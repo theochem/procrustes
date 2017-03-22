@@ -3,13 +3,7 @@ __author__ = 'Jonny'
 import numpy as np
 import unittest
 from math import *
-from procrustes.procrustes.procrustes_orthogonal import OrthogonalProcrustes
-from procrustes.procrustes.procrustes_permutation import PermutationProcrustes
-from procrustes.procrustes.procrustes_rotational_orthogonal import RotationalOrthogonalProcrustes
-from procrustes.procrustes.procrustes_symmetric import SymmetricProcrustes
-from procrustes.procrustes.procrustes_two_sided_orthogonal import TwoSidedOrthogonalProcrustes
-from procrustes.procrustes.procrustes_two_sided_orthogonal_single_transformation import TwoSidedOrthogonalSingleTransformationProcrustes
-from procrustes.procrustes.procrustes_two_sided_permutation_single_transformation import TwoSidedPermutationSingleTransformationProcrustes
+from procrustes import *
 
 
 class Test(unittest.TestCase):

@@ -1,7 +1,7 @@
 __author__ = 'Jonny'
 
 import unittest
-from procrustes.procrustes.base import *
+from procrustes import *
 
 
 class Test(unittest.TestCase):
@@ -336,9 +336,9 @@ class Test(unittest.TestCase):
         array = np.array([[5, 3, 2, 5], [7, 5, 4, 3]])
         # Proceed with the translate_scale process.
         procrust = Procrustes(array, array.T)
-        array_trans_scale_1, unused = procrust.translate_scale_array(array)
+        array_trans_scale_1, unused, _ = procrust.translate_scale_array(array)
         # Perform the process again using the already translated and scaled array as input
-        array_trans_scale_2, unused = procrust.translate_scale_array(array_trans_scale_1)
+        array_trans_scale_2, unused, _ = procrust.translate_scale_array(array_trans_scale_1)
         assert(abs(array_trans_scale_1 - array_trans_scale_2) < 1.e-10).all()
         """
         This test shows that applying translate scale to an array which is translated
@@ -353,9 +353,9 @@ class Test(unittest.TestCase):
         # Verify the validity of the translate_scale analysis
         procrust = Procrustes(array, array_trans_scale)
         # Returns an object with an origin centred centroid unit Frobenius norm
-        predicted, unused = procrust.translate_scale_array(array_trans_scale)
+        predicted, unused, _ = procrust.translate_scale_array(array_trans_scale)
         # Returns the same object, origin centred and unit Frobenius norm
-        expected = procrust.translate_scale_array(array)
+        expected, _, _ = procrust.translate_scale_array(array)
         assert(abs(predicted - expected) < 1.e-10).all()
         """
         This test shows that applying translate scale to an array which is translated
@@ -482,14 +482,3 @@ class Test(unittest.TestCase):
 
     if __name__ == '__main__':
         unittest.main()
-
-
-
-
-
-
-
-
-
-
-

@@ -9,12 +9,12 @@ class PermutationProcrustes(Procrustes):
     '''
     This method deals with the Permutation Procrustes problem
     '''
-    def __init__(self, array_a, array_b, translate_scale=False, translate=False, scale=False):
+    def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        Procrustes.__init__(self, array_a, array_b, translate_scale=translate_scale, translate=translate,
+        Procrustes.__init__(self, array_a, array_b, translate=translate,
                             scale=scale)
 
-    def calculate(self,):
+    def calculate(self):
         """
          Calculates the optimum permutation transformation array in the
         single-sided procrustes problem
@@ -62,4 +62,4 @@ class PermutationProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, perm_optimum)
 
-        return perm_optimum, array_transformed, total_potential, error
+        return perm_optimum, array_transformed, total_potential, error, self.translate_and_or_scale

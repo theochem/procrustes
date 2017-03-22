@@ -6,13 +6,13 @@ import numpy as np
 
 class OrthogonalProcrustes(Procrustes):
 
-    '''
+    """
     This method deals with the orthogonal Procrustes problem
-    '''
+    """
 
-    def __init__(self, array_a, array_b, translate_scale=False, translate=False, scale=False):
+    def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        Procrustes.__init__(self, array_a, array_b, translate_scale=translate_scale, translate=translate,
+        Procrustes.__init__(self, array_a, array_b, translate=translate,
                             scale=scale)
         # allows one to call Procrustes methods
 
@@ -44,13 +44,8 @@ class OrthogonalProcrustes(Procrustes):
         prod_matrix = np.dot(array_a.T, array_b)
         u, s, v_trans = self.singular_value_decomposition(prod_matrix)
 
-        # Remove array elements close to zero
-        u[abs(u) <= 1.e-8] = 0
-        v_trans[abs(v_trans) <= 1.e-8] = 0
-
         # Define the optimum orthogonal transformation
         u_optimum = np.dot(u, v_trans)
-        u_optimum[abs(u_optimum) <= 1.e-8] = 0
 
         # Calculate the error
         error = self.single_sided_procrustes_error(array_a, array_b, u_optimum)
@@ -58,4 +53,4 @@ class OrthogonalProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, u_optimum)
 
-        return u_optimum, array_transformed, error
+        return u_optimum, array_transformed, error, self.translate_and_or_scale

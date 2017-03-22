@@ -12,7 +12,7 @@ class SymmetricProcrustes(Procrustes):
 
     """
 
-    def __init__(self, array_a, array_b, translate_scale=False, translate=False, scale=False):
+    def __init__(self, array_a, array_b, translate=False, scale=False):
 
         self.array_a = self.hide_zero_padding_array(array_a)
         m_a, n_a = self.array_a.shape
@@ -24,7 +24,7 @@ class SymmetricProcrustes(Procrustes):
                              ' where m, n are the number of rows, columns of the unpadded input arrays')
         assert(np.linalg.matrix_rank(self.array_b) < n_a)
 
-        Procrustes.__init__(self, self.array_a, self.array_b, translate_scale=translate_scale, translate=translate,
+        Procrustes.__init__(self, self.array_a, self.array_b, translate=translate,
                             scale=scale)
 
     def calculate(self):
@@ -75,7 +75,7 @@ class SymmetricProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, x)
 
-        return x, array_transformed, error
+        return x, array_transformed, error, self.translate_and_or_scale
 
 
 # Reference

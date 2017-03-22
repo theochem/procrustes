@@ -11,9 +11,9 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
 
     """
 
-    def __init__(self, array_a, array_b, translate_scale=False, translate=False, scale=False):
+    def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        Procrustes.__init__(self, array_a, array_b, translate_scale=translate_scale, translate=translate, scale=scale)
+        Procrustes.__init__(self, array_a, array_b, translate=translate, scale=scale)
 
     def calculate(self):
         """
@@ -35,10 +35,10 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
              sided procrustes problem
         u2 = the optimum orthogonal right-multiplying transformation array satisfying the double
              sided procrustes problem
-        array_ transformed = the transformed input array after the transformation U1* array_a*U2
+        array_transformed = the transformed input array after the transformation U1* array_a*U2
         error = the error as described by the double-sided procrustes problem
-
         """
+
         array_a = self.array_a
         array_b = self.array_b
         # Calculate the SVDs of array_a and array_b & solve for the optimum orthogonal transformation arrays
@@ -53,4 +53,4 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(np.dot(u1.T, array_a), u2)
 
-        return u1, u2, array_transformed, error
+        return u1, u2, array_transformed, error, self.translate_and_or_scale

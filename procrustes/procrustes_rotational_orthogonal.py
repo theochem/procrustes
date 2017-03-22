@@ -11,9 +11,9 @@ class RotationalOrthogonalProcrustes(Procrustes):
     Constrain the transformation matrix U to be pure rotational
     '''
 
-    def __init__(self, array_a, array_b, translate_scale=False, translate=False, scale=False):
+    def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        Procrustes.__init__(self, array_a, array_b, translate_scale=translate_scale, translate=translate, scale=scale)
+        Procrustes.__init__(self, array_a, array_b, translate=translate, scale=scale)
 
     def calculate(self):
 
@@ -50,12 +50,9 @@ class RotationalOrthogonalProcrustes(Procrustes):
         n = array_a.shape[1]
         s = np.eye(n)
         s[n-1, n-1] = replace_singular_value
-        # Remove zero entries
-        s[abs(s) <= 1e-8] = 0
 
         # Calculate the optimum rotation matrix r
         r = np.dot(np.dot(u, s), v_trans)
-        r[abs(r) <= 1e-8] = 0
 
         # Calculate the error
         error = self.single_sided_procrustes_error(array_a, array_b, r)
@@ -63,4 +60,4 @@ class RotationalOrthogonalProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, r)
 
-        return r, array_transformed, error
+        return r, array_transformed, error, self.translate_and_or_scale

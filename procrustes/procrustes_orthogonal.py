@@ -6,8 +6,22 @@ import numpy as np
 
 class OrthogonalProcrustes(Procrustes):
 
-    """
-    This method deals with the orthogonal Procrustes problem
+    r"""
+    This method deals with the orthogonal Procrustes problem.
+    Given an :math:`\text{m}\times\text{n }A` and a reference matrix :math:`A^0`, find the unitary/orthogonla transformation of :math:`A` that makes it as close as possible to :math:`A^0`. I.e.,
+
+    .. math::
+
+       \underbrace{min}_{\left\{U|U^{-1} = {U}^\dagger \right\}}\|AU-A^0\|_{F}^2=\underbrace{min}_{\left\{U|U^{-1} = {U}^\dagger \right\}}\text{Tr}[({AU-A^0})^\dagger(AU-A^0)]=\underbrace{max}_{\left\{U|U^{-1} = {U}^\dagger\right\}}\text{Tr}[ U^\dagger {A}^\dagger A^0]
+
+    The solution of obtained by taking the singular value decomposition (SVD) of the product of the matrices, :math:`A^{\dagger}A^0`,
+
+    .. math::
+
+       A^{\dagger}A^0 = \tilde{U}\tilde{\Sigma}\tilde{V^{\dagger}}\\
+       U_{optimum}=\tilde{U}\tilde{V^{\dagger}}
+
+    These singular values are always listed in decreasing order, with the smallest singular value in the bottom=right-hand corner of :math:`\tilde{\Sigma}`.
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):

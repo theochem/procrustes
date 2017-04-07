@@ -16,8 +16,8 @@ class PermutationProcrustes(Procrustes):
 
     def calculate(self):
         """
-         Calculates the optimum permutation transformation array in the
-        single-sided procrustes problem
+        Calculates the optimum permutation transformation array in the
+        single-sided procrustes problem.
 
         Parameters
         ----------
@@ -34,8 +34,7 @@ class PermutationProcrustes(Procrustes):
              sided procrustes problem
         array_ transformed = the transformed input array after transformation by perm_optimum
         total_potential = The total 'profit', i.e. the trace of the transformed input array
-        error = the error as described by the single-sided procrustes problem
-
+        error = the error as described by the single-sided procrustes problem.
         """
         array_a = self.array_a
         array_b = self.array_b

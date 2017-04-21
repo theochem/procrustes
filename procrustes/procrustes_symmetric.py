@@ -1,6 +1,7 @@
 __author__ = 'Jonny'
 
 from procrustes.base import Procrustes
+from procrustes.utils import hide_zero_padding, singular_value_decomposition
 import numpy as np
 
 
@@ -14,9 +15,9 @@ class SymmetricProcrustes(Procrustes):
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        self.array_a = self.hide_zero_padding_array(array_a)
+        self.array_a = hide_zero_padding(array_a)
         m_a, n_a = self.array_a.shape
-        self.array_b = self.hide_zero_padding_array(array_b)
+        self.array_b = hide_zero_padding(array_b)
         m_b, n_b = self.array_b.shape
         assert(m_a == m_b and n_a == n_b)
         if m_a < n_a:
@@ -52,7 +53,7 @@ class SymmetricProcrustes(Procrustes):
         array_b = self.array_b
         m, n = self.array_a.shape
         # Compute SVD of array_a
-        u, s, v_trans = self.singular_value_decomposition(array_a)
+        u, s, v_trans = singular_value_decomposition(array_a)
         # Add zeros to the eigenvalue array s so that total length(s) = n
         s_concatenate = np.zeros(n - len(s))
         np.concatenate((s, s_concatenate))

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 '''Package for Various Procrustes Implementations'''
 
+from procrustes.utils import *
 from procrustes.hungarian import *
 from procrustes.base import *
 from procrustes.procrustes_orthogonal import *

@@ -1,6 +1,7 @@
 __author__ = 'Jonny'
 
 from procrustes.base import Procrustes
+from procrustes.utils import singular_value_decomposition
 import numpy as np
 
 
@@ -42,8 +43,8 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         array_a = self.array_a
         array_b = self.array_b
         # Calculate the SVDs of array_a and array_b & solve for the optimum orthogonal transformation arrays
-        u_a, sigma_a, v_trans_a = self.singular_value_decomposition(array_a)
-        u_a0, sigma_a0, v_trans_a0 = self.singular_value_decomposition(array_b)
+        u_a, sigma_a, v_trans_a = singular_value_decomposition(array_a)
+        u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(array_b)
         u1 = np.dot(u_a, u_a0.T)
         u2 = np.dot(v_trans_a.T, v_trans_a0)
 

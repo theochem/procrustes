@@ -1,6 +1,7 @@
 __author__ = 'Jonny'
 
 from procrustes.base import Procrustes
+from procrustes.utils import singular_value_decomposition
 import numpy as np
 
 
@@ -71,7 +72,7 @@ class RotationalOrthogonalProcrustes(Procrustes):
         array_b = self.array_b
         # form the product matrix & compute SVD
         prod_matrix = np.dot(array_a.T, array_b)
-        u, s, v_trans = self.singular_value_decomposition(prod_matrix)
+        u, s, v_trans = singular_value_decomposition(prod_matrix)
 
         # Constrain transformation matrix to be a pure rotation matrix by replacing the least
         # significant singular value with sgn(|U*V^t|). The rest of the

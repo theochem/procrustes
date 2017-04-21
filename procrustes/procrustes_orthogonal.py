@@ -1,11 +1,12 @@
-__author__ = 'Jonny'
+"""
+"""
 
 from procrustes.base import Procrustes
+from procrustes.utils import singular_value_decomposition
 import numpy as np
 
 
 class OrthogonalProcrustes(Procrustes):
-
     r"""
     This method deals with the orthogonal Procrustes problem.
     Given an :math:`\text{m}\times\text{n }A` and a reference matrix :math:`A^0`, find the unitary/orthogonla transformation of :math:`A` that makes it as close as possible to :math:`A^0`. I.e.,
@@ -55,14 +56,14 @@ class OrthogonalProcrustes(Procrustes):
         array_b = self.array_b
 
         # Calculate SVD
-        prod_matrix = np.dot(array_a.T, array_b)
-        u, s, v_trans = self.singular_value_decomposition(prod_matrix)
+        prod_matrix = np.dot(self.array_a.T, self.array_b)
+        u, s, v_trans = singular_value_decomposition(prod_matrix)
 
         # Define the optimum orthogonal transformation
         u_optimum = np.dot(u, v_trans)
 
         # Calculate the error
-        error = self.single_sided_procrustes_error(array_a, array_b, u_optimum)
+        error = self.single_sided_procrustes_error(self.array_a, self.array_b, u_optimum)
 
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, u_optimum)

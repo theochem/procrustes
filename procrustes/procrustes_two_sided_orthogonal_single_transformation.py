@@ -1,6 +1,7 @@
 __author__ = 'Jonny'
 
 from procrustes.base import Procrustes
+from procrustes.utils import eigenvalue_decomposition, singular_value_decomposition
 from procrustes.procrustes_orthogonal import OrthogonalProcrustes
 import numpy as np
 from itertools import product
@@ -57,8 +58,8 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
         array_b = self.array_b
         if return_u_approx:
             # Calculate the eigenvalue decomposition of array_a and array_b
-            sigma_a, u_a = self.eigenvalue_decomposition(array_a, two_sided_single=True)
-            sigma_a0, u_a0 = self.eigenvalue_decomposition(array_b, two_sided_single=True)
+            sigma_a, u_a = eigenvalue_decomposition(array_a, two_sided_single=True)
+            sigma_a0, u_a0 = eigenvalue_decomposition(array_b, two_sided_single=True)
             # Compute u_umeyama
             u_umeyama = np.multiply(abs(u_a), abs(u_a0).T)
             # Compute u_umeyama_approx using orthogonal procrustes analysis
@@ -73,8 +74,8 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
 
         if return_u_best:
             # svd of each array
-            u_a, sigma_a, v_trans_a = self.singular_value_decomposition(array_a)
-            u_a0, sigma_a0, v_trans_a0 = self.singular_value_decomposition(array_b)
+            u_a, sigma_a, v_trans_a = singular_value_decomposition(array_a)
+            u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(array_b)
             n, m = array_a.shape
             assert(n == m)
             # Compute all 2^n combinations of diagonal n x n matrices where diagonal elements are from the set {-1,1}

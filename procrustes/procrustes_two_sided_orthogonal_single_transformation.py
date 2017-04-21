@@ -68,7 +68,7 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             u_approx, array_transformed_ortho, error_ortho, translate_and_or_scale = ortho.calculate()
             u_approx[abs(u_approx) < 1.e-8] = 0
             # Calculate the error
-            error_approx = self.double_sided_procrustes_error(array_a, array_b, u_approx, u_approx)
+            error_approx = self.double_sided_error(u_approx, u_approx)
             # Calculate the transformed input array
             array_transformed_approx = np.dot(array_a, u_approx)
 
@@ -89,7 +89,7 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
                 # Compute the trial's optimum transformation array
                 u_trial = np.dot(np.dot(u_a, np.diag(diag_vec_list[i])), u_a0.T)
                 # And the trial's corresponding error
-                error = self.double_sided_procrustes_error(array_a, array_b, u_trial, u_trial)
+                error = self.double_sided_error(u_trial, u_trial)
                 if error < tol:
                     u_best = u_trial
                     error_best = error

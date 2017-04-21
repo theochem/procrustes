@@ -49,7 +49,7 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         u2 = np.dot(v_trans_a.T, v_trans_a0)
 
         # Calculate the error
-        error = self.double_sided_procrustes_error(array_a, array_b, u1, u2)
+        error = self.double_sided_error(u1, u2)
 
         # Calculate the transformed input array
         array_transformed = np.dot(np.dot(u1.T, array_a), u2)

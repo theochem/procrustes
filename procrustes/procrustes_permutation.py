@@ -56,7 +56,7 @@ class PermutationProcrustes(Procrustes):
         total_potential = hungary.get_total_potential()
 
         # Calculate the error
-        error = self.single_sided_procrustes_error(array_a, array_b, perm_optimum)
+        error = self.single_sided_error(perm_optimum)
 
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, perm_optimum)

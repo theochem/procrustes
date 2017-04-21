@@ -71,7 +71,7 @@ class SymmetricProcrustes(Procrustes):
         x = np.dot(np.dot(v_trans.T, y), v_trans)
 
         # Calculate the error
-        error = self.single_sided_procrustes_error(array_a, array_b, x)
+        error = self.single_sided_error(x)
 
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, x)

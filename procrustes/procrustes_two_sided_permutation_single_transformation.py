@@ -173,7 +173,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
             perm_optimum, array_transformed, total_potential, error, unused_translate_and_or_scale = perm.calculate()
 
             # Calculate the error
-            error_perm_optimum = self.double_sided_procrustes_error(array_a, array_b, perm_optimum, perm_optimum)
+            error_perm_optimum = self.double_sided_error(perm_optimum, perm_optimum)
 
             if error_perm_optimum < error_to_beat:
                 least_error_perm = perm_optimum

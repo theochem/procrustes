@@ -91,66 +91,48 @@ class Procrustes(object):
         self.array_a = array_a
         self.array_b = array_b
 
-    def single_sided_procrustes_error(self, array_a, array_b, t_array):
-        r""" Returns the error for all single-sided procrustes problems
+    def single_sided_error(self, array_u):
+        r"""
+        Return the single-sided procrustes error.
 
          .. math::
-
-            min[({AU-A^0})^\dagger (AU-A^0)]
-
-        where :math:`A` is a :math:`\text{m}\times\text{n }` array,
-        :math:`\text{A}^0 \text{is the reference }\text{m}\times\text{n}` array and
-        :math:`U` represents the optimum transformation array.
+            \text{Tr}\left[\left(\mathbf{AU} - \mathbf{A}^0\right)^\dagger
+                           \left(\mathbf{AU} - \mathbf{A}^0\right)\right]
 
         Parameters
         ----------
-        array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b).
-
-        array_b : ndarray
-            A 2D array representing the reference array.
-
-        t_array: ndarray
-           A 2D array representing the 'optimum' transformation.
+        array_u : ndarray
+           A 2D array representing the transformation :math:`\mathbf{U}`.
 
         Returns
         -------
-        Returns the error given by the optimum choice of t_array.
-
+        float
+            The single-sided error.
         """
-        at = np.dot(array_a, t_array)
-        error = np.trace(np.dot((at - array_b).T, at - array_b))
+        au = np.dot(self.array_a, array_u)
+        error = np.trace(np.dot((au - self.array_b).T, au - self.array_b))
         return error
 
-    def double_sided_procrustes_error(self, array_a, array_b, t_array1, t_array2):
-        """
-        Returns the error for all double-sided procrustes problems
+    def double_sided_error(self, array_u1, array_u2):
+        r"""
+        Return the double-sided procrustes error.
 
          .. math::
-
-        min { ([t_array1].^\mathrm{T}*[array_a]*[t_array2] - [array_b]).^\mathrm{T}) * ([t_array1].^\mathrm{T}*[array_a]*[t_array2] - [array_b])) }
-            : t_array1, t_array2 satisfies some condition.
+            \text{Tr}\left[\left(\mathbf{U_1}^\dagger \mathbf{AU_2} - \mathbf{A}^0\right)^\dagger
+                           \left(\mathbf{U_1}^\dagger \mathbf{AU_2} - \mathbf{A}^0\right)\right]
 
         Parameters
         ----------
-
-        array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b).
-
-        array_b : ndarray
-            A 2D array representing the reference array.
-
-        t_array: ndarray
-           A 2D array representing the 1st 'optimum' transformation
-           in the two-sided procrustes problems.
-        t_array2: ndarray
-           A 2D array representing the 2nd 'optimum' transformation
-           in the two-sided procrustes problems.
+        array_u1 : ndarray
+           A 2D array representing the 1st transformation :math:`\mathbf{U_1}`.
+        array_u2 : ndarray
+           A 2D array representing the 2nd transformation :math:`\mathbf{U_2}`.
 
         Returns
-        ------------
-        Returns the error given by the optimum choice of t_array1 and t_array2
+        -------
+        float
+            The double-sided error.
         """
-        t_trans_a_t = np.dot(np.dot(t_array1.T, array_a), t_array2)
-        error = np.trace(np.dot((t_trans_a_t - array_b).T, (t_trans_a_t - array_b)))
+        u1au2 = np.dot(np.dot(array_u1.T, self.array_a), array_u2)
+        error = np.trace(np.dot((u1au2 - self.array_b).T, u1au2 - self.array_b))
         return error

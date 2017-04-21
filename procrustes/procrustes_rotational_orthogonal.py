@@ -86,7 +86,7 @@ class RotationalOrthogonalProcrustes(Procrustes):
         r = np.dot(np.dot(u, s), v_trans)
 
         # Calculate the error
-        error = self.single_sided_procrustes_error(array_a, array_b, r)
+        error = self.single_sided_error(r)
 
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, r)

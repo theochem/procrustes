@@ -63,7 +63,7 @@ class OrthogonalProcrustes(Procrustes):
         u_optimum = np.dot(u, v_trans)
 
         # Calculate the error
-        error = self.single_sided_procrustes_error(self.array_a, self.array_b, u_optimum)
+        error = self.single_sided_error(u_optimum)
 
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, u_optimum)

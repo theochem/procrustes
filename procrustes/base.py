@@ -78,11 +78,11 @@ class Procrustes(object):
         if array_a.shape[0] != array_b.shape[0]:
             print 'The general Procrustes analysis requires two 2D arrays with the same number of rows,',
             print 'so the array with the smaller number of rows will automatically be padded with zero rows.'
-            array_a, array_b = zero_padding(array_a, array_b, row=True, column=False)
+            array_a, array_b = zero_padding(array_a, array_b, mode='row')
             if array_a.shape[1] == array_b.shape[1]:
                 print 'Tip: The 2D input arrays have the same number of columns, so'
                 print 'the Procrustes analysis is doable (without zero padding) on the transposed matrices.'
-            array_a, array_b = zero_padding(array_a, array_b, row=False, column=True)
+            array_a, array_b = zero_padding(array_a, array_b, mode='col')
         # proceed once the number of rows are the same
         else:
             print 'The number of rows are the same, the analysis will proceed.'

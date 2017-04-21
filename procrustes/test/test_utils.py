@@ -11,7 +11,7 @@ def test_zero_padding_rows():
     array2 = np.array([[5, 6]])
 
     # match the number of rows of the 1st array
-    padded2, padded1 = zero_padding(array2, array1, row=True)
+    padded2, padded1 = zero_padding(array2, array1, mode='row')
     assert padded1.shape == (2, 2)
     assert padded2.shape == (2, 2)
     assert (abs(padded1 - array1) < 1.e-10).all()
@@ -20,7 +20,7 @@ def test_zero_padding_rows():
     # match the number of rows of the 1st array
     array3 = np.arange(8).reshape(2, 4)
     array4 = np.arange(8).reshape(4, 2)
-    padded3, padded4 = zero_padding(array3, array4, row=True)
+    padded3, padded4 = zero_padding(array3, array4, mode='row')
     assert padded3.shape == (4, 4)
     assert padded4.shape == (4, 2)
     assert (abs(array4 - padded4) < 1.e-10).all()
@@ -30,7 +30,7 @@ def test_zero_padding_rows():
     assert (abs(expected - padded3) < 1.e-10).all()
 
     # padding the padded_arrays should not change anything
-    padded5, padded6 = zero_padding(padded3, padded4, row=True)
+    padded5, padded6 = zero_padding(padded3, padded4, mode='row')
     assert padded3.shape == (4, 4)
     assert padded4.shape == (4, 2)
     assert padded5.shape == (4, 4)
@@ -44,7 +44,7 @@ def test_zero_padding_columns():
     array2 = np.array([[5], [2]])
 
     # match the number of columns of the 1st array
-    padded2, padded1 = zero_padding(array2, array1, column=True)
+    padded2, padded1 = zero_padding(array2, array1, mode='col')
     assert padded1.shape == (2, 3)
     assert padded2.shape == (2, 3)
     assert (abs(padded1 - array1) < 1.e-10).all()
@@ -53,7 +53,7 @@ def test_zero_padding_columns():
     # match the number of columns of the 1st array
     array3 = np.arange(8).reshape(8, 1)
     array4 = np.arange(8).reshape(2, 4)
-    padded3, padded4 = zero_padding(array3, array4, row=False, column=True)
+    padded3, padded4 = zero_padding(array3, array4, mode='col')
     assert padded3.shape == (8, 4)
     assert padded4.shape == (2, 4)
     assert (abs(array4 - padded4) < 1.e-10).all()
@@ -63,7 +63,7 @@ def test_zero_padding_columns():
     assert (abs(expected - padded3) < 1.e-10).all()
 
     # padding the padded_arrays should not change anything
-    padded5, padded6 = zero_padding(padded3, padded4, row=False, column=True)
+    padded5, padded6 = zero_padding(padded3, padded4, mode='col')
     assert padded3.shape == (8, 4)
     assert padded4.shape == (2, 4)
     assert padded5.shape == (8, 4)
@@ -77,7 +77,7 @@ def test_zero_padding_square():
     array1 = np.array([[60, 85, 86], [85, 151, 153], [86, 153, 158]])
     array2 = np.array([[60, 85, 86, 0, 0], [85, 151, 153, 0, 0],
                        [86, 153, 158, 0, 0], [0, 0, 0, 0, 0]])
-    square1, square2 = zero_padding(array1, array2, row=False, column=False, square=True)
+    square1, square2 = zero_padding(array1, array2, mode='square')
     assert square1.shape == square2.shape
     assert square1.shape[0] == square1.shape[1]
 
@@ -86,7 +86,7 @@ def test_zero_padding_square():
     array1 = np.dot(sym_part, sym_part.T)
     array2 = array1
     assert(array1.shape == array2.shape)
-    square1, square2 = zero_padding(array1, array2, row=False, column=False, square=True)
+    square1, square2 = zero_padding(array1, array2, mode='square')
     assert square1.shape == square2.shape
     assert square1.shape[0] == square1.shape[1]
     assert (abs(array2 - array1) < 1.e-10).all()

@@ -6,124 +6,81 @@ Utility Module.
 import numpy as np
 
 
-def zero_padding(x1, x2, row=False, column=False, square=False):
-    """
-    Match the number of rows and/or columns of arrays x1 and x2 by
-    padding zero rows and/or columns to the array with the smaller dimensions.
+def zero_padding(array_a, array_b, mode):
+    r"""
+    Return arrays padded with rowm and/or columns of zero.
 
     Parameters
     ----------
-    x1 : ndarray
-        A 2D array
-    x2 : ndarray
-        A 2D array
-    row : bool
-        Set to True to match the number of rows by zero-padding; default=True.
-    column : bool
-        Set to True to match the number of columns by zero-padding; default=False.
-    square: bool
-        Set to True to zero pad the input arrays such that the inputs become square
-        arrays of the same size
+    array_a : ndarray
+        The 2D array :math:`\mathbf{A}_{n_1 \times m_1}`.
+    array_b : ndarray
+        The 2D array :math:`\mathbf{B}_{n_2 \times m_2}`.
+    mode : str
+        One of the following values specifying how to padd arrays:
+
+        **'row'**
+             The array with fewer rows is padded with zero rows so that both have the same
+             number of rows.
+        **'col'**
+             The array with fewer columns is padded with zero columns so that both have the
+             same number of columns.
+        **'row-col'**
+             The array with fewer rows is padded with zero rows, and the array with fewer
+             columns is padded with zero columns, so that both have the same dimensions.
+             This does not necessarily result in square arrays.
+        'square'
+             The arrays are padded with zero rows and zero columns so that they are both
+             squared arrays. The dimension of square array is specified based on the highest
+             dimension, i.e. :math:`\text{max}(n_1, m_1, n_2, m_2)`.
+
     Returns
     -------
-    If row = True and Column = False:
-
-         Returns the input arrays, x1 and x2, where the array with the fewer number
-         of rows has been padded with zeros to match the number of rows of the other array
-
-    if row = False and column = True
-
-         Returns the input arrays, x1 and x2, where the array with the fewer number
-         of columns has been padded with zeros to match the number of columns of the other array
-
-    if row = True and column = True
-
-         Returns the input arrays, x1 and x2, where the array with the fewer rows has been row-padded
-         with zeros, and the array with the fewer number of columns has been column-padded with zeros
-         in order to match the row/column number of the array with the greatest number of rows/columns.
-         The outputs have the same size, and need not be square.
-
-    if squre = True
-         Returns the input arrays x1 and x2 zero padded such that both arrays are square and of the same size.
+    ndarray, ndarray
+        Padded array_a and array_b arrays.
     """
-    # Confirm the input arrays are 2d arrays
-    # Assertions are a systematic way to check that the internal state of a program is as the
-    # programmer expected, with the goal of catching bugs
-    # Assertions are a systematic way to check that the internal state of a
-    # program is as the programmer expected, with the goal of catching bugs
-    assert isinstance(x1, np.ndarray) and isinstance(x2, np.ndarray)
-    assert isinstance(x1, np.ndarray) and isinstance(x2, np.ndarray)
-    assert x1.ndim == 2 and x2.ndim == 2
-    if square:
-        if (x1.shape == x2.shape) and (x1.shape[0] == x1.shape[1]):
-            print "The arrays are already square and of the same size."
-        n_1, m_1 = x1.shape
-        n_2, m_2 = x2.shape
-        new_dimension = max(n_1, n_2, m_1, m_2)
-        # Row pad
-        if n_1 < new_dimension:
-            pad = np.zeros((new_dimension - n_1, x1.shape[1]))
-            x1 = np.concatenate((x1, pad), axis=0)
-        if n_2 < new_dimension:
-            pad = np.zeros((new_dimension - n_2, x2.shape[1]))
-            x2 = np.concatenate((x2, pad), axis=0)
-        # Column Pad
-        if m_1 < new_dimension:
-            pad = np.zeros((new_dimension, new_dimension - m_1))
-            x1 = np.concatenate((x1, pad), axis=1)
-        if m_2 < new_dimension:
-            pad = np.zeros((new_dimension, new_dimension - m_2))
-            x2 = np.concatenate((x2, pad), axis=1)
+    # sanity checks
+    if not isinstance(array_a, np.ndarray) or not isinstance(array_b, np.ndarray):
+        raise ValueError('Arguments array_a & array_b should be numpy arrays.')
+    if array_a.ndim != 2 or array_b.ndim != 2:
+        raise ValueError('Arguments array_a & array_b should be 2D arrays.')
 
-    if x1.shape == x2.shape:
-        pass
-    else:
-        if row and column:
-            # operations on rows
-            if x1.shape[0] < x2.shape[0]:
-                # padding x1 with zero rows
-                pad = np.zeros((x2.shape[0] - x1.shape[0], x1.shape[1]))
-                x1 = np.concatenate((x1, pad), axis=0)
-            elif x1.shape[0] > x2.shape[0]:
-                # padding x2 with zero rows
-                pad = np.zeros((x1.shape[0] - x2.shape[0], x2.shape[1]))
-                x2 = np.concatenate((x2, pad), axis=0)
+    if array_a.shape == array_b.shape:
+        # special case of square arrays, mode is set to None so that array_a & array_b are returned.
+        mode = None
 
-            # operaations on columns
-            if x1.shape[1] < x2.shape[1]:
-                # padding x1 with zero columns
-                pad = np.zeros((x1.shape[0], x2.shape[1] - x1.shape[1]))
-                x1 = np.concatenate((x1, pad), axis=1)
-            elif x1.shape[1] > x2.shape[1]:
-                # padding x2 with zero columns
-                pad = np.zeros((x2.shape[0], x1.shape[1] - x2.shape[1]))
-                x2 = np.concatenate((x2, pad), axis=1)
+    if mode == 'square':
+        # calculate desired dimension of square array
+        (n1, m1), (n2, m2) = array_a.shape, array_b.shape
+        dim = max(n1, n2, m1, m2)
+        # padding rows to have both arrays have dim rows
+        if n1 < dim:
+            array_a = np.pad(array_a, [[0, dim - n1], [0, 0]], 'constant', constant_values=0)
+        if n2 < dim:
+            array_b = np.pad(array_b, [[0, dim - n2], [0, 0]], 'constant', constant_values=0)
+        # padding columns to have both arrays have dim columns
+        if m1 < dim:
+            array_a = np.pad(array_a, [[0, 0], [0, dim - m1]], 'constant', constant_values=0)
+        if m2 < dim:
+            array_b = np.pad(array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
 
-        elif row:
-            if x1.shape[0] < x2.shape[0]:
-                # padding x1 with zero rows
-                pad = np.zeros((x2.shape[0] - x1.shape[0], x1.shape[1]))
-                x1 = np.concatenate((x1, pad), axis=0)
-            elif x1.shape[0] > x2.shape[0]:
-                # padding x2 with zero rows
-                pad = np.zeros((x1.shape[0] - x2.shape[0], x2.shape[1]))
-                x2 = np.concatenate((x2, pad), axis=0)
-
-        elif column:
-            if x1.shape[1] < x2.shape[1]:
-                # padding x1 with zero columns
-                pad = np.zeros((x1.shape[0], x2.shape[1] - x1.shape[1]))
-                x1 = np.concatenate((x1, pad), axis=1)
-            elif x1.shape[1] > x2.shape[1]:
-                # padding x2 with zero columns
-                pad = np.zeros((x2.shape[0], x1.shape[1] - x2.shape[1]))
-                x2 = np.concatenate((x2, pad), axis=1)
-
+    if mode == 'row' or mode == 'row-col':
+        # padding rows to have both arrays have the same number of rows
+        diff = array_a.shape[0] - array_b.shape[0]
+        if diff < 0:
+            array_a = np.pad(array_a, [[0, -diff], [0, 0]], 'constant', constant_values=0)
         else:
-            raise ValueError('Either row or column arguments should be set to True for '
-                             'the padding to be meaningful.')
+            array_b = np.pad(array_b, [[0, diff], [0, 0]], 'constant', constant_values=0)
 
-    return x1, x2
+    if mode == 'col' or mode == 'row-col':
+        # padding columns to have both arrays have the same number of columns
+        diff = array_a.shape[1] - array_b.shape[1]
+        if diff < 0:
+            array_a = np.pad(array_a, [[0, 0], [0, -diff]], 'constant', constant_values=0)
+        else:
+            array_b = np.pad(array_b, [[0, 0], [0, diff]], 'constant', constant_values=0)
+
+    return array_a, array_b
 
 
 def translate_array(array_a, array_b=None):

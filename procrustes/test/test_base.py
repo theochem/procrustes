@@ -107,7 +107,7 @@ def test_zero_padding_square():
     assert(abs(array2 - array1) < 1.e-10).all()
 
 
-def test_hide_zero_padding_array():
+def test_hide_zero_padding():
     array0 = np.array([[1, 6, 7, 8], [5, 7, 22, 7]])
     # Create (arbitrary) pads to add onto the permuted input array, array_permuted
     m, n = array0.shape
@@ -119,11 +119,11 @@ def test_hide_zero_padding_array():
     array1 = np.concatenate((array1, pad_horizontal), axis=0)
     # Assert array has been zero padded
     assert(array0.shape != array1.shape)
-    # Confirm that after hide_zero_padding_array has been applied, the arrays are of equal size and
+    # Confirm that after hide_zero_padding has been applied, the arrays are of equal size and
     # are identical
     procrust = Procrustes(array0, array1)
-    hide_array0 = procrust.hide_zero_padding_array(array0)
-    hide_array1 = procrust.hide_zero_padding_array(array1)
+    hide_array0 = procrust.hide_zero_padding(array0)
+    hide_array1 = procrust.hide_zero_padding(array1)
     assert(hide_array0.shape == hide_array1.shape)
     assert(abs(hide_array0 - hide_array1) < 1.e-10).all()
 
@@ -140,11 +140,11 @@ def test_hide_zero_padding_array():
     array1 = np.concatenate((array1, pad_horizontal), axis=0)
     # Assert array has been zero padded
     assert(array0.shape != array1.shape)
-    # Confirm that after hide_zero_padding_array has been applied, the arrays are of equal size and
+    # Confirm that after hide_zero_padding has been applied, the arrays are of equal size and
     # are identical
     procrust = Procrustes(array0, array1)
-    hide_array0 = procrust.hide_zero_padding_array(array0)
-    hide_array1 = procrust.hide_zero_padding_array(array1)
+    hide_array0 = procrust.hide_zero_padding(array0)
+    hide_array1 = procrust.hide_zero_padding(array1)
     assert(hide_array0.shape == hide_array1.shape)
     assert(abs(hide_array0 - hide_array1) < 1.e-10).all()
 

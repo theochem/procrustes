@@ -1,14 +1,16 @@
-__author__ = 'Jonny'
-# -*- coding: utf-8 -*-
-"""Base class for Procrustes Analysis"""
+"""
+Base Procrustes Module.
+"""
+
 
 import numpy as np
 
 
 class Procrustes(object):
     """
-    This class provides a base class for all types of Procrustes analysis.
+    Base Procrustes Class.
     """
+
     def __init__(self, array_a, array_b, translate=False, scale=False):
         """
         Parameters
@@ -17,13 +19,12 @@ class Procrustes(object):
             A 2D array
         array_b : ndarray
             A 2D array
-        translate_scale : bool
-            Set to True to translate and scale the input arrays; default=False
         translate : bool
             Set to True to translate the input arrays; default=False
         scale : bool
             Set to True to scale the input arrays; default=False
-            Note: Scaling is meaningful only if preceded with translation. So, the code sets translate=True if scale=True and translate=False.
+            Note: Scaling is meaningful only if preceded with translation.
+            So, the code sets translate=True if scale=True and translate=False.
         """
         translate_scale = False
         # Check type and dimension of arrays
@@ -40,13 +41,11 @@ class Procrustes(object):
             translate = False
             scale = False
 
-        """
-        Remove any zero-padding that may already be attached to arrays.
-        This is important if translating is to be done.
-        """
+        # Remove any zero-padding that may already be attached to arrays.
+        # This is important if translating is to be done.
         # Hiding zero padding
-        array_a = self.hide_zero_padding_array(array_a)
-        array_b = self.hide_zero_padding_array(array_b)
+        array_a = self.hide_zero_padding(array_a)
+        array_b = self.hide_zero_padding(array_b)
 
         # Initialize the translate_and_or_scale list to contain no entries
         self.translate_and_or_scale = []
@@ -74,7 +73,8 @@ class Procrustes(object):
 
         # Zero pad arrays
         print 'The input 2D arrays are {0} and {1}.\n'.format(array_a.shape, array_b.shape)
-        #expand the array with smaller number of rows to expand to the same row number with the big one
+        # expand the array with smaller number of rows to expand to the same row
+        # number with the big one
         if array_a.shape[0] != array_b.shape[0]:
             print 'The general Procrustes analysis requires two 2D arrays with the same number of rows,',
             print 'so the array with the smaller number of rows will automatically be padded with zero rows.'
@@ -83,7 +83,7 @@ class Procrustes(object):
                 print 'Tip: The 2D input arrays have the same number of columns, so'
                 print 'the Procrustes analysis is doable (without zero padding) on the transposed matrices.'
             array_a, array_b = self.zero_padding(array_a, array_b, row=False, column=True)
-        #proceed once the number of rows are the same
+        # proceed once the number of rows are the same
         else:
             print 'The number of rows are the same, the analysis will proceed.'
 
@@ -91,12 +91,7 @@ class Procrustes(object):
         self.array_a = array_a
         self.array_b = array_b
 
-
-
-    # -------------------------------------------------------------------
-
     def zero_padding(self, x1, x2, row=False, column=False, square=False):
-
         """
         Match the number of rows and/or columns of arrays x1 and x2 by
         padding zero rows and/or columns to the array with the smaller dimensions.
@@ -137,9 +132,10 @@ class Procrustes(object):
              Returns the input arrays x1 and x2 zero padded such that both arrays are square and of the same size.
         """
         # Confirm the input arrays are 2d arrays
-        ## Assertions are a systematic way to check that the internal state of a program is as the
-        #programmer expected, with the goal of catching bugs
-        # Assertions are a systematic way to check that the internal state of a program is as the programmer expected, with the goal of catching bugs
+        # Assertions are a systematic way to check that the internal state of a program is as the
+        # programmer expected, with the goal of catching bugs
+        # Assertions are a systematic way to check that the internal state of a
+        # program is as the programmer expected, with the goal of catching bugs
         assert isinstance(x1, np.ndarray) and isinstance(x2, np.ndarray)
         assert isinstance(x1, np.ndarray) and isinstance(x2, np.ndarray)
         assert x1.ndim == 2 and x2.ndim == 2
@@ -168,7 +164,7 @@ class Procrustes(object):
             pass
         else:
             if row and column:
-                #operations on rows
+                # operations on rows
                 if x1.shape[0] < x2.shape[0]:
                     # padding x1 with zero rows
                     pad = np.zeros((x2.shape[0] - x1.shape[0], x1.shape[1]))
@@ -178,7 +174,7 @@ class Procrustes(object):
                     pad = np.zeros((x1.shape[0] - x2.shape[0], x2.shape[1]))
                     x2 = np.concatenate((x2, pad), axis=0)
 
-                #operaations on columns
+                # operaations on columns
                 if x1.shape[1] < x2.shape[1]:
                     # padding x1 with zero columns
                     pad = np.zeros((x1.shape[0], x2.shape[1] - x1.shape[1]))
@@ -214,12 +210,9 @@ class Procrustes(object):
 
         return x1, x2
 
-    # -----------------------------------------
-
     def translate_array(self, array_a, array_b=None):
-
         """
-        Translate the array_a if array_b is provided.
+        Translate array_a if array_b is provided.
 
         Parameters
         ----------
@@ -241,9 +234,11 @@ class Procrustes(object):
         When array_b is not None:
              Translates the centroid of array_a to coincide with the centroid of array_b.
              The translation vector which brings the centroid of array_a to that of array_b's is also returned.
-
-
          """
+        # The mean is strongly affected by outliers and is not a robust estimator for central location: the mean
+        # is not necessarily a typical example of the data points
+        # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
+        centroid = self.centroid(array_a)
         if array_b is not None:
             print 'When array_b is supplied, this function returns array_a shifted so that its centroid ' \
                   'coincides with that of array_b\'s.'
@@ -254,20 +249,20 @@ class Procrustes(object):
                 translate_centroid_a_to_b = centroid_b - centroid_a
                 translated_centroid_a = array_a + translate_centroid_a_to_b
                 return translated_centroid_a, translate_centroid_a_to_b
-        #The mean is strongly affected by outliers and is not a robust estimator for central location: the mean
-        #is not necessarily a typical example of the data points
-        #see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
+        # The mean is strongly affected by outliers and is not a robust estimator for central location: the mean
+        # is not necessarily a typical example of the data points
+        # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
         else:
                 centroid = array_a.mean(0)
                 origin_centred_array = array_a - centroid
                 return origin_centred_array, -centroid
 
-    # -------------------------------------
-
     def scale_array(self, array_a, array_b=None):
-
         """
-        Uniform scaling of the input (m x n) array. Scales the arrays so that each array corresponds to a point on the unit sphere in R^(m x n). The required operation is Frobenius normalization.
+        Uniform scaling of the input (m x n) array.
+
+        Scales the arrays so that each array corresponds to a point on the unit sphere
+        in R^(m x n). The required operation is Frobenius normalization.
 
         Parameters
         ----------
@@ -285,7 +280,7 @@ class Procrustes(object):
             to the origin.
 
         Returns
-        ----------
+        -------
         if array_b = None and show_scaling = True :
             returns the Frobenius normalized array_a and the scaling factor, s=1 / Frobenius_norm.
 
@@ -295,7 +290,7 @@ class Procrustes(object):
         if array_b is not none :
             returns the optimal scaling factor for array_a which brings the frobenius norm of array_a
             to that of array_b\'s.
-         """
+        """
         if array_b is not None:
             print 'When array_b is supplied, this function returns the optimal scaling factor bringing the scale' \
                   ' of array_a to that of array_b\'s.'
@@ -316,13 +311,10 @@ class Procrustes(object):
             fn = self.frobenius_norm(array_a)
             # Scale array to lie on unit sphere
             array = array_a / fn
-            scaling = 1./fn
+            scaling = 1. / fn
             return array, scaling
 
-    # ---------------------------------------------------
-
     def translate_scale_array(self, array_a, array_b=None):
-
         """
         Translation of one object (array_a) to coincide with either the origin, or the
         centroid of another object (array_b). After translational components has been removed,
@@ -385,22 +377,19 @@ class Procrustes(object):
             array_translated_scaled, scaling = self.scale_array(array_translated)
             return array_translated_scaled, t_vec, scaling
 
-    # ---------------------------------------------------
-
     def single_sided_procrustes_error(self, array_a, array_b, t_array):
-
         r""" Returns the error for all single-sided procrustes problems
 
          .. math::
 
             min[({AU-A^0})^\dagger (AU-A^0)]
 
-        where
-        where :math:`A` is a :math:`\text{m}\times\text{n }` array, :math:`\text{A}^0 \text{is the reference }\text{m}\times\text{n}` array and :math:`U` represents the optimum transformation array.
+        where :math:`A` is a :math:`\text{m}\times\text{n }` array,
+        :math:`\text{A}^0 \text{is the reference }\text{m}\times\text{n}` array and
+        :math:`U` represents the optimum transformation array.
 
         Parameters
         ----------
-
         array_a : ndarray
             A 2D array representing the array to be transformed (as close as possible to array_b).
 
@@ -411,19 +400,15 @@ class Procrustes(object):
            A 2D array representing the 'optimum' transformation.
 
         Returns
-        ------------
+        -------
         Returns the error given by the optimum choice of t_array.
 
         """
-
         at = np.dot(array_a, t_array)
-        error = np.trace(np.dot((at-array_b).T, at-array_b))
+        error = np.trace(np.dot((at - array_b).T, at - array_b))
         return error
 
-    # -----------------------------------------------
-
     def double_sided_procrustes_error(self, array_a, array_b, t_array1, t_array2):
-
         """
         Returns the error for all double-sided procrustes problems
 
@@ -453,16 +438,15 @@ class Procrustes(object):
         Returns the error given by the optimum choice of t_array1 and t_array2
         """
         t_trans_a_t = np.dot(np.dot(t_array1.T, array_a), t_array2)
-        error = np.trace(np.dot((t_trans_a_t - array_b).T, (t_trans_a_t-array_b)))
+        error = np.trace(np.dot((t_trans_a_t - array_b).T, (t_trans_a_t - array_b)))
         return error
 
-    # -------------------------------------
-
-    def singular_value_decomposition(self, array):
-
+    @staticmethod
+    def singular_value_decomposition(array):
         """
-        Singular Value Decomposition of an array
-        Decomposes an mxn array A such that A = U*S*V.T
+        Return Singular Value Decomposition of an array.
+
+        Decomposes an math:`m \times n` array math:`A` such that math:`A = U*S*V.T`
 
         Parameters
         -----------
@@ -476,13 +460,9 @@ class Procrustes(object):
         s = diagonal matrix of singular values, sorting from greatest to least.
         v = a unitary matrix.
         """
-
         return np.linalg.svd(array)
 
-    # ----------------------------------------
-
     def eigenvalue_decomposition(self, array, two_sided_single=False):
-
         """
         Computes the eigenvalue decomposition of array
         Decomposes array A such that A = U*S*U.T
@@ -522,16 +502,15 @@ class Procrustes(object):
 
         return s, v
 
-    # -------------------------------------------------------
-
-    def hide_zero_padding_array(self, array, tol=1.e-8):
-
+    @staticmethod
+    def hide_zero_padding(array, tol=1.e-8):
         """
         Removes any zero-padding that may be on the array.
 
         Parameters
         ------------
-        array: An array that may or may not contain zero-padding, where all important information is contained in upper-left block of array.
+        array: An array that may or may not contain zero-padding, where all important information
+        is contained in upper-left block of array.
 
         tol: Tolerance for which is sum(row/column) < tol, then the row/col will be removed.
 
@@ -541,7 +520,6 @@ class Procrustes(object):
         All zero padding is assumed to be such that all relevant information is contained
         within upper-left most array block
         """
-
         m, n = array.shape
         for i in range(m)[::-1]:
             # If the sum of array elements across given row is less than tol..
@@ -554,10 +532,7 @@ class Procrustes(object):
                 array = np.delete(array, j, 1)
         return array
 
-# -------------------------------------------------
-
     def is_diagonalizable(self, array):
-
         """
         Check if the given array is diagonalizable or not.
 
@@ -569,8 +544,7 @@ class Procrustes(object):
         ---------
         Returns a boolean value dictating whether or not the input array is diagonalizable
         """
-
-        array = self.hide_zero_padding_array(array)
+        array = self.hide_zero_padding(array)
         m, n = array.shape
         if m != n:
             raise ValueError('The input array must be square.')
@@ -582,18 +556,18 @@ class Procrustes(object):
             # The array cannot be diagonalizable
             return False
         else:
-            # The eigenvectors span the dimension of the vector space and therefore the array is diagonalizable
+            # The eigenvectors span the dimension of the vector space and therefore
+            # the array is diagonalizable
             return True
 
-# ----------------------------
-
-    def centroid(self, array):
+    @staticmethod
+    def centroid(array):
+        """
+        """
         centroid = array.mean(0)
         return centroid
 
-# -----------------------------
-
-    def frobenius_norm(self, array):
+    @staticmethod
+    def frobenius_norm(array):
+        """Return the Forbenius norm of array."""
         return np.sqrt((array ** 2.).sum())
-
-

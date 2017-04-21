@@ -128,50 +128,28 @@ def zero_padding(x1, x2, row=False, column=False, square=False):
 
 def translate_array(array_a, array_b=None):
     """
-    Translate array_a if array_b is provided.
+    Return translated array_a and translation vector.
 
     Parameters
     ----------
     array_a : ndarray
-        A 2D array
-
+        The 2D array to translate.
     array_b : ndarray
-        A 2D array
-
-    show_translation : bool
-        A boolean value specifying whether or not the translation vector is to be returned
+        The 2D array to translate array_a based on (default=None).
 
     Returns
-    ----------
-    When array_b is None:
-         Removes translational components of array_a by translating the object (array).
-         such that its centroid is centred about the origin.
-
-    When array_b is not None:
-         Translates the centroid of array_a to coincide with the centroid of array_b.
-         The translation vector which brings the centroid of array_a to that of array_b's is also returned.
+    -------
+    ndarray, ndarray
+        If array_b is None, array_a is translated to origin using its centroid.
+        If array_b is given, array_a is translated to centroid of array_b (the centroid of
+        translated array_a will centroid with the centroid array_b).
      """
-    # The mean is strongly affected by outliers and is not a robust estimator for central location: the mean
-    # is not necessarily a typical example of the data points
+    # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
     centroid = compute_centroid(array_a)
     if array_b is not None:
-        print 'When array_b is supplied, this function returns array_a shifted so that its centroid ' \
-              'coincides with that of array_b\'s.'
-
-    if array_b is not None:
-            centroid_b = array_b.mean(0)
-            centroid_a = array_a.mean(0)
-            translate_centroid_a_to_b = centroid_b - centroid_a
-            translated_centroid_a = array_a + translate_centroid_a_to_b
-            return translated_centroid_a, translate_centroid_a_to_b
-    # The mean is strongly affected by outliers and is not a robust estimator for central location: the mean
-    # is not necessarily a typical example of the data points
-    # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
-    else:
-            centroid = array_a.mean(0)
-            origin_centred_array = array_a - centroid
-            return origin_centred_array, -centroid
+            centroid -= compute_centroid(array_b)
+    return array_a - centroid, -centroid
 
 
 def scale_array(array_a, array_b=None):

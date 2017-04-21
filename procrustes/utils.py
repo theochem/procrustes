@@ -154,60 +154,29 @@ def translate_array(array_a, array_b=None):
 
 def scale_array(array_a, array_b=None):
     """
-    Uniform scaling of the input (m x n) array.
-
-    Scales the arrays so that each array corresponds to a point on the unit sphere
-    in R^(m x n). The required operation is Frobenius normalization.
+    Return scaled array_a and scaling vector.
 
     Parameters
     ----------
     array_a : ndarray
-        A 2D array
-
+        The 2D array to scale
     array_b : ndarray
-        A 2D array
-
-    show_scaling : bool
-        A boolean value specifying whether or not the scaling factor is returned.
-
-    keep_centroid : bool
-        A boolean value specifying whether or not the centroid of the input array should be kept and not translated
-        to the origin.
+        The 2D array to scale array_a based on (default=None).
 
     Returns
     -------
-    if array_b = None and show_scaling = True :
-        returns the Frobenius normalized array_a and the scaling factor, s=1 / Frobenius_norm.
-
-    if array_b = None and show_scaling = False :
-        returns the Frobenius normalized array_a.
-
-    if array_b is not none :
-        returns the optimal scaling factor for array_a which brings the frobenius norm of array_a
-        to that of array_b\'s.
+    ndarray, ndarray
+        If array_b is None, array_a is scaled to match norm of unit sphere using array_a's
+        Frobenius norm.
+        If array_b is given, array_a is scaled to match array_b's norm (the norm of array_a
+        will be equal norm of array_b).
     """
+    # scaling factor to match unit sphere
+    scale = 1. / frobenius_norm(array_a)
     if array_b is not None:
-        print 'When array_b is supplied, this function returns the optimal scaling factor bringing the scale' \
-              ' of array_a to that of array_b\'s.'
-    if array_b is not None:
-        # Calculate Frobenius norm of array a
-        fna = frobenius_norm(array_a)
-        # Calculate Frobenius norm of array b
-        fnb = frobenius_norm(array_b)
-        # Bring the scale of array a to the scale of array b's
-        scale_a_to_b = fnb / fna
-        # Compute the rescaled array a
-        array_a_rescaled = scale_a_to_b * array_a
-        return array_a_rescaled, scale_a_to_b
-
-    else:
-        # Centre array by normalizing by the Frobenius norm
-        # Calculate Frobenius norm
-        fn = frobenius_norm(array_a)
-        # Scale array to lie on unit sphere
-        array = array_a / fn
-        scaling = 1. / fn
-        return array, scaling
+        # scaling factor to match array_b norm
+        scale *= frobenius_norm(array_b)
+    return array_a * scale, scale
 
 
 def translate_scale_array(array_a, array_b=None):

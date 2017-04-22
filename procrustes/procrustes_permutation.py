@@ -36,11 +36,8 @@ class PermutationProcrustes(Procrustes):
         total_potential = The total 'profit', i.e. the trace of the transformed input array
         error = the error as described by the single-sided procrustes problem.
         """
-        array_a = self.array_a
-        array_b = self.array_b
-
         # Define the profit array & applying the hungarian algorithm
-        profit_array = np.dot(array_a.T, array_b)
+        profit_array = np.dot(self.array_a.T, self.array_b)
         hungary = hm.Hungarian(profit_array, is_profit_matrix=True)
         hungary.calculate()
 
@@ -59,6 +56,6 @@ class PermutationProcrustes(Procrustes):
         error = self.single_sided_error(perm_optimum)
 
         # Calculate the transformed input array
-        array_transformed = np.dot(array_a, perm_optimum)
+        array_transformed = np.dot(self.array_a, perm_optimum)
 
         return perm_optimum, array_transformed, total_potential, error, self.translate_and_or_scale

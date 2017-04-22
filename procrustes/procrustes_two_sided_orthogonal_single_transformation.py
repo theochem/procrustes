@@ -53,13 +53,10 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
         array_transformed = the transformed input array after transformation by u_umeyama_approx
         error = the error as described by the double-sided procrustes problem
         """
-
-        array_a = self.array_a
-        array_b = self.array_b
         if return_u_approx:
             # Calculate the eigenvalue decomposition of array_a and array_b
-            sigma_a, u_a = eigenvalue_decomposition(array_a, two_sided_single=True)
-            sigma_a0, u_a0 = eigenvalue_decomposition(array_b, two_sided_single=True)
+            sigma_a, u_a = eigenvalue_decomposition(self.array_a, two_sided_single=True)
+            sigma_a0, u_a0 = eigenvalue_decomposition(self.array_b, two_sided_single=True)
             # Compute u_umeyama
             u_umeyama = np.multiply(abs(u_a), abs(u_a0).T)
             # Compute u_umeyama_approx using orthogonal procrustes analysis
@@ -70,13 +67,13 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             # Calculate the error
             error_approx = self.double_sided_error(u_approx, u_approx)
             # Calculate the transformed input array
-            array_transformed_approx = np.dot(array_a, u_approx)
+            array_transformed_approx = np.dot(self.array_a, u_approx)
 
         if return_u_best:
             # svd of each array
-            u_a, sigma_a, v_trans_a = singular_value_decomposition(array_a)
-            u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(array_b)
-            n, m = array_a.shape
+            u_a, sigma_a, v_trans_a = singular_value_decomposition(self.array_a)
+            u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(self.array_b)
+            n, m = self.array_a.shape
             assert(n == m)
             # Compute all 2^n combinations of diagonal n x n matrices where diagonal elements are from the set {-1,1}
             diag_vec_list = list(product((-1., 1.), repeat=n))
@@ -99,7 +96,7 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
                     error_best = error
                 else:
                     continue
-            array_transformed_best = np.dot(np.dot(u_best.T, array_a), u_best)
+            array_transformed_best = np.dot(np.dot(u_best.T, self.array_a), u_best)
 
         if return_u_approx and return_u_best:
             if error_approx >= error_best:
@@ -116,12 +113,12 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
 
         elif return_u_approx:
             print "You've selected the Umeyaman approximation."
-            print 'The input 2D arrays are {0} and {1}.\n'.format(array_a.shape, array_b.shape)
+            print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
             return u_approx, array_transformed_approx, error_approx, self.translate_and_or_scale
 
         elif return_u_best:
             print "You've selected the best transformation. "
-            print 'The input 2D arrays are {0} and {1}.\n'.format(array_a.shape, array_b.shape)
+            print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
             return u_best, array_transformed_best, error_best, self.translate_and_or_scale
 
         else:

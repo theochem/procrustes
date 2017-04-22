@@ -60,23 +60,19 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         error = the error as described by the double-sided procrustes problem
         """
 
-        # Arrays already translated_scaled
-        array_a = self.array_a
-        array_b = self.array_b
-
         """Finding initial guess"""
 
         # Method 1
 
         # Solve for the optimum initial permutation transformation array by finding the closest permutation
         # array to u_umeyama_approx given by the two-sided orthogonal single transformation problem
-        twosided_ortho_single_trans = TwoSidedOrthogonalSingleTransformationProcrustes(array_a, array_b)
+        twosided_ortho_single_trans = TwoSidedOrthogonalSingleTransformationProcrustes(self.array_a, self.array_b)
         u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, error_best,\
         unused_translate_and_or_scale = twosided_ortho_single_trans.calculate(return_u_approx=True, return_u_best=True)
 
         # Find the closest permutation matrix to the u_optima obtained from TSSTO with permutation procrustes analysis
-        perm1 = PermutationProcrustes(array_a, u_approx)
-        perm2 = PermutationProcrustes(array_a, u_best)
+        perm1 = PermutationProcrustes(self.array_a, u_approx)
+        perm2 = PermutationProcrustes(self.array_a, u_best)
 
         # Differentiate between exact and approx u_optima from two-sided single transformation orthogonal
         # initial guesses
@@ -91,18 +87,18 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         Method two returns too high an error to be correctly coded
         """
         # Method 2
-        n_a, m_a = array_a.shape
-        n_a0, m_a0 = array_b.shape
-        diagonals_a = np.diagonal(array_a)
-        diagonals_a0 = np.diagonal(array_b)
+        n_a, m_a = self.array_a.shape
+        n_a0, m_a0 = self.array_b.shape
+        diagonals_a = np.diagonal(self.array_a)
+        diagonals_a0 = np.diagonal(self.array_b)
         b = np.zeros((n_a, m_a))
         b0 = np.zeros((n_a0, m_a0))
         b[0, :] = diagonals_a
         b0[0, :] = diagonals_a0
         # Populate remaining rows with columns of array_a sorted from greatest to least (excluding diagonals)
         for i in range(n_a):
-            col_a = array_a[i, :]  # Get the ith column of array_a
-            col_a0 = array_b[i, :]
+            col_a = self.array_a[i, :]  # Get the ith column of array_a
+            col_a0 = self.array_b[i, :]
             col_a = np.delete(col_a, i)  # Remove the diagonal component
             col_a0 = np.delete(col_a0, i)
             idx_a = col_a.argsort()[::-1]  # Sort the column from greatest to least
@@ -138,7 +134,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
             n, m = perm_optimum.shape
 
             # Initializing updated arrays. See literature for a full description of algorithm
-            t_array = np.dot(np.dot(array_a, perm_optimum), array_b)
+            t_array = np.dot(np.dot(self.array_a, perm_optimum), self.array_b)
             p_new = perm_optimum
             p_old = perm_optimum
             # For simplicity, shorten t_array to t.

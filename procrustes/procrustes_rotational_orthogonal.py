@@ -67,18 +67,15 @@ class RotationalOrthogonalProcrustes(Procrustes):
         array_ transformed = the transformed input array after transformation by r
         error = the error as described by the single-sided procrustes problem
         """
-
-        array_a = self.array_a
-        array_b = self.array_b
         # form the product matrix & compute SVD
-        prod_matrix = np.dot(array_a.T, array_b)
+        prod_matrix = np.dot(self.array_a.T, self.array_b)
         u, s, v_trans = singular_value_decomposition(prod_matrix)
 
         # Constrain transformation matrix to be a pure rotation matrix by replacing the least
         # significant singular value with sgn(|U*V^t|). The rest of the
         # diagonal entries are ones
         replace_singular_value = np.sign(np.linalg.det(np.dot(u, v_trans)))
-        n = array_a.shape[1]
+        n = self.array_a.shape[1]
         s = np.eye(n)
         s[n - 1, n - 1] = replace_singular_value
 
@@ -89,6 +86,6 @@ class RotationalOrthogonalProcrustes(Procrustes):
         error = self.single_sided_error(r)
 
         # Calculate the transformed input array
-        array_transformed = np.dot(array_a, r)
+        array_transformed = np.dot(self.array_a, r)
 
         return r, array_transformed, error, self.translate_and_or_scale

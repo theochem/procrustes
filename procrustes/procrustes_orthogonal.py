@@ -52,9 +52,6 @@ class OrthogonalProcrustes(Procrustes):
         array_ transformed = the transformed input array after transformation by u_optimum
         error = the error as described by the single-sided procrustes problem
         """
-        array_a = self.array_a
-        array_b = self.array_b
-
         # Calculate SVD
         prod_matrix = np.dot(self.array_a.T, self.array_b)
         u, s, v_trans = singular_value_decomposition(prod_matrix)
@@ -66,6 +63,6 @@ class OrthogonalProcrustes(Procrustes):
         error = self.single_sided_error(u_optimum)
 
         # Calculate the transformed input array
-        array_transformed = np.dot(array_a, u_optimum)
+        array_transformed = np.dot(self.array_a, u_optimum)
 
         return u_optimum, array_transformed, error, self.translate_and_or_scale

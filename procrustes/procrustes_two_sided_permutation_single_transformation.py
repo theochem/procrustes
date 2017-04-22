@@ -67,8 +67,8 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         # Solve for the optimum initial permutation transformation array by finding the closest permutation
         # array to u_umeyama_approx given by the two-sided orthogonal single transformation problem
         twosided_ortho_single_trans = TwoSidedOrthogonalSingleTransformationProcrustes(self.array_a, self.array_b)
-        u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, error_best,\
-        unused_translate_and_or_scale = twosided_ortho_single_trans.calculate(return_u_approx=True, return_u_best=True)
+        u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, error_best = \
+        twosided_ortho_single_trans.calculate(return_u_approx=True, return_u_best=True)
 
         # Find the closest permutation matrix to the u_optima obtained from TSSTO with permutation procrustes analysis
         perm1 = PermutationProcrustes(self.array_a, u_approx)
@@ -76,10 +76,8 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
         # Differentiate between exact and approx u_optima from two-sided single transformation orthogonal
         # initial guesses
-        perm_optimum_trans1, array_transformed1, total_potential1, error1, unused_translate_and_or_scale =\
-            perm1.calculate()
-        perm_optimum_trans2, array_transformed2, total_potential2, error2, unused_translate_and_or_scale =\
-            perm2.calculate()
+        perm_optimum_trans1, array_transformed1, total_potential1, error1 = perm1.calculate()
+        perm_optimum_trans2, array_transformed2, total_potential2, error2 = perm2.calculate()
         perm_optimum1 = perm_optimum_trans1.T  # Initial guess due to u_approx
         perm_optimum2 = perm_optimum_trans2.T  # Initial guess due to u_exact
 
@@ -117,7 +115,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
         # Match the matrices b and b0 via the permutation procrustes problem
         perm = PermutationProcrustes(b, b0)
-        perm_optimum3, array_transformed, total_potential, error, unused_translate_and_or_scale = perm.calculate()
+        perm_optimum3, array_transformed, total_potential, error = perm.calculate()
 
         least_error_perm = perm_optimum1  # Arbitrarily initiate the least error perm. Will be adjusted in
         #  following procedure
@@ -166,7 +164,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
             """Converting optimal permutation (step 2) into permutation matrix """
             # Convert the array found above into a permutation matrix with permutation procrustes analysis
             perm = PermutationProcrustes(np.eye(n), p_new)
-            perm_optimum, array_transformed, total_potential, error, unused_translate_and_or_scale = perm.calculate()
+            perm_optimum, array_transformed, total_potential, error = perm.calculate()
 
             # Calculate the error
             error_perm_optimum = self.double_sided_error(perm_optimum, perm_optimum)
@@ -178,4 +176,4 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
                 error_to_beat = error_perm_optimum
             else:
                 continue
-        return least_error_perm, least_error_array_transformed, min_error, self.translate_and_or_scale
+        return least_error_perm, least_error_array_transformed, min_error

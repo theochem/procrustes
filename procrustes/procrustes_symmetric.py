@@ -76,7 +76,7 @@ class SymmetricProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(array_a, x)
 
-        return x, array_transformed, error, self.translate_and_or_scale
+        return x, array_transformed, error
 
 
 # Reference

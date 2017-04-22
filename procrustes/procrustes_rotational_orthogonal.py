@@ -88,4 +88,4 @@ class RotationalOrthogonalProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(self.array_a, r)
 
-        return r, array_transformed, error, self.translate_and_or_scale
+        return r, array_transformed, error

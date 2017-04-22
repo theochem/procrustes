@@ -58,4 +58,4 @@ class PermutationProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(self.array_a, perm_optimum)
 
-        return perm_optimum, array_transformed, total_potential, error, self.translate_and_or_scale
+        return perm_optimum, array_transformed, total_potential, error

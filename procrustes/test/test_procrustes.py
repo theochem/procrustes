@@ -36,7 +36,7 @@ def test_orthogonal():
     array_ortho_transf = np.concatenate((array_ortho_transf, pad_horizontal), axis=0)
     # Proceed with orthogonal procrustes analysis
     ortho = OrthogonalProcrustes(array, array_ortho_transf)
-    u_optimum, array_transformed, error, translate_and_or_scale = ortho.calculate()
+    u_optimum, array_transformed, error = ortho.calculate()
     # Assert that the analysis returns zero error and is correct
     assert error < 1.e-10
     """
@@ -51,7 +51,7 @@ def test_orthogonal():
     assert(abs(array_a - array_b) < 1.e-8).all()
     # Proceed with orthogonal procrustes analysis
     ortho = OrthogonalProcrustes(array_a, array_b)
-    u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
+    u_optimum, a_transformed, error = ortho.calculate()
     # The transformation should return zero error
     assert error < 1.e-10
     """
@@ -76,7 +76,7 @@ def test_orthogonal():
     array_b = np.dot(array_b, ortho_trans)
     # Proceed with the orthogonal procrustes analysis
     ortho = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
-    u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
+    u_optimum, a_transformed, error = ortho.calculate()
     # The transformation should return zero error
     assert error < 1.e-10
 
@@ -98,7 +98,7 @@ def test_orthogonal():
     array_b = np.dot(array_b, ortho_trans)
     # Proceed with the orthogonal procrustes analysis
     ortho = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
-    u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
+    u_optimum, a_transformed, error = ortho.calculate()
     # The transformation should return zero error
     assert error < 1.e-10
 
@@ -120,7 +120,7 @@ def test_orthogonal():
     array_b = np.dot(array_b, ortho_trans)
     # Proceed with the orthogonal procrustes analysis
     ortho = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
-    u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
+    u_optimum, a_transformed, error = ortho.calculate()
     # The transformation should return zero error
     assert error < 1.e-10
 
@@ -144,7 +144,7 @@ def test_permutation():
     array_permuted = np.concatenate((array_permuted, pad_horizontal), axis=0)
     # Proceed with permutation procrustes analysis
     perm = PermutationProcrustes(array, array_permuted)
-    perm_optimum, array_transformed_predicted, total_potential, error, translate_and_or_scale = perm.calculate()
+    perm_optimum, array_transformed_predicted, total_potential, error = perm.calculate()
     # Perm_optimum must be a permutation array
     assert(abs(np.linalg.det(perm_optimum)) - 1. < 1.e-8)
     assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -162,7 +162,7 @@ def test_permutation():
     assert(abs(array_a - array_b) < 1.e-8).all()
     # Proceed with procrustes analysis
     perm = PermutationProcrustes(array_a, array_b)
-    perm_optimum, a_transformed, total_potential, error, translate_and_or_scale = perm.calculate()
+    perm_optimum, a_transformed, total_potential, error = perm.calculate()
     # Perm_optimum must be a permutation array
     assert(abs(np.linalg.det(perm_optimum) - 1.) < 1.e-8)
     assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -190,7 +190,7 @@ def test_permutation():
     array_b = np.dot(array_b, perm_array)
     # Proceed with permutation procrustes analysis
     perm = PermutationProcrustes(array_a, array_b, translate=True, scale=True)
-    perm_optimum, array_transformed_predicted, total_potential, error, translate_and_or_scale = perm.calculate()
+    perm_optimum, array_transformed_predicted, total_potential, error = perm.calculate()
     # Perm_optimum must be a permutation array
     assert(abs(np.linalg.det(perm_optimum) - 1.) < 1.e-8)
     assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -213,7 +213,7 @@ def test_permutation():
     array_b = np.dot(array_b, perm_array)
     # Proceed with permutation procrustes analysis
     perm = PermutationProcrustes(array_a, array_b, translate=True, scale=True)
-    perm_optimum, array_transformed_predicted, total_potential, error, translate_and_or_scale = perm.calculate()
+    perm_optimum, array_transformed_predicted, total_potential, error = perm.calculate()
     # Perm_optimum must be a permutation array
     assert(abs(np.linalg.det(perm_optimum) - 1.) < 1.e-8)
     assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -236,7 +236,7 @@ def test_permutation():
     array_b = np.dot(array_b, perm_array)
     # Proceed with permutation procrustes analysis
     perm = PermutationProcrustes(array_a, array_b, translate=True, scale=True)
-    perm_optimum, array_transformed_predicted, total_potential, error, translate_and_or_scale = perm.calculate()
+    perm_optimum, array_transformed_predicted, total_potential, error = perm.calculate()
     # Perm_optimum must be a permutation array
     assert(abs(np.linalg.det(perm_optimum) - 1.) < 1.e-8)
     assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -264,7 +264,7 @@ def test_rotational_orthogonal():
     array_rotated = np.concatenate((array_rotated, pad_horizontal), axis=0)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array, array_rotated)
-    r, array_transformed_predicted, error, translate_and_or_scale = rot_ortho.calculate()
+    r, array_transformed_predicted, error = rot_ortho.calculate()
     # Verify r is purely rotational and equivalent to rot_array
     assert(abs(np.dot(r, r.T) - np.eye(2)) < 1.e-8).all()
     assert(abs(np.linalg.det(r) - 1) < 1.e-10)
@@ -281,7 +281,7 @@ def test_rotational_orthogonal():
     assert(abs(array_a - array_b) < 1.e-8).all()
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_b)
-    r, a_transformed, error, translate_and_or_scale = rot_ortho.calculate()
+    r, a_transformed, error = rot_ortho.calculate()
     # r must be a purely rotational-orthogonal transformation
     assert(abs(np.dot(r, r.T) - np.eye(4)) < 1.e-8).all()
     assert(abs(np.linalg.det(r) - 1) < 1.e-10)
@@ -306,7 +306,7 @@ def test_rotational_orthogonal():
     array_rotated = np.dot(array_b, rot_array)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_rotated, translate=True, scale=True)
-    r, a_transformed, error, translate_and_or_scale = rot_ortho.calculate()
+    r, a_transformed, error = rot_ortho.calculate()
     # r must be a rotation array
     assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
     assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
@@ -328,7 +328,7 @@ def test_rotational_orthogonal():
     array_rotated = np.dot(array_b, rot_array)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_rotated, translate=True, scale=True)
-    r, a_transformed, error, translate_and_or_scale = rot_ortho.calculate()
+    r, a_transformed, error = rot_ortho.calculate()
     # r must be a rotation array
     assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
     assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
@@ -352,7 +352,7 @@ def test_rotational_orthogonal():
     array_rotated = np.dot(array_b, rot_array)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_rotated, translate=True, scale=True)
-    r, a_transformed, error, translate_and_or_scale = rot_ortho.calculate()
+    r, a_transformed, error = rot_ortho.calculate()
     # r must be a rotation array
     assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
     assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
@@ -379,7 +379,7 @@ def test_symmetric():
     # Proceed with symmetric procrustes analysis
     # calculate the symmetric array
     symm = SymmetricProcrustes(array, array_symmetrically_transformed)
-    symmetric_transformation, a_transformed_predicted, error, translate_and_or_scale = symm.calculate()
+    symmetric_transformation, a_transformed_predicted, error = symm.calculate()
     assert((symmetric_transformation - symmetric_transformation.T -
             np.zeros(symmetric_transformation.shape)) < 1.e-10).all()
     assert error < 1.e-8
@@ -400,7 +400,7 @@ def test_symmetric():
     array_symmetrically_transformed = np.dot(array_b, sym_array)
     # Proceed with symmetric-procrustes analysis
     symm = SymmetricProcrustes(array_a, array_symmetrically_transformed, translate=True, scale=True)
-    x, a_transformed, error, translate_and_or_scale = symm.calculate()
+    x, a_transformed, error = symm.calculate()
     assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
     # The transformation should return zero error
     assert error < 1.e-8
@@ -418,7 +418,7 @@ def test_symmetric():
     array_symmetrically_transformed = np.dot(array_b, sym_array)
     # Proceed with symmetric-procrustes analysis
     symm = SymmetricProcrustes(array_a, array_symmetrically_transformed, translate=True, scale=True)
-    x, a_transformed, error, translate_and_or_scale = symm.calculate()
+    x, a_transformed, error = symm.calculate()
     assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
     # The transformation should return zero error
     assert error < 1.e-8
@@ -438,7 +438,7 @@ def test_symmetric():
     array_symmetrically_transformed = np.dot(array_b, sym_array)
     # Proceed with symmetric-procrustes analysis
     symm = SymmetricProcrustes(array_a, array_symmetrically_transformed, translate=True, scale=True)
-    x, a_transformed, error, translate_and_or_scale = symm.calculate()
+    x, a_transformed, error = symm.calculate()
     assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
     # The transformation should return zero error
     assert error < 1.e-8
@@ -480,7 +480,7 @@ def test_two_sided_orthogonal():
     array_ortho_transformed = np.concatenate((array_ortho_transformed, pad_horizontal), axis=0)
     # Proceed with two-sided procrustes analysis
     twosided_ortho = TwoSidedOrthogonalProcrustes(array, array_ortho_transformed)
-    u1, u2, array_transformed, error, translate_and_or_scale = twosided_ortho.calculate()
+    u1, u2, array_transformed, error = twosided_ortho.calculate()
     assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
     assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
     # The transformation should return zero error
@@ -496,7 +496,7 @@ def test_two_sided_orthogonal():
     assert(abs(array_a - array_b) < 1.e-8).all()
     # Proceed with two-sided orthogonal procrustes analysis
     twosided_ortho = TwoSidedOrthogonalProcrustes(array_a, array_b)
-    u1, u2, array_transformed, error, translate_and_or_scale = twosided_ortho.calculate()
+    u1, u2, array_transformed, error = twosided_ortho.calculate()
     assert((np.dot(u1, u1.T) - np.eye(4)) < 1.e-10).all()
     assert((np.dot(u2, u2.T) - np.eye(4)) < 1.e-10).all()
     # The transformation should return zero error
@@ -524,7 +524,7 @@ def test_two_sided_orthogonal():
     array_twosided_ortho_transf = np.dot(np.dot(refl_array, array_b), rot_array)
     # Proceed with two-sided orthogonal procrustes analysis
     twosided_ortho = TwoSidedOrthogonalProcrustes(array_a, array_twosided_ortho_transf, translate=True, scale=True)
-    u1, u2, a_transformed, error, translate_and_or_scale = twosided_ortho.calculate()
+    u1, u2, a_transformed, error = twosided_ortho.calculate()
     assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
     assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
     # The transformation should return zero error
@@ -549,7 +549,7 @@ def test_two_sided_orthogonal():
     array_twosided_ortho_transf = np.dot(np.dot(refl_array, array_b), rot_array)
     # Proceed with two-sided orthogonal procrustes analysis
     twosided_ortho = TwoSidedOrthogonalProcrustes(array_a, array_twosided_ortho_transf, translate=True, scale=True)
-    u1, u2, a_transformed, error, translate_and_or_scale = twosided_ortho.calculate()
+    u1, u2, a_transformed, error = twosided_ortho.calculate()
     assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
     assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
     # The transformation should return zero error
@@ -574,7 +574,7 @@ def test_two_sided_orthogonal():
     array_twosided_ortho_transf = np.dot(np.dot(refl_array, array_b), rot_array)
     # Proceed with two-sided orthogonal procrustes analysis
     twosided_ortho = TwoSidedOrthogonalProcrustes(array_a, array_twosided_ortho_transf, translate=True, scale=True)
-    u1, u2, a_transformed, error, translate_and_or_scale = twosided_ortho.calculate()
+    u1, u2, a_transformed, error = twosided_ortho.calculate()
     assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
     assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
     # The transformation should return zero error
@@ -612,7 +612,7 @@ def test_two_sided_orthogonal_single_transformation():
     # Proceed with two-sided single transformation procrustes analysis
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(sym_array, array_singleortho_transf)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best, \
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+        = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(3)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
     assert error_best < 1.e-10
@@ -629,7 +629,7 @@ def test_two_sided_orthogonal_single_transformation():
     # Proceed with two-sided single transformation orthogonal procrustes analysis
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(sym_array_a, sym_array_b)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best,\
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+        = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(3)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
     assert error_best < 1.e-10
@@ -669,7 +669,7 @@ def test_two_sided_orthogonal_single_transformation():
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(array_a, array_singleortho_transf,
                                                                              translate=True, scale=True)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best, \
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+         = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(3)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
 
@@ -703,7 +703,7 @@ def test_two_sided_orthogonal_single_transformation():
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(array_a, array_singleortho_transf,
                                                                              translate=True, scale=True)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best,\
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+         = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(3)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
 
@@ -736,7 +736,7 @@ def test_two_sided_orthogonal_single_transformation():
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(array_a, array_singleortho_transf,
                                                                              translate=True, scale=True)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best,\
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+         = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(2)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(2)) < 1.e-8).all()
 
@@ -770,7 +770,7 @@ def test_two_sided_orthogonal_single_transformation():
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(array_a, array_singleortho_transf,
                                                                              translate=True, scale=True)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best,\
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+         = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(2)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(2)) < 1.e-8).all()
 
@@ -804,7 +804,7 @@ def test_two_sided_orthogonal_single_transformation():
     twosided_single_ortho = TwoSidedOrthogonalSingleTransformationProcrustes(array_a, array_singleortho_transf,
                                                                              translate=True, scale=True)
     u_approx, u_exact, array_transformed_approx, array_transformed_exact, error_approx, error_best, \
-        translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
+         = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
     assert(abs(np.dot(u_approx, u_approx.T) - np.eye(2)) < 1.e-8).all()
     assert(abs(np.dot(u_exact, u_exact.T) - np.eye(2)) < 1.e-8).all()
 
@@ -829,7 +829,7 @@ def test_two_sided_permutation_single_transformation():
     array_permuted = np.concatenate((array_permuted, pad_horizontal), axis=0)
     # Proceed with permutation procrustes analysis
     twosided_single_perm = TwoSidedPermutationSingleTransformationProcrustes(sym_array, array_permuted)
-    least_error_perm, least_error_array_transformed, min_error, translate_and_or_scale =\
+    least_error_perm, least_error_array_transformed, min_error =\
         twosided_single_perm.calculate()
     assert(abs(np.linalg.det(least_error_perm)) - 1. < 1.e-8)
     assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(3)) < 1.e-8).all()
@@ -848,7 +848,7 @@ def test_two_sided_permutation_single_transformation():
     assert(abs(array_a - array_b) < 1.e-8).all()
     # Proceed with two sided single-transformation procrustes analysis
     twosided_single_perm = TwoSidedPermutationSingleTransformationProcrustes(array_a, array_b)
-    least_error_perm, least_error_array_transformed, min_error, translate_and_or_scale =\
+    least_error_perm, least_error_array_transformed, min_error =\
         twosided_single_perm.calculate()
     # Perm_optimum must be a permutation array
     assert(abs(np.linalg.det(least_error_perm)) - 1. < 1.e-8)
@@ -883,7 +883,7 @@ def test_two_sided_permutation_single_transformation():
     # Proceed with permutation procrustes analysis
     twosided_single_perm = TwoSidedPermutationSingleTransformationProcrustes(sym_array, array_permuted,
                                                                              translate=True, scale=True)
-    least_error_perm, least_error_array_transformed, min_error, translate_and_or_scale =\
+    least_error_perm, least_error_array_transformed, min_error =\
         twosided_single_perm.calculate()
     assert(abs(np.linalg.det(least_error_perm)) - 1. < 1.e-8)
     assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(3)) < 1.e-8).all()
@@ -910,7 +910,7 @@ def test_two_sided_permutation_single_transformation():
     # Proceed with permutation procrustes analysis
     twosided_single_perm = TwoSidedPermutationSingleTransformationProcrustes(sym_array, array_permuted,
                                                                              translate=True, scale=True)
-    least_error_perm, least_error_array_transformed, min_error, translate_and_or_scale = \
+    least_error_perm, least_error_array_transformed, min_error = \
         twosided_single_perm.calculate()
     assert(abs(np.linalg.det(least_error_perm)) - 1. < 1.e-8)
     assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -938,7 +938,7 @@ def test_two_sided_permutation_single_transformation():
     # Proceed with permutation procrustes analysis
     twosided_single_perm = TwoSidedPermutationSingleTransformationProcrustes(sym_array, array_permuted,
                                                                              translate=True, scale=True)
-    least_error_perm, least_error_array_transformed, min_error, translate_and_or_scale = \
+    least_error_perm, least_error_array_transformed, min_error = \
         twosided_single_perm.calculate()
     assert(abs(np.linalg.det(least_error_perm)) - 1. < 1.e-8)
     assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
@@ -968,7 +968,7 @@ def test_two_sided_permutation_single_transformation():
     # Proceed with permutation procrustes analysis
     twosided_single_perm = TwoSidedPermutationSingleTransformationProcrustes(sym_array, array_permuted,
                                                                              translate=True, scale=True)
-    least_error_perm, least_error_array_transformed, min_error, translate_and_or_scale = \
+    least_error_perm, least_error_array_transformed, min_error = \
         twosided_single_perm.calculate()
     assert(abs(np.linalg.det(least_error_perm)) - 1. < 1.e-8)
     assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(5)) < 1.e-8).all()

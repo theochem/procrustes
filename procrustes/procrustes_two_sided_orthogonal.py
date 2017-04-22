@@ -51,4 +51,4 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(np.dot(u1.T, self.array_a), u2)
 
-        return u1, u2, array_transformed, error, self.translate_and_or_scale
+        return u1, u2, array_transformed, error

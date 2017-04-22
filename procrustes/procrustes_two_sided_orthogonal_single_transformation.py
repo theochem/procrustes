@@ -62,7 +62,7 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             # Compute u_umeyama_approx using orthogonal procrustes analysis
             n, m = u_umeyama.shape
             ortho = OrthogonalProcrustes(np.eye(n), u_umeyama)
-            u_approx, array_transformed_ortho, error_ortho, translate_and_or_scale = ortho.calculate()
+            u_approx, array_transformed_ortho, error_ortho = ortho.calculate()
             u_approx[abs(u_approx) < 1.e-8] = 0
             # Calculate the error
             error_approx = self.double_sided_error(u_approx, u_approx)
@@ -109,17 +109,17 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             print "Output order: u_approx, u_best, array_transformation_approx_exact,"
             print "array_transformation_exact, error_approx, error_best, translate_and_or_scaling:"
             return u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, \
-                error_best, self.translate_and_or_scale
+                error_best
 
         elif return_u_approx:
             print "You've selected the Umeyaman approximation."
             print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
-            return u_approx, array_transformed_approx, error_approx, self.translate_and_or_scale
+            return u_approx, array_transformed_approx, error_approx
 
         elif return_u_best:
             print "You've selected the best transformation. "
             print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
-            return u_best, array_transformed_best, error_best, self.translate_and_or_scale
+            return u_best, array_transformed_best, error_best
 
         else:
             print " Cannot complete analysis. You must select at least one transformation."

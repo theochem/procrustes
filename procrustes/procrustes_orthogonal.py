@@ -65,4 +65,4 @@ class OrthogonalProcrustes(Procrustes):
         # Calculate the transformed input array
         array_transformed = np.dot(self.array_a, u_optimum)
 
-        return u_optimum, array_transformed, error, self.translate_and_or_scale
+        return u_optimum, array_transformed, error

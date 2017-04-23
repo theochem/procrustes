@@ -41,6 +41,23 @@ class OrthogonalProcrustes(Procrustes):
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
         """
+        Initialize the class and transfer/scale the arrays followed by computing transformaion.
+
+        Parameters
+        ----------
+        array_a : ndarray
+            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+        array_b : ndarray
+            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
+        translate : bool
+            If True, both arrays are translated to be centered at origin, default=False.
+        scale : bool
+            If True, both arrays are column normalized to unity, default=False.
+
+        Notes
+        -----
+        The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
+        array with the smaller number of rows will automatically be padded with zero rows.
         """
         super(OrthogonalProcrustes, self).__init__(array_a, array_b, translate, scale)
 
@@ -52,7 +69,7 @@ class OrthogonalProcrustes(Procrustes):
 
     def compute_transformation(self):
         r"""
-        Return the optimal orthogonal transformation array :math:`\mathbf{U}`
+        Return the optimal orthogonal transformation array :math:`\mathbf{U}`.
 
         Returns
         -------

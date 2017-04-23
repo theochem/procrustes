@@ -14,10 +14,7 @@ class Procrustes(object):
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
         r"""
-        Initialize the class and transfor the arrays.
-
-        The general Procrustes analysis requires two 2d-arrays with the same number of rows,
-        so the array with the smaller number of rows will automatically be padded with zero rows.
+        Initialize the class and transfer/scale the arrays.
 
         Parameters
         ----------
@@ -26,9 +23,14 @@ class Procrustes(object):
         array_b : ndarray
             The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
         translate : bool
-            Whether to translate input arrays to origin; default=False.
+            If True, both arrays are translated to be centered at origin, default=False.
         scale : bool
-            Whether to scale the input arrays; default=False.
+            If True, both arrays are column normalized to unity, default=False.
+
+        Notes
+        -----
+        The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
+        array with the smaller number of rows will automatically be padded with zero rows.
         """
         # sanity checks of type and dimension
         if not isinstance(array_a, np.ndarray) or not isinstance(array_b, np.ndarray):

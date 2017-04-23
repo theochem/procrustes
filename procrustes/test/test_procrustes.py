@@ -320,12 +320,11 @@ def test_rotational_orthogonal():
     array_rotated = np.concatenate((array_rotated, pad_horizontal), axis=0)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array, array_rotated)
-    r, array_transformed_predicted, error = rot_ortho.calculate()
     # Verify r is purely rotational and equivalent to rot_array
-    assert(abs(np.dot(r, r.T) - np.eye(2)) < 1.e-8).all()
-    assert(abs(np.linalg.det(r) - 1) < 1.e-10)
+    assert(abs(np.dot(rot_ortho.array_u, rot_ortho.array_u.T) - np.eye(2)) < 1.e-8).all()
+    assert(abs(np.linalg.det(rot_ortho.array_u) - 1) < 1.e-10)
     # The transformation should return zero error
-    assert error < 1.e-8
+    assert rot_ortho.error < 1.e-8
     """
     This test verifies that permutation procrustes analysis
     works when the input arrays are identical
@@ -337,12 +336,11 @@ def test_rotational_orthogonal():
     assert(abs(array_a - array_b) < 1.e-8).all()
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_b)
-    r, a_transformed, error = rot_ortho.calculate()
     # r must be a purely rotational-orthogonal transformation
-    assert(abs(np.dot(r, r.T) - np.eye(4)) < 1.e-8).all()
-    assert(abs(np.linalg.det(r) - 1) < 1.e-10)
+    assert(abs(np.dot(rot_ortho.array_u, rot_ortho.array_u.T) - np.eye(4)) < 1.e-8).all()
+    assert(abs(np.linalg.det(rot_ortho.array_u) - 1) < 1.e-10)
     # The transformation should return zero error
-    assert error < 1.e-8
+    assert rot_ortho.error < 1.e-8
     """
     This test verifies that rotational-orthogonal procrustes analysis is capable of matching an input array
     to itself after it undergoes translation, scaling, and rotational transformations
@@ -362,12 +360,11 @@ def test_rotational_orthogonal():
     array_rotated = np.dot(array_b, rot_array)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_rotated, translate=True, scale=True)
-    r, a_transformed, error = rot_ortho.calculate()
     # r must be a rotation array
-    assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
-    assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
+    assert(abs(np.dot(rot_ortho.array_u, rot_ortho.array_u.T) - np.eye(3)) < 1.e-8).all()
+    assert(abs(np.linalg.det(rot_ortho.array_u) - 1) < 1.e-10)
     # The transformation should return zero error
-    assert error < 1.e-10
+    assert rot_ortho.error < 1.e-10
 
     # Define arbitrary array
     array_a = np.array([[31.4, 17.5, 18.4], [34.5, 26.5, 28.6], [17.6, 19.3, 34.6], [46.3, 38.5, 23.3]])
@@ -384,12 +381,11 @@ def test_rotational_orthogonal():
     array_rotated = np.dot(array_b, rot_array)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_rotated, translate=True, scale=True)
-    r, a_transformed, error = rot_ortho.calculate()
     # r must be a rotation array
-    assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
-    assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
+    assert(abs(np.dot(rot_ortho.array_u, rot_ortho.array_u.T) - np.eye(3)) < 1.e-8).all()
+    assert(abs(np.linalg.det(rot_ortho.array_u) - 1) < 1.e-10)
     # The transformation should return zero error
-    assert error < 1.e-10
+    assert rot_ortho.error < 1.e-10
 
     # Define arbitrary array
     array_a = np.array([[4.35e-5, 1.52e-5, 8.16e-5], [4.14e-6, 16.41e-5, 18.3e-6], [17.53e-5, 29.53e-5, 34.56e-5],
@@ -408,12 +404,11 @@ def test_rotational_orthogonal():
     array_rotated = np.dot(array_b, rot_array)
     # Proceed with rotational-orthogonal procrustes analysis
     rot_ortho = RotationalOrthogonalProcrustes(array_a, array_rotated, translate=True, scale=True)
-    r, a_transformed, error = rot_ortho.calculate()
     # r must be a rotation array
-    assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
-    assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
+    assert(abs(np.dot(rot_ortho.array_u, rot_ortho.array_u.T) - np.eye(3)) < 1.e-8).all()
+    assert(abs(np.linalg.det(rot_ortho.array_u) - 1) < 1.e-10)
     # The transformation should return zero error
-    assert error < 1.e-10
+    assert rot_ortho.error < 1.e-10
 
 
 def test_symmetric():

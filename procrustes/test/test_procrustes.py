@@ -435,14 +435,9 @@ def test_symmetric():
     # Proceed with symmetric procrustes analysis
     # calculate the symmetric array
     symm = SymmetricProcrustes(array, array_symmetrically_transformed)
-    symmetric_transformation, a_transformed_predicted, error = symm.calculate()
-    assert((symmetric_transformation - symmetric_transformation.T -
-            np.zeros(symmetric_transformation.shape)) < 1.e-10).all()
-    assert error < 1.e-8
-    """
-    This test verifies that symmetric procrustes analysis is capable of matching an input array
-    to itself after it undergoes translation, scaling, and symmetric transformations
-    """
+    assert(abs(symm.array_x - symm.array_x.T) < 1.e-10).all()
+    assert symm.error < 1.e-8
+
     # Define an arbitrary array.
     array_a = np.array([[5, 2, 8], [2, 2, 3], [1, 5, 6], [7, 3, 2]])
     # Define an arbitrary translation
@@ -456,10 +451,9 @@ def test_symmetric():
     array_symmetrically_transformed = np.dot(array_b, sym_array)
     # Proceed with symmetric-procrustes analysis
     symm = SymmetricProcrustes(array_a, array_symmetrically_transformed, translate=True, scale=True)
-    x, a_transformed, error = symm.calculate()
-    assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
+    assert (abs(symm.array_x - symm.array_x.T) < 1.e-10).all()
     # The transformation should return zero error
-    assert error < 1.e-8
+    assert symm.error < 1.e-8
 
     # Define an arbitrary array.
     array_a = np.array([[245., 122.4, 538.5], [122.5, 252.2, 352.2], [152.5, 515.2, 126.5], [357.5, 312.5, 225.5]])
@@ -474,10 +468,9 @@ def test_symmetric():
     array_symmetrically_transformed = np.dot(array_b, sym_array)
     # Proceed with symmetric-procrustes analysis
     symm = SymmetricProcrustes(array_a, array_symmetrically_transformed, translate=True, scale=True)
-    x, a_transformed, error = symm.calculate()
-    assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
+    assert (abs(symm.array_x - symm.array_x.T) < 1.e-10).all()
     # The transformation should return zero error
-    assert error < 1.e-8
+    assert symm.error < 1.e-8
 
     # Define an arbitrary array.
     array_a = np.array([[5.52e-5, 2.15e-5, 8.12e-5], [2.14e-5, 2.22e-5, 3.14e-5], [1.11e-5, 5.94e-5, 6.58e-5],
@@ -489,15 +482,14 @@ def test_symmetric():
     array_b = 6.61e-4 * array_a + shift
     sym_part = np.array([[5.2, 6.7, 3.5]])
     sym_array = np.dot(sym_part.T, sym_part)
-    assert(sym_array == sym_array.T).all()
+    assert (sym_array == sym_array.T).all()
     # Compute the symmetrically transformed original array
     array_symmetrically_transformed = np.dot(array_b, sym_array)
     # Proceed with symmetric-procrustes analysis
     symm = SymmetricProcrustes(array_a, array_symmetrically_transformed, translate=True, scale=True)
-    x, a_transformed, error = symm.calculate()
-    assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
+    assert ((symm.array_x - symm.array_x.T) < 1.e-10).all()
     # The transformation should return zero error
-    assert error < 1.e-8
+    assert symm.error < 1.e-8
 
 
 def test_two_sided_orthogonal():

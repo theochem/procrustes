@@ -105,7 +105,8 @@ def translate_array(array_a, array_b=None):
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
     centroid = compute_centroid(array_a)
     if array_b is not None:
-            centroid -= compute_centroid(array_b)
+        # translation vector to b centroid
+        centroid -= compute_centroid(array_b)
     return array_a - centroid, -centroid
 
 
@@ -134,70 +135,6 @@ def scale_array(array_a, array_b=None):
         # scaling factor to match array_b norm
         scale *= frobenius_norm(array_b)
     return array_a * scale, scale
-
-
-def translate_scale_array(array_a, array_b=None):
-    """
-    Translation of one object (array_a) to coincide with either the origin, or the
-    centroid of another object (array_b). After translational components has been removed,
-    Frobenius scaling is applied. The array_a is Frobenius normalized (if array_b is None),
-    or, if array_b is not None, array_a is optimally scaled to array_b such that the Frobenius
-    norm of the new array_a is equal to that of array_b's.
-
-    Parameters
-    ----------
-    array_a : ndarray
-        A 2D array
-
-    array_b : ndarray
-        A 2D array
-
-    show_scaling : bool
-        A boolean value specifying whether or not the tranlation vector and scaling factor is returned.
-
-    Returns
-    ----------
-    if array_b = None and show_scaling = True :
-        returns the origin-centred and Frobenius normalized array_a, as well as the corresponding
-         translation vector and the scaling factor.
-
-    if array_b = None and show_scaling = False :
-        returns the origin-centred and Frobenius normalized array_a.
-
-    if array_b is not None :
-        returns the translated and optimally scaled array_a with respect to array_b. i.e. array_a\'s centroid
-        is first translated to coincide with array_b's, and then the updated array_a is scaled such that its
-        Frobenius norm is equal to array_b's.
-     """
-
-    if array_b is not None:
-        print 'When array_b is supplied, this function returns the translation/scaling which bring the ' \
-              'centroid and scale of array_a to that of array_b\'s. '
-
-    if array_b is not None:
-        # Origin-centre each input array
-        at, translate_vec1 = translate_array(array_a)
-        bt, unused_translate_vec = translate_array(array_b)
-        # Compute the scaling factor between the two arrays
-        scale_a_to_b = frobenius_norm(at) / frobenius_norm(bt)
-        # Scale the original array by the scaling factor
-        scaled_original = at * scale_a_to_b
-        # Calculate the required translation
-        translate_vec2 = array_b - scaled_original
-        scaled_translated_original = scaled_original + translate_vec2
-        """
-        array_a is first origin_translated, scaled to array_b's scaling, then centroid translated to array_b's
-        centroid. The net translation and scaling are described below.
-        """
-        net_translation = translate_vec1 * scale_a_to_b + translate_vec2
-        scaling = scale_a_to_b
-        return scaled_translated_original, net_translation, scaling
-    else:
-        # Translate array_a's centroid to that of array_b's
-        array_translated, t_vec = translate_array(array_a)
-        # Scale by Frobenius norm
-        array_translated_scaled, scaling = scale_array(array_translated)
-        return array_translated_scaled, t_vec, scaling
 
 
 def singular_value_decomposition(array):

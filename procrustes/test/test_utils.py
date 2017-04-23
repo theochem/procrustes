@@ -229,43 +229,6 @@ def test_scale_array():
     assert(abs(predicted - expected) < 1.e-10).all()
 
 
-
-def test_translate_scale_array():
-    # Define an arbitrary array
-    array = np.array([[5, 3, 2, 5], [7, 5, 4, 3]])
-    # Proceed with the translate_scale process.
-    array_trans_scale_1, unused, _ = translate_scale_array(array)
-    # Perform the process again using the already translated and scaled array as input
-    array_trans_scale_2, unused, _ = translate_scale_array(array_trans_scale_1)
-    assert(abs(array_trans_scale_1 - array_trans_scale_2) < 1.e-10).all()
-
-    # Define an arbitrary array
-    array = np.array([[1., 4., 6., 7.], [4., 6., 7., 3.], [5., 7., 3., 1.]])
-    # Define an arbitrary centroid shift
-    shift = np.array([[1., 4., 6., 9.], [1., 4., 6., 9.], [1., 4., 6., 9.]])
-    # Define the translated and scaled original array
-    array_trans_scale = 14.76 * array + shift
-    # Verify the validity of the translate_scale analysis
-    # Returns an object with an origin centred centroid unit Frobenius norm
-    predicted, unused, _ = translate_scale_array(array_trans_scale)
-    # Returns the same object, origin centred and unit Frobenius norm
-    expected, _, _ = translate_scale_array(array)
-    assert(abs(predicted - expected) < 1.e-10).all()
-
-    # Define an arbitrary array
-    array = np.array([[6., 12., 16., 7.], [4., 16., 17., 33.], [5., 17., 12., 16.]])
-    # Define an arbitrary centroid shift
-    shift = np.array([[3., 7., 9., 1.], [3., 7., 9., 1.], [3., 7., 9., 1.]])
-    # Define the translated and scaled original array
-    array_trans_scale = 123.45 * array + shift
-    # Verify the validity of the translate_scale analysis
-    # Proceed with analysis, matching array_trans_scale to array
-    predicted, trans_vec, scale_vec = translate_scale_array(array_trans_scale, array)
-    # array_trans_scale should be identical to array after the above analysis
-    expected = array
-    assert(abs(predicted - expected) < 1.e-10).all()
-
-
 def test_eigenvalue_decomposition():
     array = np.array([[-1. / 2, 3. / 2], [3. / 2, -1. / 2]])
     assert(is_diagonalizable(array) is True)

@@ -62,12 +62,12 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             # Compute u_umeyama_approx using orthogonal procrustes analysis
             n, m = u_umeyama.shape
             ortho = OrthogonalProcrustes(np.eye(n), u_umeyama)
-            u_approx, array_transformed_ortho, error_ortho = ortho.calculate()
-            u_approx[abs(u_approx) < 1.e-8] = 0
+            # u_approx, array_transformed_ortho, error_ortho = ortho.calculate()
+            ortho.array_u[abs(ortho.array_u) < 1.e-8] = 0
             # Calculate the error
-            error_approx = self.double_sided_error(u_approx, u_approx)
+            error_approx = self.double_sided_error(ortho.array_u, ortho.array_u)
             # Calculate the transformed input array
-            array_transformed_approx = np.dot(self.array_a, u_approx)
+            array_transformed_approx = np.dot(self.array_a, ortho.array_u)
 
         if return_u_best:
             # svd of each array
@@ -103,18 +103,18 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
                 u_best = u_best
                 error_best = error_best
             else:
-                u_best = u_approx
+                u_best = ortho.array_u
                 error_best = error_approx
             print " You've selected both the Umeyaman and exact transformations."
             print "Output order: u_approx, u_best, array_transformation_approx_exact,"
             print "array_transformation_exact, error_approx, error_best, translate_and_or_scaling:"
-            return u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, \
+            return ortho.array_u, u_best, array_transformed_approx, array_transformed_best, error_approx, \
                 error_best
 
         elif return_u_approx:
             print "You've selected the Umeyaman approximation."
             print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
-            return u_approx, array_transformed_approx, error_approx
+            return ortho.array_u, array_transformed_approx, error_approx
 
         elif return_u_best:
             print "You've selected the best transformation. "

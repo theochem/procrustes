@@ -199,33 +199,42 @@ def eigenvalue_decomposition(array, two_sided_single=False):
     return s, v
 
 
-def hide_zero_padding(array, tol=1.e-8):
+def hide_zero_padding(array):
     """
-    Removes any zero-padding that may be on the array.
+    Return array with zero-padded rows (at the bottom) and columns (on the right) removed.
 
     Parameters
-    ------------
-    array: An array that may or may not contain zero-padding, where all important information
-    is contained in upper-left block of array.
-
-    tol: Tolerance for which is sum(row/column) < tol, then the row/col will be removed.
+    ----------
+    array: ndarray
+        The 2d or 1d array which may or may not contain zero-padd rows and/or columns.
+        It is assumed that zero-padded rows are located at the bottom and zero-padded columns
+        are located on the right. I.e. all relevant information is contained in upper-left
+        block. The rows (from bottom) and columns (from right) are checked until a non-zero
+        row and column is reached.
 
     Returns
-    ----------
-    Returns the input array with any zero-padding removed.
-    All zero padding is assumed to be such that all relevant information is contained
-    within upper-left most array block
+    -------
+    ndarray
+        The 2d or 1d array with no padded row and/or columns of zero.
     """
-    m, n = array.shape
-    for i in range(m)[::-1]:
-        # If the sum of array elements across given row is less than tol..
-        if sum(np.absolute(array[i, :])) < tol:
-            array = np.delete(array, i, 0)
+    # check zero rows from bottom to up
+    count = array.shape[0] - 1
+    while count >= 0:
+        # check is stopped when the 1st non-zero row is found
+        if np.any(abs(array[count]) > 1.e-8):
+            break
+        array = np.delete(array, count, axis=0)
+        count -= 1
 
-    # If the sum of array elements down given col is less than tol..
-    for j in range(n)[::-1]:
-        if sum(np.absolute(array[:, j])) < tol:
-            array = np.delete(array, j, 1)
+    # for 2d arrays, check zero columns from right to left
+    if array.ndim == 2:
+        count = array.shape[1] - 1
+        while count >= 0:
+            # check is stopped when the 1st non-zero column is found
+            if np.any(abs(array[:, count]) > 1.e-8):
+                break
+            array = np.delete(array, count, axis=1)
+            count -= 1
     return array
 
 

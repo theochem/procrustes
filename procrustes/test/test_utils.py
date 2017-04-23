@@ -92,44 +92,56 @@ def test_zero_padding_square():
     assert (abs(array2 - array1) < 1.e-10).all()
 
 
-def test_hide_zero_padding():
-    array0 = np.array([[1, 6, 7, 8], [5, 7, 22, 7]])
-    # Create (arbitrary) pads to add onto the permuted input array, array_permuted
-    m, n = array0.shape
-    arb_pad_col = 27
-    arb_pad_row = 13
-    pad_vertical = np.zeros((m, arb_pad_col))
-    pad_horizontal = np.zeros((arb_pad_row, n + arb_pad_col))
-    array1 = np.concatenate((array0, pad_vertical), axis=1)
-    array1 = np.concatenate((array1, pad_horizontal), axis=0)
-    # Assert array has been zero padded
-    assert(array0.shape != array1.shape)
-    # Confirm that after hide_zero_padding has been applied, the arrays are of equal size and
-    # are identical
-    hide_array0 = hide_zero_padding(array0)
-    hide_array1 = hide_zero_padding(array1)
-    assert(hide_array0.shape == hide_array1.shape)
-    assert(abs(hide_array0 - hide_array1) < 1.e-10).all()
+def test_hide_zero_padding_flat():
+    array0 = np.array([0, 1, 5, 8, 0, 1])
+    # check array with no padding
+    np.testing.assert_almost_equal(hide_zero_padding(array0), array0, decimal=6)
+    array1 = np.array([0, 1, 5, 8, 0, 1, 0])
+    np.testing.assert_almost_equal(hide_zero_padding(array1), array0, decimal=6)
+    array2 = np.array([0, 1, 5, 8, 0, 1, 0, 0, 0, 0])
+    np.testing.assert_almost_equal(hide_zero_padding(array2), array0, decimal=6)
 
-    # Define an arbitrary array
-    array0 = np.array([[124.25, 625.15, 725.64, 158.51], [536.15, 367.63, 322.62, 257.61],
-                       [361.63, 361.63, 672.15, 631.63]])
-    # Create (arbitrary) pads to add onto the permuted input array, array_permuted
-    m, n = array0.shape
-    arb_pad_col = 14
-    arb_pad_row = 19
-    pad_vertical = np.zeros((m, arb_pad_col))
-    pad_horizontal = np.zeros((arb_pad_row, n + arb_pad_col))
-    array1 = np.concatenate((array0, pad_vertical), axis=1)
-    array1 = np.concatenate((array1, pad_horizontal), axis=0)
-    # Assert array has been zero padded
-    assert(array0.shape != array1.shape)
-    # Confirm that after hide_zero_padding has been applied, the arrays are of equal size and
-    # are identical
-    hide_array0 = hide_zero_padding(array0)
-    hide_array1 = hide_zero_padding(array1)
-    assert(hide_array0.shape == hide_array1.shape)
-    assert(abs(hide_array0 - hide_array1) < 1.e-10).all()
+
+def test_hide_zero_padding_rectangular():
+    array0 = np.array([[1, 6, 0, 7, 8], [5, 7, 0, 22, 7]])
+    # check array with no padding
+    np.testing.assert_almost_equal(hide_zero_padding(array0), array0, decimal=6)
+    # check row-padded arrays
+    array1 = np.array([[1, 6, 0, 7, 8], [5, 7, 0, 22, 7], [0, 0, 0, 0, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array1), array0, decimal=6)
+    array2 = np.array([[1, 6, 0, 7, 8], [5, 7, 0, 22, 7], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array2), array0, decimal=6)
+    # check column-padded arrays
+    array3 = np.array([[1, 6, 0, 7, 8, 0], [5, 7, 0, 22, 7, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array3), array0, decimal=6)
+    array4 = np.array([[1, 6, 0, 7, 8, 0, 0, 0], [5, 7, 0, 22, 7, 0, 0, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array4), array0, decimal=6)
+    # check row- and column-padded arrays
+    array5 = np.array([[1, 6, 0, 7, 8, 0, 0, 0],
+                       [5, 7, 0, 22, 7, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array5), array0, decimal=6)
+
+
+def test_hide_zero_padding_square():
+    array0 = np.array([[0, 0.5, 1.0], [0, 3.1, 4.6], [0, 7.2, 9.2]])
+    # check array with no padding
+    np.testing.assert_almost_equal(hide_zero_padding(array0), array0, decimal=6)
+    # check row-padded arrays
+    array1 = np.array([[0, 0.5, 1.0], [0, 3.1, 4.6], [0, 7.2, 9.2], [0., 0., 0.]])
+    np.testing.assert_almost_equal(hide_zero_padding(array1), array0, decimal=6)
+    # check column-padded arrays
+    array2 = np.array([[0, 0.5, 1.0, 0], [0, 3.1, 4.6, 0], [0, 7.2, 9.2, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array2), array0, decimal=6)
+    array3 = np.array([[0, 0.5, 1.0, 0, 0], [0, 3.1, 4.6, 0, 0], [0, 7.2, 9.2, 0, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array3), array0, decimal=6)
+    # check row- and column-padded arrays
+    array4 = np.array([[0, 0.5, 1.0, 0, 0],
+                       [0, 3.1, 4.6, 0, 0],
+                       [0, 7.2, 9.2, 0, 0],
+                       [0, 0.0, 0.0, 0, 0],
+                       [0, 0.0, 0.0, 0, 0]])
+    np.testing.assert_almost_equal(hide_zero_padding(array4), array0, decimal=6)
 
 
 def test_translate_array():

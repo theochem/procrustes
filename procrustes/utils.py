@@ -139,21 +139,21 @@ def scale_array(array_a, array_b=None):
 
 def singular_value_decomposition(array):
     """
-    Return Singular Value Decomposition of an array.
-
-    Decomposes an math:`m \times n` array math:`A` such that math:`A = U*S*V.T`
+    Return Singular Value Decomposition (SVD) factorization of an array.
 
     Parameters
     -----------
-
     array: ndarray
-    A 2D array who's singular value decomposition is to be calculated.
+        The 2d-array :math:`\mathbf{A}_{m \times n}`.
 
     Returns
-    --------------
-    u = a unitary matrix.
-    s = diagonal matrix of singular values, sorting from greatest to least.
-    v = a unitary matrix.
+    -------
+    u : ndarray
+        Unitary matrix \mathbf{U}_{m \times m}.
+    s : ndarray
+        The singular values of matrix sorted in descending order.
+    v : ndarray
+        Unitary matrix \mathbf{V}_{n \times n}.
     """
     return np.linalg.svd(array)
 
@@ -175,7 +175,7 @@ def eigenvalue_decomposition(array, two_sided_single=False):
         to proceed.
 
     Returns
-    ------------
+    -------
     s = 1D array of the eigenvalues of array, sorted from greatest to least.
     v = 2D array of eigenvectors of array, sorted according to S.
     """
@@ -240,40 +240,52 @@ def hide_zero_padding(array):
 
 def is_diagonalizable(array):
     """
-    Check if the given array is diagonalizable or not.
+    Check whether the given array is diagonalizable.
 
     Parameters
     ------------
-    array: A square array for which the diagonalizability is of interest
+    array: ndarray
+        A square array for which the diagonalizability is checked.
 
     Returns
     ---------
-    Returns a boolean value dictating whether or not the input array is diagonalizable
+    bool
+        True if the array is diagonalizable, otherwise False.
     """
     array = hide_zero_padding(array)
-    m, n = array.shape
-    if m != n:
-        raise ValueError('The input array must be square.')
-    u, s, vt = np.linalg.svd(array)
+    if array.shape[0] != array.shape[1]:
+        raise ValueError('Argument arrays should be a square array! shape={0}'.format(array.shape))
+    # SVD decomposition of array
+    u, s, vt = singular_value_decomposition(array)
     rank_u = np.linalg.matrix_rank(u)
-    rank_array = np.linalg.matrix_rank(array)
-    if rank_u != rank_array:
-        # The eigenvectors cannot span the dimension of the vector space
-        # The array cannot be diagonalizable
-        return False
-    else:
-        # The eigenvectors span the dimension of the vector space and therefore
-        # the array is diagonalizable
-        return True
+    rank_a = np.linalg.matrix_rank(array)
+    diagonalizable = True
+    # If the ranks of u and a are not equal, the eigenvectors cannot span the dimension
+    # of the vector space, and the array cannot be diagonalized.
+    if rank_u != rank_a:
+        diagonalizable = False
+    return diagonalizable
 
 
 def compute_centroid(array):
     """
+    Return mean value of array columns.
+
+    Parameters
+    ----------
+    array: ndarray
+        A 2d-array.
     """
-    centroid = array.mean(0)
-    return centroid
+    return np.mean(array, axis=0)
 
 
 def frobenius_norm(array):
-    """Return the Forbenius norm of array."""
-    return np.sqrt((array ** 2.).sum())
+    """
+    Return the Forbenius norm of array.
+
+    Parameters
+    ----------
+    array: ndarray
+        A 2d-array.
+    """
+    return np.linalg.norm(array)

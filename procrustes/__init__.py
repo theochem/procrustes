@@ -20,7 +20,8 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-'''Package for Various Procrustes Implementations'''
+"""Package for Various Procrustes Algorithms."""
+
 
 from procrustes.utils import *
 from procrustes.hungarian import *

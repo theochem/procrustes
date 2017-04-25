@@ -20,16 +20,23 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+"""Setup and Install Module."""
+
+
 from distutils.core import setup
+
 
 setup(
     name='procrustes',
     version='0.0',
-    packages=['procrustes', 'procrustes.hungarian', 'procrustes.procrustes', 'procrustes.procrustes.test'],
+    description='Procrustes Package.',
     url='',
-    #test_suite='nose.collector',
     license='MIT',
-    author='Jonathan La, Farnaz Zadeh',
+    author='Ayers Group',
     author_email='',
-    description='A package for basic procrustes problems'
+    package_dir={'procrustes': 'procrustes'},
+    packages=['procrustes', 'procrustes.hungarian', 'procrustes.procrustes',
+              'procrustes.procrustes.test'],
+    # test_suite='nose.collector',
+    requires=['numpy', 'numpy', 'sphinx', 'scipy'],
 )

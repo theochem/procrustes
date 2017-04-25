@@ -20,13 +20,16 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""
+"""Solve the Permutation Procrustes Problem.
+
+Find the permutation of the rows and columns of one matrix such that it most closely resembles
+another matrix
 """
 
 
-import hungarian.hungarian_algorithm as hm
-from procrustes.base import Procrustes
 import numpy as np
+from scipy.optimize import linear_sum_assignment
+from procrustes.base import Procrustes
 
 
 class PermutationProcrustes(Procrustes):
@@ -36,13 +39,13 @@ class PermutationProcrustes(Procrustes):
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
         """
-        Initialize the class and transfer/scale the arrays followed by computing transformaion.
+        Initialize the class and transfer/scale the arrays followed by computing transformation.
 
         Parameters
         ----------
-        array_a : ndarray
+        array_a : np.ndarray(m,n)
             The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-        array_b : ndarray
+        array_b : np.ndarray(m,n)
             The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
         translate : bool
             If True, both arrays are translated to be centered at origin, default=False.
@@ -64,27 +67,21 @@ class PermutationProcrustes(Procrustes):
 
     def compute_transformation(self):
         """
-        Return optimum right hand sided permutation array.
+        Find the optimum permutation transformation matrix in the single-sided procrustes problem.
 
         Returns
         -------
-        ndarray
-            The permutation array.
+        perm_optimum : np.ndarray(N, M)
+            Permutation transformation matrix that satisfies the single sided procrustes problem
         """
+
         # Define the profit array & applying the hungarian algorithm
         profit_array = np.dot(self.array_a.T, self.array_b)
-        hungary = hm.Hungarian(profit_array, is_profit_matrix=True)
-        hungary.calculate()
+        cost_matrix = np.ones(profit_matrix.shape) * np.max(profit_matrix) - profit_matrix
 
         # Obtain the optimum permutation transformation and convert to array form
-        perm_hungarian = hungary.get_results()
-        perm_optimum = np.zeros(profit_array.shape)
-        # convert hungarian output into array form
-        for k in range(len(perm_hungarian)):
-            i, j = perm_hungarian[k]
-            perm_optimum[i, j] = 1
-
-        # # Calculate the total potential (trace)
-        # total_potential = hungary.get_total_potential()
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+        perm_optimum = np.zeros(profit_matrix.shape)
+        perm_optimum[row_ind, col_ind] = 1
 
         return perm_optimum

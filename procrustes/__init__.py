@@ -24,7 +24,6 @@
 
 
 from procrustes.utils import *
-from procrustes.hungarian import *
 from procrustes.base import *
 from procrustes.procrustes_orthogonal import *
 from procrustes.procrustes_permutation import *

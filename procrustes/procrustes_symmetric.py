@@ -18,10 +18,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
-#
-# --
-"""
-"""
 
 
 from procrustes.base import Procrustes
@@ -30,12 +26,56 @@ import numpy as np
 
 
 class SymmetricProcrustes(Procrustes):
-    """
-    Symmetric Procrustes Class.
+    r"""
+    Given an :math:`m \times n` matrix :math:`A^0`, with
+    :math:`m \geqslant n`,
+    find the symmetric :math:`n \times n` matrix :math:`X` for
+    which :math:`AX` is as close as possible to :math:`A^0`.
+
+    .. math::
+       \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
+       {\bf{X}}_{}^\dagger } \right.} \right\}}\left\| {{\bf{AX}} -
+       {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
+       {\bf{X}}_{}^\dagger } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
+       {\left( {{\bf{AX}} - {{\bf{A}}^0}} \right)_{}^\dagger \left( {{\bf{AX}} -
+       {{\bf{A}}^0}} \right)}
+       \right]
+
+    Define the singular value decomposition of :math:`A` as
+
+    .. math::
+       {\bf{A}} = {{\bf{U}}_{m \times m}}\left[
+       \begin{array}{l}{\Sigma _{m \times m}}\\{{\bf{0}}_{m \times \left(
+       {n - m} \right)}}\end{array} \right]
+       {\bf{V}}_{n \times n}^\dagger
+
+    A square diagonal :math:`n \times n` matrix with nonnegative elements is represented
+    by :math:`\Sigma`, and it is consisted of :math:`\sigma_{i}` , listed in decreasing order.
+
+    Define
+
+    .. math::
+       {{\bf{C}}_{m \times n}} = {\bf{U}}_{m \times m}^\dagger
+       {\bf{A}}_{m \times n}^0{{\bf{V}}_{n \times n}}
+
+    Then the elements of the optimal :math:`n \times n` matrix :math:`X` are
+
+    .. math::
+       {x_{ij}} =
+       \left\{
+       \begin{array}{l}
+        0 & & i {\text{ and }} j > {\rm{rank}}\left( {{{\bf{A}}^0}}\right)\\
+       \frac{{{\sigma_i}{c_{ij}} + {\sigma_j}{c_{ji}}}}{{\sigma_i^2 + \sigma_j^2}}
+       &  & {\rm{otherwise}}
+       \end{array}
+       \right.
+
+    Notice that the first part of this constrain works only only in the unusual case where
+    :math:`A^0` has rank less than :math:`n`.
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
-        """
+        r"""
         Initialize the class and transfer/scale the arrays followed by computing transformaion.
 
         Parameters
@@ -75,7 +115,7 @@ class SymmetricProcrustes(Procrustes):
         self.error = self.single_sided_error(self.array_x)
 
     def compute_transformation(self):
-        """
+        r"""
         Return optimum right hand sided symmetric transformation array.
 
         Returns

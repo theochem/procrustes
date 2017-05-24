@@ -29,24 +29,125 @@ import numpy as np
 from math import log
 from math import isnan
 
-
 class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
+    r"""
+    Given a symmetric :math:`n \times n` matrix :math:`A` and a reference :math:`n \times n` matrix :math:`A^0` , find a permutation of the rows\/columns of :math:`A` that makes it as close as possible to :math:`A^0`.
 
-    """
+    .. math::
+       \begin{array}{c}
+       \underbrace {\min }_{\left\{{{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{{0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}\left\| {{\bf{P}}_{}^T{\bf{A}}{{\bf{P}}_{}} - {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1}\right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left( {{\bf{P}}_{}^T{\bf{A}}{{\bf{P}}_{}} - {{\bf{A}}^0}} \right)_{}^T\left({{\bf{P}}_{}^T{\bf{A}}{{\bf{P}}_{}} - {{\bf{A}}^0}} \right)} \right]\\
+       = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n{{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{{\bf{P}}^T}{\bf{A}}_{}^T{\bf{P}}{{\bf{A}}^0}} \right]
+       \end{array}
+
+    Given an intial guess, the best local minimum can be obtained by the iterative procedure.
+
+    .. math::
+       p_{ij}^{\left( {n + 1} \right)} = p_{ij}^{\left( n \right)}\sqrt {\frac{{2{{\left[ {{{\bf{T}}^{\left( n \right)}}} \right]}_{ij}}}}{{{{\left[ {{{\bf{P}}^{\left( n \right)}}\left( {{{\left( {{{\bf{P}}^{\left( n \right)}}} \right)}^T}{\bf{T}} + {{\left( {{{\left( {{{\bf{P}}^{\left( n \right)}}} \right)}^T}{\bf{T}}} \right)}^T}} \right)} \right]}_{ij}}}}}
+
+    where
+
+    .. math::
+       {\bf{T}}^{\left(n\right)}={\bf{A}}{\bf{P}}^{\left(n\right)}{\bf{A}}^0
+
+    **Step 1. Initial Guess**
+
+    Two possible initial guesses are inferred from the Umeyama procedure. One can find either the closest permutation matrix to  :math:`{\bf{U}}_{Umeyama}` (Eq.23) or to :math:`{\bf{U}}_{Umeyama}^{\left(approx\right)}`.  I.e., two choices come from the permutation Procrustes problem with:
+
+    .. math::
+       \begin{array}{c}
+       \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}\left\| {{\bf{P}} - {\bf{U}}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left( {{\bf{P}} - {\bf{U}}} \right)_{}^\dagger \left( {{\bf{P}} - {\bf{U}}} \right)} \right]\\
+       = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {\bf{U}}} \right]
+       \end{array}
+
+    which gives two different assignment problems for the Hungarian algorithm,
+
+    .. math::
+       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}
+       = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {{\bf{U}}_{{\rm{Umeyama}}}}} \right]
+
+    .. math::
+       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {\bf{U}}_{{\rm{Umeyama}}}^{\left( {{\rm{approx}}{\rm{.}}} \right)}} \right]
+
+    The permutations matrix that solves the problem is used as input into Eq.(28).
+
+    Another choice is to start by solving a normal permutation Procrustes problem.  E.g., write new matrices, :math:`\bf{B}` and :math:`{\bf{B}}^0`, with columns like
+
+    .. math::
+       \left[ {\begin{array}{*{20}{c}}
+       {{a_{ii}}}\\
+       {p \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max}}}}}}} \right)\underbrace {\max }_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
+       {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{\left( max-1 \right)}}}}}}} \right)\underbrace {\max {\rm{ - 1}}}_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
+       \vdots
+       \end{array}} \right]
+
+    Here max-1 refers to the second-largest element (in absolute value), max-2 is the third-largest element in absolute value, etc..
+
+    The matrices :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) has the diagonal elements of :math:`\bf{A}` (or :math:`{\bf{A}}^0`) in the first row and below the first row has the largest off-diagonal element in row I, the second-largest off-diagonal element, etc.. These elements are weighted by a factor 0 < p < 1, so that smaller elements are considered less important for matching. (Perhaps choose :math:`p = 2^{-0.5}`.)  The matrices can be truncated after a few terms (perhaps after the size of the elements falls below some threshold; a reasonable choice would be to stop after :math:`m = \left\lfloor {\frac{{ - 2\ln 10}}{{\ln p}} + 1} \right\rfloor`) rows; this ensures that the size of the elements in the last row is less than 1% of those in first off-diagonal row.
+
+    Then one uses the normal permutation Procrustes procedure to match the matrices :math:`\bf{B}` and :math:`{\bf{B}}^0` constructed by the preceding procedure. I.e.,
+
+    .. math::
+       \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n{{p_{ij}}}  = 1 } \right.} \right\}}\left\| {{\bf{BP}} - {{\bf{B}}^0}} \right\|_F^2 = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {\bf{B}}_{}^\dagger {{\bf{B}}^0}} \right]
+
+    which we solve with the Hungarian methods,
+
+    .. math::
+       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger \left( {{\bf{B}}_{}^\dagger {{\bf{B}}^0}} \right)} \right]
+
+    There are obviously many different ways to construct the matrices B.  Another, even better, method would be to try to encode not only what the off-diagonal elements are, but which element in the matrix they correspond to. One could do that by replacing each row in Eq.  by two rows, one of which lists the diagonal element and the other of which lists the associated off-diagonal element. I.e., the columns of :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) would be,
+
+    .. math::
+       \left[
+         {\begin{array}{*{20}{c}}
+           {{a_{ii}}}\\
+           {p \cdot {a_{{j_{\max }}{j_{\max }}}}}\\
+           {p \cdot {\mathop{\rm sgn}} \left(  {{a_{i{j_{{\rm{max}}}}}}}           \right)\underbrace {\max }_{1  \le j \le n}\left( {\left| {{a_{ij}}}    \right|} \right)}\\
+           {{p^2} \cdot {a_{{j_{{\rm{\left( max-1 \right)}}}}{j_{{\rm{\left( max-1 \right)}}}}}}}\\
+           {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max -  1}}}}}}}     \right)\underbrace {\max {\rm{ - 1}}}_{1 \le j \le  n}\left( {\left|    {{a_{ij}}} \right|} \right)}\\
+           \vdots
+         \end{array}}
+       \right]
+
+    **Step 2. Iteration**
+
+    Using one of the initial guesses obtained by solving the assignment problems in , , or , use the iteration procedure in
+
+    .. math::
+       {\mathop{\rm Tr}\nolimits} \left[ {{{\left( {{{\bf{P}}^{\left( {n + 1} \right)}} - {{\bf{P}}^{\left( n \right)}}} \right)}^T}\left( {{{\bf{P}}^{\left( {n + 1} \right)}} - {{\bf{P}}^{\left( n \right)}}} \right)} \right]
+
+    Stop when the change in  is small enough.
+
+    **Step 3. Refinment**
+
+    The result of step 2 is not a permutation matrix.  So we have to find the closest permutation matrix, corresponding to the problem,
+
+    .. math::
+       \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}\left\| {{\bf{P}} - {{\bf{P}}^{\left( \infty  \right)}}} \right\|_F^2 = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n  {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {{\bf{P}}^{\left( \infty  \right)}}} \right]
+
+    where :math:`{\bf{P}}^\infty` is the solution of step 2. We now have the Hungarian problem,
+
+    .. math::
+       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}
+       = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {{\bf{P}}^{\left( \infty  \right)}}} \right]
+
+
+
+
     This method deals with the two-sided orthogonal Procrustes problem
-    limited to a single transformation
-
+    limited to a single transformation.
     We require symmetric input arrays to perform this analysis
-    """
 
-    """
     map_a_to_b is set to True by default. For the two-sided single transformation procrustes analyses, this is crucial
     for accuracy. When set to False, the input arrays both undergo centroid translation to the origin and
     Frobenius normalization, prior to further analysis. Something about this transformation skews the accuracy
     of the results.
-    """
 
-    """
     translate_scale for this analysis is False by default. The reason is that the inputs are really the outputs of two-
     sided single orthogonal procrustes, where translate_scale is True.
     """

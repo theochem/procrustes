@@ -33,9 +33,9 @@ class OrthogonalProcrustes(Procrustes):
     r"""
     Orthogonal Procrustes Class.
 
-    Given a matrix :math:`A_{\m \times \n}` and a reference matrix :math:`A^0_{\m \times \n}`,
-    find the unitary/orthogonla transformation of :math:`A_{\m \times \n}` that makes it as
-    close as possible to :math:`A^0_{\m \times \n}`. I.e.,
+    Given a matrix :math:`A_{m \times n}` and a reference matrix :math:`A^0_{m \times n}`,
+    find the unitary/orthogonla transformation of :math:`A_{m \times n}` that makes it as
+    close as possible to :math:`A^0_{m \times n}`. I.e.,
 
     .. math::
        \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger

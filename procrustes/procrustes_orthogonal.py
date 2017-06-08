@@ -34,11 +34,11 @@ class OrthogonalProcrustes(Procrustes):
     Orthogonal Procrustes Class.
 
     Given a matrix :math:`A_{m \times n}` and a reference matrix :math:`A^0_{m \times n}`,
-    find the unitary/orthogonla transformation of :math:`A_{m \times n}` that makes it as
+    find the unitary/orthogonal transformation of :math:`A_{m \times n}` that makes it as
     close as possible to :math:`A^0_{m \times n}`. I.e.,
 
     .. math::
-       \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
                                 \right\}}
           \|\mathbf{A}\mathbf{U} - \mathbf{A}^0\|_{F}^2
        &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
@@ -57,7 +57,7 @@ class OrthogonalProcrustes(Procrustes):
                                           \tilde{\mathbf{V}}^{\dagger} \\
        \mathbf{U}_{\text{optimum}} &= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}
 
-    These singular values are always listed in decreasing order, with the smallest singular
+    These singular values ar·e always listed in decreasing order, with the smallest singular
     value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.
     """
 
@@ -81,7 +81,9 @@ class OrthogonalProcrustes(Procrustes):
         The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
         array with the smaller number of rows will automatically be padded with zero rows.
         """
-        super(OrthogonalProcrustes, self).__init__(array_a, array_b, translate, scale)
+
+        super(OrthogonalProcrustes, self).__init__(
+            array_a, array_b, translate, scale)
 
         # compute transformation
         self.array_u = self.compute_transformation()
@@ -89,18 +91,25 @@ class OrthogonalProcrustes(Procrustes):
         # calculate the single-sided error
         self.error = self.single_sided_error(self.array_u)
 
-    def compute_transformation(self):
+    def compute_transformation(self.array_a, self.array_b):
         r"""
         Return the optimal orthogonal transformation array :math:`\mathbf{U}`.
 
+        Parameters
+        ----------
+        array_a : ndarray
+            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+        array_b : ndarray
+            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
+
         Returns
         -------
-        ndarray
+        u_opt : ndarray
             The optimum orthogonal transformation array.
         """
         # calculate SVD of A.T * A0
         product = np.dot(self.array_a.T, self.array_b)
         u, s, v_trans = singular_value_decomposition(product)
         # compute optimum orthogonal transformation
-        u_optimum = np.dot(u, v_trans)
-        return u_optimum
+        u_opt = np.dot(u, v_trans)
+        return u_opt

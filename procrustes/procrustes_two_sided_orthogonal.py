@@ -29,8 +29,13 @@ import numpy as np
 class TwoSidedOrthogonalProcrustes(Procrustes):
     r"""
     This method deals with the orthogonal Procrustes problem.
+<<<<<<< HEAD
     Given an :math: `m \times n \text{matrix} A` and a reference
     :math:`m \times n \text{matrix} A^0`, find two unitary/orthogonal transformation of
+=======
+    Given an :math:`m \times n \ \text{matrix} \ A`
+    and a reference :math:`m \times n \ \text{matrix} \ A^0`, find two unitary/orthogonal transformation of
+>>>>>>> a6bcad4... Modify documentation
     :math:`A` that makes it as close as possible to :math:`A^0`. I.e.,
 
     .. math::
@@ -75,33 +80,35 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        Procrustes.__init__(self, array_a, array_b, translate=translate, scale=scale)
+        Procrustes.__init__(self, array_a, array_b,
+                            translate=translate, scale=scale)
 
     def calculate(self):
         """
-        Calculates the two optimum two-sided orthogonal transformation arrays in the
-        double-sided procrustes problem
+        Calculates the two optimum two-sided orthogonal transformation arrays in the double-sided procrustes problem.
 
         Parameters
         ----------
         array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b)
-
+            A 2D array representing the array to be transformed
+            (as close as possible to array_b).
         array_b : ndarray
-            A 2D array representing the reference array
+            A 2D array representing the reference array.
 
         Returns
-        ----------
-        u1, u2, array_transformed, error
-        u1 = the optimum orthogonal left-multiplying transformation array satisfying the double
-             sided procrustes problem
-        u2 = the optimum orthogonal right-multiplying transformation array satisfying the double
-             sided procrustes problem
-        array_transformed = the transformed input array after the transformation U1* array_a*U2
-        error = the error as described by the double-sided procrustes problem
+        -------
+        u1 : ndarray
+           The optimum orthogonal left-multiplying transformation array satisfying the double sided procrustes problem.
+        u2 : ndarray
+           The optimum orthogonal right-multiplying transformation array satisfying the double sided procrustes problem.
+        array_transformed : ndarray
+           The transformed input array after the transformation.
+        error : float
+           The error as described by the double-sided procrustes problem.
         """
-        # Calculate the SVDs of array_a and array_b & solve for the optimum orthogonal
-        # transformation arrays
+
+        # Calculate the SVDs of array_a and array_b & solve for the optimum
+        # orthogonal transformation arrays
         u_a, sigma_a, v_trans_a = singular_value_decomposition(self.array_a)
         u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(self.array_b)
         u1 = np.dot(u_a, u_a0.T)

@@ -62,7 +62,7 @@ class OrthogonalProcrustes(Procrustes):
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
-        """
+        r"""
         Initialize the class and transfer/scale the arrays followed by computing transformaion.
 
         Parameters
@@ -91,7 +91,7 @@ class OrthogonalProcrustes(Procrustes):
         # calculate the single-sided error
         self.error = self.single_sided_error(self.array_u)
 
-    def compute_transformation(self.array_a, self.array_b):
+    def compute_transformation(self):
         r"""
         Return the optimal orthogonal transformation array :math:`\mathbf{U}`.
 

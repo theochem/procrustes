@@ -37,14 +37,14 @@ class RotationalOrthogonalProcrustes(Procrustes):
     close as possible to :math:`A^0_{m times n}`. I.e.,
 
     .. math::
-       \underbrace{\text{min}}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+       \underbrace{\min}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
                                 \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
           \|\mathbf{A}\mathbf{U} - \mathbf{A}^0\|_{F}^2
-       &= \underbrace{\text{min}}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+       &= \underbrace{\min}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
                                    \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
           \text{Tr}\left[\left(\mathbf{A}\mathbf{U} - \mathbf{A}^0 \right)^\dagger
                          \left(\mathbf{A}\mathbf{U} - \mathbf{A}^0 \right)\right] \\
-       &= \underbrace{\text{max}}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+       &= \underbrace{\max}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
                                    \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
           \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{A}^0 \right]
 
@@ -81,15 +81,15 @@ class RotationalOrthogonalProcrustes(Procrustes):
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
-        r"""
+        """
         Initialize the class and transfer/scale the arrays followed by computing transformaion.
 
         Parameters
         ----------
         array_a : ndarray
-            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+            The 2d-array :math: `A_{m \times n}` which is going to be transformed.
         array_b : ndarray
-            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
+            The 2d-array :math: `A^0_{m \times n}` represents the reference matrix.
         translate : bool
             If True, both arrays are translated to be centered at origin, default=False.
         scale : bool
@@ -100,7 +100,8 @@ class RotationalOrthogonalProcrustes(Procrustes):
         The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
         array with the smaller number of rows will automatically be padded with zero rows.
         """
-        super(RotationalOrthogonalProcrustes, self).__init__(array_a, array_b, translate, scale)
+        super(RotationalOrthogonalProcrustes, self).__init__(
+            array_a, array_b, translate, scale)
 
         # compute transformation
         self.array_u = self.compute_transformation()
@@ -114,7 +115,7 @@ class RotationalOrthogonalProcrustes(Procrustes):
 
         Returns
         -------
-        ndarray
+        u_opt : ndarray
             The optimum rotational-orthogonal transformation array.
         """
         # compute SVD of A.T * A

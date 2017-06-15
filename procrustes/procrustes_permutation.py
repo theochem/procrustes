@@ -20,11 +20,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Solve the Permutation Procrustes Problem.
-
-Find the permutation of the rows and columns of one matrix such that it most closely resembles
-another matrix
-"""
 
 
 import numpy as np
@@ -35,10 +30,15 @@ from procrustes.base import Procrustes
 class PermutationProcrustes(Procrustes):
     """
     Permutation Procrustes Class.
+    Solve the Permutation Procrustes Problem.
+
+    Find the permutation of the rows and columns of one matrix such that it
+    most closely resembles another matrix. Therefore, this class is related
+    with the best possible "matching" between matrices.
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
-        """
+        r"""
         Initialize the class and transfer/scale the arrays followed by computing transformation.
 
         Parameters
@@ -54,10 +54,13 @@ class PermutationProcrustes(Procrustes):
 
         Notes
         -----
-        The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
-        array with the smaller number of rows will automatically be padded with zero rows.
+        The Procrustes analysis requires two 2d-arrays with the same number of
+        rows, so the array with the smaller number of rows will automatically
+        be padded with zero rows.
         """
-        super(PermutationProcrustes, self).__init__(array_a, array_b, translate, scale)
+
+        super(PermutationProcrustes, self).__init__(
+            array_a, array_b, translate, scale)
 
         # compute transformation
         self.array_p = self.compute_transformation()
@@ -67,19 +70,38 @@ class PermutationProcrustes(Procrustes):
 
     def compute_transformation(self):
         """
-        Find the optimum permutation transformation matrix in the single-sided procrustes problem.
+        Compute optimum permutation transformation matrix in the single-sided procrustes problem.
+
+        This problem can be solved by the Hungarian method.
 
         Returns
         -------
-        perm_optimum : np.ndarray(N, M)
-            Permutation transformation matrix that satisfies the single sided procrustes problem
+        perm_optimum : ndarray
+            Permutation transformation matrix that satisfies the single sided procrustes problem.
+
+        Notes
+        -----
+        You may refer to
+        https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.linear_sum_assignment.html
+        for more information.
+
+        References
+        ----------
+        1. Harold W. Kuhn. The Hungarian Method for the assignment problem.
+           *Naval Research Logistics Quarterly*, 2:83-97, 1955.
+        2. Harold W. Kuhn. Variants of the Hungarian method for assignment
+           problems. *Naval Research Logistics Quarterly*, 3: 253-258, 1956.
+        3. Munkres, J. Algorithms for the Assignment and Transportation
+           Problems. *J. SIAM*, 5(1):32-38, March, 1957.
         """
 
         # Define the profit array & applying the hungarian algorithm
         profit_array = np.dot(self.array_a.T, self.array_b)
-        cost_matrix = np.ones(profit_matrix.shape) * np.max(profit_matrix) - profit_matrix
+        cost_matrix = np.ones(profit_matrix.shape) * \
+            np.max(profit_matrix) - profit_matrix
 
-        # Obtain the optimum permutation transformation and convert to array form
+        # Obtain the optimum permutation transformation and convert to array
+        # form
         row_ind, col_ind = linear_sum_assignment(cost_matrix)
         perm_optimum = np.zeros(profit_matrix.shape)
         perm_optimum[row_ind, col_ind] = 1

@@ -93,7 +93,10 @@ class OrthogonalProcrustes(Procrustes):
 
     def compute_transformation(self):
         r"""
-        Return the optimal orthogonal transformation array :math:`\mathbf{U}`.
+        Compute the optimal orthogonal transformation array :math:`\mathbf{U}`.
+
+        This function computes the optimal orthogonal transformation array making use of
+        singular value decomposition (SVD).
 
         Parameters
         ----------
@@ -106,10 +109,19 @@ class OrthogonalProcrustes(Procrustes):
         -------
         u_opt : ndarray
             The optimum orthogonal transformation array.
+
+        Notes
+        -----
+        SVD is an orthogonal matrix reduction and the SVD separates any matrix
+        :math:`A` into :math:`A=U \Sigma {U}^\intercal` where
+        :math:`U \text{and} V` are orthogonal matrices, and
+        :math:`\Sigma` is a diagonal matrix.
         """
+
         # calculate SVD of A.T * A0
         product = np.dot(self.array_a.T, self.array_b)
         u, s, v_trans = singular_value_decomposition(product)
+
         # compute optimum orthogonal transformation
         u_opt = np.dot(u, v_trans)
         return u_opt

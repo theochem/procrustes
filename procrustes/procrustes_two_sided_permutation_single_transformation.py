@@ -29,32 +29,33 @@ import numpy as np
 from math import log
 from math import isnan
 
+
 class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
     r"""
-    Given a symmetric :math:`n \times n` matrix :math:`A` and a reference :math:`n \times n` matrix :math:`A^0` ,
-    find a permutation of the rows\/columns of :math:`A` that makes it as close as possible to :math:`A^0`.
+    Given a symmetric :math:`n \times n` matrix :math:`A` and a reference :math:`n \times n` matrix :math:`A^0` , find a
+    permutation of the rows\/columns of :math:`A` that makes it as close as possible to :math:`A^0`.
 
     .. math::
        \begin{array}{c}
        \underbrace {\min }_{\left\{{{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{{0,1} \right\} \atop
-       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}\left\| {{\bf{P}}_{}^T{\bf{A}}{{\bf{P}}_{}} - {{\bf{A}}^0}} \right\|_F^2 =
-       \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1}\right\} \atop
-       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 }
-       \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left( {{\bf{P}}_{}^T{\bf{A}}{{\bf{P}}_{}} -
-       {{\bf{A}}^0}} \right)_{}^T\left({{\bf{P}}_{}^T{\bf{A}}{{\bf{P}}_{}} - {{\bf{A}}^0}} \right)} \right]\\
-       = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\}
-       \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n{{p_{ij}}}  = 1 } \right.}
-       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{{\bf{P}}^T}{\bf{A}}_{}^T{\bf{P}}{{\bf{A}}^0}} \right]
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}\left\|
+       {{\bf{P}}^T{\bf{A}}{{\bf{P}}} - {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{P}}\left|
+       {\scriptstyle{p_{ij}} \in \left\{ {0,1}\right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  =
+       \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left(
+       {{\bf{P}}^T{\bf{A}}{{\bf{P}}} - {{\bf{A}}^0}} \right)^T\left({{\bf{P}}^T{\bf{A}}{{\bf{P}}} -
+       {{\bf{A}}^0}} \right)} \right]\\
+       = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n{{p_{ij}}}  = 1 } \right.}
+       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{{\bf{P}}^T}{\bf{A}}^T{\bf{P}}{{\bf{A}}^0}} \right]
        \end{array}
 
     Given an intial guess, the best local minimum can be obtained by the iterative procedure.
 
     .. math::
-       p_{ij}^{\left( {n + 1} \right)} = p_{ij}^{\left( n \right)}\sqrt
-       {\frac{{2{{\left[ {{{\bf{T}}^{\left( n \right)}}} \right]}_{ij}}}}{{{{\left[ {{{\bf{P}}^{\left( n \right)}}
-       \left( {{{\left( {{{\bf{P}}^{\left( n \right)}}} \right)}^T}{\bf{T}} + {{\left( {{{\left( {{{\bf{P}}^{
-       \left( n \right)}}} \right)}^T}{\bf{T}}} \right)}^T}} \right)} \right]}_{ij}}}}}
+       p_{ij}^{\left( {n + 1} \right)} = p_{ij}^{\left( n \right)}\sqrt {\frac{{2{{\left[ {{{\bf{T}}^{\left( n
+       \right)}}} \right]}_{ij}}}}{{{{\left[ {{{\bf{P}}^{\left( n \right)}}\left( {{{\left( {{{\bf{P}}^{\left( n
+       \right)}}} \right)}^T}{\bf{T}} + {{\left( {{{\left( {{{\bf{P}}^{\left( n \right)}}} \right)}^T}{\bf{T}}}
+       \right)}^T}} \right)} \right]}_{ij}}}}}
 
     where
 
@@ -63,23 +64,22 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
     **Step 1. Initial Guess**
 
-    Two possible initial guesses are inferred from the Umeyama procedure. One can find either the
-    closest permutation matrix to  :math:`{\bf{U}}_{Umeyama}` (Eq.23) or to
-    :math:`{\bf{U}}_{Umeyama}^{\left(approx\right)}`.  I.e., two choices come from the permutation Procrustes
-    problem with:
+    Two possible initial guesses are inferred from the Umeyama procedure. One can find either the closest permutation
+    matrix to  :math:`{\bf{U}}_{Umeyama}` (Eq.23) or to :math:`{\bf{U}}_{Umeyama}^{\left(approx\right)}`.  I.e., two
+    choices come from the permutation Procrustes problem with:
 
     .. math::
        \begin{array}{c}
        \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}\left\|
+       {{\bf{P}} - {\bf{U}}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in
+       \left\{ {0,1} \right\} \atop
        \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}\left\| {{\bf{P}} - {\bf{U}}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{P}}\left|
-       {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left( {{\bf{P}} - {\bf{U}}} \right)^\dagger \left( {{\bf{P}} -
+       {\bf{U}}} \right)} \right]\\
+       = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
        \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left( {{\bf{P}} - {\bf{U}}} \right)_{}^\dagger
-       \left( {{\bf{P}} - {\bf{U}}} \right)} \right]\\
-       = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\}
-       \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger {\bf{U}}} \right]
+       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}^\dagger {\bf{U}}} \right]
        \end{array}
 
     which gives two different assignment problems for the Hungarian algorithm,
@@ -87,118 +87,110 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
     .. math::
        \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop
        \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}
-       = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[ {{\bf{P}}_{}^\dagger {{\bf{U}}_{{\rm{Umeyama}}}}} \right]
+       = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
+       {{\bf{P}}^\dagger {{\bf{U}}_{{\rm{Umeyama}}}}} \right]
 
     .. math::
        \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop
        \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger
-       {\bf{U}}_{{\rm{Umeyama}}}^{\left( {{\rm{approx}}{\rm{.}}} \right)}} \right]
+       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}^\dagger {\bf{U}}_{{\rm{Umeyama}}}^{\left(
+       {{\rm{approx}}{\rm{.}}} \right)}} \right]
 
     The permutations matrix that solves the problem is used as input into Eq.(28).
 
-    Another choice is to start by solving a normal permutation Procrustes problem.
-    E.g., write new matrices, :math:`\bf{B}` and :math:`{\bf{B}}^0`, with columns like
+    Another choice is to start by solving a normal permutation Procrustes problem.  E.g., write new matrices,
+    :math:`\bf{B}` and :math:`{\bf{B}}^0`, with columns like
 
     .. math::
        \left[ {\begin{array}{*{20}{c}}
        {{a_{ii}}}\\
-       {p \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max}}}}}}} \right)\underbrace
-       {\max }_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
-       {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{\left( max-1 \right)}}}}}}} \right)
-       \underbrace {\max {\rm{ - 1}}}_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
+       {p \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max}}}}}}} \right)\underbrace {\max }_{1 \le j \le n}\left(
+       {\left| {{a_{ij}}} \right|} \right)}\\
+       {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{\left( max-1 \right)}}}}}}} \right)\underbrace {\max {\rm{
+           - 1}}}_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
        \vdots
        \end{array}} \right]
 
-    Here max-1 refers to the second-largest element (in absolute value), max-2 is the third-largest element
-    in absolute value, etc..
+    Here max-1 refers to the second-largest element (in absolute value), max-2 is the third-largest element in absolute
+    value, etc..
 
-    The matrices :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) has the diagonal elements of
-    :math:`\bf{A}` (or :math:`{\bf{A}}^0`) in the first row and below the first row has the largest off-diagonal
-    element in row I, the second-largest off-diagonal element, etc.. These elements are weighted by a factor
-    0 < p < 1, so that smaller elements are considered less important for matching. (Perhaps choose
-    :math:`p = 2^{-0.5}`.)  The matrices can be truncated after a few terms (perhaps after the size of the
-    elements falls below some threshold; a reasonable choice would be to stop after
-    :math:`m = \left\lfloor {\frac{{ - 2\ln 10}}{{\ln p}} + 1} \right\rfloor`) rows;
-    this ensures that the size of the elements in the last row is less than 1% of those in first off-diagonal row.
+    The matrices :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) has the diagonal elements of :math:`\bf{A}` (or
+    :math:`{\bf{A}}^0`) in the first row and below the first row has the largest off-diagonal element in row I, the
+    second-largest off-diagonal element, etc.. These elements are weighted by a factor 0 < p < 1, so that smaller
+    elements are considered less important for matching. (Perhaps choose :math:`p = 2^{-0.5}`.)  The matrices can be
+    truncated after a few terms (perhaps after the size of the elements falls below some threshold; a reasonable choice
+    would be to stop after :math:`m = \left\lfloor {\frac{{ - 2\ln 10}}{{\ln p}} + 1} \right\rfloor`) rows; this ensures
+    that the size of the elements in the last row is less than 1% of those in first off-diagonal row.
 
     Then one uses the normal permutation Procrustes procedure to match the matrices :math:`\bf{B}` and
     :math:`{\bf{B}}^0` constructed by the preceding procedure. I.e.,
 
     .. math::
-       \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in
-       \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  =
-       \sum\limits_{j = 1}^n{{p_{ij}}}  = 1 } \right.} \right\}}\left\| {{\bf{BP}} -
-       {{\bf{B}}^0}} \right\|_F^2 = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in
-       \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  =
-       \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[ {{\bf{P}}_{}^\dagger {\bf{B}}_{}^\dagger {{\bf{B}}^0}} \right]
+       \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n{{p_{ij}}}  = 1 } \right.} \right\}}\left\|
+       {{\bf{BP}} - {{\bf{B}}^0}} \right\|_F^2 = \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in
+       \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  =
+       1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}^\dagger {\bf{B}}^\dagger {{\bf{B}}^0}}
+       \right]
 
     which we solve with the Hungarian methods,
 
     .. math::
-       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop
-       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}_{}^\dagger \left( {{\bf{B}}_{}^\dagger
-       {{\bf{B}}^0}} \right)} \right]
+       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop \scriptstyle\sum\limits_{i = 1}^n
+       {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
+       {{\bf{P}}^\dagger \left( {{\bf{B}}^\dagger {{\bf{B}}^0}} \right)} \right]
 
-    There are obviously many different ways to construct the matrices B.  Another, even better,
-    method would be to try to encode not only what the off-diagonal elements are, but which element in the
-    matrix they correspond to. One could do that by replacing each row in Eq.  by two rows, one of which
-    lists the diagonal element and the other of which lists the associated off-diagonal element. I.e.,
-    the columns of :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) would be,
+    There are obviously many different ways to construct the matrices B.  Another, even better, method would be to try
+    to encode not only what the off-diagonal elements are, but which element in the matrix they correspond to. One could
+    do that by replacing each row in Eq.  by two rows, one of which lists the diagonal element and the other of which
+        lists the associated off-diagonal element. I.e., the columns of :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) would
+        be,
 
     .. math::
        \left[
          {\begin{array}{*{20}{c}}
            {{a_{ii}}}\\
            {p \cdot {a_{{j_{\max }}{j_{\max }}}}}\\
-           {p \cdot {\mathop{\rm sgn}} \left(  {{a_{i{j_{{\rm{max}}}}}}}  \right)\underbrace {\max }_{1
-           \le j \le n}\left( {\left| {{a_{ij}}}    \right|} \right)}\\
+           {p \cdot {\mathop{\rm sgn}} \left(  {{a_{i{j_{{\rm{max}}}}}}}           \right)\underbrace {\max }_{1  \le j
+           \le n}\left( {\left| {{a_{ij}}}    \right|} \right)}\\
            {{p^2} \cdot {a_{{j_{{\rm{\left( max-1 \right)}}}}{j_{{\rm{\left( max-1 \right)}}}}}}}\\
-           {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max -  1}}}}}}} \right)\underbrace
-           {\max {\rm{ - 1}}}_{1 \le j \le  n}\left( {\left|    {{a_{ij}}} \right|} \right)}\\
+           {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max -  1}}}}}}}     \right)\underbrace {\max {\rm{ -
+           1}}}_{1 \le j \le  n}\left( {\left|    {{a_{ij}}} \right|} \right)}\\
            \vdots
          \end{array}}
        \right]
 
     **Step 2. Iteration**
 
-    Using one of the initial guesses obtained by solving the assignment problems in , , or ,
-    use the iteration procedure in
+    Using one of the initial guesses obtained by solving the assignment problems in , , or , use the iteration procedure
+    in
 
     .. math::
-       {\mathop{\rm Tr}\nolimits} \left[ {{{\left( {{{\bf{P}}^{\left( {n + 1} \right)}} -
-       {{\bf{P}}^{\left( n \right)}}} \right)}^T}\left( {{{\bf{P}}^{\left( {n + 1} \right)}} -
-       {{\bf{P}}^{\left( n \right)}}} \right)} \right]
+       {\mathop{\rm Tr}\nolimits} \left[ {{{\left( {{{\bf{P}}^{\left( {n + 1} \right)}} - {{\bf{P}}^{\left( n \right)}}}
+       \right)}^T}\left( {{{\bf{P}}^{\left( {n + 1} \right)}} - {{\bf{P}}^{\left( n \right)}}} \right)} \right]
 
     Stop when the change in  is small enough.
 
     **Step 3. Refinment**
 
-    The result of step 2 is not a permutation matrix.  So we have to find the closest
-    permutation matrix, corresponding to the problem,
+    The result of step 2 is not a permutation matrix.  So we have to find the closest permutation matrix, corresponding
+    to the problem,
 
     .. math::
        \underbrace {\min }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop
-       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.}
-       \right\}}\left\| {{\bf{P}} - {{\bf{P}}^{\left( \infty  \right)}}} \right\|_F^2 =
-       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\}
-       \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}
-       = \sum\limits_{j = 1}^n  {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[ {{\bf{P}}_{}^\dagger {{\bf{P}}^{\left( \infty  \right)}}} \right]
+       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}\left\|
+       {{\bf{P}} - {{\bf{P}}^{\left( \infty  \right)}}} \right\|_F^2 = \underbrace {\max }_{\left\{ {{\bf{P}}\left|
+       {\scriptstyle{p_{ij}} \in \left\{ {0,1} \right\} \atop \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}  =
+       \sum\limits_{j = 1}^n  {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {{\bf{P}}^\dagger
+       {{\bf{P}}^{\left( \infty  \right)}}} \right]
 
     where :math:`{\bf{P}}^\infty` is the solution of step 2. We now have the Hungarian problem,
 
     .. math::
-       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop
-       \scriptstyle\sum\limits_{i = 1}^n {{p_{ij}}}
-       = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[ {{\bf{P}}_{}^\dagger {{\bf{P}}^{\left( \infty  \right)}}} \right]
-
-
-
+       \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop \scriptstyle\sum\limits_{i = 1}^n
+       {{p_{ij}}}
+       = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
+       {{\bf{P}}^\dagger {{\bf{P}}^{\left( \infty  \right)}}} \right]
 
     This method deals with the two-sided orthogonal Procrustes problem
     limited to a single transformation.
@@ -215,11 +207,12 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
 
-        Procrustes.__init__(self, array_a, array_b, translate=translate, scale=scale)
-
+        Procrustes.__init__(self, array_a, array_b,
+                            translate=translate, scale=scale)
 
         if (abs(self.array_a - self.array_a.T) > 1.e-10).all() or (abs(self.array_b - self.array_b.T) > 1.e-10).all():
-            raise ValueError('Arrays array_a and array_b must both be symmetric for this analysis.')
+            raise ValueError(
+                'Arrays array_a and array_b must both be symmetric for this analysis.')
 
     def calculate(self, tol=1e-5, p=2.**(-.5)):
         """
@@ -250,9 +243,11 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
         # Solve for the optimum initial permutation transformation array by finding the closest permutation
         # array to u_umeyama_approx given by the two-sided orthogonal single transformation problem
-        twosided_ortho_single_trans = TwoSidedOrthogonalSingleTransformationProcrustes(self.array_a, self.array_b)
+        twosided_ortho_single_trans = TwoSidedOrthogonalSingleTransformationProcrustes(
+            self.array_a, self.array_b)
         u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, error_best = \
-        twosided_ortho_single_trans.calculate(return_u_approx=True, return_u_best=True)
+            twosided_ortho_single_trans.calculate(
+                return_u_approx=True, return_u_best=True)
 
         # Find the closest permutation matrix to the u_optima obtained from TSSTO with permutation procrustes analysis
         perm1 = PermutationProcrustes(self.array_a, u_approx)
@@ -283,16 +278,19 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
             col_a0 = self.array_b[i, :]
             col_a = np.delete(col_a, i)  # Remove the diagonal component
             col_a0 = np.delete(col_a0, i)
-            idx_a = col_a.argsort()[::-1]  # Sort the column from greatest to least
+            # Sort the column from greatest to least
+            idx_a = col_a.argsort()[::-1]
             idx_a0 = col_a0.argsort()[::-1]
             ordered_col_a = col_a[idx_a]
             ordered_col_a0 = col_a0[idx_a0]
             b[i, 1:n_a] = ordered_col_a  # Append the ordered column to array B
             b0[i, 1:n_a0] = ordered_col_a0
         for i in range(1, m_a):
-            b[i, :] = p**i * b[i, :]  # Scale each row by appropriate weighting factor
+            # Scale each row by appropriate weighting factor
+            b[i, :] = p**i * b[i, :]
             b0[i, :] = p**i * b0[i, :]
-        n_truncate = -2*log(10) / log(p) + 1  # Truncation criteria ; Truncate after this many rows
+        # Truncation criteria ; Truncate after this many rows
+        n_truncate = -2 * log(10) / log(p) + 1
         truncate_rows = range(int(n_truncate), n_a)
         b = np.delete(b, truncate_rows, axis=0)
         b0 = np.delete(b0, truncate_rows, axis=0)
@@ -301,11 +299,13 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         perm = PermutationProcrustes(b, b0)
         perm_optimum3, array_transformed, total_potential, error = perm.calculate()
 
-        least_error_perm = perm_optimum1  # Arbitrarily initiate the least error perm. Will be adjusted in
+        # Arbitrarily initiate the least error perm. Will be adjusted in
+        least_error_perm = perm_optimum1
         #  following procedure
         initial_perm_list = [perm_optimum1, perm_optimum2, perm_optimum3]
         min_error = 1.e8  # Arbitrarily initialize error ; will be adjusted in following procedure
-        least_error_array_transformed = array_transformed1  # Arbitrarily initiate the least error transformed array
+        # Arbitrarily initiate the least error transformed array
+        least_error_array_transformed = array_transformed1
 
         error_to_beat = 1.  # Initialize error-to-beat
 
@@ -336,13 +336,15 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
                                 break
                             # If the numerator (denominator) is NaN, skip the current method and
                             # move onto the next.
-                            denom = np.dot(p_old, (np.dot(p_old.T, t)) + (np.dot(p_old.T, t)).T)[i, j]
+                            denom = np.dot(
+                                p_old, (np.dot(p_old.T, t)) + (np.dot(p_old.T, t)).T)[i, j]
                             if isnan(denom):
                                 break_outer = False
                                 break
                             factor = np.sqrt(abs(num / denom))
                             p_new[i, j] = p_old[i, j] * factor
-                    error = np.trace(np.dot((p_new - p_old).T, (p_new - p_old)))
+                    error = np.trace(
+                        np.dot((p_new - p_old).T, (p_new - p_old)))
                 break_outer = False
 
             """Converting optimal permutation (step 2) into permutation matrix """
@@ -351,7 +353,8 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
             perm_optimum, array_transformed, total_potential, error = perm.calculate()
 
             # Calculate the error
-            error_perm_optimum = self.double_sided_error(perm_optimum, perm_optimum)
+            error_perm_optimum = self.double_sided_error(
+                perm_optimum, perm_optimum)
 
             if error_perm_optimum < error_to_beat:
                 least_error_perm = perm_optimum

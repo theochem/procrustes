@@ -28,14 +28,9 @@ import numpy as np
 
 class TwoSidedOrthogonalProcrustes(Procrustes):
     r"""
-    This method deals with the orthogonal Procrustes problem.
-<<<<<<< HEAD
-    Given an :math: `m \times n \text{matrix} A` and a reference
-    :math:`m \times n \text{matrix} A^0`, find two unitary/orthogonal transformation of
-=======
+    This class deals with the orthogonal Procrustes problem.
     Given an :math:`m \times n \ \text{matrix} \ A`
     and a reference :math:`m \times n \ \text{matrix} \ A^0`, find two unitary/orthogonal transformation of
->>>>>>> a6bcad4... Modify documentation
     :math:`A` that makes it as close as possible to :math:`A^0`. I.e.,
 
     .. math::
@@ -76,9 +71,26 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
        {{\bf{U}}_1} = {\bf{U}}_A^{}{\bf{U}}_{{A^0}}^\dagger \\
        {{\bf{U}}_2} = {\bf{V}}_A^{}{\bf{V}}_{{A^0}}^\dagger
        \end{array}
+
+    References
+    ----------
+    1. Schönemann, Peter H. "A generalized solution of the orthogonal Procrustes problem." *Psychometrika* 31.1:1-10, 
+    1966
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
+        """
+        Parameters
+        ----------
+        array_a : ndarray
+            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+        array_b : ndarray
+            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
+        translate : bool, default = 'False'
+            If True, both arrays are translated to be centered at origin.
+        scale : bool, default = 'False'
+            If True, both arrays are column normalized to unity.
+        """
 
         Procrustes.__init__(self, array_a, array_b,
                             translate=translate, scale=scale)
@@ -87,19 +99,11 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         """
         Calculates the two optimum two-sided orthogonal transformation arrays in the double-sided procrustes problem.
 
-        Parameters
-        ----------
-        array_a : ndarray
-            A 2D array representing the array to be transformed
-            (as close as possible to array_b).
-        array_b : ndarray
-            A 2D array representing the reference array.
-
         Returns
         -------
-        u1 : ndarray
+        u1_opt : ndarray
            The optimum orthogonal left-multiplying transformation array satisfying the double sided procrustes problem.
-        u2 : ndarray
+        u2_opt : ndarray
            The optimum orthogonal right-multiplying transformation array satisfying the double sided procrustes problem.
         array_transformed : ndarray
            The transformed input array after the transformation.
@@ -111,13 +115,13 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         # orthogonal transformation arrays
         u_a, sigma_a, v_trans_a = singular_value_decomposition(self.array_a)
         u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(self.array_b)
-        u1 = np.dot(u_a, u_a0.T)
-        u2 = np.dot(v_trans_a.T, v_trans_a0)
+        u1_opt = np.dot(u_a, u_a0.T)
+        u2_opt = np.dot(v_trans_a.T, v_trans_a0)
 
         # Calculate the error
-        error = self.double_sided_error(u1, u2)
+        error = self.double_sided_error(u1_opt, u2_opt)
 
         # Calculate the transformed input array
-        array_transformed = np.dot(np.dot(u1.T, self.array_a), u2)
+        array_transformed = np.dot(np.dot(u1_opt.T, self.array_a), u2_opt)
 
-        return u1, u2, array_transformed, error
+        return u1_opt, u2_opt, array_transformed, error

@@ -58,9 +58,10 @@ def zero_padding(array_a, array_b, mode):
 
     Returns
     -------
-    ndarray, ndarray
+    array : ndarray
         Padded array_a and array_b arrays.
     """
+
     # sanity checks
     if not isinstance(array_a, np.ndarray) or not isinstance(array_b, np.ndarray):
         raise ValueError('Arguments array_a & array_b should be numpy arrays.')
@@ -77,30 +78,38 @@ def zero_padding(array_a, array_b, mode):
         dim = max(n1, n2, m1, m2)
         # padding rows to have both arrays have dim rows
         if n1 < dim:
-            array_a = np.pad(array_a, [[0, dim - n1], [0, 0]], 'constant', constant_values=0)
+            array_a = np.pad(
+                array_a, [[0, dim - n1], [0, 0]], 'constant', constant_values=0)
         if n2 < dim:
-            array_b = np.pad(array_b, [[0, dim - n2], [0, 0]], 'constant', constant_values=0)
+            array_b = np.pad(
+                array_b, [[0, dim - n2], [0, 0]], 'constant', constant_values=0)
         # padding columns to have both arrays have dim columns
         if m1 < dim:
-            array_a = np.pad(array_a, [[0, 0], [0, dim - m1]], 'constant', constant_values=0)
+            array_a = np.pad(
+                array_a, [[0, 0], [0, dim - m1]], 'constant', constant_values=0)
         if m2 < dim:
-            array_b = np.pad(array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
+            array_b = np.pad(
+                array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
 
     if mode == 'row' or mode == 'row-col':
         # padding rows to have both arrays have the same number of rows
         diff = array_a.shape[0] - array_b.shape[0]
         if diff < 0:
-            array_a = np.pad(array_a, [[0, -diff], [0, 0]], 'constant', constant_values=0)
+            array_a = np.pad(
+                array_a, [[0, -diff], [0, 0]], 'constant', constant_values=0)
         else:
-            array_b = np.pad(array_b, [[0, diff], [0, 0]], 'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, diff], [0, 0]],
+                             'constant', constant_values=0)
 
     if mode == 'col' or mode == 'row-col':
         # padding columns to have both arrays have the same number of columns
         diff = array_a.shape[1] - array_b.shape[1]
         if diff < 0:
-            array_a = np.pad(array_a, [[0, 0], [0, -diff]], 'constant', constant_values=0)
+            array_a = np.pad(
+                array_a, [[0, 0], [0, -diff]], 'constant', constant_values=0)
         else:
-            array_b = np.pad(array_b, [[0, 0], [0, diff]], 'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, 0], [0, diff]],
+                             'constant', constant_values=0)
 
     return array_a, array_b
 
@@ -122,7 +131,8 @@ def translate_array(array_a, array_b=None):
         If array_b is None, array_a is translated to origin using its centroid.
         If array_b is given, array_a is translated to centroid of array_b (the centroid of
         translated array_a will centroid with the centroid array_b).
-     """
+    """
+
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
     centroid = compute_centroid(array_a)
@@ -140,8 +150,8 @@ def scale_array(array_a, array_b=None):
     ----------
     array_a : ndarray
         The 2D array to scale
-    array_b : ndarray
-        The 2D array to scale array_a based on (default=None).
+    array_b : ndarray, default=None
+        The 2D array to scale array_a based on.
 
     Returns
     -------
@@ -151,6 +161,7 @@ def scale_array(array_a, array_b=None):
         If array_b is given, array_a is scaled to match array_b's norm (the norm of array_a
         will be equal norm of array_b).
     """
+
     # scaling factor to match unit sphere
     scale = 1. / frobenius_norm(array_a)
     if array_b is not None:
@@ -176,14 +187,19 @@ def singular_value_decomposition(array):
         The singular values of matrix sorted in descending order.
     v : ndarray
         Unitary matrix \mathbf{V}_{n \times n}.
+
+    See Also
+    --------
+    `numpy.linalg.svd() <https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.linalg.svd.html>`_
     """
+
     return np.linalg.svd(array)
 
 
 def eigenvalue_decomposition(array, two_sided_single=False):
     """
-    Computes the eigenvalue decomposition of array
-    Decomposes array A such that A = U*S*U.T
+    Compute the eigenvalue decomposition of array
+    Decomposes array :math:`A` such that :math:`A = U S {U}^\intercal`.
 
     Parameters
     ------------
@@ -198,12 +214,16 @@ def eigenvalue_decomposition(array, two_sided_single=False):
 
     Returns
     -------
-    s = 1D array of the eigenvalues of array, sorted from greatest to least.
-    v = 2D array of eigenvectors of array, sorted according to S.
+    s : ndarray
+        1D array of the eigenvalues of array, sorted from greatest to least.
+    v : ndarray
+        2D array of eigenvectors of array, sorted according to S.
     """
+
     # Test whether eigenvalue decomposition is possible on the input array
     if is_diagonalizable(array) is False:
-        raise ValueError('The input array is not diagonalizable. The analysis cannot continue.')
+        raise ValueError(
+            'The input array is not diagonalizable. The analysis cannot continue.')
 
     # Find eigenvalues and array of eigenvectors
     s, v = np.linalg.eigh(array)
@@ -236,9 +256,10 @@ def hide_zero_padding(array):
 
     Returns
     -------
-    ndarray
+    array : ndarray
         The 2d or 1d array with no padded row and/or columns of zero.
     """
+
     # check zero rows from bottom to up
     count = array.shape[0] - 1
     while count >= 0:
@@ -271,12 +292,16 @@ def is_diagonalizable(array):
 
     Returns
     ---------
-    bool
+    diagonalizable : bool
         True if the array is diagonalizable, otherwise False.
     """
+
     array = hide_zero_padding(array)
+
     if array.shape[0] != array.shape[1]:
-        raise ValueError('Argument arrays should be a square array! shape={0}'.format(array.shape))
+        raise ValueError(
+            'Argument arrays should be a square array! shape={0}'.format(array.shape))
+
     # SVD decomposition of array
     u, s, vt = singular_value_decomposition(array)
     rank_u = np.linalg.matrix_rank(u)
@@ -297,8 +322,19 @@ def compute_centroid(array):
     ----------
     array: ndarray
         A 2d-array.
+
+    Returns
+    -------
+    col_mean : float
+        the mean value of array columns.
+
+    See Also
+    --------
+    `np.mean() <https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html>`_
     """
-    return np.mean(array, axis=0)
+
+    col_mean = np.mean(array, axis=0)
+    return col_mean
 
 
 def frobenius_norm(array):
@@ -309,5 +345,16 @@ def frobenius_norm(array):
     ----------
     array: ndarray
         A 2d-array.
+
+    Returns
+    -------
+    f_norm : float
+        the Forbenius norm of the array.
+
+    See Also
+    --------
+    `np.linalg.norm() <https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.linalg.norm.html>`_
     """
-    return np.linalg.norm(array)
+
+    f_norm = np.linalg.norm(array)
+    return f_norm

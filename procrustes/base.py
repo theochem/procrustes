@@ -44,10 +44,10 @@ class Procrustes(object):
             The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
         array_b : ndarray
             The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
-        translate : bool
-            If True, both arrays are translated to be centered at origin, default=False.
-        scale : bool
-            If True, both arrays are column normalized to unity, default=False.
+        translate : bool, default="False"
+            If True, both arrays are translated to be centered at origin.
+        scale : bool, default="False"
+            If True, both arrays are column normalized to unityalse.
 
         Notes
         -----
@@ -56,9 +56,11 @@ class Procrustes(object):
         """
         # sanity checks of type and dimension
         if not isinstance(array_a, np.ndarray) or not isinstance(array_b, np.ndarray):
-            raise ValueError('Arguments array_a and array_b should be of numpy.ndarray type.')
+            raise ValueError(
+                'Arguments array_a and array_b should be of numpy.ndarray type.')
         if array_a.ndim != 2 or array_b.ndim != 2:
-            raise ValueError('Arguments array_a and array_b should be 2D arrays.')
+            raise ValueError(
+                'Arguments array_a and array_b should be 2D arrays.')
 
         # remove already padded zero rows and columns (important for translation)
         array_a = hide_zero_padding(array_a)
@@ -95,9 +97,10 @@ class Procrustes(object):
 
         Returns
         -------
-        float
+        error : float
             The single-sided error.
         """
+
         au = np.dot(self.array_a, array_u)
         error = np.trace(np.dot((au - self.array_b).T, au - self.array_b))
         return error
@@ -119,9 +122,11 @@ class Procrustes(object):
 
         Returns
         -------
-        float
+        error : float
             The double-sided error.
         """
+
         u1au2 = np.dot(np.dot(array_u1.T, self.array_a), array_u2)
-        error = np.trace(np.dot((u1au2 - self.array_b).T, u1au2 - self.array_b))
+        error = np.trace(
+            np.dot((u1au2 - self.array_b).T, u1au2 - self.array_b))
         return error

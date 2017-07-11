@@ -20,7 +20,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-__author__ = 'Jonny'
 
 from procrustes.base import Procrustes
 from procrustes.procrustes_two_sided_orthogonal_single_transformation import TwoSidedOrthogonalSingleTransformationProcrustes
@@ -98,23 +97,22 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
     The permutations matrix that solves the problem is used as input into Eq.(28).
 
-    Another choice is to start by solving a normal permutation Procrustes problem.  E.g., write new matrices,
-    :math:`\bf{B}` and :math:`{\bf{B}}^0`, with columns like
+    Another choice is to start by solving a normal permutation Procrustes problem.  E.g., write new matrices, :math:`\bf{B}` and :math:`{\bf{B}}^0`, with columns like
 
     .. math::
-       \left[ {\begin{array}{*{20}{c}}
+       \left[
+       {\begin{array}{*{20}{c}}
        {{a_{ii}}}\\
-       {p \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max}}}}}}} \right)\underbrace {\max }_{1 \le j \le n}\left(
-       {\left| {{a_{ij}}} \right|} \right)}\\
-       {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{\left( max-1 \right)}}}}}}} \right)\underbrace {\max {\rm{
-           - 1}}}_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
+       {p \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max}}}}}}} \right)\underbrace {\max }_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
+       {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{\left( max-1 \right)}}}}}}} \right)\underbrace {\max {\rm{ - 1}}}_{1 \le j \le n}\left( {\left| {{a_{ij}}} \right|} \right)}\\
        \vdots
-       \end{array}} \right]
+       \end{array}}
+       \right]
 
     Here max-1 refers to the second-largest element (in absolute value), max-2 is the third-largest element in absolute
     value, etc..
 
-    The matrices :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) has the diagonal elements of :math:`\bf{A}` (or
+    The matrix :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) has the diagonal elements of :math:`\bf{A}` (or
     :math:`{\bf{A}}^0`) in the first row and below the first row has the largest off-diagonal element in row I, the
     second-largest off-diagonal element, etc.. These elements are weighted by a factor 0 < p < 1, so that smaller
     elements are considered less important for matching. (Perhaps choose :math:`p = 2^{-0.5}`.)  The matrices can be
@@ -143,19 +141,29 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
     There are obviously many different ways to construct the matrices B.  Another, even better, method would be to try
     to encode not only what the off-diagonal elements are, but which element in the matrix they correspond to. One could
     do that by replacing each row in Eq.  by two rows, one of which lists the diagonal element and the other of which
-        lists the associated off-diagonal element. I.e., the columns of :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) would
-        be,
+    lists the associated off-diagonal element. I.e., the columns of :math:`\bf{B}` (or :math:`{\bf{B}}^0` ) would
+    be,
 
     .. math::
        \left[
          {\begin{array}{*{20}{c}}
            {{a_{ii}}}\\
            {p \cdot {a_{{j_{\max }}{j_{\max }}}}}\\
-           {p \cdot {\mathop{\rm sgn}} \left(  {{a_{i{j_{{\rm{max}}}}}}}           \right)\underbrace {\max }_{1  \le j
-           \le n}\left( {\left| {{a_{ij}}}    \right|} \right)}\\
+           {p \cdot {\mathop{\rm sgn}}
+           \left(
+           {{a_{i{j_{{\rm{max}}}}}}}
+           \right)
+           \underbrace {\max }_{1  \le j \le n}\left( {\left| {{a_{ij}}}
+           \right|} \right)}\\
            {{p^2} \cdot {a_{{j_{{\rm{\left( max-1 \right)}}}}{j_{{\rm{\left( max-1 \right)}}}}}}}\\
-           {{p^2} \cdot {\mathop{\rm sgn}} \left( {{a_{i{j_{{\rm{max -  1}}}}}}}     \right)\underbrace {\max {\rm{ -
-           1}}}_{1 \le j \le  n}\left( {\left|    {{a_{ij}}} \right|} \right)}\\
+           {{p^2} \cdot {\mathop{\rm sgn}}
+           \left(
+           {{a_{i{j_{{\rm{max -  1}}}}}}}
+           \right)
+           \underbrace {\max {\rm{ - 1}}}_{1 \le j \le  n}
+           \left(
+           {\left|    {{a_{ij}}} \right|}
+           \right)}\\
            \vdots
          \end{array}}
        \right]
@@ -188,15 +196,15 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
     .. math::
        \underbrace {\max }_{\left\{ {{\bf{P}}\left| {\scriptstyle0 \le {p_{ij}} \atop \scriptstyle\sum\limits_{i = 1}^n
-       {{p_{ij}}}
+           {{p_{ij}}}
        = \sum\limits_{j = 1}^n {{p_{ij}}}  = 1 } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
        {{\bf{P}}^\dagger {{\bf{P}}^{\left( \infty  \right)}}} \right]
 
     This method deals with the two-sided orthogonal Procrustes problem
     limited to a single transformation.
-    We require symmetric input arrays to perform this analysis
+    We require symmetric input arrays to perform this analysis.
 
-    map_a_to_b is set to True by default. For the two-sided single transformation procrustes analyses, this is crucial
+    Map_a_to_b is set to True by default. For the two-sided single transformation procrustes analyses, this is crucial
     for accuracy. When set to False, the input arrays both undergo centroid translation to the origin and
     Frobenius normalization, prior to further analysis. Something about this transformation skews the accuracy
     of the results.
@@ -206,6 +214,20 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
+        r"""
+        Initialize class.
+
+        Parameters
+        ----------
+        array_a : ndarray
+            The 2d-array :math: `A_{m \times n}` which is going to be transformed.
+        array_b : ndarray
+            The 2d-array :math: `A^0_{m \times n}` represents the reference matrix.
+        translate : bool, default='False'
+            If True, both arrays are translated to be centered at origin.
+        scale : bool, default='False'
+            If True, both arrays are column normalized to unity.
+        """
 
         Procrustes.__init__(self, array_a, array_b,
                             translate=translate, scale=scale)
@@ -216,7 +238,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
     def calculate(self, tol=1e-5, p=2.**(-.5)):
         """
-        Calculates the single optimum two-sided permuation transformation matrix in the
+        Calculate the single optimum two-sided permuation transformation matrix in the
         double-sided procrustes problem
 
         Parameters
@@ -226,30 +248,38 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
         array_b : ndarray
             A 2D array representing the reference array
+        tol : float, default=1e-5
+            Tolerance value.
+        p : float, default=2.**(-.5)
+            Weighting factor to scale the rows of the matrix.
 
         Returns
-        ----------
-        perm_optimum, array_transformed, error
-        perm_optimum= the optimum permutation transformation array satisfying the double
-             sided procrustes problem. Array represents the closest permutation array to
-             u_umeyama given by the permutation procrustes problem
-        array_ transformed = the transformed input array after transformation by perm_optimum
-        error = the error as described by the double-sided procrustes problem
+        -------
+        perm_optimum : ndarray
+            The optimum permutation transformation array satisfying the double
+            sided procrustes problem. Array represents the closest permutation
+            array to u_umeyama given by the permutation procrustes problem.
+        array_ transformed : ndarroay
+            The transformed input array after transformation by perm_optimum.
+        error : float
+             The error as described by the double-sided procrustes problem.
         """
 
-        """Finding initial guess"""
+        # Finding initial guess
 
         # Method 1
 
         # Solve for the optimum initial permutation transformation array by finding the closest permutation
-        # array to u_umeyama_approx given by the two-sided orthogonal single transformation problem
+        # array to u_umeyama_approx given by the two-sided orthogonal single
+        # transformation problem
         twosided_ortho_single_trans = TwoSidedOrthogonalSingleTransformationProcrustes(
             self.array_a, self.array_b)
         u_approx, u_best, array_transformed_approx, array_transformed_best, error_approx, error_best = \
             twosided_ortho_single_trans.calculate(
                 return_u_approx=True, return_u_best=True)
 
-        # Find the closest permutation matrix to the u_optima obtained from TSSTO with permutation procrustes analysis
+        # Find the closest permutation matrix to the u_optima obtained from
+        # TSSTO with permutation procrustes analysis
         perm1 = PermutationProcrustes(self.array_a, u_approx)
         perm2 = PermutationProcrustes(self.array_a, u_best)
 
@@ -260,9 +290,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         perm_optimum1 = perm_optimum_trans1.T  # Initial guess due to u_approx
         perm_optimum2 = perm_optimum_trans2.T  # Initial guess due to u_exact
 
-        """
-        Method two returns too high an error to be correctly coded
-        """
+        # Method two returns too high an error to be correctly coded
         # Method 2
         n_a, m_a = self.array_a.shape
         n_a0, m_a0 = self.array_b.shape
@@ -272,7 +300,8 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         b0 = np.zeros((n_a0, m_a0))
         b[0, :] = diagonals_a
         b0[0, :] = diagonals_a0
-        # Populate remaining rows with columns of array_a sorted from greatest to least (excluding diagonals)
+        # Populate remaining rows with columns of array_a sorted from greatest
+        # to least (excluding diagonals)
         for i in range(n_a):
             col_a = self.array_a[i, :]  # Get the ith column of array_a
             col_a0 = self.array_b[i, :]
@@ -315,14 +344,16 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
             """Beginning Iterative Procedure"""
             n, m = perm_optimum.shape
 
-            # Initializing updated arrays. See literature for a full description of algorithm
+            # Initializing updated arrays. See literature for a full
+            # description of algorithm
             t_array = np.dot(np.dot(self.array_a, perm_optimum), self.array_b)
             p_new = perm_optimum
             p_old = perm_optimum
             # For simplicity, shorten t_array to t.
             t = t_array
             # Arbitrarily initialize error
-            # Define breakouter, a boolean value which will skip the current method if NaN values occur
+            # Define breakouter, a boolean value which will skip the current
+            # method if NaN values occur
 
             break_outer = True
             while break_outer:
@@ -347,8 +378,9 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
                         np.dot((p_new - p_old).T, (p_new - p_old)))
                 break_outer = False
 
-            """Converting optimal permutation (step 2) into permutation matrix """
-            # Convert the array found above into a permutation matrix with permutation procrustes analysis
+            #Converting optimal permutation (step 2) into permutation matrix
+            # Convert the array found above into a permutation matrix with
+            # permutation procrustes analysis
             perm = PermutationProcrustes(np.eye(n), p_new)
             perm_optimum, array_transformed, total_potential, error = perm.calculate()
 

@@ -96,12 +96,10 @@ class PermutationProcrustes(Procrustes):
         """
 
         # Define the profit array & applying the hungarian algorithm
-        profit_array = np.dot(self.array_a.T, self.array_b)
-        cost_matrix = np.ones(profit_matrix.shape) * \
-            np.max(profit_matrix) - profit_matrix
+        profit_matrix = np.dot(self.array_a.T, self.array_b)
+        cost_matrix = np.ones(profit_matrix.shape) * np.max(profit_matrix) - profit_matrix
 
         # Obtain the optimum permutation transformation and convert to array
-        # form
         row_ind, col_ind = linear_sum_assignment(cost_matrix)
         perm_optimum = np.zeros(profit_matrix.shape)
         perm_optimum[row_ind, col_ind] = 1

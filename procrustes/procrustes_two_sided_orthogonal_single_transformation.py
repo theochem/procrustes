@@ -116,10 +116,10 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
         Procrustes.__init__(self, array_a, array_b,
                             translate=translate, scale=scale)
 
-        if (abs(self.array_a - self.array_a.T) > 1.e-10).all() or
-            (abs(self.array_b - self.array_b.T) > 1.e-10).all():
-            raise ValueError(
-                'Arrays array_a and array_b must both be symmetric for this analysis.')
+        diff_a = abs(self.array_a - self.array_a.T)
+        diff_b = abs(self.array_b - self.array_b.T)
+        if (diff_a.all() or diff_b.all()) > 1.e-10:
+            raise ValueError('Arrays array_a and array_b must both be symmetric for this analysis.')
 
     def calculate(self, return_u_approx=False, return_u_best=True, tol=1.e-12):
         """
@@ -207,8 +207,8 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             print " You've selected both the Umeyaman and exact transformations."
             print "Output order: u_approx, u_best, array_transformation_approx_exact,"
             print "array_transformation_exact, error_approx, error_best, translate_and_or_scaling:"
-            return ortho.array_u, u_best, array_transformed_approx, array_transformed_best,
-                   error_approx, error_best
+            return (ortho.array_u, u_best, array_transformed_approx,
+                    array_transformed_best, error_approx, error_best)
 
         elif return_u_approx:
             print "You've selected the Umeyaman approximation."

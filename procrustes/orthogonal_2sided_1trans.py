@@ -24,7 +24,7 @@
 
 from procrustes.base import Procrustes
 from procrustes.utils import eigenvalue_decomposition, singular_value_decomposition
-from procrustes.procrustes_orthogonal import OrthogonalProcrustes
+from procrustes.orthogonal import OrthogonalProcrustes
 import numpy as np
 from itertools import product
 

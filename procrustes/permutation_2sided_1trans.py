@@ -22,8 +22,8 @@
 # --
 
 from procrustes.base import Procrustes
-from procrustes.procrustes_two_sided_orthogonal_single_transformation import TwoSidedOrthogonalSingleTransformationProcrustes
-from procrustes.procrustes_permutation import PermutationProcrustes
+from procrustes.orthogonal_2sided_1trans import TwoSidedOrthogonalSingleTransformationProcrustes
+from procrustes.permutation import PermutationProcrustes
 import numpy as np
 from math import log
 from math import isnan

@@ -25,10 +25,10 @@
 
 from procrustes.utils import *
 from procrustes.base import *
-from procrustes.procrustes_orthogonal import *
-from procrustes.procrustes_permutation import *
-from procrustes.procrustes_rotational_orthogonal import *
-from procrustes.procrustes_symmetric import *
-from procrustes.procrustes_two_sided_orthogonal import *
-from procrustes.procrustes_two_sided_orthogonal_single_transformation import *
-from procrustes.procrustes_two_sided_permutation_single_transformation import *
+from procrustes.orthogonal import *
+from procrustes.permutation import *
+from procrustes.rotational import *
+from procrustes.symmetric import *
+from procrustes.orthogonal_2sided import *
+from procrustes.orthogonal_2sided_1trans import *
+from procrustes.permutation_2sided_1trans import *

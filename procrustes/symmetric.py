@@ -18,6 +18,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
+"""Symmetric Procrustes."""
 
 
 from procrustes.base import Procrustes
@@ -33,7 +34,6 @@ class SymmetricProcrustes(Procrustes):
     which :math:`AX` is as close as possible to :math:`A^0`.
 
     .. math::
-<<<<<<< HEAD
        \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
        {\bf{X}}_{}^\dagger } \right.} \right\}}\left\| {{\bf{AX}} -
        {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
@@ -41,17 +41,10 @@ class SymmetricProcrustes(Procrustes):
        {\left( {{\bf{AX}} - {{\bf{A}}^0}} \right)_{}^\dagger \left( {{\bf{AX}} -
        {{\bf{A}}^0}} \right)}
        \right]
-=======
-       \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} = {\bf{X}}_{}^\dagger } \right.} \right\}}\left\|
-       {{\bf{AX}} - {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
-       {\bf{X}}_{}^\dagger } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[ {\left( {{\bf{AX}} - {{\bf{A}}^0}}
-       \right)_{}^\dagger \left( {{\bf{AX}} - {{\bf{A}}^0}} \right)} \right]
->>>>>>> 555d38f... Add references
 
     Define the singular value decomposition of :math:`A` as
 
     .. math::
-<<<<<<< HEAD
        {\bf{A}} = {{\bf{U}}_{m \times m}}\left[
        \begin{array}{l}{\Sigma _{m \times m}}\\{{\bf{0}}_{m \times \left(
        {n - m} \right)}}\end{array} \right]
@@ -59,13 +52,6 @@ class SymmetricProcrustes(Procrustes):
 
     A square diagonal :math:`n \times n` matrix with nonnegative elements is represented
     by :math:`\Sigma`, and it is consisted of :math:`\sigma_{i}` , listed in decreasing order.
-=======
-       {\bf{A}} = {{\bf{U}}_{m \times m}}\left[ \begin{array}{l}{\Sigma _{m \times m}}\\{{\bf{0}}_{m \times \left( {n -
-       m} \right)}}\end{array} \right]{\bf{V}}_{n \times n}^\dagger
-
-    A square diagonal :math:`n \times n` matrix with nonnegative elements is represented by :math:`\Sigma`, and it is
-    consisted of :math:`\sigma_{i}` , listed in decreasing order.
->>>>>>> 555d38f... Add references
 
     Define
 

@@ -21,6 +21,7 @@
 #
 # --
 """
+Orthogonal Procrustes Module.
 """
 
 
@@ -33,31 +34,30 @@ class OrthogonalProcrustes(Procrustes):
     r"""
     Orthogonal Procrustes Class.
 
-    Given a matrix :math:`A_{m \times n}` and a reference matrix :math:`A^0_{m \times n}`,
-    find the unitary/orthogonal transformation of :math:`A_{m \times n}` that makes it as
-    close as possible to :math:`A^0_{m \times n}`. I.e.,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
+    find the unitary/orthogonal transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
+    :math:`\mathbf{A}_{m \times n}` as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
 
     .. math::
-       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                \right\}}
-          \|\mathbf{A}\mathbf{U} - \mathbf{A}^0\|_{F}^2
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
+                          \|\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
        &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
                                    \right\}}
-          \text{Tr}\left[\left(\mathbf{A}\mathbf{U} - \mathbf{A}^0 \right)^\dagger
-                         \left(\mathbf{A}\mathbf{U} - \mathbf{A}^0 \right)\right] \\
+          \text{Tr}\left[\left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
        &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
                                    \right\}}
-          \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{A}^0 \right]
+          \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
 
-    The solution is obtained by taking the singular value decomposition (SVD) of the
-    product of the matrices,
+    The solution is obtained by taking the singular value decomposition (SVD) of the product of the
+    matrices,
 
     .. math::
-       \mathbf{A}^\dagger \mathbf{A}^0 &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
+       \mathbf{A}^\dagger \mathbf{B} &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
                                           \tilde{\mathbf{V}}^{\dagger} \\
        \mathbf{U}_{\text{optimum}} &= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}
 
-    These singular values ar·e always listed in decreasing order, with the smallest singular
+    The singular values are always listed in decreasing order, with the smallest singular
     value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.
     """
 
@@ -70,55 +70,52 @@ class OrthogonalProcrustes(Procrustes):
         array_a : ndarray
             The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
         array_b : ndarray
-            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
-        translate : bool
-            If True, both arrays are translated to be centered at origin, default=False.
-        scale : bool
-            If True, both arrays are column normalized to unity, default=False.
+            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+        translate : bool, default=False
+            If True, both arrays are translated to be centered at origin.
+        scale : bool, default=False
+            If True, both arrays are column normalized to unity.
 
         Notes
         -----
         The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
         array with the smaller number of rows will automatically be padded with zero rows.
         """
-
-        super(OrthogonalProcrustes, self).__init__(
-            array_a, array_b, translate, scale)
+        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
 
         # compute transformation
-        self.array_u = self.compute_transformation()
+        self._array_u = self._compute_transformation()
 
         # calculate the single-sided error
-        self.error = self.single_sided_error(self.array_u)
+        self._error = self.single_sided_error(self._array_u)
 
-    def compute_transformation(self):
+    @property
+    def array_u(self):
+        r"""Transformation matrix :math:`\mathbf{U}_{n \times n}`."""
+        return self._array_u
+
+    @property
+    def error(self):
+        """Procrustes error."""
+        return self._error
+
+    def _compute_transformation(self):
         r"""
-        Compute the optimal orthogonal transformation array :math:`\mathbf{U}`.
-
-        This function computes the optimal orthogonal transformation array making use of
-        singular value decomposition (SVD).
+        Compute optimal orthogonal transformation array.
 
         Parameters
         ----------
         array_a : ndarray
             The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
         array_b : ndarray
-            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
+            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
 
         Returns
         -------
         u_opt : ndarray
             The optimum orthogonal transformation array.
-
-        Notes
-        -----
-        SVD is an orthogonal matrix reduction and the SVD separates any matrix
-        :math:`A` into :math:`A=U \Sigma {U}^\intercal` where
-        :math:`U \text{and} V` are orthogonal matrices, and
-        :math:`\Sigma` is a diagonal matrix.
         """
-
-        # calculate SVD of A.T * A0
+        # calculate SVD of A.T * B
         product = np.dot(self.array_a.T, self.array_b)
         u, s, v_trans = singular_value_decomposition(product)
 

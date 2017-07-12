@@ -20,6 +20,9 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+"""
+Permutation Procrustes Module.
+"""
 
 
 import numpy as np
@@ -28,13 +31,51 @@ from procrustes.base import Procrustes
 
 
 class PermutationProcrustes(Procrustes):
-    """
+    r"""
     Permutation Procrustes Class.
-    Solve the Permutation Procrustes Problem.
 
-    Find the permutation of the rows and columns of one matrix such that it
-    most closely resembles another matrix. Therefore, this class is related
-    with the best possible "matching" between matrices.
+    Given matrix :math:`\mathbf{A}_{n \times n}` and reference :math:`\mathbf{B}_{n \times n}`
+    find a permutation of the rows and/or columns of :math:`\mathbf{A}_{n \times n}` that makes
+    it as close as possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
+
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+                            \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\left(\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
+                   \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right]
+
+    Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. The solution is to relax the
+    problem into a linear programming problem and note that the solution to a linear programming
+    problem is always at the boundary of the allowed region, which means that the solution can
+    always be written as a permutation matrix,
+
+    .. math::
+       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                   \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right] =
+       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \geq 0
+                   \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\left(\mathbf{A}^\dagger\mathbf{B}\right) \right]
+
+    This is a matching problem and can be solved by the Hungarian method. Note that if
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` have different numbers of items, you choose
+    the larger matrix as :math:`\mathbf{B}` and then pad :math:`\mathbf{A}` with rows/columns
+    of zeros.
+
+    References
+    ----------
+    1. Harold W. Kuhn. The Hungarian Method for the assignment problem.
+       Naval Research Logistics Quarterly, 2:83-97, 1955.
+    2. Harold W. Kuhn. Variants of the Hungarian method for assignment problems.
+       Naval Research Logistics Quarterly, 3: 253-258, 1956.
+    3. Munkres, J. Algorithms for the Assignment and Transportation Problems.
+       J. SIAM, 5(1):32-38, March, 1957.
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
@@ -43,14 +84,14 @@ class PermutationProcrustes(Procrustes):
 
         Parameters
         ----------
-        array_a : np.ndarray(m,n)
-            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-        array_b : np.ndarray(m,n)
-            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
-        translate : bool
-            If True, both arrays are translated to be centered at origin, default=False.
-        scale : bool
-            If True, both arrays are column normalized to unity, default=False.
+        array_a : np.ndarray
+            The 2d-array :math:`\mathbf{A}_{n \times n}` which is going to be transformed.
+        array_b : np.ndarray
+            The 2d-array :math:`\mathbf{B}_{n \times n}` representing the reference.
+        translate : bool, default=False
+            If True, both arrays are translated to be centered at origin.
+        scale : bool, default=False
+            If True, both arrays are column normalized to unity.
 
         Notes
         -----
@@ -58,43 +99,33 @@ class PermutationProcrustes(Procrustes):
         rows, so the array with the smaller number of rows will automatically
         be padded with zero rows.
         """
-
-        super(PermutationProcrustes, self).__init__(
-            array_a, array_b, translate, scale)
+        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
 
         # compute transformation
-        self.array_p = self.compute_transformation()
+        self._array_p = self._compute_transformation()
 
         # calculate the single-sided error
-        self.error = self.single_sided_error(self.array_p)
+        self._error = self.single_sided_error(self._array_p)
 
-    def compute_transformation(self):
+    @property
+    def array_p(self):
+        r"""Transformation matrix :math:`\mathbf{P}_{n \times n}`."""
+        return self._array_p
+
+    @property
+    def error(self):
+        """Procrustes error."""
+        return self._error
+
+    def _compute_transformation(self):
         """
         Compute optimum permutation transformation matrix in the single-sided procrustes problem.
-
-        This problem can be solved by the Hungarian method.
 
         Returns
         -------
         perm_optimum : ndarray
             Permutation transformation matrix that satisfies the single sided procrustes problem.
-
-        Notes
-        -----
-        You may refer to
-        https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.linear_sum_assignment.html
-        for more information.
-
-        References
-        ----------
-        1. Harold W. Kuhn. The Hungarian Method for the assignment problem.
-           *Naval Research Logistics Quarterly*, 2:83-97, 1955.
-        2. Harold W. Kuhn. Variants of the Hungarian method for assignment
-           problems. *Naval Research Logistics Quarterly*, 3: 253-258, 1956.
-        3. Munkres, J. Algorithms for the Assignment and Transportation
-           Problems. *J. SIAM*, 5(1):32-38, March, 1957.
         """
-
         # Define the profit array & applying the hungarian algorithm
         profit_matrix = np.dot(self.array_a.T, self.array_b)
         cost_matrix = np.ones(profit_matrix.shape) * np.max(profit_matrix) - profit_matrix

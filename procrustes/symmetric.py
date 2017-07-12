@@ -18,7 +18,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
-"""Symmetric Procrustes."""
+"""
+Symmetric Procrustes Module.
+"""
 
 
 from procrustes.base import Procrustes
@@ -28,112 +30,114 @@ import numpy as np
 
 class SymmetricProcrustes(Procrustes):
     r"""
-    Given an :math:`m \times n` matrix :math:`A^0`, with
-    :math:`m \geqslant n`,
-    find the symmetric :math:`n \times n` matrix :math:`X` for
-    which :math:`AX` is as close as possible to :math:`A^0`.
+    Symmetric Procrustes Class.
+
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
+    with :math:`m \geqslant n`, find the symmetric matrix :math:`\mathbf{X}_{n \times n}` for which
+    :math:`\mathbf{AX}` is as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
 
     .. math::
-       \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
-       {\bf{X}}_{}^\dagger } \right.} \right\}}\left\| {{\bf{AX}} -
-       {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{ {{\bf{X}}\left| {{\bf{X}} =
-       {\bf{X}}_{}^\dagger } \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
-       {\left( {{\bf{AX}} - {{\bf{A}}^0}} \right)_{}^\dagger \left( {{\bf{AX}} -
-       {{\bf{A}}^0}} \right)}
-       \right]
+       \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
+                                \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2 =
+       \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
+                                \right. \right\}}
+                \text{Tr}\left[\left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)\right]
 
-    Define the singular value decomposition of :math:`A` as
-
-    .. math::
-       {\bf{A}} = {{\bf{U}}_{m \times m}}\left[
-       \begin{array}{l}{\Sigma _{m \times m}}\\{{\bf{0}}_{m \times \left(
-       {n - m} \right)}}\end{array} \right]
-       {\bf{V}}_{n \times n}^\dagger
-
-    A square diagonal :math:`n \times n` matrix with nonnegative elements is represented
-    by :math:`\Sigma`, and it is consisted of :math:`\sigma_{i}` , listed in decreasing order.
-
-    Define
+    Considering the singular value decomposition of :math:`\mathbf{A}_{m \times n}` as
 
     .. math::
-       {{\bf{C}}_{m \times n}} = {\bf{U}}_{m \times m}^\dagger
-       {\bf{A}}_{m \times n}^0{{\bf{V}}_{n \times n}}
+       \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
+                                 \mathbf{\Sigma}_{m \times m} \\
+                                 \mathbf{0}_{m \times (n - m)} \end{bmatrix}
+                                 \mathbf{V}_{n \times n}^\dagger
 
-    Then the elements of the optimal :math:`n \times n` matrix :math:`X` are
+    where :math:`\mathbf{\Sigma}_{n \times n}` is a square diagonal matrix with nonnegative elements
+    denoted by :math:`\sigma_i` listed in decreasing order, define
 
     .. math::
-       {x_{ij}} =
-       \left\{
-       \begin{array}{l}
-        0 & & i {\text{ and }} j > {\rm{rank}}\left( {{{\bf{A}}^0}}\right)\\
-       \frac{{{\sigma_i}{c_{ij}} + {\sigma_j}{c_{ji}}}}{{\sigma_i^2 + \sigma_j^2}}
-       &  & {\rm{otherwise}}
-       \end{array}
-       \right.
+       \mathbf{C}_{m \times n} = \mathbf{U}_{m \times m}^\dagger
+                                 \mathbf{A}_{m \times n}^0 \mathbf{V}_{n \times n}
 
-    Notice that the first part of this constrain works only only in the unusual case where :math:`A^0` has rank less
-    than :math:`n`.
+    Then the elements of the optimal matrix :math:`\mathbf{X}_{n \times n}` are
+
+    .. math::
+       x_{ij} = \begin{cases}
+              0 && i \text{ and } j > \text{rank} \left(\mathbf{B}\right) \\
+              \frac{\sigma_i c_{ij} + \sigma_j c_{ji}}{\sigma_i^2 + \sigma_j^2} && \text{otherwise}
+              \end{cases}
+
+    Notice that the first part of this constrain only works in the unusual case where
+    :math:`\mathbf{B}` has rank less than :math:`n`.
 
     References
     ----------
-    1. Higham, Nicholas J. "The symmetric Procrustes problem." *BIT Numerical Mathematics*, 28.1:133-143, 1988.
+    1. Higham, Nicholas J. The Symmetric Procrustes problem.
+       BIT Numerical Mathematics, 28 (1), 133-143, 1988.
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
         r"""
-        Initialize the class.
+        Initialize the class and transfer/scale the arrays followed by computing transformaion.
 
         Parameters
         ----------
         array_a : ndarray
             The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
         array_b : ndarray
-            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
-        translate : bool, default = 'False'
+            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+        translate : bool, default=False
             If True, both arrays are translated to be centered at origin.
-        scale : bool, default = 'False'
+        scale : bool, default=False
             If True, both arrays are column normalized to unity.
 
         Notes
         -----
-        The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
-        array with the smaller number of rows will automatically be padded with zero rows.
+        The symmetric procrustes analysis requires two 2d-arrays with the same number of rows, so
+        the array with the smaller number of rows will automatically be padded with zero rows.
         """
         array_a = hide_zero_padding(array_a)
         array_b = hide_zero_padding(array_b)
 
         if array_a.shape[0] < array_a.shape[1]:
-            raise ValueError(
-                'The unpadding array_a should cannot have more columns than rows.')
-        if array_a.shape[0] != array_b.shape[0]:
-            raise ValueError(
-                'Arguments array_a & array_b should have the same number of rows.')
-        if array_a.shape[1] != array_b.shape[1]:
-            raise ValueError(
-                'Arguments array_a & array_b should have the same number of columns.')
-        if np.linalg.matrix_rank(array_b) >= array_a.shape[1]:
-            raise ValueError(
-                'Rand of array_b should be less than number of columns of array_a.')
+            raise ValueError('The unpadding array_a cannot have more columns than rows.')
 
-        super(SymmetricProcrustes, self).__init__(
-            array_a, array_b, translate, scale)
+        if array_a.shape[0] != array_b.shape[0]:
+            raise ValueError('Arguments array_a & array_b should have the same number of rows.')
+
+        if array_a.shape[1] != array_b.shape[1]:
+            raise ValueError('Arguments array_a & array_b should have the same number of columns.')
+
+        if np.linalg.matrix_rank(array_b) >= array_a.shape[1]:
+            raise ValueError('Rand of array_b should be less than number of columns of array_a.')
+
+        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
 
         # compute transformation
-        self.array_x = self.compute_transformation()
+        self._array_x = self._compute_transformation()
 
         # calculate the single-sided error
-        self.error = self.single_sided_error(self.array_x)
+        self._error = self.single_sided_error(self._array_x)
 
-    def compute_transformation(self):
+    @property
+    def array_x(self):
+        r"""Transformation matrix :math:`\mathbf{X}_{n \times n}`."""
+        return self._array_x
+
+    @property
+    def error(self):
+        """Procrustes error."""
+        return self._error
+
+    def _compute_transformation(self):
         """
         Compute optimum right hand sided symmetric transformation array.
 
         Returns
         -------
-        u_opt : ndarray
+        x_opt : ndarray
             The optimum symmetric transformation array.
         """
-
         # compute SVD of A
         u, s, v_trans = singular_value_decomposition(self.array_a)
 
@@ -153,6 +157,6 @@ class SymmetricProcrustes(Procrustes):
                     y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / \
                         (s[i]**2 + s[j]**2)
 
-        u_opt = np.dot(np.dot(v_trans.T, y), v_trans)
+        x_opt = np.dot(np.dot(v_trans.T, y), v_trans)
 
-        return u_opt
+        return x_opt

@@ -20,6 +20,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+"""
+Two-Sided Orthogonal Procrustes Module.
+"""
+
 
 from procrustes.base import Procrustes
 from procrustes.utils import singular_value_decomposition
@@ -28,100 +32,98 @@ import numpy as np
 
 class TwoSidedOrthogonalProcrustes(Procrustes):
     r"""
-    This class deals with the orthogonal Procrustes problem.
-    Given an :math:`m \times n \ \text{matrix} \ A`
-    and a reference :math:`m \times n \ \text{matrix} \ A^0`, find two unitary/orthogonal transformation of
-    :math:`A` that makes it as close as possible to :math:`A^0`. I.e.,
+    Two-Sided Orthogonal Procrustes.
+
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
+    find two unitary/orthogonal transformation of :math:`\mathbf{A}_{m \times n}` that makes it as
+    as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
 
     .. math::
-       \begin{array}{c} \underbrace{\min }_{\left\{{\begin{array}{*{20}{c}}
-       {{{\bf{U}}_1}}\\{{{\bf{U}}_2}}
-       \end{array}\left| {\begin{array}{*{20}{c}}
-       {{\bf{U}}_1^{ - 1} = {\bf{U}}_1^\dagger }\\
-       {{\bf{U}}_2^{ - 1} = {\bf{U}}_2^\dagger }
-       \end{array}} \right.} \right\}}\left\| {{\bf{U}}_1^\dagger {\bf{A}}{{\bf{U}}_2} -
-       {{\bf{A}}^0}} \right\|_F^2 = \underbrace {\min }_{\left\{{\begin{array}{*{20}{c}}
-       {{{\bf{U}}_1}}\\{{{\bf{U}}_2}}
-       \end{array}\left| {\begin{array}{*{20}{c}}
-       {{\bf{U}}_1^{ - 1} = {\bf{U}}_1^\dagger }\\
-       {{\bf{U}}_2^{ - 1} = {\bf{U}}_2^\dagger }
-       \end{array}} \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[ {\left({{\bf{U}}_1^\dagger {\bf{A}}{{\bf{U}}_2} -
-       {{\bf{A}}^0}} \right)_{}^\dagger \left({{\bf{U}}_1^\dagger {\bf{A}}{{\bf{U}}_2} -
-       {{\bf{A}}^0}} \right)} \right]\\
-        = \underbrace {\max }_{\left\{ {\begin{array}{*{20}{c}}
-       {{{\bf{U}}_1}}\\
-       {{{\bf{U}}_2}}
-       \end{array}\left| {\begin{array}{*{20}{c}}
-       {{\bf{U}}_1^{ - 1} = {\bf{U}}_1^\dagger }\\
-       {{\bf{U}}_2^{ - 1} = {\bf{U}}_2^\dagger }
-       \end{array}} \right.} \right\}}{\mathop{\rm Tr}\nolimits} \left[
-       {{\bf{U}}_2^\dagger {\bf{A}}_{}^\dagger {{\bf{U}}_1}{{\bf{A}}^0}} \right]
-       \end{array}
+          \underbrace{\text{min}}_{\left\{ {\mathbf{U}_1 \atop \mathbf{U}_2} \left|
+            {\mathbf{U}_1^{-1} = \mathbf{U}_1^\dagger \atop \mathbf{U}_2^{-1} =
+            \mathbf{U}_2^\dagger} \right. \right\}}
+            \|\mathbf{U}_1^\dagger \mathbf{A} \mathbf{U}_2 - \mathbf{B}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{ {\mathbf{U}_1 \atop \mathbf{U}_2} \left|
+             {\mathbf{U}_1^{-1} = \mathbf{U}_1^\dagger \atop \mathbf{U}_2^{-1} =
+             \mathbf{U}_2^\dagger} \right. \right\}}
+        \text{Tr}\left[\left(\mathbf{U}_1^\dagger\mathbf{A}\mathbf{U}_2 - \mathbf{B} \right)^\dagger
+                   \left(\mathbf{U}_1^\dagger\mathbf{A}\mathbf{U}_2 - \mathbf{B} \right)\right] \\
+       &= \underbrace{\text{min}}_{\left\{ {\mathbf{U}_1 \atop \mathbf{U}_2} \left|
+             {\mathbf{U}_1^{-1} = \mathbf{U}_1^\dagger \atop \mathbf{U}_2^{-1} =
+             \mathbf{U}_2^\dagger} \right. \right\}}
+          \text{Tr}\left[\mathbf{U}_2^\dagger\mathbf{A}^\dagger\mathbf{U}_1\mathbf{B} \right]
 
-    We can get the solution by taking singular value decomposition of the matrices,
+    We can get the solution by taking singular value decomposition of the matrices. Having,
 
     .. math::
-       \begin{array}{c}
-       {\bf{A}} = {{\bf{U}}_A}{\Sigma _A}{\bf{V}}_A^\dagger \\
-       {{\bf{A}}^0} = {{\bf{U}}_{{A^0}}}{\Sigma _{{A^0}}}{\bf{V}}_{{A^0}}^\dagger
-       \end{array}
+       \mathbf{A} = \mathbf{U}_A \mathbf{\Sigma}_A \mathbf{V}_A^\dagger \\
+       \mathbf{B} = \mathbf{U}_B \mathbf{\Sigma}_B \mathbf{V}_B^\dagger
 
-       \begin{array}{l}
-       {{\bf{U}}_1} = {\bf{U}}_A^{}{\bf{U}}_{{A^0}}^\dagger \\
-       {{\bf{U}}_2} = {\bf{V}}_A^{}{\bf{V}}_{{A^0}}^\dagger
-       \end{array}
+    The transformation is foubd by,
+
+    .. math::
+       \mathbf{U}_1 = \mathbf{U}_A \mathbf{U}_B^\dagger \\
+       \mathbf{U}_2 = \mathbf{V}_B \mathbf{V}_B^\dagger
 
     References
     ----------
-    1. Schönemann, Peter H. "A generalized solution of the orthogonal Procrustes problem." *Psychometrika* 31.1:1-10, 
-    1966
+    1. Schönemann, Peter H. "A generalized solution of the orthogonal Procrustes problem."
+       *Psychometrika* 31.1:1-10, 1966.
     """
 
     def __init__(self, array_a, array_b, translate=False, scale=False):
-        """
+        r"""
+        Initialize the class and transfer/scale the arrays followed by computing transformaions.
+
         Parameters
         ----------
         array_a : ndarray
             The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
         array_b : ndarray
-            The 2d-array :math:`\mathbf{A}^0_{m \times n}` representing the reference.
-        translate : bool, default = 'False'
+            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+        translate : bool, default=False
             If True, both arrays are translated to be centered at origin.
-        scale : bool, default = 'False'
+        scale : bool, default=False
             If True, both arrays are column normalized to unity.
         """
+        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
 
-        Procrustes.__init__(self, array_a, array_b,
-                            translate=translate, scale=scale)
+        # compute transformation
+        self._array_u1, self._array_u2 = self._compute_transformation()
 
-    def calculate(self):
+        # calculate the single-sided error
+        self._error = self.double_sided_error(self._array_u1, self._array_u2)
+
+    @property
+    def array_u1(self):
+        r"""Transformation matrix :math:`\mathbf{U}_1`."""
+        return self._array_u1
+
+    @property
+    def array_u2(self):
+        r"""Transformation matrix :math:`\mathbf{U}_2`."""
+        return self._array_u2
+
+    @property
+    def error(self):
+        """Procrustes error."""
+        return self._error
+
+    def _compute_transformation(self):
         """
-        Calculates the two optimum two-sided orthogonal transformation arrays in the double-sided procrustes problem.
+        Compute optimal two-sided orthogonal transformation arrays.
 
         Returns
         -------
         u1_opt : ndarray
-           The optimum orthogonal left-multiplying transformation array satisfying the double sided procrustes problem.
+           The optimum orthogonal left-multiplying transformation array.
         u2_opt : ndarray
-           The optimum orthogonal right-multiplying transformation array satisfying the double sided procrustes problem.
-        array_transformed : ndarray
-           The transformed input array after the transformation.
-        error : float
-           The error as described by the double-sided procrustes problem.
+           The optimum orthogonal right-multiplying transformation array.
         """
-
-        # Calculate the SVDs of array_a and array_b & solve for the optimum
-        # orthogonal transformation arrays
+        # calculate the SVDs of array_a and array_b
         u_a, sigma_a, v_trans_a = singular_value_decomposition(self.array_a)
-        u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(self.array_b)
-        u1_opt = np.dot(u_a, u_a0.T)
-        u2_opt = np.dot(v_trans_a.T, v_trans_a0)
-
-        # Calculate the error
-        error = self.double_sided_error(u1_opt, u2_opt)
-
-        # Calculate the transformed input array
-        array_transformed = np.dot(np.dot(u1_opt.T, self.array_a), u2_opt)
-
-        return u1_opt, u2_opt, array_transformed, error
+        u_b, sigma_b, v_trans_b = singular_value_decomposition(self.array_b)
+        # compute optimal orthogonal transformation arrays
+        u1_opt = np.dot(u_a, u_b.T)
+        u2_opt = np.dot(v_trans_a.T, v_trans_b)
+        return u1_opt, u2_opt

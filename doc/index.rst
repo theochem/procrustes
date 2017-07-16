@@ -34,6 +34,12 @@ Some introduction.
 
 .. toctree::
    :maxdepth: 1
+
+   usr_doc_installation
+
+
+.. toctree::
+   :maxdepth: 1
    :caption: Procrustes Flavours
 
    procrustes_base

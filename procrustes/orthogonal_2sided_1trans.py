@@ -30,195 +30,191 @@ from itertools import product
 
 
 class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
-
     r"""
-    This method deals with the two-sided orthogonal Procrustes problem limited to
-    a single transformation. Given a symmetric :math: `n \times n` matrix :math:`A`
-    and a reference :math:`n \times n` math:`A^0`, find two unitary\orthogonal transformation
-    of :math:`A` that makes it as close as possible to :math:`A^0`. I.e.,
+    Two-Sided Orthogonal Procrustes with Single-Transformation Class.
+
+    Given matrix :math:`\mathbf{A}_{n \times n}` and a reference :math:`\mathbf{B}_{n \times n}`,
+    find one unitary/orthogonal transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
+    :math:`\mathbf{A}_{n \times n}` as close as possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
 
     .. math::
-       \begin{array}{c}
-       \underbrace {\min }_{\left\{ {{\bf{U}}\left| {{\bf{U}}_{}^{ - 1} =
-       {\bf{U}}_{}^\dagger } \right.}
-       \right\}}\left\| {{\bf{U}}_{}^\dagger {\bf{A}}{{\bf{U}}_{}} - {{\bf{A}}^0}} \right\|_F^2 =
-       \underbrace {\min        }_{\left\{ {{\bf{U}}\left| {{\bf{U}}_{}^{ - 1} =
-       {\bf{U}}_{}^\dagger } \right.}        \right\}}{\mathop{\rm Tr}\nolimits} \left[
-       {\left( {{\bf{U}}_{}^\dagger {\bf{AU}}        - {{\bf{A}}^0}} \right)_{}^\dagger \left(
-       {{\bf{U}}_{}^\dagger {\bf{A}}{{\bf{U}}_{}}        - {{\bf{A}}^0}} \right)} \right]\\
-       = \underbrace {\max }_{\left\{ {{\bf{U}}\left| {{{\bf{U}}^{ - 1}} =
-       {\bf{U}}_{}^\dagger } \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[{{\bf{U}}_{}^\dagger{\bf{A}}_{}^\dagger{{\bf{U}}_{}}{{\bf{A}}^0}} \right]
-       \end{array}
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
+                          \|\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\left(\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\mathbf{U}^\dagger\mathbf{A}^\dagger\mathbf{U}\mathbf{B} \right]
 
-    The solution is obtained by taking the eigenvalue decomposition of the matrices
+    Taking the eigenvalue decomposition of the matrices:
 
     .. math::
-       {\bf{A}} = {{\bf{U}}_A}{\Lambda _A}{\bf{U}}_A^\dagger \\
-       {{\bf{A}}^0} = {{\bf{U}}_{{A^0}}}{\Lambda _{{A^0}}}{\bf{U}}_{{A^0}}^\dagger\\
-       {\bf{U}} = {\bf{U}}_A^{}{\bf{SU}}_{{A^0}}^\dagger
+       \mathbf{A} = \mathbf{U}_A \mathbf{\Lambda}_A \mathbf{U}_A^\dagger \\
+       \mathbf{B} = \mathbf{U}_B \mathbf{\Lambda}_B \mathbf{U}_B^\dagger
 
-    where :math:`S` is a diagonal matrix for which every diagonal element is :math:`\pm{1}`,
+    the solution is obtained by,
 
     .. math::
-       {\bf{S}} = \left[ {\begin{array}{*{20}{c}}
-       { \pm 1}&0& \cdots &0\\
-       0&{ \pm 1}& \ddots & \vdots \\
-       \vdots & \ddots & \ddots &0\\
-       0& \cdots &0&{ \pm 1}
-       \end{array}} \right]
+       \mathbf{U} = \mathbf{U}_A \mathbf{S} \mathbf{U}_A^\dagger
 
-    Choose the choce of :math:`S` required :math:`2^n` trial-and-error tests.
+    where :math:`\mathbf{S}` is a diagonal matrix for which every diagonal element is
+    :math:`\pm{1}`,
+
+    .. math::
+       \mathbf{S} =
+       \begin{bmatrix}
+        { \pm 1} & 0       &\cdots &0 \\
+        0        &{ \pm 1} &\ddots &\vdots \\
+        \vdots   &\ddots   &\ddots &0\\
+        0        &\cdots   &0      &{ \pm 1}
+       \end{bmatrix}
+
+    Finding the best choice of :math:`\mathbf{S}` requires :math:`2^n` trial-and-error tests.
+    This is called the ``exact`` scheme for solving the probelm.
 
     A heuristic, due to Umeyama, is to take the element-wise absolute value of the elements
     of the unitary transformations,
 
     .. math::
-       {{\bf{U}}_{{\rm{Umeyama}}}} = {\rm{abs}}\left( {{\bf{U}}_A^{}} \right) \cdot
-       {\rm{abs}}\left( {{\bf{U}}_{{A^0}}^\dagger } \right)
+       \mathbf{U}_\text{Umeyama} = \text{abs}(\mathbf{U}_A) \cdot \text{abs}(\mathbf{U}_B^\dagger)
 
     This is not actually a unitary matrix. But we can use the orthogonal procrustes problem
     to find the closest unitray matrix (i.e., the closest matrix that is unitarily equivalent
     to the identity matrix),
 
     .. math::
-       \begin{array}{c}
-       \underbrace {\min }_{\left\{ {{\bf{U}}\left| {{{\bf{U}}^{ - 1}} =
-       {\bf{U}}_{}^\dagger } \right.}  \right\}}\left\| {{\bf{IU}} -
-       {{\bf{U}}_{{\rm{Umeyama}}}}} \right\|_F^2 = \underbrace {\min }_{\left\{{{\bf{U}}\left|
-       {{{\bf{U}}^{ - 1}} = {\bf{U}}_{}^\dagger } \right.}\right\}}{\mathop{\rm Tr}\nolimits}
-       \left[ {\left( {{\bf{U}} -{{\bf{U}}_{{\rm{Umeyama}}}}} \right)_{}^\dagger
-       \left( {{\bf{U}} - {{\bf{U}}_{{\rm{Umeyama}}}}} \right)} \right]\\
-       = \underbrace {\max }_{\left\{ {{\bf{U}}\left| {{{\bf{U}}^{ - 1}} =
-       {\bf{U}}_{}^\dagger } \right.} \right\}}{\mathop{\rm Tr}\nolimits}
-       \left[{{\bf{U}}_{}^\dagger {{\bf{U}}_{{\rm{Umeyama}}}}} \right]
-       \end{array}
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
+                          \|\mathbf{I}\mathbf{U} -  \mathbf{U}_\text{Umeyama}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\left(\mathbf{U} - \mathbf{U}_\text{Umeyama} \right)^\dagger
+                         \left(\mathbf{U} - \mathbf{U}_\text{Umeyama} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\mathbf{U}^\dagger \mathbf{U}_\text{Umeyama} \right]
 
-    with solution given by Eqs.(2)-(3). I.e.m making the singular value decomposition of
-    :math:`{U}_{Umeyama}` ,
+    considering the singular value decomposition of :math:`\mathbf{U}_\text{Umeyama}`,
 
     .. math::
-       {{\bf{U}}_{{\rm{Umeyama}}}} = {\bf{\tilde U}}\tilde \Sigma {\bf{\tilde V}}_{}^\dagger
-       {\bf{U}}_{{\rm{Umeyama}}}^{\left( {{\rm{approx}}{\rm{.}}} \right)} =
-       {\bf{\tilde U\tilde V}}_{}^\dagger
+       \mathbf{U}_\text{Umeyama} =
+            \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}} \tilde{\mathbf{V}}^\dagger
 
-    **Note**
+    the solution is give by,
 
-    Map_a_to_b is set to True by default. For the two-sided single transformation procrustes
-    analyses, this is crucial
-    for accuracy. When set to False, the input arrays both undergo centroid translation to
-    the origin and Frobenius normalization, prior to further analysis. Something about
-    this transformation skews the accuracy of the results.
+    .. math::
+       \mathbf{U}_\text{Umeyama}^\text{approx} = \tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger
+
+    This is called the ``approx`` scheme for solving the probelm.
     """
 
-    def __init__(self, array_a, array_b, translate=False, scale=False):
-
-        Procrustes.__init__(self, array_a, array_b,
-                            translate=translate, scale=scale)
-
-        diff_a = abs(self.array_a - self.array_a.T)
-        diff_b = abs(self.array_b - self.array_b.T)
-        if (diff_a.all() or diff_b.all()) > 1.e-10:
-            raise ValueError('Arrays array_a and array_b must both be symmetric for this analysis.')
-
-    def calculate(self, return_u_approx=False, return_u_best=True, tol=1.e-12):
-        """
-        Calculates the single optimum two-sided orthogonal transformation matrix in the
-        double-sided procrustes problem
+    def __init__(self, array_a, array_b, translate=False, scale=False, scheme='approx', tol=1.e-12):
+        r"""
+        Initialize the class and transfer/scale the arrays followed by computing transformaions.
 
         Parameters
         ----------
         array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b)
-
+            The 2d-array symmetric :math:`\mathbf{A}_{n \times n}` which is going to be transformed.
         array_b : ndarray
-            A 2D array representing the reference array
-
-        Returns
-        ----------
-        u_umeyama_approx, array_transformed, error
-        u_umeyama_approx = the optimum orthogonal transformation array satisfying the double
-             sided procrustes problem. Array represents the closest orthogonal array to
-             u_umeyama given by the orthogonal procrustes problem
-        array_transformed = the transformed input array after transformation by u_umeyama_approx
-        error = the error as described by the double-sided procrustes problem
+            The 2d-array symmetric :math:`\mathbf{B}_{n \times n}` representing the reference.
+        translate : bool, default=False
+            If True, both arrays are translated to be centered at origin.
+        scale : bool, default=False
+            If True, both arrays are column normalized to unity.
+        scheme : str, default='approx'
+            The scheme to solve for unitary transformation. Options: 'exact' and 'approx'.
+        tol : float, default=1.e-12
+            The tolerace used by ``approx`` scheme.
         """
-        if return_u_approx:
-            # Calculate the eigenvalue decomposition of array_a and array_b
-            sigma_a, u_a = eigenvalue_decomposition(
-                self.array_a, two_sided_single=True)
-            sigma_a0, u_a0 = eigenvalue_decomposition(
-                self.array_b, two_sided_single=True)
-            # Compute u_umeyama
-            u_umeyama = np.multiply(abs(u_a), abs(u_a0).T)
-            # Compute u_umeyama_approx using orthogonal procrustes analysis
-            n, m = u_umeyama.shape
-            ortho = OrthogonalProcrustes(np.eye(n), u_umeyama)
-            # u_approx, array_transformed_ortho, error_ortho = ortho.calculate()
-            ortho.array_u[abs(ortho.array_u) < 1.e-8] = 0
-            # Calculate the error
-            error_approx = self.double_sided_error(
-                ortho.array_u, ortho.array_u)
-            # Calculate the transformed input array
-            array_transformed_approx = np.dot(self.array_a, ortho.array_u)
+        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
+        self._scheme = scheme
+        self._tol = tol
 
-        if return_u_best:
-            # svd of each array
-            u_a, sigma_a, v_trans_a = singular_value_decomposition(
-                self.array_a)
-            u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(
-                self.array_b)
-            n, m = self.array_a.shape
-            assert(n == m)
-            # Compute all 2^n combinations of diagonal n x n matrices where diagonal elements are
-            # from the set {-1,1}
-            diag_vec_list = list(product((-1., 1.), repeat=n))
-            error_best = 1.e5  # Arbitrarily initialize best error
-            """
-            Iterate until all possible combinations have been checked, and choose trial with the
-            least error. If any iteration produces error less than the tolerance, stop the loop
-            and choose this trial.
-            """
-            for i in range(2**n):
-                # Compute the trial's optimum transformation array
-                u_trial = np.dot(
-                    np.dot(u_a, np.diag(diag_vec_list[i])), u_a0.T)
-                # And the trial's corresponding error:
-                error = self.double_sided_error(u_trial, u_trial)
-                if error < tol:
-                    u_best = u_trial
-                    error_best = error
-                    break
-                if error < error_best:
-                    u_best = u_trial
-                    error_best = error
-                else:
-                    continue
-            array_transformed_best = np.dot(
-                np.dot(u_best.T, self.array_a), u_best)
+        # check arrau_a and array_b are symmetric
+        diff_a = abs(self.array_a - self.array_a.T)
+        diff_b = abs(self.array_b - self.array_b.T)
+        if np.all(diff_a) > 1.e-10:
+            raise ValueError('Array array_a should be symmetric.')
+        if np.all(diff_b) > 1.e-10:
+            raise ValueError('Array array_b should be symmetric.')
 
-        if return_u_approx and return_u_best:
-            if error_approx >= error_best:
-                u_best = u_best
-                error_best = error_best
-            else:
-                u_best = ortho.array_u
-                error_best = error_approx
-            print " You've selected both the Umeyaman and exact transformations."
-            print "Output order: u_approx, u_best, array_transformation_approx_exact,"
-            print "array_transformation_exact, error_approx, error_best, translate_and_or_scaling:"
-            return (ortho.array_u, u_best, array_transformed_approx,
-                    array_transformed_best, error_approx, error_best)
+        # compute matrix u and double sided error
+        if self._scheme == 'approx':
+            self._array_u = self._compute_transformation_approx()
+            self._error = self.double_sided_error(self._array_u, self._array_u)
 
-        elif return_u_approx:
-            print "You've selected the Umeyaman approximation."
-            print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
-            return ortho.array_u, array_transformed_approx, error_approx
-
-        elif return_u_best:
-            print "You've selected the best transformation. "
-            print 'The input 2D arrays are {0} and {1}.\n'.format(self.array_a.shape, self.array_b.shape)
-            return u_best, array_transformed_best, error_best
+        elif self._scheme == 'exact':
+            self._array_u, self._error = self._compute_transformation_exact()
 
         else:
-            print "Cannot complete analysis. You must select at least one transformation."
+            raise ValueError('Scheme={0} not recognozed!'.format(scheme))
+
+    @property
+    def array_u(self):
+        r"""Transformation matrix :math:`\mathbf{U}`."""
+        return self._array_u
+
+    @property
+    def error(self):
+        """Procrustes error."""
+        return self._error
+
+    @property
+    def scheme(self):
+        """Scheme to solve for unitary transformation."""
+        return self._scheme
+
+    def _compute_transformation_approx(self):
+        """
+        Compute approximate two-sided orthogonal single transformation array.
+
+        Returns
+        -------
+        u_opt : ndarray
+           The optimum transformation array.
+        """
+        # calculate the eigenvalue decomposition of array_a and array_b
+        sigma_a, u_a = eigenvalue_decomposition(self.array_a, two_sided_single=True)
+        sigma_b, u_b = eigenvalue_decomposition(self.array_b, two_sided_single=True)
+
+        # compute u_umeyama
+        u_umeyama = np.multiply(abs(u_a), abs(u_b).T)
+        # compute the closet unitary transformation to u_umeyama
+        ortho = OrthogonalProcrustes(np.eye(u_umeyama.shape[0]), u_umeyama)
+        ortho.array_u[abs(ortho.array_u) < 1.e-8] = 0
+        return ortho.array_u
+
+    def _compute_transformation_exact(self):
+        """
+        Compute exact two-sided orthogonal single transformation array.
+
+        Returns
+        -------
+        u_opt : ndarray
+           The optimum transformation array.
+        e_opt : float
+           The optimum double-sided procrustes error.
+        """
+        # svd of array_a and array_b
+        u_a, sigma_a, v_trans_a = singular_value_decomposition(self.array_a)
+        u_b, sigma_b, v_trans_b = singular_value_decomposition(self.array_b)
+
+        # 2^n trial-and-error test to find optimum S array
+        diags = product((-1., 1.), repeat=self.array_a.shape[0])
+        for index, diag in enumerate(diags):
+            if index == 0:
+                u_opt = np.dot(np.dot(u_a, np.diag(diag)), u_b.T)
+                e_opt = self.double_sided_error(u_opt, u_opt)
+            else:
+                # compute trial transformation and error
+                u_trial = np.dot(np.dot(u_a, np.diag(diag)), u_b.T)
+                e_trial = self.double_sided_error(u_trial, u_trial)
+                if e_trial < e_opt:
+                    u_opt = u_trial
+                    e_opt = e_trial
+            # stop trial-and-error if error is below treshold
+            if e_opt < self._tol:
+                break
+        return u_opt, e_opt

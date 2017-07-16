@@ -26,15 +26,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+**************************************
 Welcome to Procrustes's documentation!
-======================================
+**************************************
+
+Some introduction.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Procrustes Flavours
 
-   tech_api
-
+   procrustes_base
+   procrustes_orthogonal
+   procrustes_orthogonal_2sided
+   procrustes_orthogonal_2sided_1trans
+   procrustes_permutation
+   procrustes_permutation_2sided_1trans
+   procrustes_rotational
+   procrustes_symmetric
 
 Indices and tables
 ==================

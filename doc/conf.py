@@ -59,7 +59,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -186,7 +187,18 @@ texinfo_documents = [
 
 # Put class docstring and the __init__ docstring together in the documentation
 # for your class when you use the autoclass directive.
-autoclass_content = 'both'
-
+autoclass_content = 'class'
 autodoc_member_order = 'bysource'
-#autodoc_default_flags = ['members', 'undoc-members', 'inherited-members', 'show-inheritance']
+autodoc_default_flags = ['members', 'inherited-members', 'show-inheritance']
+
+# -----------------------------------------------------------------------------
+# Autosummary
+# -----------------------------------------------------------------------------
+autosummary_generate = ['procrustes_base.rst',
+                        'procrustes_orthogonal.rst',
+                        'procrustes_orthogonal_2sided.rst',
+                        'procrustes_orthogonal_2sided_1trans.rst',
+                        'procrustes_permutation.rst',
+                        'procrustes_permutation_2sided_1trans.rst',
+                        'procrustes_rotational.rst',
+                        'procrustes_symmetric.rst']

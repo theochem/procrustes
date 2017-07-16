@@ -35,8 +35,7 @@ setup(
     author='Ayers Group',
     author_email='',
     package_dir={'procrustes': 'procrustes'},
-    packages=['procrustes', 'procrustes.hungarian', 'procrustes.procrustes',
-              'procrustes.procrustes.test'],
+    packages=['procrustes'],
     # test_suite='nose.collector',
-    requires=['numpy', 'numpy', 'sphinx', 'scipy'],
+    requires=['numpy', 'scipy', 'sphinx'],
 )

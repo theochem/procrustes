@@ -213,3 +213,21 @@ def test_procrustes_rotation_translate_scale():
     proc = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
     assert_almost_equal(proc.array_u, np.dot(rotation, reflection), decimal=6)
     assert_almost_equal(proc.error, 0., decimal=6)
+
+
+def test_procrustes_orthogonal_translate_scale2():
+    # initial array
+    array_a = np.array([[1, 4], [7, 9]])
+    # define a transformation composed of rotation & reflection
+    theta = np.pi / 2
+    rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    ref = np.array([[1, 0], [0, -1]])
+    trans = np.dot(rot, ref)
+    # define array_b by transforming array_a and padding with zero
+    array_b = np.dot(array_a, trans)
+    array_b = np.concatenate((array_b, np.zeros((2, 5))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((5, 7))), axis=0)
+    # compute procrustes transformation
+    proc = OrthogonalProcrustes(array_a, array_b, translate=False, scale=False)
+    assert_almost_equal(proc.array_u, np.dot(rot, ref), decimal=6)
+    assert_almost_equal(proc.error, 0., decimal=6)

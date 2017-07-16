@@ -35,11 +35,11 @@ def zero_padding(array_a, array_b, mode):
     Parameters
     ----------
     array_a : ndarray
-        The 2D array :math:`\mathbf{A}_{n_1 \times m_1}`.
+        The 2d-array :math:`\mathbf{A}_{n_a \times m_a}`.
     array_b : ndarray
-        The 2D array :math:`\mathbf{B}_{n_2 \times m_2}`.
+        The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
     mode : str
-        One of the following values specifying how to padd arrays:
+        Specifying how to padd arrays. Options:
 
         **'row'**
              The array with fewer rows is padded with zero rows so that both have the same
@@ -54,11 +54,11 @@ def zero_padding(array_a, array_b, mode):
         'square'
              The arrays are padded with zero rows and zero columns so that they are both
              squared arrays. The dimension of square array is specified based on the highest
-             dimension, i.e. :math:`\text{max}(n_1, m_1, n_2, m_2)`.
+             dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
 
     Returns
     -------
-    array : ndarray
+    padded_a, padded_b : ndarray, ndarray
         Padded array_a and array_b arrays.
     """
 
@@ -78,38 +78,30 @@ def zero_padding(array_a, array_b, mode):
         dim = max(n1, n2, m1, m2)
         # padding rows to have both arrays have dim rows
         if n1 < dim:
-            array_a = np.pad(
-                array_a, [[0, dim - n1], [0, 0]], 'constant', constant_values=0)
+            array_a = np.pad(array_a, [[0, dim - n1], [0, 0]], 'constant', constant_values=0)
         if n2 < dim:
-            array_b = np.pad(
-                array_b, [[0, dim - n2], [0, 0]], 'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, dim - n2], [0, 0]], 'constant', constant_values=0)
         # padding columns to have both arrays have dim columns
         if m1 < dim:
-            array_a = np.pad(
-                array_a, [[0, 0], [0, dim - m1]], 'constant', constant_values=0)
+            array_a = np.pad(array_a, [[0, 0], [0, dim - m1]], 'constant', constant_values=0)
         if m2 < dim:
-            array_b = np.pad(
-                array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
 
     if mode == 'row' or mode == 'row-col':
         # padding rows to have both arrays have the same number of rows
         diff = array_a.shape[0] - array_b.shape[0]
         if diff < 0:
-            array_a = np.pad(
-                array_a, [[0, -diff], [0, 0]], 'constant', constant_values=0)
+            array_a = np.pad(array_a, [[0, -diff], [0, 0]], 'constant', constant_values=0)
         else:
-            array_b = np.pad(array_b, [[0, diff], [0, 0]],
-                             'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, diff], [0, 0]], 'constant', constant_values=0)
 
     if mode == 'col' or mode == 'row-col':
         # padding columns to have both arrays have the same number of columns
         diff = array_a.shape[1] - array_b.shape[1]
         if diff < 0:
-            array_a = np.pad(
-                array_a, [[0, 0], [0, -diff]], 'constant', constant_values=0)
+            array_a = np.pad(array_a, [[0, 0], [0, -diff]], 'constant', constant_values=0)
         else:
-            array_b = np.pad(array_b, [[0, 0], [0, diff]],
-                             'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, 0], [0, diff]], 'constant', constant_values=0)
 
     return array_a, array_b
 
@@ -121,9 +113,9 @@ def translate_array(array_a, array_b=None):
     Parameters
     ----------
     array_a : ndarray
-        The 2D array to translate.
-    array_b : ndarray
-        The 2D array to translate array_a based on (default=None).
+        The 2d-array to translate.
+    array_b : ndarray, default=None
+        The 2d-array to translate array_a based on.
 
     Returns
     -------
@@ -132,7 +124,6 @@ def translate_array(array_a, array_b=None):
         If array_b is given, array_a is translated to centroid of array_b (the centroid of
         translated array_a will centroid with the centroid array_b).
     """
-
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
     centroid = compute_centroid(array_a)
@@ -149,9 +140,9 @@ def scale_array(array_a, array_b=None):
     Parameters
     ----------
     array_a : ndarray
-        The 2D array to scale
+        The 2d-array to scale
     array_b : ndarray, default=None
-        The 2D array to scale array_a based on.
+        The 2d-array to scale array_a based on.
 
     Returns
     -------
@@ -161,7 +152,6 @@ def scale_array(array_a, array_b=None):
         If array_b is given, array_a is scaled to match array_b's norm (the norm of array_a
         will be equal norm of array_b).
     """
-
     # scaling factor to match unit sphere
     scale = 1. / frobenius_norm(array_a)
     if array_b is not None:
@@ -171,71 +161,67 @@ def scale_array(array_a, array_b=None):
 
 
 def singular_value_decomposition(array):
-    """
-    Return Singular Value Decomposition (SVD) factorization of an array.
+    r"""
+    Return singular value decomposition (SVD) factorization of an array.
+
+    .. math::
+      \mathbf{A} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^\dagger
 
     Parameters
-    -----------
+    ----------
     array: ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}`.
+        The 2d-array :math:`\mathbf{A}_{m \times n}` to factorize.
 
     Returns
     -------
     u : ndarray
-        Unitary matrix \mathbf{U}_{m \times m}.
+        Unitary matrix :math:`\mathbf{U}_{m \times m}`.
     s : ndarray
         The singular values of matrix sorted in descending order.
     v : ndarray
-        Unitary matrix \mathbf{V}_{n \times n}.
-
-    See Also
-    --------
-    `numpy.linalg.svd() <https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.linalg.svd.html>`_
+        Unitary matrix :math:`\mathbf{V}_{n \times n}`.
     """
-
     return np.linalg.svd(array)
 
 
 def eigenvalue_decomposition(array, two_sided_single=False):
-    """
-    Compute the eigenvalue decomposition of array
-    Decomposes array :math:`A` such that :math:`A = U S {U}^\intercal`.
+    r"""
+    Compute the eigenvalue decomposition of array.
+
+    .. math::
+      \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{U}^\dagger
 
     Parameters
-    ------------
+    ----------
     array: ndarray
-       A 2D array who's eigenvalue decomposition is to be calculated.
+       The 2d-array to decompose.
 
-    two_sided_single : bool
-        Set to True when dealing with two-sided single transformation procrustes problems,
-        such as two_sided single transformation orthogonal / permutation. When true, array of
-        eigenvectors is rearranged according to rows rather than columns, allowing the analysis
-        to proceed.
+    two_sided_single : bool, default=False
+        If True, permute row of eigenvectors according to the greatest to least eigenvalues.
+        Otherwise, permute columns.
 
     Returns
     -------
     s : ndarray
-        1D array of the eigenvalues of array, sorted from greatest to least.
+        The 1d-array of the eigenvalues, sorted from greatest to least.
     v : ndarray
-        2D array of eigenvectors of array, sorted according to S.
+        The 2d-array of eigenvectors, sorted according to greatest to least eigenvalues.
     """
-
-    # Test whether eigenvalue decomposition is possible on the input array
+    # check whether eigenvalue decomposition is possible
     if is_diagonalizable(array) is False:
-        raise ValueError(
-            'The input array is not diagonalizable. The analysis cannot continue.')
+        raise ValueError('The input array is not diagonalizable.')
 
-    # Find eigenvalues and array of eigenvectors
+    # find eigenvalues & eigenvectors
     s, v = np.linalg.eigh(array)
-    # Sort the eigenvalues from greatest to least
+    # get index of sorted eigenvalues from largest to smallest
     idx = s.argsort()[::-1]
-
+    # permute eigenvalues & eigenvectors
     s = s[idx]
     if two_sided_single:
-        # For the two-sided single-transformation problems, we permute rows by idx
+        # permute rows by idx
         v = v[idx]
     else:
-        # For all other given problems, we permute columns by idx
+        # permute columns by idx
         v = v[:, idx]
 
     return s, v
@@ -259,7 +245,6 @@ def hide_zero_padding(array):
     array : ndarray
         The 2d or 1d array with no padded row and/or columns of zero.
     """
-
     # check zero rows from bottom to up
     count = array.shape[0] - 1
     while count >= 0:
@@ -286,22 +271,19 @@ def is_diagonalizable(array):
     Check whether the given array is diagonalizable.
 
     Parameters
-    ------------
+    ----------
     array: ndarray
         A square array for which the diagonalizability is checked.
 
     Returns
-    ---------
+    -------
     diagonalizable : bool
         True if the array is diagonalizable, otherwise False.
     """
-
+    # check array is square
     array = hide_zero_padding(array)
-
     if array.shape[0] != array.shape[1]:
-        raise ValueError(
-            'Argument arrays should be a square array! shape={0}'.format(array.shape))
-
+        raise ValueError('Argument array should be a square array! shape={0}'.format(array.shape))
     # SVD decomposition of array
     u, s, vt = singular_value_decomposition(array)
     rank_u = np.linalg.matrix_rank(u)
@@ -326,13 +308,8 @@ def compute_centroid(array):
     Returns
     -------
     col_mean : float
-        the mean value of array columns.
-
-    See Also
-    --------
-    `np.mean() <https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html>`_
+        The mean value of array columns.
     """
-
     col_mean = np.mean(array, axis=0)
     return col_mean
 
@@ -349,12 +326,7 @@ def frobenius_norm(array):
     Returns
     -------
     f_norm : float
-        the Forbenius norm of the array.
-
-    See Also
-    --------
-    `np.linalg.norm() <https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.linalg.norm.html>`_
+        The Forbenius norm of the array.
     """
-
     f_norm = np.linalg.norm(array)
     return f_norm

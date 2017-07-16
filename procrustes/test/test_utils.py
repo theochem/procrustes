@@ -46,7 +46,7 @@ def test_zero_padding_rows():
     assert padded3.shape == (4, 4)
     assert padded4.shape == (4, 2)
     assert (abs(array4 - padded4) < 1.e-10).all()
-    expected = range(8)
+    expected = list(range(8))
     expected.extend([0] * 8)
     expected = np.array(expected).reshape(4, 4)
     assert (abs(expected - padded3) < 1.e-10).all()
@@ -79,7 +79,7 @@ def test_zero_padding_columns():
     assert padded3.shape == (8, 4)
     assert padded4.shape == (2, 4)
     assert (abs(array4 - padded4) < 1.e-10).all()
-    expected = range(8)
+    expected = list(range(8))
     expected.extend([0] * 24)
     expected = np.array(expected).reshape(4, 8).T
     assert (abs(expected - padded3) < 1.e-10).all()

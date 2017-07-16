@@ -26,7 +26,7 @@ Base Procrustes Module.
 
 
 import numpy as np
-from utils import zero_padding, hide_zero_padding, translate_array, scale_array
+from procrustes.utils import zero_padding, hide_zero_padding, translate_array, scale_array
 
 
 class Procrustes(object):

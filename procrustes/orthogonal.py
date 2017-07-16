@@ -103,13 +103,6 @@ class OrthogonalProcrustes(Procrustes):
         r"""
         Compute optimal orthogonal transformation array.
 
-        Parameters
-        ----------
-        array_a : ndarray
-            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-        array_b : ndarray
-            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-
         Returns
         -------
         u_opt : ndarray

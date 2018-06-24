@@ -29,5 +29,4 @@ from procrustes.orthogonal import *
 from procrustes.permutation import *
 from procrustes.rotational import *
 from procrustes.symmetric import *
-from procrustes.orthogonal_2sided import *
 from procrustes.permutation_2sided_1trans import *

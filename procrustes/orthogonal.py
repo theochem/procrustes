@@ -59,6 +59,19 @@ def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
 
+    Returns
+    -------
+    A : ndarray
+        The transformed ndarray A.
+    B : ndarray
+        The transformed ndarray B.
+    U_opt : ndarray
+        The optimum transformation matrix.
+    e_opt : float
+        One-sided orthogonal Procrustes error.
+
+    Notes
+    -----
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
     find the unitary/orthogonal transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
     :math:`\mathbf{A}_{m \times n}` as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
@@ -84,6 +97,33 @@ def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
 
     The singular values are always listed in decreasing order, with the smallest singular
     value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> array_a = np.array([[-7.3,  2.8], [-7.1, -0.2],
+        [ 4. ,  1.4], [ 1.3,  0. ]])
+    >>> array_b = np.array([[-5.90207845, -5.12791088],
+        [-6.74021234, -2.24043246],
+        [ 4.23759847,  0.05252849],
+        [ 1.22159856,  0.44463126]])
+    >>> new_a, new_b, array_u, error_opt = orthogonal(array_a, array_b)
+    >>> new_a
+    array([[-7.3,  2.8],
+           [-7.1, -0.2],
+           [ 4. ,  1.4],
+           [ 1.3,  0. ]])
+    >>> new_b
+    array([[-5.90207845, -5.12791088],
+           [-6.74021234, -2.24043246],
+           [ 4.23759847,  0.05252849],
+           [ 1.22159856,  0.44463126]])
+    >>> array_u # the optimum orthogonal transformation array
+    array([[ 0.9396912 ,  0.34202404],
+           [ 0.34202404, -0.9396912 ]])
+    >>> error_opt #error
+    1.435973366535123e-29
+
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row, translate, scale, check_finite)

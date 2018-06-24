@@ -25,14 +25,50 @@ Two-Sided Orthogonal Procrustes Module.
 """
 
 
-from procrustes.base import Procrustes
-from procrustes.utils import singular_value_decomposition
 import numpy as np
 
+from itertools import product
 
-class TwoSidedOrthogonalProcrustes(Procrustes):
+from procrustes.base import Procrustes
+from procrustes.orthogonal import orthogonal
+from procrustes.utils import _get_input_arrays, _check_rank, error
+from procrustes.utils import singular_value_decomposition, eigendecomposition
+
+
+def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
+                      translate=False, scale=False, single_transform=True,
+                      mode="approx", check_finite=True, tol=1.0e-8):
     r"""
     Two-Sided Orthogonal Procrustes.
+
+    Parameters
+    ----------
+    A : ndarray
+        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+    B : ndarray
+        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
+    remove_zero_col : bool, optional
+        If True, the zero columns on the right side will be removed.
+        Default= True.
+    remove_zero_row : bool, optional
+        If True, the zero rows on the top will be removed.
+        Default= True.
+    translate : bool, optional
+        If True, both arrays are translated to be centered at origin.
+        Default=False.
+    scale : bool, optional
+        If True, both arrays are column normalized to unity. Default=False.
+    single_transform : bool
+        If True, two-sided orthogonal Procrustes with one transformation
+        will be performed. Default=False.
+    mode : string, optional
+        The scheme to solve for unitary transformation.
+        Options: 'exact' and 'approx'. Default="approx".
+    check_finite : bool, optional
+        If true, convert the input to an array, checking for NaNs or Infs.
+        Default=True.
+    tol : float, optional
+        The tolerance value used for 'approx' mode. Default=1.e-8.
 
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
     find two unitary/orthogonal transformation of :math:`\mathbf{A}_{m \times n}` that makes it as
@@ -69,61 +105,90 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
     ----------
     1. Schönemann, Peter H. "A generalized solution of the orthogonal Procrustes problem."
        *Psychometrika* 31.1:1-10, 1966.
+
     """
+    # Check symmetry if single_transform=True
+    if single_transform:
+        if (not np.allclose(A.T, A)):
+            raise ValueError('Array A should be symmetric.')
+        if (not np.allclose(B.T, B)):
+            raise ValueError('Array B should be symmetric.')
+        # Check if matrix A and B are diagonalizable
+        try:
+            _check_rank(A)
+            _check_rank(B)
+        except:
+            raise np.linalg.LinAlgError("Matrix cannot be diagonalized.")
+    # Check inputs
+    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
+                             translate, scale, check_finite)
+    # Convert mode strings into lowercase
+    mode = mode.lower()
+    # Do single-transformation computation if requested
+    if single_transform:
+        # check A and B are symmetric
+        if mode == "approx":
+            U = _2sided_1trans_approx(A, B, tol)
+            e_opt = error(A, B, U, U)
+        elif mode == "exact":
+            U = _2sided_1trans_exact(A, B, tol)
+            e_opt = error(A, B, U, U)
+        else:
+            raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
+        return A, B, U, e_opt
+    # Do regular two-sided orthogonal Procrustes calculations
+    else:
+        U_opt1, U_opt2 = _2sided(A, B)
+        e_opt = error(A, B, U_opt1, U_opt2)
+        return A, B, U_opt1, U_opt2, e_opt
 
-    def __init__(self, array_a, array_b, translate=False, scale=False):
-        r"""
-        Initialize the class and transfer/scale the arrays followed by computing transformaions.
 
-        Parameters
-        ----------
-        array_a : ndarray
-            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-        array_b : ndarray
-            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-        translate : bool, default=False
-            If True, both arrays are translated to be centered at origin.
-        scale : bool, default=False
-            If True, both arrays are column normalized to unity.
-        """
-        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
+def _2sided(A, B):
+    r"""
+    """
+    UA, _, VTA = np.linalg.svd(A)
+    UB, _, VTB = np.linalg.svd(B)
+    U_opt1 = np.dot(UA, UB.T)
+    U_opt2 = np.dot(VTA.T, VTB)
+    return U_opt1, U_opt2
 
-        # compute transformation
-        self._array_u1, self._array_u2 = self._compute_transformation()
 
-        # calculate the single-sided error
-        self._error = self.double_sided_error(self._array_u1, self._array_u2)
+def _2sided_1trans_approx(A, B, tol):
+    r"""
+    """
+    # Calculate the eigenvalue decomposition of A and B
+    _, UA = eigendecomposition(A, permute_rows=True)
+    _, UB = eigendecomposition(B, permute_rows=True)
+    # compute U_umeyama
+    U_umeyama = np.dot(np.abs(UA), np.abs(UB.T))
+    # compute the closet unitary transformation to u_umeyama
+    I = np.eye(U_umeyama.shape[0], dtype=U_umeyama.dtype)
+    _, _, U_ortho, _ = orthogonal(I, U_umeyama)
+    U_ortho[np.abs(U_ortho) < tol] = 0
+    return U_ortho
 
-    @property
-    def array_u1(self):
-        r"""Transformation matrix :math:`\mathbf{U}_1`."""
-        return self._array_u1
 
-    @property
-    def array_u2(self):
-        r"""Transformation matrix :math:`\mathbf{U}_2`."""
-        return self._array_u2
-
-    @property
-    def error(self):
-        """Procrustes error."""
-        return self._error
-
-    def _compute_transformation(self):
-        """
-        Compute optimal two-sided orthogonal transformation arrays.
-
-        Returns
-        -------
-        u1_opt : ndarray
-           The optimum orthogonal left-multiplying transformation array.
-        u2_opt : ndarray
-           The optimum orthogonal right-multiplying transformation array.
-        """
-        # calculate the SVDs of array_a and array_b
-        u_a, sigma_a, v_trans_a = singular_value_decomposition(self.array_a)
-        u_b, sigma_b, v_trans_b = singular_value_decomposition(self.array_b)
-        # compute optimal orthogonal transformation arrays
-        u1_opt = np.dot(u_a, u_b.T)
-        u2_opt = np.dot(v_trans_a.T, v_trans_b)
-        return u1_opt, u2_opt
+def _2sided_1trans_exact(A, B, tol):
+    r"""
+    """
+    _, UA = eigendecomposition(A)
+    _, UB = eigendecomposition(B)
+    # 2^n trial-and-error test to find optimum S array
+    diags = product((-1, 1.), repeat=A.shape[0])
+    for index, diag in enumerate(diags):
+        if index == 0:
+            U_opt = np.dot(np.dot(UA, np.diag(diag)), UB.T)
+            e_opt = error(A, B, U_opt, U_opt)
+        else:
+            # compute trial transformation and error
+            U_trial = np.dot(np.dot(UA, np.diag(diag)), UB.T)
+            e_trial = error(A, B, U_trial, U_trial)
+            if e_trial < e_opt:
+                U_opt = U_trial
+                e_opt = e_trial
+            else:
+                pass
+        # stop trial-and-error if error is below threshold
+        if e_opt < tol:
+            break
+    return U_opt

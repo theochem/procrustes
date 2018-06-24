@@ -266,7 +266,7 @@ def test_scale_array():
 def test_eigenvalue_decomposition():
     array = np.array([[-1. / 2, 3. / 2], [3. / 2, -1. / 2]])
     assert(is_diagonalizable(array) is True)
-    s_predicted, u_predicted = eigenvalue_decomposition(array)
+    s_predicted, u_predicted = eigendecomposition(array)
     s_expected = np.array([1, -2])
     assert(abs(np.dot(u_predicted, u_predicted.T) - np.eye(2)) < 1.e-8).all()
     # The eigenvalue decomposition must return the original array
@@ -276,7 +276,7 @@ def test_eigenvalue_decomposition():
     # check that product of u, s, and u.T obtained from eigenvalue_decomposition gives original array
     array = np.array([[3, 1], [1, 3]])
     assert(is_diagonalizable(array) is True)
-    s_predicted, u_predicted = eigenvalue_decomposition(array)
+    s_predicted, u_predicted = eigendecomposition(array)
     s_expected = np.array([4, 2])
     assert(abs(np.dot(u_predicted, u_predicted.T) - np.eye(2)) < 1.e-8).all()
     # The eigenvalue decomposition must return the original array

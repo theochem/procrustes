@@ -184,9 +184,9 @@ def singular_value_decomposition(array):
     return np.linalg.svd(array)
 
 
-def eigenvalue_decomposition(array, two_sided_single=False):
+def eigendecomposition(A, permute_rows=False):
     r"""
-    Compute the eigenvalue decomposition of array.
+    Compute the eigenvalue decomposition of an array.
 
     .. math::
       \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{U}^\dagger
@@ -194,38 +194,26 @@ def eigenvalue_decomposition(array, two_sided_single=False):
     Parameters
     ----------
     array: ndarray
-       The 2d-array to decompose.
-
-    two_sided_single : bool, default=False
-        If True, permute row of eigenvectors according to the greatest to least eigenvalues.
-        Otherwise, permute columns.
+       The 2D array to decompose.
+    permute_rows : bool, default = False
+        If True, permute rows of eigenvectors according to the greatest
+        to least eigenvalues. Otherwise, permute columns.
 
     Returns
     -------
     s : ndarray
-        The 1d-array of the eigenvalues, sorted from greatest to least.
-    v : ndarray
-        The 2d-array of eigenvectors, sorted according to greatest to least eigenvalues.
-    """
-    # check whether eigenvalue decomposition is possible
-    if is_diagonalizable(array) is False:
-        raise ValueError('The input array is not diagonalizable.')
+        The 1D array of the eigenvalues, sorted from greatest to least.
+    V : ndarray
+        The 2D array of eigenvectors, sorted according to greatest to
+        least eigenvalues.
 
+    """
     # find eigenvalues & eigenvectors
-    s, v = np.linalg.eigh(array)
+    s, V = np.linalg.eigh(A)
     # get index of sorted eigenvalues from largest to smallest
     idx = s.argsort()[::-1]
-    # permute eigenvalues & eigenvectors
-    s = s[idx]
-    if two_sided_single:
-        # permute rows by idx
-        v = v[idx]
-    else:
-        # permute columns by idx
-        v = v[:, idx]
-
-    return s, v
-
+    # Return permuted eigenvalues & eigenvectors
+    return s[idx], V[idx] if permute_rows else V[:, idx]
 
 
 def hide_zero_padding(A, remove_zero_col=True,
@@ -407,3 +395,11 @@ def _check_arraytypes(*args):
         raise TypeError("Matrix inputs must be NumPy arrays")
     if any(x.ndim != 2 for x in args):
         raise TypeError("Matrix inputs must be 2-dimensional arrays")
+
+
+def _check_rank(A):
+    r"""Check whether the given array is diagonalizable."""
+    A = hide_zero_padding(A)
+    U, _, _ = np.linalg.svd(A)
+    if np.linalg.matrix_rank(U) != np.linalg.matrix_rank(A):
+        raise np.linalg.LinAlgError("Matrix cannot be diagonalized")

@@ -68,6 +68,8 @@ def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
     e_opt : float
         One-sided orthogonal Procrustes error.
 
+    Notes
+    -----
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
     find the transformation of :math:`\mathbf{A}_{m \times n}` that makes it as close as possible
     to :math:`\mathbf{B}_{m \times n}`. I.e.,
@@ -114,6 +116,20 @@ def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
         +1 \qquad \left|\tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger\right| \geq 0 \\
         -1 \qquad \left|\tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger\right| < 0
        \end{cases}
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> array_a = np.array([[1.5, 7.4], [8.5, 4.5]])
+    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,], [9.19238816, -2.82842712, 0., 0.],
+                            [0., 0., 0., 0.]])
+    >>> new_a, new_b, array_u, error_opt = rotational(array_a, array_b, translate=False, scale=False)
+    >>> array_u # rotational array
+    array([[ 0.70710678, -0.70710678],
+       [ 0.70710678,  0.70710678]])
+    >>> error_opt # error
+    1.483808210011695e-17
+
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,

@@ -23,35 +23,49 @@
 
 
 import numpy as np
-from procrustes import OrthogonalProcrustes
-from numpy.testing import assert_almost_equal, assert_equal
+
+from numpy.testing import assert_equal, assert_almost_equal
+
+from procrustes import orthogonal, error
+
+
+__all__ = [
+    "test_identical",
+    "test_rotation_square",
+    "test_reflection_square",
+    "test_translate",
+    "test_rotation_translate",
+    "test_translate_scale",
+    "test_rotation_translate_scale",
+]
 
 
 def test_procrustes_orthogonal_identical():
     # case of identical square arrays
     array_a = np.arange(9).reshape(3, 3)
-    proc = OrthogonalProcrustes(array_a, array_a)
+    array_b = np.copy(array_a)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
     # check transformation array is identity
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_a, decimal=6)
-    assert_almost_equal(proc.array_u, np.eye(3), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    assert_almost_equal(new_a, array_a, decimal=6)
+    assert_almost_equal(new_b, array_b, decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # case of identical rectangular arrays (2 by 4)
     array_a = np.array([[1, 5, 6, 7], [1, 2, 9, 4]])
-    proc = OrthogonalProcrustes(array_a, array_a)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_a, decimal=6)
-    assert_equal(proc.array_u.shape, (4, 4))
-    # assert_almost_equal(proc.array_u, np.eye(4), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    array_b = np.copy(array_a)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(new_a, array_a, decimal=6)
+    assert_almost_equal(new_b, array_b, decimal=6)
+    assert_equal(array_u.shape, (4, 4))
+    # assert_almost_equal(array_u, np.eye(4), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # case of identical rectangular arrays (5 by 3)
     array_a = np.arange(15).reshape(5, 3)
-    proc = OrthogonalProcrustes(array_a, array_a)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_a, decimal=6)
-    assert_equal(proc.array_u.shape, (3, 3))
-    assert_almost_equal(proc.array_u, np.eye(3), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    array_b = np.copy(array_a)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(new_a, array_a, decimal=6)
+    assert_almost_equal(new_b, array_b, decimal=6)
+    assert_equal(array_u.shape, (3, 3))
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
 
 
 def test_procrustes_rotation_square():
@@ -59,84 +73,66 @@ def test_procrustes_rotation_square():
     array_a = np.arange(4).reshape(2, 2)
     # rotation by 90 degree
     array_b = np.array([[1, 0], [3, -2]])
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[0., -1.], [1., 0.]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, np.array([[0., -1.], [1., 0.]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # rotation by 180 degree
-    array_b = - array_a
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[-1., 0.], [0., -1.]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    array_b = -array_a
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, np.array([[-1., 0.], [0., -1.]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # rotation by 270 degree
     array_b = np.array([[-1, 0], [-3, 2]])
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[0., 1.], [-1., 0.]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, np.array([[0., 1.], [-1., 0.]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # rotation by 45 degree
     rotation = 0.5 * np.sqrt(2) * np.array([[1, -1], [1, 1]])
     array_b = np.dot(array_a, rotation)
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, rotation, decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, rotation, decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # rotation by 30 degree
     theta = np.pi / 6
     rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
     array_b = np.dot(array_a, rotation)
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, rotation, decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, rotation, decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # rotation by 72 degree
     theta = 1.25664
     rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
     array_b = np.dot(array_a, rotation)
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, rotation, decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, rotation, decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
 
 
 def test_procrustes_reflection_square():
     # square array
     array_a = np.array([[2.0, 0.1], [0.5, 3.0]])
     # reflection through origin
-    array_b = - array_a
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[-1, 0], [0, -1]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    array_b = -array_a
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(new_a, array_a, decimal=6)
+    assert_almost_equal(new_b, array_b, decimal=6)
+    assert_almost_equal(array_u, np.array([[-1, 0], [0, -1]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # reflection in the x-axis
     array_b = np.array([[2.0, -0.1], [0.5, -3.0]])
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[1, 0], [0, -1]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, np.array([[1, 0], [0, -1]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # reflection in the y-axis
     array_b = np.array([[-2.0, 0.1], [-0.5, 3.0]])
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[-1, 0], [0, 1]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, np.array([[-1, 0], [0, 1]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # reflection in the line y=x
     array_b = np.array([[0.1, 2.0], [3.0, 0.5]])
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.array([[0, 1], [1, 0]]), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(array_u, np.array([[0, 1], [1, 0]]), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
 
 
 def test_procrustes_shifted():
@@ -145,34 +141,30 @@ def test_procrustes_shifted():
     expected_a = array_a - np.mean(array_a, axis=0)
     # constant shift
     array_b = array_a + 4.1
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True)
-    assert_almost_equal(proc.array_a, expected_a, decimal=6)
-    assert_almost_equal(proc.array_b, expected_a, decimal=6)
-    assert_almost_equal(proc.array_u, np.eye(3), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True)
+    #assert_almost_equal(new_b, array_b, decimal=6)
+    assert_almost_equal(array_u, np.eye(3), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # different shift along each axis
     array_b = array_a + np.array([0, 3.2, 5.0])
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True)
-    assert_almost_equal(proc.array_a, expected_a, decimal=6)
-    assert_almost_equal(proc.array_b, expected_a, decimal=6)
-    assert_almost_equal(proc.array_u, np.eye(3), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True)
+    # assert_almost_equal(new_b, array_b, decimal=6)
+    assert_almost_equal(array_u, np.eye(3), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # rectangular (2 by 3)
     array_a = np.array([[1, 2, 3], [7, 9, 5]])
     expected_a = array_a - np.array([4., 5.5, 4.])
     # constant shift
     array_b = array_a + 0.71
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True)
-    assert_almost_equal(proc.array_a, expected_a, decimal=6)
-    assert_almost_equal(proc.array_b, expected_a, decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True)
+    #assert_almost_equal(new_b, array_b, decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # different shift along each axis
     array_b = array_a + np.array([0.3, 7.1, 4.2])
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True)
-    assert_almost_equal(proc.array_a, expected_a, decimal=6)
-    assert_almost_equal(proc.array_b, expected_a, decimal=6)
-    assert_equal(proc.array_u.shape, (3, 3))
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True)
+    # assert_almost_equal(new_b, array_b, decimal=6)
+    assert_equal(array_u.shape, (3, 3))
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
 
 
 def test_procrustes_rotation_translation():
@@ -184,21 +176,21 @@ def test_procrustes_rotation_translation():
     reflection = np.array([[1, 0], [0, -1]])
     array_b = np.dot(array_a, np.dot(rotation, reflection))
     # procrustes without translation and scaling
-    proc = OrthogonalProcrustes(array_a, array_b)
-    assert_almost_equal(proc.array_a, array_a, decimal=6)
-    assert_almost_equal(proc.array_b, array_b, decimal=6)
-    assert_almost_equal(proc.array_u, np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b)
+    assert_almost_equal(new_a, array_a, decimal=6)
+    assert_almost_equal(new_b, array_b, decimal=6)
+    assert_almost_equal(array_u, np.dot(rotation, reflection), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # procrustes with translation
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True)
-    assert_almost_equal(proc.array_a, array_a - np.mean(array_a, axis=0), decimal=6)
-    assert_almost_equal(proc.array_b, array_b - np.mean(array_b, axis=0), decimal=6)
-    assert_almost_equal(proc.array_u, np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True)
+    assert_almost_equal(new_a, array_a - np.mean(array_a, axis=0), decimal=6)
+    assert_almost_equal(new_b, array_b - np.mean(array_b, axis=0), decimal=6)
+    assert_almost_equal(array_u, np.dot(rotation, reflection), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
     # procrustes with translation and scaling
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(proc.array_u, np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(array_u, np.dot(rotation, reflection), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
 
 
 def test_procrustes_rotation_translate_scale():
@@ -210,9 +202,9 @@ def test_procrustes_rotation_translate_scale():
     reflection = np.array([[0, 1], [1, 0]])
     array_b = np.dot(4 * array_a + 3.0, np.dot(rotation, reflection))
     # procrustes with translation and scaling
-    proc = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(proc.array_u, np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(array_u, np.dot(rotation, reflection), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
 
 
 def test_procrustes_orthogonal_translate_scale2():
@@ -228,6 +220,20 @@ def test_procrustes_orthogonal_translate_scale2():
     array_b = np.concatenate((array_b, np.zeros((2, 5))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((5, 7))), axis=0)
     # compute procrustes transformation
-    proc = OrthogonalProcrustes(array_a, array_b, translate=False, scale=False)
-    assert_almost_equal(proc.array_u, np.dot(rot, ref), decimal=6)
-    assert_almost_equal(proc.error, 0., decimal=6)
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=False, scale=False)
+    assert_almost_equal(array_u, np.dot(rot, ref), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)
+
+
+def test_rotation_translate_scale():
+    # initial arrays
+    array_a = np.array([[5.1, 0], [-1.1, 4.8], [3.9, 7.3], [9.1, 6.3]])
+    # rotation by 68 degree & reflection in the Y=X
+    theta = 1.18682
+    rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    reflection = np.array([[0, 1], [1, 0]])
+    array_b = np.dot(4 * array_a + 3.0, np.dot(rotation, reflection))
+    # procrustes with translation and scaling
+    new_a, new_b, array_u, _ = orthogonal(array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(array_u, np.dot(rotation, reflection), decimal=6)
+    assert_almost_equal(error(new_a, new_b, array_u), 0., decimal=6)

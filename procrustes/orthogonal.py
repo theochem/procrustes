@@ -25,14 +25,39 @@ Orthogonal Procrustes Module.
 """
 
 
-from procrustes.base import Procrustes
-from procrustes.utils import singular_value_decomposition
+from procrustes.utils import singular_value_decomposition, _get_input_arrays, error
 import numpy as np
 
 
-class OrthogonalProcrustes(Procrustes):
+def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
+               translate=False, scale=False, check_finite=True):
     r"""
-    Orthogonal Procrustes Class.
+    One-sided orthogonal Procrustes.
+
+    The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
+    array with the smaller number of rows will automatically be padded with zero rows.
+
+    Parameters
+    ----------
+    A : ndarray
+        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+    B : ndarray
+        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
+    remove_zero_col : bool, optional
+        If True, the zero columns on the right side will be removed.
+        Default= True.
+    remove_zero_row : bool, optional
+        If True, the zero rows on the top will be removed.
+        Default= True.
+    translate : bool, optional
+        If True, both arrays are translated to be centered at origin.
+        Default=False.
+    scale : bool, optional
+        If True, both arrays are column normalized to unity.
+        Default=False.
+    check_finite : bool, optional
+        If true, convert the input to an array, checking for NaNs or Infs.
+        Default=True.
 
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
     find the unitary/orthogonal transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
@@ -60,58 +85,13 @@ class OrthogonalProcrustes(Procrustes):
     The singular values are always listed in decreasing order, with the smallest singular
     value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.
     """
+    # check inputs
+    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row, translate, scale, check_finite)
 
-    def __init__(self, array_a, array_b, translate=False, scale=False):
-        r"""
-        Initialize the class and transfer/scale the arrays followed by computing transformaion.
-
-        Parameters
-        ----------
-        array_a : ndarray
-            The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-        array_b : ndarray
-            The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-        translate : bool, default=False
-            If True, both arrays are translated to be centered at origin.
-        scale : bool, default=False
-            If True, both arrays are column normalized to unity.
-
-        Notes
-        -----
-        The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
-        array with the smaller number of rows will automatically be padded with zero rows.
-        """
-        super(self.__class__, self).__init__(array_a, array_b, translate, scale)
-
-        # compute transformation
-        self._array_u = self._compute_transformation()
-
-        # calculate the single-sided error
-        self._error = self.single_sided_error(self._array_u)
-
-    @property
-    def array_u(self):
-        r"""Transformation matrix :math:`\mathbf{U}_{n \times n}`."""
-        return self._array_u
-
-    @property
-    def error(self):
-        """Procrustes error."""
-        return self._error
-
-    def _compute_transformation(self):
-        r"""
-        Compute optimal orthogonal transformation array.
-
-        Returns
-        -------
-        u_opt : ndarray
-            The optimum orthogonal transformation array.
-        """
-        # calculate SVD of A.T * B
-        product = np.dot(self.array_a.T, self.array_b)
-        u, s, v_trans = singular_value_decomposition(product)
-
-        # compute optimum orthogonal transformation
-        u_opt = np.dot(u, v_trans)
-        return u_opt
+    # calculate SVD of A.T * B
+    U, _, VT = singular_value_decomposition(np.dot(A.T, B))
+    # compute optimum orthogonal transformation
+    U_opt = np.dot(U, VT)
+    # compute the error
+    e_opt = error(A, B, U_opt)
+    return A, B, U_opt, e_opt

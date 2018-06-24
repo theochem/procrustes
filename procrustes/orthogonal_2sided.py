@@ -70,6 +70,35 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
     tol : float, optional
         The tolerance value used for 'approx' mode. Default=1.e-8.
 
+    Returns
+    -------
+    A : ndarray
+        The transformed ndarray A.
+    B : ndarray
+        The transformed ndarray B.
+    U_opt1 : ndarray
+        The optimal orthogonal left-multiplying transformation ndarray if "single_transform=True".
+    U_opt2 : ndarray
+        The second transformation ndarray if "single_transform=True".
+    U_opt : ndarray
+        The transformation ndarray if "single_transform=False".
+    e_opt : float
+        The single- or double- sided orthogonal Procrustes error.
+
+    Raises
+    ------
+    ValueError
+        When input array `A` or `B` is not symmetric.
+    numpy.linalg.LinAlgError
+        If array `A` or `B` is not diagonalizable when `mode='umeyama'` or
+        `mode='umeyama_approx'`.
+    ValueError
+        If the mode is not 'exact' or 'approx' when `single_transform=True`.
+
+    Notes
+    -----
+    **Two-Sided Orthogonal Procrustes:**
+
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
     find two unitary/orthogonal transformation of :math:`\mathbf{A}_{m \times n}` that makes it as
     as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
@@ -101,10 +130,101 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
        \mathbf{U}_1 = \mathbf{U}_A \mathbf{U}_B^\dagger \\
        \mathbf{U}_2 = \mathbf{V}_B \mathbf{V}_B^\dagger
 
-    References
-    ----------
-    1. Schönemann, Peter H. "A generalized solution of the orthogonal Procrustes problem."
-       *Psychometrika* 31.1:1-10, 1966.
+    **Two-Sided Orthogonal Procrustes with Single-Transformation:**
+
+    Given matrix :math:`\mathbf{A}_{n \times n}` and a reference :math:`\mathbf{B}_{n \times n}`,
+    find one unitary/orthogonal transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
+    :math:`\mathbf{A}_{n \times n}` as close as possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
+
+    .. math::
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
+                          \|\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\left(\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\mathbf{U}^\dagger\mathbf{A}^\dagger\mathbf{U}\mathbf{B} \right]
+
+    Taking the eigenvalue decomposition of the matrices:
+
+    .. math::
+       \mathbf{A} = \mathbf{U}_A \mathbf{\Lambda}_A \mathbf{U}_A^\dagger \\
+       \mathbf{B} = \mathbf{U}_B \mathbf{\Lambda}_B \mathbf{U}_B^\dagger
+
+    the solution is obtained by,
+
+    .. math::
+       \mathbf{U} = \mathbf{U}_A \mathbf{S} \mathbf{U}_A^\dagger
+
+    where :math:`\mathbf{S}` is a diagonal matrix for which every diagonal element is
+    :math:`\pm{1}`,
+
+    .. math::
+       \mathbf{S} =
+       \begin{bmatrix}
+        { \pm 1} & 0       &\cdots &0 \\
+        0        &{ \pm 1} &\ddots &\vdots \\
+        \vdots   &\ddots   &\ddots &0\\
+        0        &\cdots   &0      &{ \pm 1}
+       \end{bmatrix}
+
+    Finding the best choice of :math:`\mathbf{S}` requires :math:`2^n` trial-and-error tests.
+    This is called the ``exact`` scheme for solving the probelm.
+
+    A heuristic, due to Umeyama, is to take the element-wise absolute value of the elements
+    of the unitary transformations,
+
+    .. math::
+       \mathbf{U}_\text{Umeyama} = \text{abs}(\mathbf{U}_A) \cdot \text{abs}(\mathbf{U}_B^\dagger)
+
+    This is not actually a unitary matrix. But we can use the orthogonal procrustes problem
+    to find the closest unitray matrix (i.e., the closest matrix that is unitarily equivalent
+    to the identity matrix),
+
+    .. math::
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
+                          \|\mathbf{I}\mathbf{U} -  \mathbf{U}_\text{Umeyama}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\left(\mathbf{U} - \mathbf{U}_\text{Umeyama} \right)^\dagger
+                         \left(\mathbf{U} - \mathbf{U}_\text{Umeyama} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
+                                   \right\}}
+          \text{Tr}\left[\mathbf{U}^\dagger \mathbf{U}_\text{Umeyama} \right]
+
+    considering the singular value decomposition of :math:`\mathbf{U}_\text{Umeyama}`,
+
+    .. math::
+       \mathbf{U}_\text{Umeyama} =
+            \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}} \tilde{\mathbf{V}}^\dagger
+
+    the solution is give by,
+
+    .. math::
+       \mathbf{U}_\text{Umeyama}^\text{approx} = \tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger
+
+    This is called the ``approx`` scheme for solving the probelm.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> array_a = np.array([[30, 33, 20], [33, 53, 43], [20, 43, 46]])
+    >>> array_b = np.array([
+        [ 22.78131838, -0.58896768,-43.00635291, 0., 0.],
+        [ -0.58896768, 16.77132475,  0.24289990, 0., 0.],
+        [-43.00635291,  0.2428999 , 89.44735687, 0., 0.],
+        [  0.        ,  0.        ,  0.        , 0., 0.]])
+    >>> new_a, new_b, array_u, error_opt = orthogonal_2sided(
+            array_a, array_b, single_transform=True,
+            remove_zero_col=True, remove_zero_rwo=True, mode='exact')
+    >>> array_u
+    array([[ 0.25116633,  0.76371527,  0.59468855],
+        [-0.95144277,  0.08183302,  0.29674906],
+        [ 0.17796663, -0.64034549,  0.74718507]])
+    >>> error_opt
+    1.9646186414076689e-26
 
     """
     # Check symmetry if single_transform=True

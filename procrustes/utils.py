@@ -343,6 +343,23 @@ def error(A, B, U, V=None):
     r"""
     Return the single- or double- sided Procrustes error.
 
+    The single sided error is defined as
+
+    .. math::
+        \text{Tr}\left[\left(\mathbf{AU} - \mathbf{B}\right)^\dagger
+                       \left(\mathbf{AU} - \mathbf{B}\right)\right]
+
+    The double sided Procrustes error is defined as
+
+    .. math::
+        \text{Tr} \left[
+            \left(
+                \mathbf{U}^\dagger \mathbf{A}\mathbf{V} - \mathbf{B}
+            \right)^\dagger
+            \left(
+                \mathbf{U}^\dagger \mathbf{A}\mathbf{V} - \mathbf{B}
+            \right)\right]
+
     Parameters
     ----------
     a : npdarray

@@ -30,7 +30,7 @@ import numpy as np
 def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
               translate=False, scale=False, check_finite=True):
     r"""
-    Symmetric Procrustes Class.
+    Symmetric right-sided procrustes transformation.
 
     The symmetric procrustes analysis requires two 2d-arrays with the same number of rows, so
     the array with the smaller number of rows will automatically be padded with zero rows.
@@ -111,6 +111,26 @@ def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
     ----------
     1. Higham, Nicholas J. The Symmetric Procrustes problem.
        BIT Numerical Mathematics, 28 (1), 133-143, 1988.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> array_a = np.array([[5., 2., 8.],
+                            [2., 2., 3.],
+                            [1., 5., 6.],
+                            [7., 3., 2.]])
+    >>> array_b = np.array([[ 52284.5, 209138. , 470560.5],
+                            [ 22788.5,  91154. , 205096.5],
+                            [ 46139.5, 184558. , 415255.5],
+                            [ 22788.5,  91154. , 205096.5]])
+    >>> new_a, new_b, array_x, error_opt = symmetric(array_a, array_b, translate=True, scale=True)
+    >>> array_x # symmetric transformation array
+    array([[0.0166352 , 0.06654081, 0.14971682],
+          [0.06654081, 0.26616324, 0.59886729],
+          [0.14971682, 0.59886729, 1.34745141]])
+    >>> error_opt # error
+    4.483083428047388e-31
+
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row, translate, scale, check_finite)

@@ -227,43 +227,50 @@ def eigenvalue_decomposition(array, two_sided_single=False):
     return s, v
 
 
-def hide_zero_padding(array):
-    """
-    Return array with zero-padded rows (at the bottom) and columns (on the right) removed.
+
+def hide_zero_padding(A, remove_zero_col=True,
+                      remove_zero_row=True, tol=1.0e-8):
+    r"""
+    Return array with zero-padded rows (bottom) and columns (right) removed.
 
     Parameters
     ----------
-    array: ndarray
-        The 2d or 1d array which may or may not contain zero-padd rows and/or columns.
-        It is assumed that zero-padded rows are located at the bottom and zero-padded columns
-        are located on the right. I.e. all relevant information is contained in upper-left
-        block. The rows (from bottom) and columns (from right) are checked until a non-zero
-        row and column is reached.
+    A : ndarray
+    remove_zero_col : bool, optional
+        If True, the zero columns on the right side will be removed.
+        Default=True.
+    remove_zero_row : bool, optional
+        If True, the zero rows on the top will be removed. Default=True.
 
     Returns
     -------
-    array : ndarray
-        The 2d or 1d array with no padded row and/or columns of zero.
-    """
-    # check zero rows from bottom to up
-    count = array.shape[0] - 1
-    while count >= 0:
-        # check is stopped when the 1st non-zero row is found
-        if np.any(abs(array[count]) > 1.e-8):
-            break
-        array = np.delete(array, count, axis=0)
-        count -= 1
+    new_A : ndarray
 
-    # for 2d arrays, check zero columns from right to left
-    if array.ndim == 2:
-        count = array.shape[1] - 1
-        while count >= 0:
-            # check is stopped when the 1st non-zero column is found
-            if np.any(abs(array[:, count]) > 1.e-8):
+    """
+    # Input checking
+    if A.ndim > 2:
+        raise TypeError("Matrix inputs must be 1- or 2- dimensional arrays")
+    # Check zero rows from bottom to top
+    if remove_zero_row:
+        n = A.shape[0]
+        tmpA = A[..., np.newaxis] if A.ndim == 1 else A
+        for v in tmpA[::-1]:
+            if any(abs(i) > tol for i in v):
                 break
-            array = np.delete(array, count, axis=1)
-            count -= 1
-    return array
+            n -= 1
+        A = A[:n]
+    # Cut off zero rows
+    if remove_zero_col:
+        if A.ndim == 2:
+            # Check zero columns from right to left
+            m = A.shape[1]
+            for v in A.T[::-1]:
+                if any(abs(i) > tol for i in v):
+                    break
+                m -= 1
+            # Cut off zero columns
+            A = A[:, :m]
+    return A
 
 
 def is_diagonalizable(array):
@@ -330,3 +337,56 @@ def frobenius_norm(array):
     """
     f_norm = np.linalg.norm(array)
     return f_norm
+
+
+def error(A, B, U, V=None):
+    r"""
+    Return the single- or double- sided Procrustes error.
+
+    Parameters
+    ----------
+    a : npdarray
+        The array being transformed.
+    b : npdarray
+        The reference array.
+    u : ndarray
+        The 2D array representing the transformation :math:`\mathbf{U}`.
+    v : ndarray, optional
+        The 2D array representing the transformation :math:`\mathbf{V}`.
+        If provided, will compute the double-sided Procrustes error.
+        Otherwise, will compute the single-sided Procrustes error.
+
+    Returns
+    -------
+    error : float
+
+    """
+    E = np.dot(A, U) if V is None else np.dot(np.dot(U.T, A), V)
+    E -= B
+    return np.trace(np.dot(E.T, E))
+
+
+def _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
+                      translate, scale, check_finite):
+    r"""Check and process array inputs to Procrustes transformation routines."""
+    _check_arraytypes(A, B)
+    if check_finite:
+        A = np.asarray_chkfinite(A)
+        B = np.asarray_chkfinite(B)
+    A = hide_zero_padding(A, remove_zero_col, remove_zero_row)
+    B = hide_zero_padding(B, remove_zero_col, remove_zero_row)
+    if translate:
+        A, _ = translate_array(A)
+        B, _ = translate_array(B)
+    if scale:
+        A, _ = scale_array(A)
+        B, _ = scale_array(B)
+    return zero_padding(A, B, mode="row")
+
+
+def _check_arraytypes(*args):
+    r"""Check array input types to Procrustes transformation routines."""
+    if any(not isinstance(x, np.ndarray) for x in args):
+        raise TypeError("Matrix inputs must be NumPy arrays")
+    if any(x.ndim != 2 for x in args):
+        raise TypeError("Matrix inputs must be 2-dimensional arrays")

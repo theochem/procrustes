@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Procrustes is a collection of interpretive chemical tools for
-# analyzing outputs of the quantum chemistry calculations.
+# The Procrustes library provides a set of functions for transforming
+# a matrix to make it as similar as possible to a target matrix.
 #
 # Copyright (C) 2017-2018 The Procrustes Development Team
 #

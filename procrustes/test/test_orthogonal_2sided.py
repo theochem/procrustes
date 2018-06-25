@@ -99,8 +99,8 @@ def test_two_sided_orthogonal_rotate_reflect_pad():
     # product is identity matrix and determinant is 1 or -1
     assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(2), decimal=6)
     assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(2), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u1), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(array_u2), -1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(array_u1)), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(array_u2)), 1.0, decimal=6)
     # transformation should return zero error
     assert_almost_equal(e_opt, 0, decimal=6)
 
@@ -120,8 +120,8 @@ def test_two_sided_orthogonal_translate_scale_rotate_reflect():
     # check transformation array and error
     assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(3), decimal=6)
     assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u1), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(array_u2), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(array_u1)), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(array_u2)), 1.0, decimal=6)
     # transformation should return zero error
     assert_almost_equal(e_opt, 0, decimal=6)
 
@@ -141,8 +141,8 @@ def test_two_sided_orthogonal_translate_scale_rotate_reflect_3by3():
     # check transformation array and error
     assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(3), decimal=6)
     assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u1), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(array_u2), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(array_u1)), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(array_u2)), 1.0, decimal=6)
     # transformation should return zero error
     assert_almost_equal(e_opt, 0, decimal=6)
 

@@ -25,9 +25,9 @@ Rotational-Orthogonal Procrustes Module.
 """
 
 
-from procrustes.base import Procrustes
-from procrustes.utils import singular_value_decomposition, _get_input_arrays, error
 import numpy as np
+
+from procrustes.utils import singular_value_decomposition, _get_input_arrays, error
 
 
 def rotational(A, B, remove_zero_col=True, remove_zero_row=True,

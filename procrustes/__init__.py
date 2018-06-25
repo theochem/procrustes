@@ -24,7 +24,6 @@
 
 
 from procrustes.utils import *
-from procrustes.base import *
 from procrustes.orthogonal import *
 from procrustes.permutation import *
 from procrustes.rotational import *

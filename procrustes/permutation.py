@@ -39,7 +39,7 @@ __all__ = [
 def permutation(A, B, remove_zero_col=True,
                 remove_zero_row=True, translate=False, scale=False,
                 check_finite=True):
-    """
+    r"""
     Single sided permutation Procrustes.
 
     Parameters
@@ -125,7 +125,7 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
                        remove_zero_col=True, remove_zero_row=True,
                        translate=False, scale=False, mode="normal1",
                        check_finite=True, iteration=500, tol=1.0e-8):
-    """
+    r"""
     Single sided permutation Procrustes.
 
     Parameters

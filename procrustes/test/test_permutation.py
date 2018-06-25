@@ -23,83 +23,73 @@
 
 
 import numpy as np
-from procrustes import PermutationProcrustes
+
 from numpy.testing import assert_almost_equal
 
-
-def test_permutation_identical():
-    # square array
-    array_a = np.arange(25).reshape(5, 5)
-    # permutation matrix for identical arrays is identity
-    perm = PermutationProcrustes(array_a, array_a)
-    assert_almost_equal(perm.array_a, array_a, decimal=6)
-    assert_almost_equal(perm.array_b, array_a, decimal=6)
-    assert_almost_equal(perm.array_p, np.eye(5), decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
-    # rectangular array
-    array_a = np.array([[3, 5, 4, 3], [1, 6, 5, 4], [1, 6, 4, 2]])
-    # procrustes with no scale and translate
-    perm = PermutationProcrustes(array_a, array_a)
-    # permutation matrix for identical arrays is identity
-    assert_almost_equal(perm.array_a, array_a, decimal=6)
-    assert_almost_equal(perm.array_b, array_a, decimal=6)
-    assert_almost_equal(perm.array_p, np.eye(4), decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
+from procrustes.permutation import permutation
 
 
 def test_permutation_columns():
     # square array
     array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
-    # permutate columns of array a
-    array_b = np.array([[8, 4, 5, 1], [7, 2, 5, 1], [9, 3, 6, 1], [9, 4, 7, 2]])
-    # corresponding permutation
-    permutation = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
+    # permutation
+    perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
+    # permuted array_b
+    array_b = np.dot(array_a, perm)
     # procrustes with no translate and scale
-    perm = PermutationProcrustes(array_a, array_b, False, False)
-    assert_almost_equal(perm.array_a, array_a, decimal=6)
-    assert_almost_equal(perm.array_b, array_b, decimal=6)
-    assert_almost_equal(perm.array_p, permutation, decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
+    new_a, new_b, array_p, e_opt = permutation(array_a, array_b)
+    assert_almost_equal(array_a, new_a, decimal=6)
+    assert_almost_equal(array_b, new_b, decimal=6)
+    assert_almost_equal(array_p, perm, decimal=6)
+    assert_almost_equal(e_opt, 0., decimal=6)
+
+
+def test_permutation_columns_pad():
+    r"""Test permutation by permuted columns along with padded zeros."""
+
+    # square array
+    array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
+    # permutation
+    perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
+    # permuted array_b
+    array_b = np.dot(array_a, perm)
     # padd arrays with zero row and columns
     array_a = np.concatenate((array_a, np.array([[0], [0], [0], [0]])), axis=1)
     array_b = np.concatenate((array_b, np.array([[0, 0, 0, 0]])), axis=0)
     # procrustes with no translate and scale
-    perm = PermutationProcrustes(array_a, array_b, False, False)
-    assert_almost_equal(perm.array_a, array_a[:, :-1], decimal=6)
-    assert_almost_equal(perm.array_b, array_b[:-1, :], decimal=6)
-    assert_almost_equal(perm.array_p, permutation, decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
+    new_a, new_b, array_p, e_opt = permutation(
+        array_a, array_b, remove_zero_col=True, remove_zero_row=True, translate=False, scale=False)
+    assert_almost_equal(new_a, array_a[:, :-1], decimal=6)
+    assert_almost_equal(new_b, array_b[:-1, :], decimal=6)
+    assert_almost_equal(array_p, perm, decimal=6)
+    assert_almost_equal(e_opt, 0., decimal=6)
 
 
 def test_permutation_translate_scale():
     # square array
     array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
-    # permutation matrix for identical arrays is identity
-    perm = PermutationProcrustes(array_a, array_a)
-    assert_almost_equal(perm.array_a, array_a, decimal=6)
-    assert_almost_equal(perm.array_b, array_a, decimal=6)
-    assert_almost_equal(perm.array_p, np.eye(4), decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
-    # array_b is scaled and translated array_a
-    array_b = 3.78 * array_a + np.array([6, 1, 5, 3])
-    perm = PermutationProcrustes(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(perm.array_a, perm.array_b, decimal=6)
-    assert_almost_equal(perm.array_p, np.eye(4), decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
     # array_b is scaled, translated, and permuted array_a
-    permute = np.array([[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
-    array_b = np.dot(array_b, permute)
-    perm = PermutationProcrustes(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(perm.array_p, permute, decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
-    # rectangular array
-    array_a = np.array([[118.51, 515.27, 831.61, 431.62], [161.61, 535.13, 763.16, 261.63],
-                        [116.31, 661.34, 961.31, 363.15], [236.16, 751.36, 913.51, 451.22]])
+    perm = np.array([[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
+    array_b = 3.78 * array_a + np.array([6, 1, 5, 3])
+    array_b = np.dot(array_a, perm)
+    # permutation procrustes
+    _, _, array_p, e_opt = permutation(array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(array_p, perm, decimal=6)
+    assert_almost_equal(e_opt, 0., decimal=6)
+
+
+def test_permutation_translate_scale_padd():
+    # rectangular array_a
+    array_a = np.array([[118.51, 515.27, 831.61, 431.62],
+                        [161.61, 535.13, 763.16, 261.63],
+                        [116.31, 661.34, 961.31, 363.15],
+                        [236.16, 751.36, 913.51, 451.22]])
     # array_b is scaled, translated, and permuted array_a
     array_b = 51.63 * array_a + np.array([56.24, 79.32, 26.15, 49.52])
-    permute = np.array([[0., 0., 0., 1.], [0., 1., 0., 0.], [0., 0., 1., 0.], [1., 0., 0., 0.]])
-    array_b = np.dot(array_b, permute)
-    # procrustes with translate and scale
-    perm = PermutationProcrustes(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(perm.array_p, permute, decimal=6)
-    assert_almost_equal(perm.error, 0., decimal=6)
+    perm = np.array([[0., 0., 0., 1.], [0., 1., 0., 0.],
+                     [0., 0., 1., 0.], [1., 0., 0., 0.]])
+    array_b = np.dot(array_b, perm)
+    # check
+    _, _, array_p, e_opt = permutation(array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(array_p, perm, decimal=6)
+    assert_almost_equal(e_opt, 0., decimal=6)

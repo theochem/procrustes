@@ -20,22 +20,22 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Setup and Install Module."""
+"""Setup and Install Script."""
 
 
 from distutils.core import setup
 
 
 setup(
-    name='procrustes',
-    version='0.0',
-    description='Procrustes Package.',
-    url='',
-    license='MIT',
-    author='Ayers Group',
-    author_email='',
-    package_dir={'procrustes': 'procrustes'},
-    packages=['procrustes'],
-    # test_suite='nose.collector',
-    requires=['numpy', 'scipy', 'sphinx'],
+    name="procrustes",
+    version="0.0",
+    description="Procrustes Package",
+    url="http://github.com/QuantumElephant/procrustes",
+    license="GNU (Version 3)",
+    author="Ayers Group",
+    author_email="ayers@mcmaster.ca",
+    package_dir={"procrustes": "procrustes"},
+    packages=["procrustes"],
+    # test_suite="nose.collector",
+    requires=["numpy", "scipy", "sphinx"],
 )

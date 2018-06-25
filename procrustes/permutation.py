@@ -69,6 +69,43 @@ def permutation(A, B, remove_zero_col=True,
         The optimum permutation transformation matrix.
     e_opt : float
         One-sided orthogonal Procrustes error.
+
+    Notes
+    -----
+    Given matrix :math:`\mathbf{A}_{n \times n}` and reference :math:`\mathbf{B}_{n \times n}`
+    find a permutation of the rows and/or columns of :math:`\mathbf{A}_{n \times n}` that makes
+    it as close as possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
+
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+                            \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\left(\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
+                   \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right]
+
+    Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. The solution is to relax the
+    problem into a linear programming problem and note that the solution to a linear programming
+    problem is always at the boundary of the allowed region, which means that the solution can
+    always be written as a permutation matrix,
+
+    .. math::
+       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                   \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right] =
+       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \geq 0
+                   \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\left(\mathbf{A}^\dagger\mathbf{B}\right) \right]
+
+    This is a matching problem and can be solved by the Hungarian method. Note that if
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` have different numbers of items, you choose
+    the larger matrix as :math:`\mathbf{B}` and then pad :math:`\mathbf{A}` with rows/columns
+    of zeros.
+
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
@@ -132,8 +169,134 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
         The optimum permutation transformation matrix.
     e_opt : float
         One-sided orthogonal Procrustes error.
-    """
 
+    Notes
+    -----
+    Given matrix :math:`\mathbf{A}_{n \times n}` and a reference :math:`\mathbf{B}_{n \times n}`,
+    find a permutation of rows/columns of :math:`\mathbf{A}_{n \times n}` that makes it as close as
+    possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
+
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+                              \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
+                   \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{P}\mathbf{B} \right]
+
+    Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. Given an intial guess, the
+    best local minimum can be obtained by the iterative procedure,
+
+    .. math::
+       p_{ij}^{(n + 1)} = p_{ij}^{(n)} \sqrt{ \frac{2\left[\mathbf{T}^{(n)}\right]_{ij}}{\left[
+                          \mathbf{P}^{(n)} \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} +
+                          \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} \right)^T  \right)
+                          \right]_{ij}} }
+    where,
+
+    .. math::
+       \mathbf{T}^{(n)} = \mathbf{A} \mathbf{P}^{(n)} \mathbf{B}
+
+    Using an initial guess, the iteration can stops when the change in :math:`d` is below the
+    specified threshold,
+
+    .. math::
+       d = \text{Tr} \left[\left(\mathbf{P}^{(n+1)} -\mathbf{P}^{(n)} \right)^T
+                           \left(\mathbf{P}^{(n+1)} -\mathbf{P}^{(n)} \right)\right]
+
+    The outcome of the iterative procedure :math:`\mathbf{P}^{(\infty)}` is not a permutation
+    matrix. So, the closest permutation can be found by setting ``refinement=True``. This uses
+    :class:`procrustes.permutation.PermutationProcrustes` to find the closest permutation; that is,
+
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+                            \|\mathbf{P} - \mathbf{P}^{(\infty)}\|_{F}^2
+       = \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+         \text{Tr}\left[\mathbf{P}^\dagger\mathbf{P}^{(\infty)} \right]
+
+    The answer ro this problem is a heuristic solution for the matrix-matching problem that seems
+    to be relatively accurate.
+
+    **Initial Guess:**
+
+    Two possible initial guesses are inferred from the Umeyama procedure. One can find either the
+    closest permutation matrix to :math:`\mathbf{U}_\text{Umeyama}` or to
+    :math:`\mathbf{U}_\text{Umeyama}^\text{approx.}`.
+
+    Considering the :class:`procrustes.permutation.PermutationProcrustes`, the resulting permutation
+    matrix can be specified as initial guess through ``guess=umeyama`` and ``guess=umeyama_approx``,
+    which solves:
+
+    .. math::
+        \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                         \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{U}_\text{Umeyama} \right] \\
+        \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                         \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{U}_\text{Umeyama}^\text{approx.} \right]
+
+    Another choice is to start by solving a normal permutation Procrustes problem. In other words,
+    write new matrices, :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0`, with columns like,
+
+    .. math::
+       \begin{bmatrix}
+        a_{ii} \\
+        p \cdot \text{sgn}\left( a_{ij_\text{max}} \right)
+                \underbrace{\text{max}}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+        p^2 \cdot \text{sgn}\left( a_{ij_{\text{max}-1}} \right)
+                  \underbrace{\text{max}-1}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+        \vdots
+       \end{bmatrix}
+
+    Here, :math:`\text{max}-1` denotes the second-largest absolute value of elements,
+    :math:`\text{max}-2` is the third-largest abosule value of elements, etc.
+
+    The matrices :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` have the diagonal elements of
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` in the first row, and below the first row has the
+    largest off-diagonal element in row :math:`i`, the second-largest off-diagonal element, etc.
+    The elements are weighted by a factor :math:`0 < p < 1`, so that the smaller elements are
+    considered less important for matching. The matrices can be truncated after a few terms; for
+    example, after the size of elements falls below some threshold. A reasonable choice would be
+    to stop after :math:`\lfloor \frac{-2\ln 10}{\ln p} +1\rfloor` rows; this ensures that the
+    size of the elements in the last row is less than 1% of those in the first off-diagonal row.
+
+    There are obviously many different ways to construct the matrices :math:`\mathbf{A}^0` and
+    :math:`\mathbf{B}^0`. Another, even better, method would be to try to encode not only what the
+    off-diagonal elements are, but which element in the matrix they correspond to. One could do that
+    by not only listing the diagonal elements, but also listing the associated off-diagonal element.
+    I.e., the columns of :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` would be,
+
+    .. math::
+       \begin{bmatrix}
+        a_{ii} \\
+        p \cdot a_{j_\text{max} j_\text{max}} \\
+        p \cdot \text{sgn}\left( a_{ij_\text{max}} \right)
+                \underbrace{\text{max}}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+        p^2 \cdot a_{j_{\text{max}-1} j_{\text{max}-1}} \\
+        p^2 \cdot \text{sgn}\left( a_{ij_{\text{max}-1}} \right)
+                  \underbrace{\text{max}-1}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+        \vdots
+       \end{bmatrix}
+
+    In this case, you wuold stop the procedure after
+    :math:``m = \left\lfloor {\frac{{ - 4\ln 10}}{{\ln p}} + 1} \right\rfloor`) rows;` rows.
+
+    Then one uses the :class:`procrustes.permutation.PermutationProcrustes` to match the constructed
+    matrices :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` instead of :math:`\mathbf{A}` and
+    :math:`\mathbf{B}`. I.e.,
+
+    .. math::
+        \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                         \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{P}^\dagger \left(\mathbf{A^0}^\dagger\mathbf{B^0}\right)\right]
+
+    """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
                              translate, scale, check_finite)

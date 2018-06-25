@@ -20,12 +20,13 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""
-"""
 
 
 import numpy as np
-from procrustes.utils import *
+
+from procrustes.utils import zero_padding, hide_zero_padding
+from procrustes.utils import translate_array, scale_array
+from procrustes.utils import eigendecomposition, is_diagonalizable
 
 
 def test_zero_padding_rows():
@@ -283,40 +284,3 @@ def test_eigenvalue_decomposition():
     predicted = np.dot(u_predicted, np.dot(np.diag(s_predicted), u_predicted.T))
     assert (abs(predicted - array) < 1.e-8).all()
     assert(abs(s_predicted - s_expected) < 1.e-8).all()
-
-
-def test_compute_centroid():
-    # Define an arbitrary array
-    array = np.array([[6., 12., 16., 7.], [4., 16., 17., 33.], [5., 17., 12., 16.]])
-    array_centred, translate = translate_array(array)
-    assert(abs(compute_centroid(array_centred)) < 1.e-10).all()
-
-    # Define an arbitrary array
-    array = np.array([[6325.26, 1232.46, 1356.75, 7351.64], [4351.36, 1246.63, 1247.63, 3243.64]])
-    array_centred, translate = translate_array(array)
-    assert(abs(compute_centroid(array_centred)) < 1.e-10).all()
-    # Even if the array is zero-padded, the correct translation about the origin is obtained.
-    # Define an arbitrary, zero-padded array
-    array = np.array([[1.5294e-4, 1.242e-5, 1.624e-3, 7.35e-4], [4.534e-5, 1.652e-5, 1.725e-5, 3.314e-4],
-                      [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
-    array_centred, translate = translate_array(array)
-    assert(abs(compute_centroid(array_centred)) < 1.e-10).all()
-
-
-def test_frobenius_norm():
-    # Define an arbitrary, zero-padded array
-    array = np.array([[1.5294e-4, 1.242e-5, 1.624e-3, 7.35e-4], [4.534e-5, 1.652e-5, 1.725e-5, 3.314e-4],
-                      [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
-    array_scaled, scaling = scale_array(array)
-    assert(abs(frobenius_norm(array_scaled) - 1.) < 1.e-10).all()
-
-    # Define an arbitrary, zero-padded array
-    array = np.array([[6325.26, 1232.46, 1356.75, 7351.64, 0, 0], [4351.36, 1246.63, 1247.63, 3243.64, 0, 0],
-                      [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]])
-    array_scaled, scaling = scale_array(array)
-    assert(abs(frobenius_norm(array_scaled) - 1.) < 1.e-10).all()
-
-    # Define an arbitrary
-    array = np.array([[6., 12., 16., 7.], [4., 16., 17., 33.], [5., 17., 12., 16.]])
-    array_scaled, scaling = scale_array(array)
-    assert(abs(frobenius_norm(array_scaled) - 1.) < 1.e-10).all()

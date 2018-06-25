@@ -20,9 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""
-Utility Module.
-"""
+"""Utility Module."""
 
 
 import numpy as np
@@ -126,10 +124,10 @@ def translate_array(array_a, array_b=None):
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
-    centroid = compute_centroid(array_a)
+    centroid = np.mean(array_a, axis=0)
     if array_b is not None:
         # translation vector to b centroid
-        centroid -= compute_centroid(array_b)
+        centroid -= np.mean(array_b, axis=0)
     return array_a - centroid, -centroid
 
 
@@ -153,10 +151,10 @@ def scale_array(array_a, array_b=None):
         will be equal norm of array_b).
     """
     # scaling factor to match unit sphere
-    scale = 1. / frobenius_norm(array_a)
+    scale = 1. / np.linalg.norm(array_a)
     if array_b is not None:
         # scaling factor to match array_b norm
-        scale *= frobenius_norm(array_b)
+        scale *= np.linalg.norm(array_b)
     return array_a * scale, scale
 
 
@@ -216,8 +214,7 @@ def eigendecomposition(A, permute_rows=False):
     return s[idx], V[idx] if permute_rows else V[:, idx]
 
 
-def hide_zero_padding(A, remove_zero_col=True,
-                      remove_zero_row=True, tol=1.0e-8):
+def hide_zero_padding(A, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
     r"""
     Return array with zero-padded rows (bottom) and columns (right) removed.
 
@@ -289,42 +286,6 @@ def is_diagonalizable(array):
     if rank_u != rank_a:
         diagonalizable = False
     return diagonalizable
-
-
-def compute_centroid(array):
-    """
-    Return mean value of array columns.
-
-    Parameters
-    ----------
-    array: ndarray
-        A 2d-array.
-
-    Returns
-    -------
-    col_mean : float
-        The mean value of array columns.
-    """
-    col_mean = np.mean(array, axis=0)
-    return col_mean
-
-
-def frobenius_norm(array):
-    """
-    Return the Forbenius norm of array.
-
-    Parameters
-    ----------
-    array: ndarray
-        A 2d-array.
-
-    Returns
-    -------
-    f_norm : float
-        The Forbenius norm of the array.
-    """
-    f_norm = np.linalg.norm(array)
-    return f_norm
 
 
 def error(A, B, U, V=None):

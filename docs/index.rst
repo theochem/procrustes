@@ -22,34 +22,40 @@
     : --
 
 .. Procrustes documentation master file, created by
-   sphinx-quickstart on Tue Mar 21 16:33:18 2017.
+   sphinx-quickstart on Wed Apr 11 19:35:53 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-**************************************
 Welcome to Procrustes's documentation!
-**************************************
-
-Some introduction.
+======================================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   usr_doc_installation
-
+   intro_about
+   intro_citing
+   intro_license
+   intro_contact
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Procrustes Flavours
+   :maxdepth: 3
+   :caption: User Documentation
 
-   procrustes_base
-   procrustes_orthogonal
-   procrustes_orthogonal_2sided
-   procrustes_orthogonal_2sided_1trans
-   procrustes_permutation
-   procrustes_permutation_2sided_1trans
-   procrustes_rotational
-   procrustes_symmetric
+   usr_doc_installization
+   usr_doc_quick_start
+   usr_doc_tutorials
+   usr_doc_zref
+
+.. toctree::
+   :maxdepth: 3
+   :caption: API Documentation
+
+   api/utils.rst
+   api/orthogonal.rst
+   api/permutation.rst
+   api/softassign.rst
+   api/rotational.rst
+   api/symmetric.rst
 
 Indices and tables
 ==================
@@ -57,3 +63,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+

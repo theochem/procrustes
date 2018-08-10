@@ -185,7 +185,8 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
           \text{Tr}\left[\left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
                    \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
        &= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right
+                              \right\}}
           \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{P}\mathbf{B} \right]
 
     Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. Given an intial guess, the
@@ -220,7 +221,7 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
                             \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{P}^{(\infty)} \right]
 
-    The answer ro this problem is a heuristic solution for the matrix-matching problem that seems
+    The answer to this problem is a heuristic solution for the matrix-matching problem that seems
     to be relatively accurate.
 
     **Initial Guess:**
@@ -296,6 +297,23 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
                          \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
           \text{Tr}\left[\mathbf{P}^\dagger \left(\mathbf{A^0}^\dagger\mathbf{B^0}\right)\right]
 
+    Please note that the 'umeyama_approx' might give inaccurate permutation matrix. More specificity, this is a approximated Umeyama method. One example we can give is that when we compute the permutation matrix that transforms :math:`A` to :math:`B`, the "umeyama_approx" method can not give the exact permutation transformation matrix while "umeyama", "normal1" and "normal2" do.
+
+    .. math::
+        A =
+        \begin{bmatrix}
+             4 &  5 & -3 &  3 \\
+             5 &  7 &  3 & -5 \\
+            -3 &  3 &  2 &  2 \\
+             3 & -5 &  2 &  5 \\
+        \end{bmatrix} \\
+        B =
+        \begin{bmatrix}
+             73 &  100 &   73 &  -62 \\
+            100 &  208 & -116 &  154 \\
+             73 & -116 &  154 &  100 \\
+            -62 &  154 &  100 &  127 \\
+        \end{bmatrix} \\
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,

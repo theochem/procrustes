@@ -380,27 +380,6 @@ def test_permutation_2sided_4by4_umeyama_approx_translate_scale():
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
-# def test_permutation_2sided_umeyama_approx_translate_scale_loop():
-#    r"""Test two-sided permutation Procrustes using 'umeyama_approx' mode by #translating, scaling the 4by4 matrix with all possible permutation #matrices."""
-#    # define a random matrix
-#    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-#                        [-3, 3, 2, 2], [3, -5, 2, 5]])
-#    # check with all possible permutation matrices
-#    for comb in itertools.permutations(np.arange(4)):
-#        # Compute the permutation matrix
-#        perm = np.zeros((4, 4))
-#        perm[np.arange(4), comb] = 1
-#        if not np.allclose(perm, np.eye(4, 4)):
-#            # Compute the translated, scaled matrix padded with zeros
-#            array_b = np.dot(perm.T, np.dot(27 * array_a + 19, perm))
-#            # Check
-#            new_a, new_b, U, e_opt = permutation_2sided(
-#                array_a, array_b, transform_mode='single_undirected',
-#                translate=True, scale=True, mode='umeyama_approx')
-#            assert_almost_equal(U, perm, decimal=6)
-#            assert_almost_equal(e_opt, 0, decimal=6)
-
-
 def test_permutation_2sided_4by4_umeyama_approx_translate_scale_zero_padding():
     # define a random matrix
     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],

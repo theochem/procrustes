@@ -1,0 +1,22 @@
+language: python
+
+sudo: false
+
+python:
+  - "2.7"
+  - "3.6"
+
+install:
+  - pip install nose numpy scipy
+
+os:
+  - linux
+
+dist:
+  - trusty
+
+branches:
+  only:
+    - master
+
+script: python -m nose -a '!slow'

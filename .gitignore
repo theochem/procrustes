@@ -1,14 +1,44 @@
+# Prerequisites
+*.d
+
+# Compiled object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Compiled dynamic libraries
+*.so
+*.so.[0-9]*
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*.pyc
-
-# C extensions
-*.so
+*$py.class
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -20,20 +50,15 @@ lib64/
 parts/
 sdist/
 var/
-*.egg-info/
+wheels/
 .installed.cfg
+MANIFEST
+*.egg-info/
 *.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-
-# Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -43,24 +68,41 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
+.pytest_cache/
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
+# Documentation
+docs/html/
+docs/latex/
+docs/man/
+docs/xml/
+docs/_build/
 doc/_build/
 doc/source
 doc/modules
 
-# PyBuilder
-target/
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
 
-# PyCharm
+# Editor junk
+tags
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+*~
+\#*\#
+.\#*
+.ropeproject
 .idea/
-
+.spyderproject
+.spyproject
+.vscode/
 # Mac .DS_Store
 .DS_Store
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints

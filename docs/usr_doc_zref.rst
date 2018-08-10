@@ -29,6 +29,5 @@ References
 
 .. bibliography:: zreference.bib
    :style: unsrt
-   :start: continue
    :cited:
    :all:

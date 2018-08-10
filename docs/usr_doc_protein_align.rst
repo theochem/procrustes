@@ -28,7 +28,7 @@ Protein Structure Alignment
 
 Protein structure alignment is one of the fundamental problems in structural biology and structured
 based drug design. A well-known structure alignment method is Kabsch algorithm
-:cite:`a-kabsch1976solution,a-kabsch1978discussion`, which involves three steps, centroid of
+:cite:`kabsch1976solution,kabsch1978discussion`, which involves three steps, centroid of
 the coordinates,  computation of the covariance matrix and finding the optimal rotation matrix. When
 translation is a mandatory operation, the problems evolves into a rotational Procrustes problem.
 
@@ -235,18 +235,3 @@ people are free to use.
     :figclass: align-center
 
     Coordinates and RMSD value after alignment (PDB ID: 2HHB)
-
-
-
-
-.. rubric:: References
-
-.. bibliography:: zreference.bib
-   :style: unsrt
-   :start: continue
-   :cited:
-   :labelprefix: A
-   :keyprefix: a-
-   :all:
-
-

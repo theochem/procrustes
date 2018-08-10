@@ -98,11 +98,5 @@ We can tell from the figure that the number of atoms in molecule **A** has been 
 adding 3 virtual atoms, namely atom 3, 6 and 7. In this mapping, we can tell that the triple bonds
 and double bounds are aligned pair-wise and atom 3 in **B** corresponds to the newly generated atom
 3 in molecule **A**. The atoms, 6 and 7, in molecule **B** do not have a physical matching with any
-meanings. All the codes have been wrapped into a single script file.
-
-.. rubric:: References
-
-.. todo::
-    #. Add references
-
-
+meanings. All the codes have been wrapped into a single script file. This example as inspired by
+:cite:`zadeh2013molecular`.

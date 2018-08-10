@@ -47,7 +47,7 @@ shows the pair-wise relationship for 5 football teams.
    ======= ======= ======= ======= ======= =======
 
 We introduce the concept of ranking vector, which can be cast as a permutation of the integer 1 to n
-that ranks all the teams :cite:`langville2012s`. For example, the
+that ranks all the teams. For example, the
 :math:`{rank\_vec}^{\top} = [1,3,4,5,2]` for team_A, team_B, team_C, team_D, team_E respectively. the
 :math:`rank\_vec` assigns team_A with rank position 1, team_E with rank position 2 and so on. The
 ranking vector with length :math:`n` can result in a :math:`n \times n` *rank-differential matrix*
@@ -89,7 +89,7 @@ We can formulate for 5 football team gaming score into a matrix :math:`D`,
 
 Now the problem becomes finding a optimal permutation matrix :math:`Q` that minimizes
 :math:`\left\lVert Q^{\top} D Q - \hat{R} \right\rVert` and more detailed information can be found
-in :cite:`langville2012s`.
+in reference.
 
 In order to compute the *ranking vector*, we need the *fundamental rank-differential matrix*
 :math:`\hat{R}_{n \times n}`. So we build a function
@@ -153,11 +153,3 @@ check the input data :math:`D` is squared or not. Here we provide a simple funct
 
 All the codes have been wrapped in a single python executable file which locates in the
 **Example/ranking** folder.
-
-.. rubric:: References
-
-.. bibliography:: zreference.bib
-   :style: unsrt
-   :start: continue
-   :cited:
-

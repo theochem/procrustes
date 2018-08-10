@@ -32,8 +32,9 @@ based drug design. A well-known structure alignment method is Kabsch algorithm
 the coordinates,  computation of the covariance matrix and finding the optimal rotation matrix. When
 translation is a mandatory operation, the problems evolves into a rotational Procrustes problem.
 
-We will use the human deocyhemoglobin X-ray crystal structure as an example (PDB ID: 2HHB). The
-structure is of cyclic - C2 global symmetry, where chain A (magenta) and chain C (green) are
+We will use the human deocyhemoglobin X-ray crystal structure as an example (PDB ID: 2HHB) which was
+inspired by the example in https://biomolecularstructures.readthedocs.io/en/latest/kabsch/.
+The structure is of cyclic - C2 global symmetry, where chain A (magenta) and chain C (green) are
 hemoglobin (deoxy) alpha chains, and chain B and D are hemoglobin (deoxy) beta chains.
 
 .. _lable:

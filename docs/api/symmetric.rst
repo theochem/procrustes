@@ -22,10 +22,10 @@
     : --
 
 
-:mod:`procrustes._symmetric`
+:mod:`procrustes.symmetric`
 =============================
 
-.. automodule:: procrustes._symmetric
+.. automodule:: procrustes.symmetric
    :members:
    :undoc-members:
    :special-members:

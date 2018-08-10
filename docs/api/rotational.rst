@@ -22,10 +22,10 @@
     : --
 
 
-:mod:`procrustes._rotational`
+:mod:`procrustes.rotational`
 =============================
 
-.. automodule:: procrustes._rotational
+.. automodule:: procrustes.rotational
    :members:
    :undoc-members:
    :special-members:

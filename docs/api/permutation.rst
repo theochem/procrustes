@@ -22,10 +22,10 @@
     : --
 
 
-:mod:`procrustes._permutation`
+:mod:`procrustes.permutation`
 ===============================
 
-.. automodule:: procrustes._permutation
+.. automodule:: procrustes.permutation
    :members:
    :undoc-members:
    :special-members:

@@ -22,10 +22,10 @@
     : --
 
 
-:mod:`procrustes._utils`
+:mod:`procrustes.utils`
 =============================
 
-.. automodule:: procrustes._utils
+.. automodule:: procrustes.utils
    :members:
    :undoc-members:
    :special-members:

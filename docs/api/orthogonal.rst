@@ -22,10 +22,10 @@
     : --
 
 
-:mod:`procrustes._orthogonal`
+:mod:`procrustes.orthogonal`
 =============================
 
-.. automodule:: procrustes._orthogonal
+.. automodule:: procrustes.orthogonal
    :members:
    :undoc-members:
    :special-members:

@@ -22,10 +22,10 @@
     : --
 
 
-:mod:`procrustes._softassign`
+:mod:`procrustes.softassign`
 =============================
 
-.. automodule:: procrustes._softassign
+.. automodule:: procrustes.softassign
    :members:
    :undoc-members:
    :special-members:

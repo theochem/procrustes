@@ -133,6 +133,7 @@ Now we can plot the coordinates before alignment which is with rmsd value.
    from Bio.PDB.PDBParser import PDBParser
    from mpl_toolkits.mplot3d import Axes3D
    import matplotlib.pyplot as plt
+   from procrustes import rotational
 
    # before align
    A = _get_coordinates('2hhb.pdb', '2hhb', 'A')

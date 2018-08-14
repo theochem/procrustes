@@ -1,0 +1,36 @@
+S
+                    3D
+ Structure written by MMmdl.
+  5  4  0  0  1  0            999 V2000
+    0.3979   -0.5423   -0.4377 H   0  0  0  0  0  0
+    0.0726    0.2672    0.2157 C   0  0  1  0  0  0
+    1.1494    0.1898    1.8873 Br  0  0  0  0  0  0
+   -1.2253    0.0960    0.4617 F   0  0  0  0  0  0
+    0.3097    1.8081   -0.6451 Cl  0  0  0  0  0  0
+  1  2  1  0  0  0
+  2  3  1  0  0  0
+  2  4  1  0  0  0
+  2  5  1  0  0  0
+M  END
+> <s_m_entry_id>
+3
+
+> <chiral flag>
+1
+
+> <version>
+0
+
+> <chiral flag>
+1
+
+> <i_f3d_flags>
+0
+
+> <r_lp_tautomer_probability>
+1
+
+> <s_m_job_name>
+ligprep_2
+
+$$$$

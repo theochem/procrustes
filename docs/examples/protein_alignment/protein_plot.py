@@ -21,15 +21,11 @@
 #
 # --
 
-
 r"""Rotation Procrustes example: protein backbone alignment."""
-
-
 import numpy as np
 from protein_align import *
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-
 
 # before align
 A = _get_coordinates('2hhb.pdb', '2hhb', 'A')
@@ -54,7 +50,6 @@ ax.legend(fontsize=20)
 plt.show()
 
 # after align
-
 new_A, new_C, rot_array, rmsd = align(
     file_name_A='2hhb.pdb', pdb_id_A='2hhb', chain_id_A='A',
     file_name_B='2hhb.pdb', pdb_id_B='2hhb', chain_id_B='C')
@@ -76,9 +71,3 @@ ax.set_title('RMSD=0.23003871056618516', fontsize=24)
 ax.legend(fontsize=20)
 
 plt.show()
-
-
-
-
-
-

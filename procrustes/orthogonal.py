@@ -24,7 +24,7 @@
 
 
 import numpy as np
-
+import warnings
 from itertools import product
 
 from procrustes.utils import _get_input_arrays, _check_rank, error
@@ -141,7 +141,7 @@ def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
 
 def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
                       translate=False, scale=False, single_transform=True,
-                      mode="approx", check_finite=True, tol=1.0e-8):
+                      mode="exact", check_finite=True, tol=1.0e-8):
     r"""
     Two-Sided Orthogonal Procrustes.
 
@@ -167,7 +167,7 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
         will be performed. Default=False.
     mode : string, optional
         The scheme to solve for unitary transformation.
-        Options: 'exact' and 'approx'. Default="approx".
+        Options: 'exact' and 'approx'. Default="exact".
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
@@ -343,6 +343,9 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
             _check_rank(B)
         except:
             raise np.linalg.LinAlgError("Matrix cannot be diagonalized.")
+    if translate:
+        warnings.warn("The translation matrix was not well defined. \
+                Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
                              translate, scale, check_finite)
@@ -355,8 +358,8 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
             U = _2sided_1trans_approx(A, B, tol)
             e_opt = error(A, B, U, U)
         elif mode == "exact":
-            U = _2sided_1trans_exact(A, B, tol)
-            e_opt = error(A, B, U, U)
+            U, e_opt = _2sided_1trans_exact(A, B, tol)
+            #e_opt = error(A, B, U, U)
         else:
             raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
         return A, B, U, e_opt
@@ -397,22 +400,22 @@ def _2sided_1trans_exact(A, B, tol):
     """
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)
+
     # 2^n trial-and-error test to find optimum S array
     diags = product((-1, 1.), repeat=A.shape[0])
-    for index, diag in enumerate(diags):
-        if index == 0:
-            U_opt = np.dot(np.dot(UA, np.diag(diag)), UB.T)
-            e_opt = error(A, B, U_opt, U_opt)
-        else:
-            # compute trial transformation and error
-            U_trial = np.dot(np.dot(UA, np.diag(diag)), UB.T)
-            e_trial = error(A, B, U_trial, U_trial)
-            if e_trial < e_opt:
-                U_opt = U_trial
-                e_opt = e_trial
-            else:
-                pass
-        # stop trial-and-error if error is below threshold
-        if e_opt < tol:
-            break
-    return U_opt
+
+    error_list = []
+    diag_list = []
+    for _, diag in enumerate(diags):
+        S = np.diag(diag)
+        U = np.dot(np.dot(UA, S), UB.T)
+        e_temp = error(A, B, U, U)
+        error_list.append(e_temp)
+        diag_list.append(S)
+
+    index = np.argmin(error_list)
+    S_opt = diag_list[index]
+    U_opt = np.dot(np.dot(UA, S_opt), UB.T)
+    e_opt = error(A, B, U_opt, U_opt)
+
+    return U_opt, e_opt

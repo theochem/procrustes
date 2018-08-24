@@ -309,7 +309,11 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
     .. math::
        \mathbf{U}_\text{Umeyama}^\text{approx} = \tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger
 
-    This is called the ``approx`` scheme for solving the probelm.
+    This is called the ``approx`` scheme for solving the problem.
+
+    Please note that the translation operation is not well defined for two sided orthogonal
+    procrustes since two sided rotation and translation don't commute. Therefore, please be careful
+    when setting translate=True.
 
     Examples
     --------

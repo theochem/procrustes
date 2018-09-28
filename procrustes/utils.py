@@ -26,9 +26,9 @@
 import numpy as np
 
 
-def zero_padding(array_a, array_b, mode):
+def zero_padding(array_a, array_b, pad_mode='row-col'):
     r"""
-    Return arrays padded with rowm and/or columns of zero.
+    Return arrays padded with rows and/or columns of zero.
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ def zero_padding(array_a, array_b, mode):
         The 2d-array :math:`\mathbf{A}_{n_a \times m_a}`.
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
-    mode : str
+    pad_mode : str
         Specifying how to padd arrays. Options:
 
         **'row'**
@@ -68,9 +68,9 @@ def zero_padding(array_a, array_b, mode):
 
     if array_a.shape == array_b.shape:
         # special case of square arrays, mode is set to None so that array_a & array_b are returned.
-        mode = None
+        pad_mode = None
 
-    if mode == 'square':
+    if pad_mode == 'square':
         # calculate desired dimension of square array
         (n1, m1), (n2, m2) = array_a.shape, array_b.shape
         dim = max(n1, n2, m1, m2)
@@ -85,7 +85,7 @@ def zero_padding(array_a, array_b, mode):
         if m2 < dim:
             array_b = np.pad(array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
 
-    if mode == 'row' or mode == 'row-col':
+    if pad_mode == 'row' or pad_mode == 'row-col':
         # padding rows to have both arrays have the same number of rows
         diff = array_a.shape[0] - array_b.shape[0]
         if diff < 0:
@@ -93,7 +93,7 @@ def zero_padding(array_a, array_b, mode):
         else:
             array_b = np.pad(array_b, [[0, diff], [0, 0]], 'constant', constant_values=0)
 
-    if mode == 'col' or mode == 'row-col':
+    if pad_mode == 'col' or pad_mode == 'row-col':
         # padding columns to have both arrays have the same number of columns
         diff = array_a.shape[1] - array_b.shape[1]
         if diff < 0:
@@ -329,7 +329,7 @@ def error(A, B, U, V=None):
 
 
 def _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                      translate, scale, check_finite):
+                      pad_mode, translate, scale, check_finite):
     r"""Check and process array inputs to Procrustes transformation routines."""
     _check_arraytypes(A, B)
     if check_finite:
@@ -343,7 +343,7 @@ def _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
     if scale:
         A, _ = scale_array(A)
         B, _ = scale_array(B)
-    return zero_padding(A, B, mode="row")
+    return zero_padding(A, B, pad_mode="row-col")
 
 
 def _check_arraytypes(*args):

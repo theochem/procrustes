@@ -22,13 +22,12 @@
 # --
 """Permutation Procrustes Module."""
 
-
 import numpy as np
 
 from scipy.optimize import linear_sum_assignment
 
-from procrustes.utils import _get_input_arrays, _check_rank, eigendecomposition, error
-
+from procrustes.utils import _get_input_arrays, _check_rank, eigendecomposition, \
+    error
 
 __all__ = [
     "permutation",
@@ -36,8 +35,8 @@ __all__ = [
 ]
 
 
-def permutation(A, B, remove_zero_col=True,
-                remove_zero_row=True, translate=False, scale=False,
+def permutation(A, B, remove_zero_col=True, remove_zero_row=True,
+                pad_mode='row-col', translate=False, scale=False,
                 check_finite=True):
     r"""
     Single sided permutation Procrustes.
@@ -52,6 +51,18 @@ def permutation(A, B, remove_zero_col=True,
         If True, the zero columns on the right side will be removed. Default= True.
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed. Default= True.
+    pad_mode : str, optional
+      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+      'row': The array with fewer rows is padded with zero rows so that both have the same
+           number of rows.
+      'col': The array with fewer columns is padded with zero columns so that both have the
+           same number of columns.
+      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+           columns is padded with zero columns, so that both have the same dimensions.
+           This does not necessarily result in square arrays.
+      'square': The arrays are padded with zero rows and zero columns so that they are both
+           squared arrays. The dimension of square array is specified based on the highest
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     translate : bool, optional
         If True, both arrays are translated to be centered at origin. Default=False.
     scale : bool, optional
@@ -109,7 +120,7 @@ def permutation(A, B, remove_zero_col=True,
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             translate, scale, check_finite)
+                             pad_mode, translate, scale, check_finite)
     # compute permutation Procrustes matrix
     P = np.dot(A.T, B)
     C = np.full(P.shape, np.max(P))
@@ -123,8 +134,9 @@ def permutation(A, B, remove_zero_col=True,
 
 def permutation_2sided(A, B, transform_mode='single_undirected',
                        remove_zero_col=True, remove_zero_row=True,
-                       translate=False, scale=False, mode="normal1",
-                       check_finite=True, iteration=500, tol=1.0e-8):
+                       pad_mode='row-col', translate=False, scale=False,
+                       mode="normal1", check_finite=True, iteration=500,
+                       tol=1.0e-8):
     r"""
     Single sided permutation Procrustes.
 
@@ -144,6 +156,18 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
         If True, the zero columns on the right side will be removed. Default= True.
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed. Default= True.
+    pad_mode : str, optional
+      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+      'row': The array with fewer rows is padded with zero rows so that both have the same
+           number of rows.
+      'col': The array with fewer columns is padded with zero columns so that both have the
+           same number of columns.
+      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+           columns is padded with zero columns, so that both have the same dimensions.
+           This does not necessarily result in square arrays.
+      'square': The arrays are padded with zero rows and zero columns so that they are both
+           squared arrays. The dimension of square array is specified based on the highest
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     translate : bool, optional
         If True, both arrays are translated to be centered at origin. Default=False.
     scale : bool, optional
@@ -317,14 +341,15 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
     """
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             translate, scale, check_finite)
+                             pad_mode, translate, scale, check_finite)
     # np.power() can not handle the negatives values
     # Try to convert the matrices to non-negative
-    maximum = np.max(np.abs(B)) if np.max(np.abs(B)) > np.max(np.abs(A)) else np.max(np.abs(A))
+    maximum = np.max(np.abs(B)) if np.max(np.abs(B)) > np.max(
+        np.abs(A)) else np.max(np.abs(A))
     A += maximum
     B += maximum
-    #A += np.min(A, B)
-    #B += np.min(A, B)
+    # A += np.min(A, B)
+    # B += np.min(A, B)
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == 'single_undirected':
@@ -382,8 +407,8 @@ def _2sided_regular(M, N, tol, iteration):
             # Update the error
             e_opt1 = error(N, M, P1.T, Q1)
 
-            #print("step:", step1)
-            #print("error:", e_opt1)
+            # print("step:", step1)
+            # print("error:", e_opt1)
         if step1 == iteration:
             print('Maximum iteration reached in the first case! \
                 Error={0}'.format(e_opt1))
@@ -411,8 +436,8 @@ def _2sided_regular(M, N, tol, iteration):
             # Update the error
             e_opt2 = error(N, M, P2.T, Q2)
             step2 += 1
-            #print("step:", step2)
-            #print("error:", e_opt2)
+            # print("step:", step2)
+            # print("error:", e_opt2)
         if step2 == iteration:
             print('Maximum iteration reached in the second case! \
                 Error={0}'.format(e_opt2))
@@ -434,7 +459,8 @@ def _2sided_Hungarian(profit_matrix):
     """
 
     # Define the profit array & applying the hungarian algorithm
-    cost_matrix = np.ones(profit_matrix.shape) * np.max(profit_matrix) - profit_matrix
+    cost_matrix = np.ones(profit_matrix.shape) * np.max(
+        profit_matrix) - profit_matrix
 
     # Obtain the optimum permutation transformation and convert to array
     row_ind, col_ind = linear_sum_assignment(cost_matrix)
@@ -454,8 +480,9 @@ def _2sided_1trans_initial_guess_normal1(A):
     array_mask = ~np.eye(A.shape[0], dtype=bool)
     # get all the non-diagonal element
     array_c_non_diag = (A[array_mask]).T.reshape(A.shape[0], A.shape[1] - 1)
-    array_c_non_diag = array_c_non_diag[np.arange(np.shape(array_c_non_diag)[0])[:, np.newaxis],
-                                        np.argsort(abs(array_c_non_diag))]
+    array_c_non_diag = array_c_non_diag[
+        np.arange(np.shape(array_c_non_diag)[0])[:, np.newaxis],
+        np.argsort(abs(array_c_non_diag))]
 
     # form the right format in order to combine with matrix A
     array_c_sorted = np.fliplr(array_c_non_diag).T
@@ -481,7 +508,8 @@ def _2sided_1trans_initial_guess_normal2(A):
     array_off_diag = A[array_mask_a].reshape((A.shape[0], A.shape[1] - 1))
     # array_off_diag1 is sorted off diagonal elements of A
     array_off_diag = array_off_diag[np.arange(np.shape(array_off_diag)[0])[
-        :, np.newaxis], np.argsort(abs(array_off_diag))]
+                                    :, np.newaxis], np.argsort(
+        abs(array_off_diag))]
     array_off_diag = np.fliplr(array_off_diag).T
 
     # array_c is newly built matrix B without weights
@@ -532,7 +560,7 @@ def _2sided_1trans_initial_guess_umeyama(A, B):
     U = np.dot(np.abs(UA), np.abs(UB.T))
     # compute closest permutation matrix to U
     # In the original paper, it's not like this
-    #_, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
+    # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
     return U
 
 
@@ -554,7 +582,7 @@ def _2sided_1trans_initial_guess_umeyama_approx(A, B):
     U_a, _, VTa = np.linalg.svd(U)
     U_approx = np.dot(abs(U_a), np.abs(VTa))
     # compute closest unitary transformation to U
-    #_, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
+    # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
     return U_approx
 
 
@@ -568,8 +596,8 @@ def _2sided_1trans_initial_guess_directed(A, B):
     _, UA_0 = eigendecomposition(A_0)
     _, UB_0 = eigendecomposition(B_0)
     # Compute the magnitudes of each element
-    UA = np.sqrt(np.imag(UA_0)**2 + np.real(UA_0)**2)
-    UB = np.sqrt(np.imag(UB_0)**2 + np.real(UB_0)**2)
+    UA = np.sqrt(np.imag(UA_0) ** 2 + np.real(UA_0) ** 2)
+    UB = np.sqrt(np.imag(UB_0) ** 2 + np.real(UB_0) ** 2)
     # compute the initial guess
     U = np.dot(UA, UB.T)
     return U

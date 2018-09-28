@@ -22,7 +22,6 @@
 # --
 """Orthogonal Procrustes Module."""
 
-
 import numpy as np
 import warnings
 from itertools import product
@@ -31,7 +30,8 @@ from procrustes.utils import _get_input_arrays, _check_rank, error
 from procrustes.utils import singular_value_decomposition, eigendecomposition
 
 
-def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
+def orthogonal(A, B, remove_zero_col=True,
+               remove_zero_row=True, pad_mode='row-col',
                translate=False, scale=False, check_finite=True):
     r"""
     One-sided orthogonal Procrustes.
@@ -51,6 +51,18 @@ def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed.
         Default= True.
+    pad_mode : str, optional
+        Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+        'row': The array with fewer rows is padded with zero rows so that both have the same
+             number of rows.
+        'col': The array with fewer columns is padded with zero columns so that both have the
+             same number of columns.
+        'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+             columns is padded with zero columns, so that both have the same dimensions.
+             This does not necessarily result in square arrays.
+        'square': The arrays are padded with zero rows and zero columns so that they are both
+             squared arrays. The dimension of square array is specified based on the highest
+             dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     translate : bool, optional
         If True, both arrays are translated to be centered at origin.
         Default=False.
@@ -128,7 +140,8 @@ def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
 
     """
     # check inputs
-    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row, translate, scale, check_finite)
+    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
+                             pad_mode, translate, scale, check_finite)
 
     # calculate SVD of A.T * B
     U, _, VT = singular_value_decomposition(np.dot(A.T, B))
@@ -140,8 +153,9 @@ def orthogonal(A, B, remove_zero_col=True, remove_zero_row=True,
 
 
 def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
-                      translate=False, scale=False, single_transform=True,
-                      mode="exact", check_finite=True, tol=1.0e-8):
+                      pad_mode='row-col', translate=False, scale=False,
+                      single_transform=True, mode="exact", check_finite=True,
+                      tol=1.0e-8):
     r"""
     Two-Sided Orthogonal Procrustes.
 
@@ -157,6 +171,18 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed.
         Default= True.
+    pad_mode : str, optional
+      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+      'row': The array with fewer rows is padded with zero rows so that both have the same
+           number of rows.
+      'col': The array with fewer columns is padded with zero columns so that both have the
+           same number of columns.
+      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+           columns is padded with zero columns, so that both have the same dimensions.
+           This does not necessarily result in square arrays.
+      'square': The arrays are padded with zero rows and zero columns so that they are both
+           squared arrays. The dimension of square array is specified based on the highest
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     translate : bool, optional
         If True, both arrays are translated to be centered at origin.
         Default=False.
@@ -349,10 +375,11 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
             raise np.linalg.LinAlgError("Matrix cannot be diagonalized.")
     if translate:
         warnings.warn("The translation matrix was not well defined. \
-                Two sided rotation and translation don't commute.", stacklevel=2)
+                Two sided rotation and translation don't commute.",
+                      stacklevel=2)
     # Check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             translate, scale, check_finite)
+                             pad_mode, translate, scale, check_finite)
     # Convert mode strings into lowercase
     mode = mode.lower()
     # Do single-transformation computation if requested
@@ -363,7 +390,7 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
             e_opt = error(A, B, U, U)
         elif mode == "exact":
             U, e_opt = _2sided_1trans_exact(A, B, tol)
-            #e_opt = error(A, B, U, U)
+            # e_opt = error(A, B, U, U)
         else:
             raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
         return A, B, U, e_opt

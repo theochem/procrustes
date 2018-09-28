@@ -22,25 +22,22 @@
 # --
 """The Softassign Procrustes Module."""
 
-
 import numpy as np
 
 from procrustes.permutation import permutation
 from procrustes.utils import _get_input_arrays, eigendecomposition
 from procrustes.utils import error
 
-
 __all__ = [
     "softassign",
 ]
 
 
-def softassign(A, B, remove_zero_col=True,
-               remove_zero_row=True, translate=False,
-               scale=False, check_finite=True,
-               iteration_r=500, iteration_s=500,
-               beta_r=1.075, tol=1.0e-8,
-               epsilon_gamma=0.01, beta_0=None, beta_f=None):
+def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
+               pad_mode='row-col', translate=False, scale=False,
+               check_finite=True, iteration_r=500, iteration_s=500,
+               beta_r=1.075, tol=1.0e-8, epsilon_gamma=0.01,
+               beta_0=None, beta_f=None):
     r"""
     Parameters
     ----------
@@ -56,6 +53,18 @@ def softassign(A, B, remove_zero_col=True,
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed.
         Default=True.
+    pad_mode : str, optional
+      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+      'row': The array with fewer rows is padded with zero rows so that both have the same
+           number of rows.
+      'col': The array with fewer columns is padded with zero columns so that both have the
+           same number of columns.
+      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+           columns is padded with zero columns, so that both have the same dimensions.
+           This does not necessarily result in square arrays.
+      'square': The arrays are padded with zero rows and zero columns so that they are both
+           squared arrays. The dimension of square array is specified based on the highest
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     translate : bool, optional
         If True, both arrays are translated to be centered at origin.
         Default=False.
@@ -154,7 +163,7 @@ def softassign(A, B, remove_zero_col=True,
         raise ValueError("Argument beta_r cannot be greater than 1.")
 
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             translate, scale, check_finite)
+                             pad_mode, translate, scale, check_finite)
     # Initialization
     # Compute the benefit matrix
     C = np.kron(A, B)
@@ -163,9 +172,9 @@ def softassign(A, B, remove_zero_col=True,
     C_tensor = C.reshape(N, N, N, N)
     # Compute the beta_0
     gamma = _compute_gamma(C, N, epsilon_gamma)
-    if beta_0==None:
+    if beta_0 == None:
         beta_0 = 1.e-5 * np.sqrt(N * N)
-    if beta_f==None:
+    if beta_f == None:
         beta_f = 1.e4 * np.sqrt(N * N)
     # Initialization of M_ai
     M_ai = 1 / N + np.abs(np.random.rand(N, N))

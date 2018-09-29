@@ -1,22 +1,31 @@
 language: python
 
-sudo: false
-
 python:
+  # We don't actually use the Travis Python, but this keeps it organized.
   - "2.7"
   - "3.6"
 
 install:
-  - pip install nose numpy scipy
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
 
-os:
-  - linux
+  # Replace dep1 dep2 ... with your dependencies
+  - conda create -q -n test_environment python=$TRAVIS_PYTHON_VERSION numpy scipy nose coverage
+  - source activate test_environment
+  - python setup.py install
 
-dist:
-  - trusty
-
-branches:
-  only:
-    - master
-
-script: python -m nose -a '!slow'
+script:
+  nosetests --with-coverage --cover-package procrustes/. --cover-tests --cover-erase

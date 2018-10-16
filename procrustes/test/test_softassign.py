@@ -31,63 +31,63 @@ from procrustes import softassign
 
 
 def test_softassign_4by4():
+    r"""Test softassign by a 4by4 matrix."""
     # define a random matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.], [0., 1., 0., 0.]])
+    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
+                     [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,
-                                           remove_zero_col=False, remove_zero_row=False)
+                                           remove_zero_col=False,
+                                           remove_zero_row=False)
     assert_almost_equal(M_ai, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
-# def test_permutation_2sided_normal1_loop():
-#    r"""Test two-sided permutation Procrustes using 'normal1' mode by a 4by4
-#    matrix with all possible permutation matrices."""
-#    # define a random matrix
-#    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
-#                        [3, 3, 2, 2], [3, 5, 2, 5]])
-#    # check with all possible permutation matrices
-#    for comb in itertools.permutations(np.arange(4)):
-#        perm = np.zeros((4, 4))
-#        perm[np.arange(4), comb] = 1
-#        # get array_b by permutation
-#        array_b = np.dot(perm.T, np.dot(array_a, perm))
-#        # Check
-#        new_a, new_b, U, e_opt = softassign(array_a,
-#                                            array_b,
-#                                            remove_zero_col=False,
-#                                            remove_zero_row=False)
-#        assert_almost_equal(U, perm, decimal=6)
-#        assert_almost_equal(e_opt, 0, decimal=6)
+def test_softassign_4by4_loop():
+    r"""Test softassign by a 4by4 matrix with all possible permutation matrices."""
+    # define a random symmetric matrix
+    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
+                        [3, 3, 2, 2], [3, 5, 2, 5]])
+    # check with all possible permutation matrices
+    for comb in itertools.permutations(np.arange(4)):
+        perm = np.zeros((4, 4))
+        perm[np.arange(4), comb] = 1
+        # get array_b by permutation
+        array_b = np.dot(perm.T, np.dot(array_a, perm))
+        # Check
+        new_a, new_b, U, e_opt = softassign(array_a, array_b,
+                                            remove_zero_col=False,
+                                            remove_zero_row=False)
+        assert_almost_equal(U, perm, decimal=6)
+        assert_almost_equal(e_opt, 0, decimal=6)
 
 
-# def test_permutation_2sided_normal1_loop_negative():
-#     r"""Test two-sided permutation Procrustes using 'normal1' mode by a 4by4
-#     matrix (negative entries) with all possible permutation matrices."""
-#
-#     # define a random matrix
-#     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-#                         [-3, 3, 2, 2], [3, -5, 2, 5]])
-#     # check with all possible permutation matrices
-#     for comb in itertools.permutations(np.arange(4)):
-#         # Compute the permutation matrix
-#         perm = np.zeros((4, 4))
-#         perm[np.arange(4), comb] = 1
-#         if not np.allclose(perm, np.eye(4)):
-#             # Compute the translated, scaled matrix padded with zeros
-#             array_b = np.dot(perm.T, np.dot(array_a, perm))
-#             # Check
-#             new_a, new_b, U, e_opt = permutation_2sided(
-#                 array_a, array_b, transform_mode='single_undirected',
-#                 translate=True, scale=True, mode='normal1')
-#             assert_almost_equal(U, perm, decimal=6)
-#             assert_almost_equal(e_opt, 0, decimal=6)
+def test_softassign_4by4_loop_negative():
+    r"""Test softassign by a 4by4 negative matrix with all possible permutation matrices."""
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # check with all possible permutation matrices
+    for comb in itertools.permutations(np.arange(4)):
+        # Compute the permutation matrix
+        perm = np.zeros((4, 4))
+        perm[np.arange(4), comb] = 1
+        if not np.allclose(perm, np.eye(4)):
+            # Compute the translated, scaled matrix padded with zeros
+            array_b = np.dot(perm.T, np.dot(array_a, perm))
+            # Check
+            new_a, new_b, U, e_opt = softassign(array_a, array_b,
+                                                remove_zero_row=False,
+                                                remove_zero_col=False)
+            assert_almost_equal(U, perm, decimal=6)
+            assert_almost_equal(e_opt, 0, decimal=6)
 
 
 def test_softassign_4by4_translate_scale():
+    r"""Test softassign by 4by4 matrix with translation and scaling."""
     # define a random matrix
     array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
     array_a = np.dot(array_a, array_a.T)
@@ -96,37 +96,39 @@ def test_softassign_4by4_translate_scale():
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
     new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                        translate=True,
-                                        scale=True,
+                                        translate=True, scale=True,
                                         remove_zero_row=False,
                                         remove_zero_col=False)
     assert_almost_equal(U, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
-# def test_permutation_2sided_normal1_translate_scale_loop():
-#     r"""Test two-sided permutation Procrustes using 'normal1' mode by translating, scaling the 4by4 matrix with all possible permutation matrices."""
-#     # define a random matrix
-#     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-#                         [-3, 3, 2, 2], [3, -5, 2, 5]])
-#     # check with all possible permutation matrices
-#     for comb in itertools.permutations(np.arange(4)):
-#         # Compute the permutation matrix
-#         perm = np.zeros((4, 4))
-#         perm[np.arange(4), comb] = 1
-#         # Compute the translated, scaled matrix padded with zeros
-#         array_b = np.dot(perm.T, np.dot(3 * array_a + 10, perm))
-#         # Check
-#         new_a, new_b, U, e_opt = permutation_2sided(
-#             array_a, array_b, transform_mode='single_undirected',
-#             translate=True, scale=True, mode='normal1')
-#         assert_almost_equal(U, perm, decimal=6)
-#         assert_almost_equal(e_opt, 0, decimal=6)
+def test_softassign_4by4_translate_scale_loop():
+    r"""Test softassign by 4by4 matrix with all permutation matrices with translation and scaling."""
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # check with all possible permutation matrices
+    for comb in itertools.permutations(np.arange(4)):
+        # Compute the permutation matrix
+        perm = np.zeros((4, 4))
+        perm[np.arange(4), comb] = 1
+        # Compute the translated, scaled matrix padded with zeros
+        array_b = np.dot(perm.T, np.dot(3 * array_a + 10, perm))
+        # Check
+        new_a, new_b, U, e_opt = softassign(array_a,
+                                            array_b,
+                                            translate=True,
+                                            scale=True)
+        assert_almost_equal(U, perm, decimal=6)
+        assert_almost_equal(e_opt, 0, decimal=6)
 
 
 def test_softassign_4by4_translate_scale_zero_padding():
+    r"""Test softassign with zero padded 4by4 matrix."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array(
+        [[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     perm = np.array([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
     # Compute the translated, scaled matrix padded with zeros
@@ -147,10 +149,12 @@ def test_softassign_4by4_translate_scale_zero_padding():
 
 
 def test_softassign_practical_example():
+    r"""Test softassign by a practical example."""
     # Example taken from page 64 in parallel solution of
     # svd-related problems, with applications
     # vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf
-    # https://books.google.ca/books/about/Parallel_Solution_of_SVD_related_Problem.html?id=_aVWcgAACAAJ&redir_esc=y
+    # https://books.google.ca/books/about/Parallel_Solution_of_
+    # SVD_related_Problem.html?id=_aVWcgAACAAJ&redir_esc=y
     array_a = np.array([[32, 14, 3, 63, 50],
                         [24, 22, 1, 56, 4],
                         [94, 16, 28, 75, 81],
@@ -172,12 +176,40 @@ def test_softassign_practical_example():
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
+def test_softassign_random_noise():
+    r"""Test softassign by a practical example with random noise."""
+    # Example based on page 64 in parallel solution of
+    # svd-related problems, with applications
+    # vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf
+    # https://books.google.ca/books/about/Parallel_Solution_of_SVD_related_
+    # Problem.html?id=_aVWcgAACAAJ&redir_esc=y
+    array_a = np.array([[32, 14, 3, 63, 50],
+                        [24, 22, 1, 56, 4],
+                        [94, 16, 28, 75, 81],
+                        [19, 72, 42, 90, 54],
+                        [71, 85, 10, 96, 58]])
+    perm = np.array([[0, 0, 0, 0, 1],
+                     [0, 0, 1, 0, 0],
+                     [0, 1, 0, 0, 0],
+                     [0, 0, 0, 1, 0],
+                     [1, 0, 0, 0, 0]])
+    array_b = np.dot(perm.T, np.dot(array_a, perm)) + np.random.randn(5, 5)
+    # Check
+    new_a, new_b, U, e_opt = softassign(array_a, array_b,
+                                        translate=False,
+                                        scale=False,
+                                        remove_zero_row=False,
+                                        remove_zero_col=False)
+    assert_almost_equal(U, perm, decimal=6)
+
+
 def test_softassign_invalid_beta_r():
     r"""Test softassign Procrustes with invalid beta_r value."""
     # define a random matrix and symmetric matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.], [0., 1., 0., 0.]])
+    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
+                     [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, softassign, array_a, array_b, beta_r=0.5)

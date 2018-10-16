@@ -37,7 +37,7 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
                pad_mode='row-col', translate=False, scale=False,
                check_finite=True, iteration_r=500, iteration_s=500,
                beta_r=1.075, tol=1.0e-8, epsilon_gamma=0.01,
-               beta_0=None, beta_f=None):
+               idx_stop=10, beta_0=None, beta_f=None):
     r"""
     Parameters
     ----------
@@ -83,6 +83,9 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
         The tolerance value used for relaxation and softassign. Default=1.e-8.
     epsilon_gamma : float, optional
         Small quantity which is required to compute gamma. Default=0.01.
+    idx_stop : int, optional
+        Number of running steps after the calculation converges in the
+        relaxation step. Default=10.
     beta_0 : float, optional
         Initial inverse temperature. Default=None.
     beta_f : float, optional
@@ -182,7 +185,7 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
     M_relax_old = M_ai
     step_r = 0
     # step to control when to stop the calculation
-    idx_stop = 0
+    idx = 0
     # Deterministic annealing
     while beta < beta_f:
         delta_relax = (M_relax_old - 0) / N
@@ -220,8 +223,8 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
 
         beta = beta_r * beta
         if np.amax(np.abs(delta_relax)) < tol:
-            idx_stop += 1
-            if idx_stop == 10:
+            idx += 1
+            if idx == idx_stop:
                 break
 
     # Perform clean-up heuristic

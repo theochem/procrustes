@@ -178,14 +178,15 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
         beta_f = 1.e4 * np.sqrt(N * N)
     # Initialization of M_ai
     M_ai = 1 / N + np.abs(np.random.rand(N, N))
-
     beta = beta_0
     M_relax_old = M_ai
     step_r = 0
+    # step to control when to stop the calculation
+    idx_stop = 0
     # Deterministic annealing
     while beta < beta_f:
         delta_relax = (M_relax_old - 0) / N
-        while (np.any(delta_relax) > tol and step_r < iteration_r):
+        while np.amax(np.abs(delta_relax)) > tol and step_r < iteration_r:
             step_r += 1
             if step_r == iteration_r:
                 print('Maximum iteration in relaxation stage reached!')
@@ -200,12 +201,12 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
             step_s = 0
             # delta_M_sink = (M_relax_new - M_relax_old)/N
             delta_M_sink = (M_sink_old - 0) / N
-            while np.any(delta_M_sink) > tol and step_s < iteration_s:
+            while np.amax(np.abs(delta_M_sink)) > tol and step_s < iteration_s:
                 step_s += 1
                 # Row normalization
-                M_sink_new = M_sink_old / np.sum(M_sink_old, axis=1)
-                # column normalization
-                M_sink_new = M_sink_new / np.sum(M_sink_new, axis=0)
+                M_sink_new = M_sink_old / M_sink_old.sum(axis=1, keepdims=1)
+                # Column normalization
+                M_sink_new = M_sink_new / M_sink_new.sum(axis=0, keepdims=1)
                 # Compute the delata_M_sink
                 delta_M_sink = (M_sink_new - M_sink_old) / N
                 # Update M_sink_old
@@ -218,6 +219,11 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
             M_relax_old = M_relax_new
 
         beta = beta_r * beta
+        if np.amax(np.abs(delta_relax)) < tol:
+            idx_stop += 1
+            if idx_stop == 10:
+                break
+
     # Perform clean-up heuristic
     _, _, M_ai, _ = permutation(np.eye(M_relax_new.shape[0]), M_relax_new)
     # Compute error

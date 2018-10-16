@@ -343,7 +343,7 @@ def _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
     if scale:
         A, _ = scale_array(A)
         B, _ = scale_array(B)
-    return zero_padding(A, B, pad_mode="row-col")
+    return zero_padding(A, B, pad_mode)
 
 
 def _check_arraytypes(*args):

@@ -82,7 +82,7 @@ def permutation(A, B, remove_zero_col=True, remove_zero_row=True,
     U_opt : ndarray
         The optimum permutation transformation matrix.
     e_opt : float
-        One-sided orthogonal Procrustes error.
+        One-sided permutation Procrustes error.
 
     Notes
     -----
@@ -195,7 +195,7 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
     V : ndarray
         The optimum permutation transformation matrix.
     e_opt : float
-        One-sided orthogonal Procrustes error.
+        Two-sided permutation Procrustes error.
 
     Notes
     -----

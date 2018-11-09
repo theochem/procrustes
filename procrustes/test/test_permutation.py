@@ -28,6 +28,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_almost_equal
 
 from procrustes.permutation import permutation, permutation_2sided
+from procrustes.permutation import permutation_2sided_brutal
 from procrustes.permutation import _2sided_1trans_initial_guess_umeyama
 from procrustes.permutation import _2sided_1trans_initial_guess_normal1
 from procrustes.permutation import _2sided_1trans_initial_guess_normal2
@@ -808,3 +809,73 @@ def test_permutation_2sided_4by4_directed_translat_scale_padding():
                                                 translate=True, scale=True)
     assert_almost_equal(U, perm, decimal=6)
     assert_almost_equal(e_opt, 0., decimal=6)
+
+
+def test_permutation_2sided_brutal_4by4_loop():
+    # define a random matrix
+    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
+                        [3, 3, 2, 2], [3, 5, 2, 5]])
+    # check with all possible permutation matrices
+    for comb in itertools.permutations(np.arange(4)):
+        perm = np.zeros((4, 4))
+        perm[np.arange(4), comb] = 1
+        # get array_b by permutation
+        array_b = np.dot(perm.T, np.dot(array_a, perm))
+        # Check
+        new_a, new_b, U, e_opt = permutation_2sided_brutal(array_a, array_b)
+        assert_almost_equal(U, perm, decimal=6)
+        assert_almost_equal(e_opt, 0, decimal=6)
+
+
+def test_permutation_2sided_brutal_4by4_loop_negative():
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # check with all possible permutation matrices
+    for comb in itertools.permutations(np.arange(4)):
+        perm = np.zeros((4, 4))
+        perm[np.arange(4), comb] = 1
+        # get array_b by permutation
+        array_b = np.dot(perm.T, np.dot(array_a, perm))
+        # Check
+        new_a, new_b, U, e_opt = permutation_2sided_brutal(array_a, array_b)
+        assert_almost_equal(U, perm, decimal=6)
+        assert_almost_equal(e_opt, 0, decimal=6)
+
+
+def test_permutation_2sided_brutal_4by4_translate_scale():
+    # define a random matrix
+    array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
+    array_a = np.dot(array_a, array_a.T)
+    # define array_b by scale-translate array_a and permuting
+    shift = np.array([[3.14, 3.14, 3.14],
+                      [3.14, 3.14, 3.14],
+                      [3.14, 3.14, 3.14]])
+    perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
+    array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
+    # Check
+    new_a, new_b, U, e_opt = permutation_2sided_brutal(
+        array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(U, perm, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+
+
+def test_permutation_2sided_brutal_4by4_translate_scale_zero_padding():
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # check with all possible permutation matrices
+    perm = np.array([[0, 0, 1, 0],
+                     [1, 0, 0, 0],
+                     [0, 1, 0, 0],
+                     [0, 0, 0, 1]])
+    # Compute the translated, scaled matrix padded with zeros
+    array_b = np.dot(perm.T, np.dot(20 * array_a + 9, perm))
+    # pad the matrices with zeros
+    array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
+    # Check
+    new_a, new_b, U, e_opt = permutation_2sided_brutal(
+        array_a, array_b, translate=True, scale=True)
+    assert_almost_equal(U, perm, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)

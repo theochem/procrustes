@@ -368,7 +368,8 @@ def test_two_sided_orthogonal_single_transformation_idential():
         array_a, array_b, single_transform=True, mode='exact')
     # check transformation array and error
     assert_almost_equal(np.dot(array_u, array_u.T), np.eye(4), decimal=8)
-    assert_almost_equal(abs(array_u), np.eye(4), decimal=8)
+    # the rotations might not be unique
+    # assert_almost_equal(abs(array_u), np.eye(4), decimal=8)
     assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
     assert_almost_equal(e_opt, 0, decimal=8)
 

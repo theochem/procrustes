@@ -50,16 +50,19 @@ def chiral_check(A_data, B_data):
 
     reflection = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
     # create the reflection of compound A over the yz plane
-    A_ref = np.dot(s, reflection)
+    A_ref = np.dot(A, reflection)
     # Compute the rotational procrustes
-    _, _, U_rot, e_rot = rotational(A_ref, B, translate=True,
+    _, _, U_rot, e_rot = rotational(A, B,
+                                    translate=True,
                                     scale=False,
                                     remove_zero_col=False,
                                     remove_zero_row=False)
     # Compute the error: reflection + rotation
     _, _, U__ref_rot, e_ref_rot = rotational(A_ref, B,
                                              translate=True,
-                                             scale=False)
+                                             scale=False,
+                                             remove_zero_col=False,
+                                             remove_zero_row=False)
 
     if e_rot/e_ref_rot > 10:
     	print("These two compounds are enantiomers \

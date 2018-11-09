@@ -67,7 +67,7 @@ ax.set_ylabel('Y', fontsize=20)
 ax.set_zlabel('Z', fontsize=20)
 
 #ax.set_title(rmsd, fontsize=24)
-ax.set_title('RMSD=0.23003871056618516', fontsize=24)
+ax.set_title('RMSD=1.2413324468611958e-08', fontsize=24)
 ax.legend(fontsize=20)
 
 plt.show()

@@ -45,9 +45,9 @@ ax = fig.add_subplot(111, projection='3d')
 ax.scatter(s_rot[:,0], s_rot[:,1], s_rot[:,2], zdir='z', s=55, c='blue', label='S with rotation')
 ax.scatter(r[:,0], r[:,1], r[:,2], zdir='z', s=55, c='red', label='R')
 
-ax.set_xlabel('X', fontsize=20)
-ax.set_ylabel('Y', fontsize=20)
-ax.set_zlabel('Z', fontsize=20)
+ax.set_xlabel('X', fontsize=16)
+ax.set_ylabel('Y', fontsize=16)
+ax.set_zlabel('Z', fontsize=16)
 
 #ax.set_title(rmsd, fontsize=24)
 ax.set_title('Error=7.304696784953152', fontsize=24)

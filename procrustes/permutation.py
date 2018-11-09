@@ -24,6 +24,8 @@
 
 import numpy as np
 
+import itertools as it
+
 from scipy.optimize import linear_sum_assignment
 
 from procrustes.utils import _get_input_arrays, _check_rank, eigendecomposition, \
@@ -32,6 +34,7 @@ from procrustes.utils import _get_input_arrays, _check_rank, eigendecomposition,
 __all__ = [
     "permutation",
     "permutation_2sided",
+    "permutation_2sided_brutal"
 ]
 
 
@@ -685,3 +688,86 @@ def _compute_transform_directed(A, B, guess, tol, iteration):
     _, _, p_opt, _ = permutation(np.eye(p_new.shape[0]), p_new)
 
     return p_opt
+
+
+def permutation_2sided_brutal(A, B,
+                              remove_zero_col=True,
+                              remove_zero_row=True,
+                              pad_mode='row-col', translate=False,
+                              scale=False, check_finite=True):
+    r"""
+    Two sided permutation Procrustes by brutal method.
+
+    Parameters
+    ----------
+    A : ndarray
+        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be
+        transformed.
+    B : ndarray
+        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+    remove_zero_col : bool, optional
+        If True, the zero columns on the right side will be removed.
+        Default=True.
+    remove_zero_row : bool, optional
+        If True, the zero rows on the top will be removed. Default= True.
+    pad_mode : str, optional
+      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+      'row': The array with fewer rows is padded with zero rows so that both have the same
+           number of rows.
+      'col': The array with fewer columns is padded with zero columns so that both have the
+           same number of columns.
+      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+           columns is padded with zero columns, so that both have the same dimensions.
+           This does not necessarily result in square arrays.
+      'square': The arrays are padded with zero rows and zero columns so that they are both
+           squared arrays. The dimension of square array is specified based on the highest
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
+    translate : bool, optional
+        If True, both arrays are translated to be centered at origin. Default=False.
+    scale : bool, optional
+        If True, both arrays are column normalized to unity. Default=False.
+    check_finite : bool, optional
+        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+
+    Returns
+    -------
+    A : ndarray
+        The transformed ndarray A.
+    B : ndarray
+        The transformed ndarray B.
+    U : ndarray
+        The optimum permutation transformation matrix.
+    e_opt : float
+        Two-sided orthogonal Procrustes error.
+
+    Notes
+    -----
+    Given matrix :math:`\mathbf{A}_{n \times n}` and a reference
+    :math:`\mathbf{B}_{n \times n}`, find a permutation of rows/columns of
+    :math:`\mathbf{A}_{n \times n}` that makes it as close as
+    possible to :math:`\mathbf{B}_{n \times n}`. But be careful that we are
+    using a brutal way to loop over all the possible permutation matrices and
+    return the one that gives the minimum error(distance). This method can be
+    used as a checker for small datasets.
+
+    """
+    print('Warning: This brutal method is computational expensive! \n'
+          'But it can be used as a checker for a small dataset.')
+    # check inputs
+    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
+                             pad_mode, translate, scale, check_finite)
+    size = np.shape(A)[0]
+    perm_list = []
+    error_list = []
+    for comb in it.permutations(np.arange(size)):
+        # Compute the permutation matrix
+        perm = np.zeros((size, size))
+        perm[np.arange(size), comb] = 1
+        perm_list.append(perm)
+        # Compute the error
+        error_list.append(error(A, B, perm, perm))
+    # get the permutation matrix with the smallest value
+    e_opt = np.min(error_list)
+    U = perm_list[np.argmin(error_list)]
+    return A, B, U, e_opt
+

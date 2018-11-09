@@ -163,7 +163,7 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
     """
     # Check beta_r
     if beta_r <= 1:
-        raise ValueError("Argument beta_r cannot be greater than 1.")
+        raise ValueError("Argument beta_r cannot be less than 1.")
 
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
                              pad_mode, translate, scale, check_finite)

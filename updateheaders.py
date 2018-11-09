@@ -116,7 +116,7 @@ def main():
     f.close()
 
     for sdir in source_dirs:
-        print 'Scanning:', sdir
+        print('Scanning:', sdir)
         for fn in glob(sdir + '/*.*'):
             if not os.path.isfile(fn):
                 continue

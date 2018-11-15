@@ -551,11 +551,8 @@ def _2sided_1trans_initial_guess_umeyama(A, B):
     """
     """
     # check if A and B are diagonalizable
-    try:
-        _check_rank(A)
-        _check_rank(B)
-    except:
-        raise np.linalg.LinAlgError("Matrix cannot be diagonalized.")
+    _check_rank(A)
+    _check_rank(B)
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)
@@ -571,11 +568,8 @@ def _2sided_1trans_initial_guess_umeyama_approx(A, B):
     """
     """
     # check if A and B are diagonalizable
-    try:
-        _check_rank(A)
-        _check_rank(B)
-    except:
-        raise np.linalg.LinAlgError("Matrix cannot be diagonalized.")
+    _check_rank(A)
+    _check_rank(B)
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)

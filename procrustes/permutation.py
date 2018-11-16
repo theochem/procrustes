@@ -357,7 +357,7 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
     transform_mode = transform_mode.lower()
     if transform_mode == 'single_undirected':
         # the initial guess
-        guess = _guess_initial_permutation(A, B, mode)
+        guess = _guess_initial_permutation(A, B, mode, add_noise)
         # Compute the permutation matrix by iterations
         U = _compute_transform(A, B, guess, tol, iteration)
         e_opt = error(A, B, U, U)
@@ -414,7 +414,7 @@ def _2sided_regular(M, N, tol, iteration):
             # print("error:", e_opt1)
         if step1 == iteration:
             print('Maximum iteration reached in the first case! \
-                Error={0}'.format(e_opt1))
+                    Error={0}'.format(e_opt1))
 
     # Fix Q = I first
     # Initial guess for Q
@@ -443,7 +443,7 @@ def _2sided_regular(M, N, tol, iteration):
             # print("error:", e_opt2)
         if step2 == iteration:
             print('Maximum iteration reached in the second case! \
-                Error={0}'.format(e_opt2))
+                    Error={0}'.format(e_opt2))
 
     if e_opt1 <= e_opt2:
         P = P1
@@ -547,10 +547,19 @@ def _2sided_1trans_initial_guess_normal2(A):
     return array_new
 
 
-def _2sided_1trans_initial_guess_umeyama(A, B):
+def _2sided_1trans_initial_guess_umeyama(A, B, add_noise):
     """
     """
-
+    # add small random noise matrix when matrices are not diagonalizable
+    if add_noise:
+        A = np.float_(A)
+        shape_A = np.shape(A)
+        A += np.random.random(shape_A) * np.trace(np.abs(A)) / shape_A[
+            0] * 1.e-8
+        B = np.float_(B)
+        shape_B = np.shape(B)
+        B += np.random.random(shape_B) * np.trace(np.abs(B)) / shape_B[
+            0] * 1.e-8
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)
@@ -562,10 +571,19 @@ def _2sided_1trans_initial_guess_umeyama(A, B):
     return U
 
 
-def _2sided_1trans_initial_guess_umeyama_approx(A, B):
+def _2sided_1trans_initial_guess_umeyama_approx(A, B, add_noise):
     """
     """
-
+    # add small random noise matrix when matrices are not diagonalizable
+    if add_noise:
+        A = np.float_(A)
+        shape_A = np.shape(A)
+        A += np.random.random(shape_A) * np.trace(np.abs(A)) / shape_A[
+            0] * 1.e-8
+        B = np.float_(B)
+        shape_B = np.shape(B)
+        B += np.random.random(shape_B) * np.trace(np.abs(B)) / shape_B[
+            0] * 1.e-8
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)
@@ -596,7 +614,7 @@ def _2sided_1trans_initial_guess_directed(A, B):
     return U
 
 
-def _guess_initial_permutation(A, B, mode):
+def _guess_initial_permutation(A, B, mode, add_noise):
     """
     """
     mode = mode.lower()
@@ -609,9 +627,9 @@ def _guess_initial_permutation(A, B, mode):
         tmp_B = _2sided_1trans_initial_guess_normal2(B)
         _, _, U, _, = permutation(tmp_A, tmp_B)
     elif mode == 'umeyama':
-        U = _2sided_1trans_initial_guess_umeyama(A, B)
+        U = _2sided_1trans_initial_guess_umeyama(A, B, add_noise)
     elif mode == 'umeyama_approx':
-        U = _2sided_1trans_initial_guess_umeyama_approx(A, B)
+        U = _2sided_1trans_initial_guess_umeyama_approx(A, B, add_noise)
     else:
         raise ValueError(
             "Invalid mode argument"

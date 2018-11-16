@@ -26,7 +26,7 @@ import numpy as np
 import warnings
 from itertools import product
 
-from procrustes.utils import _get_input_arrays, _check_rank, error
+from procrustes.utils import _get_input_arrays, error
 from procrustes.utils import singular_value_decomposition, eigendecomposition
 
 
@@ -367,12 +367,6 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
             raise ValueError('Array A should be symmetric.')
         if (not np.allclose(B.T, B)):
             raise ValueError('Array B should be symmetric.')
-        # Check if matrix A and B are diagonalizable
-        try:
-            _check_rank(A)
-            _check_rank(B)
-        except:
-            raise np.linalg.LinAlgError("Matrix cannot be diagonalized.")
     if translate:
         warnings.warn("The translation matrix was not well defined. \
                 Two sided rotation and translation don't commute.",

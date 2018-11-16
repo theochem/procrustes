@@ -28,8 +28,7 @@ import itertools as it
 
 from scipy.optimize import linear_sum_assignment
 
-from procrustes.utils import _get_input_arrays, _check_rank, eigendecomposition, \
-    error
+from procrustes.utils import _get_input_arrays, eigendecomposition, error
 
 __all__ = [
     "permutation",

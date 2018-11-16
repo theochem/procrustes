@@ -550,9 +550,7 @@ def _2sided_1trans_initial_guess_normal2(A):
 def _2sided_1trans_initial_guess_umeyama(A, B):
     """
     """
-    # check if A and B are diagonalizable
-    _check_rank(A)
-    _check_rank(B)
+
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)
@@ -764,4 +762,3 @@ def permutation_2sided_brutal(A, B,
     e_opt = np.min(error_list)
     U = perm_list[np.argmin(error_list)]
     return A, B, U, e_opt
-

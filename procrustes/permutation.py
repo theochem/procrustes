@@ -565,9 +565,7 @@ def _2sided_1trans_initial_guess_umeyama(A, B):
 def _2sided_1trans_initial_guess_umeyama_approx(A, B):
     """
     """
-    # check if A and B are diagonalizable
-    _check_rank(A)
-    _check_rank(B)
+
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)

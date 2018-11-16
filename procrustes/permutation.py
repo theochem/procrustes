@@ -139,7 +139,7 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
                        remove_zero_col=True, remove_zero_row=True,
                        pad_mode='row-col', translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
-                       tol=1.0e-8):
+                       add_noise=False, tol=1.0e-8):
     r"""
     Single sided permutation Procrustes.
 
@@ -176,11 +176,16 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
     scale : bool, optional
         If True, both arrays are column normalized to unity. Default=False.
     mode : string, optional
-        Option for choosing the initial guess methods, including 'normal1', 'normal2', 'umeyama' and 'umeyama_approx'. 'umeyama_approx' is the approximated umeyama method.
+        Option for choosing the initial guess methods, including 'normal1',
+        'normal2', 'umeyama' and 'umeyama_approx'. 'umeyama_approx' is the
+        approximated umeyama method.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
-    iteration: int, optional
+        If true, convert the input to an array, checking for NaNs or Infs.
+        Default=True.
+    iteration : int, optional
         Maximum number for iterations. Default=500.
+    add_noise : bool, optional
+        Add small noise if the arrays are non-diagonalizable. Default=False.
     tol : float, optional
         The tolerance value used for updating the initial guess. Default=1.e-8
 
@@ -324,7 +329,11 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
                          \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
           \text{Tr}\left[\mathbf{P}^\dagger \left(\mathbf{A^0}^\dagger\mathbf{B^0}\right)\right]
 
-    Please note that the 'umeyama_approx' might give inaccurate permutation matrix. More specificity, this is a approximated Umeyama method. One example we can give is that when we compute the permutation matrix that transforms :math:`A` to :math:`B`, the "umeyama_approx" method can not give the exact permutation transformation matrix while "umeyama", "normal1" and "normal2" do.
+    Please note that the 'umeyama_approx' might give inaccurate permutation
+    matrix. More specificity, this is a approximated Umeyama method. One example
+    we can give is that when we compute the permutation matrix that transforms
+    :math:`A` to :math:`B`, the "umeyama_approx" method can not give the exact
+    permutation transformation matrix while "umeyama", "normal1" and "normal2" do.
 
     .. math::
         A =
@@ -414,7 +423,7 @@ def _2sided_regular(M, N, tol, iteration):
             # print("error:", e_opt1)
         if step1 == iteration:
             print('Maximum iteration reached in the first case! \
-                    Error={0}'.format(e_opt1))
+                Error={0}'.format(e_opt1))
 
     # Fix Q = I first
     # Initial guess for Q
@@ -443,7 +452,7 @@ def _2sided_regular(M, N, tol, iteration):
             # print("error:", e_opt2)
         if step2 == iteration:
             print('Maximum iteration reached in the second case! \
-                    Error={0}'.format(e_opt2))
+                Error={0}'.format(e_opt2))
 
     if e_opt1 <= e_opt2:
         P = P1

@@ -739,6 +739,36 @@ def test_permutation_2sided_regular2():
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
+def test_permutation_2sided_regular_unsquared():
+    N = np.array([[6, 8], [10, 8], [5, 8], [5, 7]])
+    perm_P = np.array([[0, 1, 0, 0], [0, 0, 1, 0],
+                       [1, 0, 0, 0], [0, 0, 0, 1]])
+    perm_Q = np.array([[0, 1], [1, 0]])
+    M = np.linalg.multi_dot([perm_P, N, perm_Q])
+    new_M, new_N, new_P, new_Q, e_opt = permutation_2sided(M, N,
+                                                           transform_mode='double',
+                                                           iteration=500)
+    assert_almost_equal(new_P, perm_P, decimal=6)
+    assert_almost_equal(new_Q, perm_Q, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+
+
+def test_permutation_2sided_regular_unsquared_negative():
+    # build random matrix by seed 999
+    np.random.seed(999)
+    N = np.random.randint(-5, 6, size=(6, 4))
+    N = np.float_(N)
+    perm_P = np.random.permutation(np.eye(6, 6))
+    perm_Q = np.random.permutation(np.eye(4, 4))
+    M = np.linalg.multi_dot([perm_P, N, perm_Q])
+    new_M, new_N, new_P, new_Q, e_opt = permutation_2sided(M, N,
+                                                           transform_mode='double',
+                                                           iteration=500)
+    assert_almost_equal(new_P, perm_P, decimal=6)
+    assert_almost_equal(new_Q, perm_Q, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+
+
 def test_permutation_2sided_4by4_directed():
     # A random array
     array_a = np.array(

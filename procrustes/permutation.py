@@ -394,10 +394,15 @@ def permutation_2sided(A, B, transform_mode='single_undirected',
 def _2sided_regular(M, N, tol, iteration):
     """
     """
+    # :math:` {\(\vert M-PNQ \vert\)}^2_F`
+    # taken from page 64 in
+    # parallel solution of svd-related problems, with applications
+    # Pythagoras Papadimitriou, University of Manchester, 1993
+
     # Fix P = I first
     # Initial guess for P
     P1 = np.eye(M.shape[0], M.shape[0])
-    # InitiMl guess for Q
+    # Initial guess for Q
     Q1 = _2sided_Hungarian(np.dot(N.T, M))
     e_opt1 = error(N, M, P1.T, Q1)
     step1 = 0
@@ -418,8 +423,6 @@ def _2sided_regular(M, N, tol, iteration):
             # Update the error
             e_opt1 = error(N, M, P1.T, Q1)
 
-            # print("step:", step1)
-            # print("error:", e_opt1)
         if step1 == iteration:
             print('Maximum iteration reached in the first case! \
                 Error={0}'.format(e_opt1))
@@ -427,7 +430,7 @@ def _2sided_regular(M, N, tol, iteration):
     # Fix Q = I first
     # Initial guess for Q
     Q2 = np.eye(M.shape[1], M.shape[1])
-    # InitiMl guess for P
+    # Initial guess for P
     P2 = _2sided_Hungarian(np.dot(N, M.T))
     P2 = np.transpose(P2)
     e_opt2 = error(N, M, P2.T, Q2)
@@ -447,8 +450,6 @@ def _2sided_regular(M, N, tol, iteration):
             # Update the error
             e_opt2 = error(N, M, P2.T, Q2)
             step2 += 1
-            # print("step:", step2)
-            # print("error:", e_opt2)
         if step2 == iteration:
             print('Maximum iteration reached in the second case! \
                 Error={0}'.format(e_opt2))

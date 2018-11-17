@@ -879,3 +879,16 @@ def test_permutation_2sided_brutal_4by4_translate_scale_zero_padding():
         array_a, array_b, translate=True, scale=True)
     assert_almost_equal(U, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
+
+def test_permutation_2sided__invalid_transform_mode():
+        r"""Test softassign Procrustes with invalid transform_mode."""
+        # define a random matrix and symmetric matrix
+        array_a = np.array(
+            [[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
+        # define array_b by permuting array_a
+        perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
+                         [0., 1., 0., 0.]])
+        array_b = np.dot(perm.T, np.dot(array_a, perm))
+        # Check
+        assert_raises(ValueError, permutation_2sided, array_a, array_b,
+                      transform_mode='haha')

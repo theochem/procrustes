@@ -33,7 +33,7 @@ from procrustes.utils import _get_input_arrays, eigendecomposition, error
 __all__ = [
     "permutation",
     "permutation_2sided",
-    "permutation_2sided_brutal"
+    "permutation_2sided_bubble"
 ]
 
 
@@ -707,13 +707,13 @@ def _compute_transform_directed(A, B, guess, tol, iteration):
     return p_opt
 
 
-def permutation_2sided_brutal(A, B,
+def permutation_2sided_bubble(A, B,
                               remove_zero_col=True,
                               remove_zero_row=True,
                               pad_mode='row-col', translate=False,
                               scale=False, check_finite=True):
     r"""
-    Two sided permutation Procrustes by brutal method.
+    Two sided permutation Procrustes by brutal strength method.
 
     Parameters
     ----------
@@ -768,22 +768,20 @@ def permutation_2sided_brutal(A, B,
     used as a checker for small datasets.
 
     """
-    print('Warning: This brutal method is computational expensive! \n'
+    print('Warning: This brutal strength method is computational expensive! \n'
           'But it can be used as a checker for a small dataset.')
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
                              pad_mode, translate, scale, check_finite)
-    size = np.shape(A)[0]
-    perm_list = []
-    error_list = []
-    for comb in it.permutations(np.arange(size)):
+    perm1 = np.zeros(np.shape(A))
+    perm_error1 = np.inf
+    for comb in it.permutations(np.arange(np.shape(A)[0])):
         # Compute the permutation matrix
-        perm = np.zeros((size, size))
-        perm[np.arange(size), comb] = 1
-        perm_list.append(perm)
-        # Compute the error
-        error_list.append(error(A, B, perm, perm))
-    # get the permutation matrix with the smallest value
-    e_opt = np.min(error_list)
-    U = perm_list[np.argmin(error_list)]
-    return A, B, U, e_opt
+        size = np.shape(A)[1]
+        perm2 = np.zeros((size, size))
+        perm2[np.arange(size), comb] = 1
+        perm_error2 = error(A, B, perm2, perm2)
+        if perm_error2 < perm_error1:
+            perm_error1 = perm_error2
+            perm1 = perm2
+    return A, B, perm1, perm_error1

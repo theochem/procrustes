@@ -54,7 +54,7 @@ Testing
 To run tests:
 
 ```bash
-   nosetests -v
+    nosetests --with-coverage --cover-package procrustes/. --cover-tests --cover-erase
 ```
 
 Development

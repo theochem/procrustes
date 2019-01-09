@@ -33,7 +33,7 @@ from procrustes.utils import _get_input_arrays, eigendecomposition, error
 __all__ = [
     "permutation",
     "permutation_2sided",
-    "permutation_2sided_bubble"
+    "permutation_2sided_explicit"
 ]
 
 
@@ -707,13 +707,13 @@ def _compute_transform_directed(A, B, guess, tol, iteration):
     return p_opt
 
 
-def permutation_2sided_bubble(A, B,
-                              remove_zero_col=True,
-                              remove_zero_row=True,
-                              pad_mode='row-col', translate=False,
-                              scale=False, check_finite=True):
+def permutation_2sided_explicit(A, B,
+                                remove_zero_col=True,
+                                remove_zero_row=True,
+                                pad_mode='row-col', translate=False,
+                                scale=False, check_finite=True):
     r"""
-    Two sided permutation Procrustes by brutal strength method.
+    Two sided permutation Procrustes by explicit method.
 
     Parameters
     ----------
@@ -768,7 +768,7 @@ def permutation_2sided_bubble(A, B,
     used as a checker for small datasets.
 
     """
-    print('Warning: This brutal strength method is computational expensive! \n'
+    print('Warning: This brute-strength method is computational expensive! \n'
           'But it can be used as a checker for a small dataset.')
     # check inputs
     A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
@@ -785,3 +785,4 @@ def permutation_2sided_bubble(A, B,
             perm_error1 = perm_error2
             perm1 = perm2
     return A, B, perm1, perm_error1
+

@@ -28,7 +28,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_almost_equal
 
 from procrustes.permutation import permutation, permutation_2sided
-from procrustes.permutation import permutation_2sided_bubble
+from procrustes.permutation import permutation_2sided_explicit
 from procrustes.permutation import _2sided_1trans_initial_guess_umeyama
 from procrustes.permutation import _2sided_1trans_initial_guess_normal1
 from procrustes.permutation import _2sided_1trans_initial_guess_normal2
@@ -912,8 +912,8 @@ def test_permutation_2sided_4by4_directed_translat_scale_padding():
     assert_almost_equal(e_opt, 0., decimal=6)
 
 
-def test_permutation_2sided_bubble_4by4_loop():
-    r"""Test 2sided-perm with bubble method by 4by4 arrays with all permutations."""
+def test_permutation_2sided_explicit_4by4_loop():
+    r"""Test 2sided-perm with explicit method by 4by4 arrays with all permutations."""
     # define a random matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
                         [3, 3, 2, 2], [3, 5, 2, 5]])
@@ -924,13 +924,13 @@ def test_permutation_2sided_bubble_4by4_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        new_a, new_b, U, e_opt = permutation_2sided_bubble(array_a, array_b)
+        new_a, new_b, U, e_opt = permutation_2sided_explicit(array_a, array_b)
         assert_almost_equal(U, perm, decimal=6)
         assert_almost_equal(e_opt, 0, decimal=6)
 
 
-def test_permutation_2sided_bubble_4by4_loop_negative():
-    r"""Test 2sided-perm with bubble method by 4by4 negative arrays with all permutations."""
+def test_permutation_2sided_explicit_4by4_loop_negative():
+    r"""Test 2sided-perm with explicit method by 4by4 negative arrays with all permutations."""
     # define a random matrix
     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
                         [-3, 3, 2, 2], [3, -5, 2, 5]])
@@ -941,13 +941,13 @@ def test_permutation_2sided_bubble_4by4_loop_negative():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        new_a, new_b, U, e_opt = permutation_2sided_bubble(array_a, array_b)
+        new_a, new_b, U, e_opt = permutation_2sided_explicit(array_a, array_b)
         assert_almost_equal(U, perm, decimal=6)
         assert_almost_equal(e_opt, 0, decimal=6)
 
 
-def test_permutation_2sided_bubble_4by4_translate_scale():
-    r"""Test 2-sided permutation with bubble method by 4by4 method """
+def test_permutation_2sided_explicit_4by4_translate_scale():
+    r"""Test 2-sided permutation with explicit method by 4by4 method """
     # define a random matrix
     array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
     array_a = np.dot(array_a, array_a.T)
@@ -958,14 +958,14 @@ def test_permutation_2sided_bubble_4by4_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
     # Check
-    new_a, new_b, U, e_opt = permutation_2sided_bubble(
+    new_a, new_b, U, e_opt = permutation_2sided_explicit(
         array_a, array_b, translate=True, scale=True)
     assert_almost_equal(U, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
-def test_permutation_2sided_bubble_4by4_translate_scale_zero_padding():
-    r"""Test 2-sided permutation with bubble method by 4by4 arrays with translation, scaling and zero padding."""
+def test_permutation_2sided_explicit_4by4_translate_scale_zero_padding():
+    r"""Test 2-sided permutation with explicit method by 4by4 arrays with translation, scaling and zero padding."""
     # define a random matrix
     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
                         [-3, 3, 2, 2], [3, -5, 2, 5]])
@@ -980,7 +980,7 @@ def test_permutation_2sided_bubble_4by4_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
-    new_a, new_b, U, e_opt = permutation_2sided_bubble(
+    new_a, new_b, U, e_opt = permutation_2sided_explicit(
         array_a, array_b, translate=True, scale=True)
     assert_almost_equal(U, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)

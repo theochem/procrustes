@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python
 # The Procrustes library provides a set of functions for transforming
 # a matrix to make it as similar as possible to a target matrix.
 #
@@ -98,7 +98,7 @@ def iter_subdirs(root):
 
 def main():
     source_dirs = ['.', 'doc', 'scripts', 'tools'] + \
-        list(iter_subdirs('procrustes'))
+                  list(iter_subdirs('procrustes'))
 
     fixers = [
         ('*.py', fix_python),
@@ -122,7 +122,7 @@ def main():
                 continue
             for pattern, fixer in fixers:
                 if fnmatch(fn, pattern):
-                    print ' Fixing:', fn
+                    print(' Fixing:', fn)
                     with open(fn) as f:
                         lines = f.readlines()
                     fixer(fn, lines, header_lines)

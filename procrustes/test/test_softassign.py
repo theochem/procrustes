@@ -125,7 +125,7 @@ def test_softassign_4by4_translate_scale_loop():
 
 
 def test_softassign_4by4_translate_scale_zero_padding():
-    r"""Test softassign with zero padded 4by4 matrix."""
+    r"""Test softassign by zero padded 4by4 matrix."""
     # define a random matrix
     array_a = np.array(
         [[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
@@ -204,7 +204,7 @@ def test_softassign_random_noise():
 
 
 def test_softassign_invalid_beta_r():
-    r"""Test softassign Procrustes with invalid beta_r value."""
+    r"""Test softassign by invalid beta_r value."""
     # define a random matrix and symmetric matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a

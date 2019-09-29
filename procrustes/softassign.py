@@ -22,12 +22,14 @@
 # --
 """The Softassign Procrustes Module."""
 
-import warnings
-
 import numpy as np
 
+import warnings
+
+from copy import deepcopy
+
 from procrustes.permutation import permutation
-from procrustes.utils import _get_input_arrays, eigendecomposition
+from procrustes.utils import _get_input_arrays
 from procrustes.utils import error
 
 __all__ = [
@@ -35,94 +37,95 @@ __all__ = [
 ]
 
 
-def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
-               pad_mode='row-col', translate=False, scale=False,
-               check_finite=True, iteration_r=500, iteration_s=500,
-               beta_r=1.075, tol_r=1.0e-8, tol_s=1.0e-8,
-               epsilon_gamma=0.01, idx_stop=10, beta_0=1.e-5,
-               beta_f=1.e4, Mai_guess=None, return_guess=False):
+def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, beta_r=1.10,
+               epsilon=0.05, epsilon_soft=1.e-2, k=0.85, gamma_scaler=1.01,  n_stop=10,
+               pad_mode='row-col', remove_zero_col=True, remove_zero_row=True, translate=False,
+               scale=False, check_finite=True, beta_0=None, beta_f=None, M_guess=None):
     r"""
     Parameters
     ----------
-    A : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which
-        is going to be transformed.
-    B : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing
-        the reference.
+    A : numpy.ndarray
+        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+    B : numpy.ndarray
+        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+    iteration_soft ： int, optional
+        Number of iterations for softassign loop. Default=50.
+    iteration_sink ： int, optional
+        Number of iterations for Sinkhorn loop. Default=50.
+    linear_cost_func :  numpy.ndarray
+        Linear cost function. Default=0.
+    beta_r : float, optional
+        Annealing rate which should greater than 1. Default=1.10.
+    epsilon : float, optional
+        The tolerance value for annealing loop. Default=0.05.
+    epsilon_soft : float, optional
+        The tolerance value used for softassign. Default=1.e-2.
+    k : float, optional
+        This parameter controls how much tighter the coverage threshold for the interior loop should
+        be than the coverage threshold for the loops outside. It has be be within the integral
+        :math:`\(0,1\)`. Default=0.85.
+    gamma_scaler : float
+        This parameter ensuses the qudratic cost function including  self-amplification positive
+        define. Default=1.01.
+    n_stop : int, optional
+        Number of running steps after the calculation converges in the relaxation procedure.
+        Default=10.
+    pad_mode : str, optional
+      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
+      'row': The array with fewer rows is padded with zero rows so that both have the same
+           number of rows.
+      'col': The array with fewer columns is padded with zero columns so that both have the
+           same number of columns.
+      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+           columns is padded with zero columns, so that both have the same dimensions.
+           This does not necessarily result in square arrays.
+      'square': The arrays are padded with zero rows and zero columns so that they are both
+           squared arrays. The dimension of square array is specified based on the highest
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed
+        If True, the zero columns on the right side will be removed.
         Default=True.
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed.
         Default=True.
-    pad_mode : str, optional
-      Zero padding mode when the sizes of two arrays differ. Defaul
-      'row': The array with fewer rows is padded with zero rows so
-           number of rows.
-      'col': The array with fewer columns is padded with zero colum
-           same number of columns.
-      'row-col': The array with fewer rows is padded with zero rows
-           columns is padded with zero columns, so that both have t
-           This does not necessarily result in square arrays.
-      'square': The arrays are padded with zero rows and zero colum
-           squared arrays. The dimension of square array is specifi
-           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
     translate : bool, optional
-        If True, both arrays are translated to be centered at origi
+        If True, both arrays are translated to be centered at origin.
         Default=False.
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Defaul
+        If True, both arrays are column normalized to unity. Default=False.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs o
+        If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
-    iteration_r : int, optional
-        Number of iterations in relaxation step. Default=500.
-    iteration_s : int, optional
-        Number of iterations in Sinkhorn step. Default=500.
-    beta_r : float, optional
-        Annealing rate which should greater than 1. Default=1.075.
-    tol_r : float, optional
-        The tolerance value used for relaxation. Default=1.e-8.
-    tol_s : float, optional
-        The tolerance value used for sinkhorn. Default=1.e-8.
-    epsilon_gamma : float, optional
-        Small quantity which is required to compute gamma. Default=
-    idx_stop : int, optional
-        Number of running steps after the calculation converges in
-        relaxation step. Default=10.
     beta_0 : float, optional
-        Initial inverse temperature. Default=1.e-5.
+        Initial inverse temperature. Default=None.
     beta_f : float, optional
-        Final inverse temperatue. Default=1.e4.
-    Mai_guess : numpy.array, optional
-        Initial guess for determinstic annealing. If None, the function
-        will use a random guess. Default=None.
-    return_guess : bool, optional
-        Whether to return the :math:`\mathbf{M}_{ai}` from the last step
-        if the calculations failed. Default=False.
+        Final inverse temperature. Default=None.
+    M_guess : numpy.ndarray
+        The initial guess of the doubly-stochastic matrix. Default=None.
 
     Returns
     -------
-    A : ndarray
-        The transformed ndarray A.
-    B : ndarray
-        The transformed ndarray B.
-    M_ai : ndarray
+    A : numpy.ndarray
+        The transformed numpy.ndarray A.
+    B : numpy.ndarray
+        The transformed numpy.ndarray B.
+    M_ai : numpy.ndarray
         The optimum permutation transformation matrix.
     e_opt : float
         Two-sided Procrustes error.
 
     Notes
     -----
-    Quadratic assignment problem (QAP) has played a very special bu
-    fundamental role in combinatorial optimization problems. The pr
-    be defined as a optimization problem to minimize the cost to as
-    of facilities to a set of locations. The cost is a function of
-    between the facilities and the geographical distances among var
+    Quadratic assignment problem (QAP) has played a very special but
+    fundamental role in combinatorial optimization problems. The problem can
+    be defined as a optimization problem to minimize the cost to assign a set
+    of facilities to a set of locations. The cost is a function of the flow
+    between the facilities and the geographical distances among various
     facilities.
-    The objective function (also named loss function in machine lea
+
+    The objective function (also named loss function in machine learning) is
     defined as [1]_
+
     .. math::
         E_{qap}(M, \mu, \nu) =
             - \frac{1}{2}\Sigma_{aibj}C_{ai;bj}M_{ai}M_{bj}
@@ -130,36 +133,40 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
             + \Sigma_i {\nu}_i (\Sigma_i M_{ai} -1)
             - \frac{\gamma}{2}\Sigma_{ai} {M_{ai}}^2
             + \frac{1}{\beta} \Sigma_{ai} M_{ai}\log{M_{ai}}
+
     where :math:`C_{ai,bj}` is the benefit matrix, :math:`M` is the
     desired :math:`N \times N` permutation matrix. :math:`E` is the
-    energy function which comes along with a self-amplification ter
-    `\gamma`, two Lagrange parameters :math:`\mu` and :math:`\nu` f
-    constrained optimization and :math:`M_{ai} \log{M_{ai}}` server
-    barrier function which ensures positivity of :math:`M_{ai}`. Th
+    energy function which comes along with a self-amplification term with
+    `\gamma`, two Lagrange parameters :math:`\mu` and :math:`\nu` for
+    constrained optimization and :math:`M_{ai} \log{M_{ai}}` servers as a
+    barrier function which ensures positivity of :math:`M_{ai}`. The
     inverse temperature :math:`\beta` is a deterministic annealing
-    control parameter. More detailed information about the algorith
+    control parameter. More detailed information about the algorithm can be
     referred to Rangarajan's paper.
 
     References
     ----------
-    .. [1] Rangarajan, Anand and Yuille, Alan L and Gold, Steven an
-       Mjolsness, Eric, "A convergence proof for the softassign qua
-       assignment algorithm" Advances in Neural Information Process
+    .. [1] Rangarajan, Anand and Yuille, Alan L and Gold, Steven and
+       Mjolsness, Eric, "A convergence proof for the softassign quadratic
+       assignment algorithm", Advances in Neural Information Processing
        Systems, page 620-626, 1997.
+    .. [2] Stefan Roth, "Analysis of a Deterministic Annealing Method for Graph Matching and
+       Quadratic Assignment", Ph.D. thesis, University of Mannheim, 2001
+
 
     Examples
     --------
     >>> import numpy as np
-    >>> array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
+    >>> array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],\
                             [3, 3, 2, 2], [3, 5, 2, 5]])
         # define a random matrix
-    >>> perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
+    >>> perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],\
                          [0., 0., 0., 1.], [0., 1., 0., 0.]])
         # define array_b by permuting array_a
     >>> array_b = np.dot(perm.T, np.dot(array_a, perm))
-    >>> new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,
-                                               remove_zero_col=Fals
-                                               remove_zero_row=Fals
+    >>> new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,\
+                                               remove_zero_col=False,\
+                                               remove_zero_row=False)
     >>> M_ai # the permutation matrix
     array([[0., 0., 1., 0.],
            [1., 0., 0., 0.],
@@ -167,6 +174,7 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
            [0., 1., 0., 0.]])
     >>> e_opt # the error
     0.0
+
     """
     # Check beta_r
     if beta_r <= 1:
@@ -181,110 +189,96 @@ def softassign(A, B, remove_zero_col=True, remove_zero_row=True,
     N = A.shape[0]
     C_tensor = C.reshape(N, N, N, N)
     # Compute the beta_0
-    gamma = _compute_gamma(C, N, epsilon_gamma)
-    # Initialization of M_ai
-    # check shape of Mai_guess
-    if Mai_guess is not None:
-        if Mai_guess.shape[0] == N and Mai_guess.shape[1] == N:
-            M_relax_old = Mai_guess
-        else:
-            warning_info = "The shape of Mai_guess does not match (" \
-                           + str(N) + "," + str(N) + "). " \
-                           + "Use random initial guess instead."
-            warnings.warn(warning_info)
-            M_relax_old = 1 / N + np.random.rand(N, N)
+    gamma = _compute_gamma(C, N, gamma_scaler)
+    if beta_0 is None:
+
+        C_gamma = C + gamma * (np.identity(N * N))
+        eival_gamma = np.amax(np.abs(np.linalg.eigvalsh(C_gamma)))
+        # todo: check which one is the best to use, gamma_scaler or beta_r
+        # beta_0 = beta_r * max(1.e-10, eival_gamma / N)
+        beta_0 = gamma_scaler * max(1.e-10, eival_gamma / N)
+        beta_0 = 1 / beta_0
     else:
-        M_relax_old = 1 / N + np.random.rand(N, N)
+        beta_0 *= N
+    if beta_f is None:
+        beta_f = 1.e5 * N
+    else:
+        beta_f *= N
+    # Initialization of M_ai
+    # check shape of M_guess
+    if M_guess is not None:
+        if M_guess.shape[0] == N and M_guess.shape[1] == N:
+            M = M_guess
+        else:
+            warnings.warn("The shape of M_guess does not match (" + str(N) + "," + str(N)+"). "
+                          "Use random initial guess instead.")
+            M = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(N, N)))
+    else:
+        # M_relax_old = 1 / N + np.random.rand(N, N)
+        M = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(N, N)))
     beta = beta_0
-    step_r = 0
-    # step to control when to stop the calculation
-    idx = 0
-    delta_M_relax = np.inf
-    # Deterministic annealing
+    nochange = 0
+    epsilon_sink = epsilon_soft * k
     while beta < beta_f:
         # relaxation
-        while np.amax(np.abs(delta_M_relax)) > tol_r and step_r < iteration_r:
-            step_r += 1
-            if step_r == iteration_r:
-                print('Maximum iteration in relaxation stage reached!')
-            # Compute Q in relaxation step
-            Q = np.einsum('aibj,bj->ai', C_tensor, M_relax_old)
-            Q += gamma * M_relax_old
+        M_old_beta = deepcopy(M)
+        # softassign loop
+        for _ in np.arange(iteration_soft):
+            M_old_soft = deepcopy(M)
+            # Compute Z in relaxation step
+            # C_gamma_tensor = C_gamma.reshape(N, N, N, N)
+            # Z = -np.einsum('ijkl,jl->ik', C_gamma_tensor, M)
+            # Z -= linear_cost_func
+            Z = np.einsum('aibj,bj->ai', C_tensor, M)
+            Z += gamma * M
             # soft_assign
-            M_soft = np.exp(beta * Q)
-            # Sinkhorn initial value
-            M_sink_old = M_soft
-            # step_s for Shinkhorn balancing
-            step_s = 0
-            # delta_M_sink = (M_relax_new - M_relax_old)/N
-            delta_M_sink = np.inf
-            # while np.amax(np.abs(delta_M_sink)) > tol and step_s < iteration_s:
-            while np.amax(np.abs(delta_M_sink)) > tol_s and step_s < iteration_s:
-                step_s += 1
+            M = np.exp(beta * Z)
+            # Sinkhorn loop
+            for _ in np.arange(iteration_sink):
                 # Row normalization
-                M_sink_new = M_sink_old / M_sink_old.sum(axis=1, keepdims=1)
+                M = M / M.sum(axis=1, keepdims=1)
                 # Column normalization
-                M_sink_new = M_sink_new / M_sink_new.sum(axis=0, keepdims=1)
+                M = M / M.sum(axis=0, keepdims=1)
                 # Compute the delata_M_sink
-                delta_M_sink = M_sink_new - M_sink_old
-                # Update M_sink_old
-                M_sink_old = M_sink_new
-                # tol_s = max(np.amax(np.abs(delta_M_sink))/20, tol_s)
-            # use the result of Sinkhorn to update M_ai for relaxation
-            M_relax_new = M_sink_new
-            # Compute the delta_M_relax
-            delta_M_relax = M_relax_new - M_relax_old
-            # tol_r = max(np.amax(np.abs(delta_M_relax))/20, tol_r)
-            # Update the M_relax
-            M_relax_old = M_relax_new
+                # if np.amax(np.abs(M.sum(axis=1, keepdims=1) - 1)) < tol_sink:
+                if np.amax(np.abs(M.sum(axis=1, keepdims=1) - 1)) < epsilon_sink:
+                    M = M / M.sum(axis=1, keepdims=1)
+                    break
 
-        beta = beta_r * beta
+            change_soft = np.amax(np.abs(M - M_old_soft))
+            # if change_soft < tol_soft:
+            if change_soft < epsilon_soft:
+                break
+            else:
+                epsilon_sink = change_soft * k
 
-        if np.isnan(M_relax_new).any() or np.isinf(M_relax_new).any():
-            break
-        else:
-            # keep a temporary value for the case of nan
-            M_tmp = M_relax_new
+        change_annealing = np.amax(np.abs(M - M_old_beta))
+        if change_annealing < epsilon:
+            nochange += 1
+            if nochange > n_stop:
+                break
 
-        # if np.amax(np.abs(delta_M_relax)) < tol_r:
-        #     idx += 1
-        #     if idx == idx_stop:
-        #         break
-    #
-    if return_guess:
-        try:
-            _, _, M_ai, _ = permutation(np.eye(M_relax_new.shape[0]), M_relax_new)
-            final_guess = M_relax_new
-        except ValueError:
-            print("M_ai cannot contain infs. Please try to decrease annealing rate (beta_r) or "
-                  "increase the temperature (beta_f).")
-            _, _, M_ai, _ = permutation(np.eye(M_tmp.shape[0]), M_tmp)
-            final_guess = M_tmp
-        # Compute error
-        e_opt = error(A, B, M_ai, M_ai)
-        return A, B, M_ai, e_opt, final_guess
-    else:
-        try:
-            _, _, M_ai, _ = permutation(np.eye(M_relax_new.shape[0]), M_relax_new)
-        except ValueError:
-            print("M_ai cannot contain infs. Please try to decrease annealing rate (beta_r) or "
-                  "increase the temperature (beta_f).")
-            _, _, M_ai, _ = permutation(np.eye(M_tmp.shape[0]), M_tmp)
+        beta *= beta_r
+        epsilon_soft = change_soft * k
+        epsilon_sink = epsilon_soft * k
 
-        # Compute error
-        e_opt = error(A, B, M_ai, M_ai)
-        print(e_opt)
-        return A, B, M_ai, e_opt
+    # Compute the error
+    _, _, M, _ = permutation(np.eye(M.shape[0]), M)
+    e_opt = error(A, B, M, M)
+    return A, B, M, e_opt
 
 
-def _compute_gamma(C, N, epsilon_gamma):
+def _compute_gamma(C, N, gamma_scaler):
     r"""Compute gamma for relaxation."""
     r = np.eye(N) - np.ones(N) / N
     R = np.kron(r, r)
     RCR = np.dot(R, np.dot(C, R))
-    # gamma = -s[-1] + epsilon_gamma
-    s = np.linalg.eigvalsh(RCR)
-    # get index of sorted eigenvalues from largest to smallest
-    idx = s.argsort()[::-1]
-    gamma = -s[idx][-1] + epsilon_gamma
+    gamma = np.max(np.abs(np.linalg.eigvalsh(RCR))) * gamma_scaler
     return gamma
+
+
+def _min_eigval(arr):
+    # get the minimum eigenvalue
+    eigvals = np.linalg.eigvalsh(arr)
+    min_eigval = np.amin(eigvals)
+    return min_eigval

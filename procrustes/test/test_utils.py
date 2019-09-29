@@ -27,6 +27,7 @@ import numpy as np
 from procrustes.utils import zero_padding, hide_zero_padding
 from procrustes.utils import translate_array, scale_array
 from procrustes.utils import eigendecomposition, is_diagonalizable
+from procrustes.utils import optimal_heuristic, error
 
 
 def test_zero_padding_rows():
@@ -101,8 +102,8 @@ def test_zero_padding_rows_columns():
 
     padded2, padded1 = zero_padding(array2, array1, pad_mode='row-col')
     array2_test = np.array([[1, 2.5, 0], [9, 5, 0], [4, 8.5, 0], [0, 0, 0]])
-    assert padded1.shape == (4,3)
-    assert padded2.shape == (4,3)
+    assert padded1.shape == (4, 3)
+    assert padded2.shape == (4, 3)
     assert (abs(padded1 - array1) < 1.e-10).all()
     assert (abs(padded2 - array2_test) < 1.e-10).all()
 
@@ -294,7 +295,8 @@ def test_eigenvalue_decomposition():
     predicted = np.dot(u_predicted, np.dot(np.diag(s_predicted), u_predicted.T))
     assert (abs(predicted - array) < 1.e-8).all()
     assert (abs(s_predicted - s_expected) < 1.e-8).all()
-    # check that product of u, s, and u.T obtained from eigenvalue_decomposition gives original array
+    # check that product of u, s, and u.T obtained from eigenvalue_decomposition gives
+    # an original array
     array = np.array([[3, 1], [1, 3]])
     assert (is_diagonalizable(array) is True)
     s_predicted, u_predicted = eigendecomposition(array)
@@ -304,3 +306,35 @@ def test_eigenvalue_decomposition():
     predicted = np.dot(u_predicted, np.dot(np.diag(s_predicted), u_predicted.T))
     assert (abs(predicted - array) < 1.e-8).all()
     assert (abs(s_predicted - s_expected) < 1.e-8).all()
+
+
+def test_optimal_heuristic():
+    # test whether it works correctly
+    arr_a = np.array([[3, 6, 1, 0, 7],
+                      [4, 5, 2, 7, 6],
+                      [8, 6, 6, 1, 7],
+                      [4, 4, 7, 9, 4],
+                      [4, 8, 0, 3, 1]])
+    arr_b = np.array([[1, 8, 0, 4, 3],
+                      [6, 5, 2, 4, 7],
+                      [7, 6, 6, 8, 1],
+                      [7, 6, 1, 3, 0],
+                      [4, 4, 7, 4, 9]])
+    perm_guess = np.array([[0, 0, 1, 0, 0],
+                           [1, 0, 0, 0, 0],
+                           [0, 0, 0, 1, 0],
+                           [0, 0, 0, 0, 1],
+                           [0, 1, 0, 0, 0]])
+    perm_exact = np.array([[0, 0, 0, 1, 0],
+                           [0, 1, 0, 0, 0],
+                           [0, 0, 1, 0, 0],
+                           [0, 0, 0, 0, 1],
+                           [1, 0, 0, 0, 0]])
+    error_old = error(arr_a, arr_b, perm_guess, perm_guess)
+    perm, kopt_error = optimal_heuristic(perm=perm_guess, A=arr_a, B=arr_b,
+                                         ref_error=error_old, k_opt=3)
+    np.testing.assert_equal(perm, perm_exact)
+    assert kopt_error == 0
+    # test the error exceptions
+    np.testing.assert_raises(ValueError, optimal_heuristic, perm=perm_guess,
+                             A=arr_a, B=arr_b, ref_error=error_old, k_opt=1)

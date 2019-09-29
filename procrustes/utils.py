@@ -22,8 +22,11 @@
 # --
 """Utility Module."""
 
+import copy
 
 import numpy as np
+
+import itertools as it
 
 
 def zero_padding(array_a, array_b, pad_mode='row-col'):
@@ -326,6 +329,51 @@ def error(A, B, U, V=None):
     E = np.dot(A, U) if V is None else np.dot(np.dot(U.T, A), V)
     E -= B
     return np.trace(np.dot(E.T, E))
+
+
+def optimal_heuristic(perm, A, B, ref_error, k_opt=3):
+    r"""
+    Perform k-opt local search with every possible valid combination of the swapping mechanism which
+    also includes 2-opt heuristic.
+
+    Parameters
+    ----------
+    perm : np.ndarray
+        The permutation array which remains to be processed with k-opt local search.
+    A : np.ndarray
+        The array to be permuted.
+    B : np.ndarray
+        The reference array.
+    ref_error : float
+        The reference error value.
+    k_opt : int, optional
+        Order of local search. Default=3.
+
+    Returns
+    -------
+    perm : np.ndarray
+        The permutation array after optimal heuristic search.
+    kopt_error : float
+        The error distance of two arrays with the updated permutation array.
+
+    """
+    if k_opt < 2:
+        raise ValueError("K_opt value must be a integer greater than 2.")
+    num_row = perm.shape[0]
+    kopt_error = ref_error
+    # all the possible row-wise permutations
+    for comb in it.combinations(np.arange(num_row), r=k_opt):
+        for comb_perm in it.permutations(comb, r=k_opt):
+            if comb_perm != comb:
+                perm_kopt = copy.deepcopy(perm)
+                perm_kopt[comb, :] = perm_kopt[comb_perm, :]
+                e_kopt_new = error(A, B, perm_kopt, perm_kopt)
+                if e_kopt_new < kopt_error:
+                    perm = perm_kopt
+                    kopt_error = e_kopt_new
+                    if kopt_error == 0:
+                        break
+    return perm, kopt_error
 
 
 def _get_input_arrays(A, B, remove_zero_col, remove_zero_row,

@@ -38,7 +38,7 @@ __all__ = [
 
 
 def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, beta_r=1.10,
-               epsilon=0.05, epsilon_soft=1.e-2, k=0.85, gamma_scaler=1.01,  n_stop=10,
+               epsilon=0.05, epsilon_soft=1.e-3, k=0.15, gamma_scaler=1.01,  n_stop=10,
                pad_mode='row-col', remove_zero_col=True, remove_zero_row=True, translate=False,
                scale=False, check_finite=True, beta_0=None, beta_f=None, M_guess=None):
     r"""

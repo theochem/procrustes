@@ -37,10 +37,11 @@ __all__ = [
 ]
 
 
-def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, beta_r=1.10,
-               epsilon=0.05, epsilon_soft=1.e-3, k=0.15, gamma_scaler=1.01,  n_stop=10,
-               pad_mode='row-col', remove_zero_col=True, remove_zero_row=True, translate=False,
-               scale=False, check_finite=True, beta_0=None, beta_f=None, M_guess=None):
+def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, beta_r=1.10,
+               beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3, epsilon_sink=1.e-3, k=0.15,
+               gamma_scaler=1.01, n_stop=3, pad_mode='row-col', remove_zero_col=True,
+               remove_zero_row=True, translate=False, scale=False, check_finite=True,
+               adapted=True, beta_0=None, M_guess=None, iteration_anneal=None):
     r"""
     Parameters
     ----------
@@ -56,14 +57,19 @@ def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, be
         Linear cost function. Default=0.
     beta_r : float, optional
         Annealing rate which should greater than 1. Default=1.10.
+    beta_f : float, optional
+        The final inverse temperature. Default=1.e5.
     epsilon : float, optional
         The tolerance value for annealing loop. Default=0.05.
     epsilon_soft : float, optional
-        The tolerance value used for softassign. Default=1.e-2.
+        The tolerance value used for softassign. Default=1.e-3.
+    epsilon_sink : float, optional
+        The tolerance value used for Sinkhorn loop. If adapted version is used, it will use the
+        adapted tolerance value for Sinkhorn instead. Default=1.e-3.
     k : float, optional
         This parameter controls how much tighter the coverage threshold for the interior loop should
         be than the coverage threshold for the loops outside. It has be be within the integral
-        :math:`\(0,1\)`. Default=0.85.
+        :math:`\(0,1\)`. Default=0.15.
     gamma_scaler : float
         This parameter ensuses the qudratic cost function including  self-amplification positive
         define. Default=1.01.
@@ -94,14 +100,18 @@ def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, be
     scale : bool, optional
         If True, both arrays are column normalized to unity. Default=False.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
+        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+    adapted : bool, optional
+        If adapted, this function will use the tighter covergence threshold for the interior loops.
         Default=True.
     beta_0 : float, optional
         Initial inverse temperature. Default=None.
     beta_f : float, optional
         Final inverse temperature. Default=None.
-    M_guess : numpy.ndarray
+    M_guess : numpy.ndarray, optional
         The initial guess of the doubly-stochastic matrix. Default=None.
+    iteration_anneal : int, optional
+        Number of iterations for annealing loop. Default=None.
 
     Returns
     -------
@@ -191,34 +201,47 @@ def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, be
     # Compute the beta_0
     gamma = _compute_gamma(C, N, gamma_scaler)
     if beta_0 is None:
-
         C_gamma = C + gamma * (np.identity(N * N))
         eival_gamma = np.amax(np.abs(np.linalg.eigvalsh(C_gamma)))
-        # todo: check which one is the best to use, gamma_scaler or beta_r
-        # beta_0 = beta_r * max(1.e-10, eival_gamma / N)
         beta_0 = gamma_scaler * max(1.e-10, eival_gamma / N)
         beta_0 = 1 / beta_0
     else:
         beta_0 *= N
-    if beta_f is None:
-        beta_f = 1.e5 * N
-    else:
+    beta = beta_0
+
+    # We will use iteration_anneal if provided even if the final inverse temperature is specified
+    # iteration_anneal is not None, beta_f can be None or not
+    if iteration_anneal is not None:
+        beta_f = beta_0 * np.power(beta_r, iteration_anneal) * N
+    # iteration_anneal is None and beta_f is not None
+    elif iteration_anneal is None and beta_f is not None:
         beta_f *= N
+    # Both iteration_anneal and beta_f are None
+    else:
+        raise ValueError("We must specify at least one of iteration_anneal and beta_f and "
+                         "specify only one is recommended.")
+
     # Initialization of M_ai
     # check shape of M_guess
     if M_guess is not None:
+        if np.any(M_guess < 0):
+            raise ValueError(
+                "The initial guess of permutation matrix cannot contain any negative values.")
         if M_guess.shape[0] == N and M_guess.shape[1] == N:
             M = M_guess
         else:
-            warnings.warn("The shape of M_guess does not match (" + str(N) + "," + str(N)+"). "
-                          "Use random initial guess instead.")
+            warnings.warn("The shape of M_guess does not match ({}, {})."
+                          "Use random initial guess instead.".format(N, N))
             M = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(N, N)))
     else:
         # M_relax_old = 1 / N + np.random.rand(N, N)
         M = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(N, N)))
-    beta = beta_0
+    M[M < 0] = 0
+    M = M / N
+
     nochange = 0
-    epsilon_sink = epsilon_soft * k
+    if adapted:
+        epsilon_sink = epsilon_soft * k
     while beta < beta_f:
         # relaxation
         M_old_beta = deepcopy(M)
@@ -240,27 +263,31 @@ def softassign(A, B, iteration_soft=50, iteration_sink=5, linear_cost_func=0, be
                 # Column normalization
                 M = M / M.sum(axis=0, keepdims=1)
                 # Compute the delata_M_sink
-                # if np.amax(np.abs(M.sum(axis=1, keepdims=1) - 1)) < tol_sink:
                 if np.amax(np.abs(M.sum(axis=1, keepdims=1) - 1)) < epsilon_sink:
                     M = M / M.sum(axis=1, keepdims=1)
                     break
 
             change_soft = np.amax(np.abs(M - M_old_soft))
-            # if change_soft < tol_soft:
             if change_soft < epsilon_soft:
                 break
             else:
-                epsilon_sink = change_soft * k
+                if adapted:
+                    epsilon_sink = change_soft * k
+                else:
+                    continue
 
         change_annealing = np.amax(np.abs(M - M_old_beta))
         if change_annealing < epsilon:
             nochange += 1
             if nochange > n_stop:
                 break
+        else:
+            nochange = 0
 
         beta *= beta_r
-        epsilon_soft = change_soft * k
-        epsilon_sink = epsilon_soft * k
+        if adapted:
+            epsilon_soft = change_soft * k
+            epsilon_sink = epsilon_soft * k
 
     # Compute the error
     _, _, M, _ = permutation(np.eye(M.shape[0]), M)

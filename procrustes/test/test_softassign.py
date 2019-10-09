@@ -104,7 +104,7 @@ def test_softassign_4by4_translate_scale():
 
 
 def test_softassign_4by4_translate_scale_loop():
-    r"""Test softassign by 4by4 matrix with all permutation matrices with translation and scaling."""
+    r"""Test softassign by 4by4 matrix with all permutations with translation and scaling."""
     # define a random matrix
     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
                         [-3, 3, 2, 2], [3, -5, 2, 5]])
@@ -213,3 +213,53 @@ def test_softassign_invalid_beta_r():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, softassign, array_a, array_b, beta_r=0.5)
+
+
+def test_softassign_4by4_beta_0():
+    r"""Test softassign by 4by4 matrix specified beta_0.."""
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # random permutation matrix_rank
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
+                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    array_b = np.dot(perm.T, np.dot(array_a, perm))
+    # Check
+    new_a, new_b, U, e_opt = softassign(array_a,
+                                        array_b,
+                                        beta_0=1.e-6,
+                                        translate=False,
+                                        scale=False)
+    assert_almost_equal(U, perm, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+
+
+def test_softassign_4by4_anneal_steps():
+    r"""Test softassign by 4by4 matrix specified annealing steps."""
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # random permutation matrix_rank
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
+                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    array_b = np.dot(perm.T, np.dot(array_a, perm))
+    # Check
+    new_a, new_b, U, e_opt = softassign(array_a,
+                                        array_b,
+                                        iteration_anneal=165,
+                                        translate=False,
+                                        scale=False)
+    assert_almost_equal(U, perm, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+
+
+def test_softassign_missing_iteration_anneal_beta_f():
+    r"""Test softassign by missing iteration_anneal and beta_f."""
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # random permutation matrix_rank
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
+                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    array_b = np.dot(perm.T, np.dot(array_a, perm))
+    assert_raises(ValueError, softassign, array_a, array_b, iteration_anneal=None, beta_f=None)

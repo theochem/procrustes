@@ -21,6 +21,7 @@
 #
 # --
 
+import warnings
 
 import itertools
 import numpy as np
@@ -263,3 +264,42 @@ def test_softassign_missing_iteration_anneal_beta_f():
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     assert_raises(ValueError, softassign, array_a, array_b, iteration_anneal=None, beta_f=None)
+
+
+def test_softassign_M_guess():
+    r"""Test softassign by given initial permutation guess."""
+    # define a random matrix
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
+                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    # random permutation matrix_rank
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
+                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    array_b = np.dot(perm.T, np.dot(array_a, perm))
+    M_guess1 = np.array([[0, -0.98, 0, 0], [0.8, 0, 0, 0],
+                         [0, 0, 1.01, 0], [0, 0, 0, 1]])
+    M_guess2 = np.array([[0, 0.98, 0, 0], [0.8, 0, 0, 0],
+                         [0, 0, 1.01, 0], [0, 0, 0, 1]])
+    M_guess3 = np.array([[0, 0.98, 0, 0], [0, 0, 1.01, 0], [0, 0, 0, 1]])
+    # check assert raises
+    assert_raises(ValueError, softassign, array_a, array_b, M_guess=M_guess1)
+    # check if initial guess works
+    new_a, new_b, U, e_opt = softassign(array_a,
+                                        array_b,
+                                        M_guess=M_guess2,
+                                        translate=False,
+                                        scale=False)
+    assert_almost_equal(U, perm, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+    # check if initial guess given shape not matching
+    with warnings.catch_warnings(record=True) as w:
+        new_a, new_b, U, e_opt = softassign(array_a,
+                                            array_b,
+                                            M_guess=M_guess3,
+                                            translate=False,
+                                            scale=False)
+        # catch the error information
+        assert len(w) == 1
+        assert not str(w[0].message).startswith("We must specify")
+        # chekc the results
+        assert_almost_equal(U, perm, decimal=6)
+        assert_almost_equal(e_opt, 0, decimal=6)

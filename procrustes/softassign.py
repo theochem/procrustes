@@ -302,10 +302,3 @@ def _compute_gamma(C, N, gamma_scaler):
     RCR = np.dot(R, np.dot(C, R))
     gamma = np.max(np.abs(np.linalg.eigvalsh(RCR))) * gamma_scaler
     return gamma
-
-
-def _min_eigval(arr):
-    # get the minimum eigenvalue
-    eigvals = np.linalg.eigvalsh(arr)
-    min_eigval = np.amin(eigvals)
-    return min_eigval

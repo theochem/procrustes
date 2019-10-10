@@ -43,6 +43,8 @@ def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, 
                remove_zero_row=True, translate=False, scale=False, check_finite=True,
                adapted=True, beta_0=None, M_guess=None, iteration_anneal=None):
     r"""
+    Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
+
     Parameters
     ----------
     A : numpy.ndarray
@@ -71,7 +73,7 @@ def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, 
         be than the coverage threshold for the loops outside. It has be be within the integral
         :math:`\(0,1\)`. Default=0.15.
     gamma_scaler : float
-        This parameter ensuses the qudratic cost function including  self-amplification positive
+        This parameter ensures the quadratic cost function including  self-amplification positive
         define. Default=1.01.
     n_stop : int, optional
         Number of running steps after the calculation converges in the relaxation procedure.

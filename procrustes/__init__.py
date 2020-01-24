@@ -27,5 +27,5 @@ from procrustes.utils import *
 from procrustes.orthogonal import *
 from procrustes.permutation import *
 from procrustes.rotational import *
-from procrustes.symmetric import *
 from procrustes.softassign import *
+from procrustes.symmetric import *

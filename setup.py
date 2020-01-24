@@ -23,7 +23,7 @@
 """Setup and Install Script."""
 
 
-from distutils.core import setup
+from setuptools import find_packages, setup
 
 
 setup(
@@ -35,7 +35,7 @@ setup(
     author="Ayers Group",
     author_email="ayers@mcmaster.ca",
     package_dir={"procrustes": "procrustes"},
-    packages=["procrustes"],
+    packages=find_packages("procrustes", exclude=["docs", "test"]),
     # test_suite="nose.collector",
     requires=["numpy", "scipy", "sphinx"],
 )

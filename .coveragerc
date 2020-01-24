@@ -1,0 +1,7 @@
+[run]
+omit =
+    procrustes/test/*
+
+[report]
+show_missing = True
+

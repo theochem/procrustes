@@ -448,7 +448,9 @@ def test_permutation_2sided_4by4_normal1():
 def test_permutation_2sided_4by4_normal1_loop():
     r"""Test 2sided-perm with 'normal1' by 4by4 arrays with all permutations."""
     # define a random matrix
-    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
+    # array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
+    np.random.seed(997)
+    array_a = np.arange(16).reshape((4,4))
     # check with all possible permutation matrices
     for comb in itertools.permutations(np.arange(4)):
         perm = np.zeros((4, 4))

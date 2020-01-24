@@ -1,5 +1,10 @@
 sudo: false
 language: python
+
+branches:
+  only:
+    - master
+
 jobs:
   include:
     - python: 2.7

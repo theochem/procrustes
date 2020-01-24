@@ -165,6 +165,6 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
             else:
                 y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / (s[i] ** 2 + s[j] ** 2)
     array_x = np.dot(np.dot(vt.T, y), vt)
-    e_opt = error( new_a,  new_b, array_x)
+    e_opt = error(new_a,  new_b, array_x)
 
     return new_a, new_b, array_x, e_opt

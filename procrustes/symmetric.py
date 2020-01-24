@@ -13,25 +13,21 @@
 #
 # Procrustes is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR array_a PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""
-Symmetric Procrustes Module.
-"""
+"""Symmetric Procrustes Module."""
 
-from procrustes.utils import singular_value_decomposition, _get_input_arrays, \
-    error
 import numpy as np
+from procrustes.utils import _get_input_arrays, error, singular_value_decomposition
 
 
-def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
-              pad_mode='row-col', translate=False, scale=False,
-              check_finite=True):
+def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
+              pad_mode='row-col', translate=False, scale=False, check_finite=True):
     r"""
     Symmetric right-sided procrustes transformation.
 
@@ -40,10 +36,10 @@ def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
 
     Parameters
     ----------
-    A : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    B : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+    array_a : ndarray
+        The 2d-array :math:`\mathbf{array_a}_{m \times n}` which is going to be transformed.
+    array_b : ndarray
+        The 2d-array :math:`\mathbf{array_b}_{m \times n}` representing the reference.
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed.
         Default=True.
@@ -73,33 +69,34 @@ def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
 
     Returns
     -------
-    A : ndarray
-        The transformed ndarray A.
-    B : ndarray
-        The transformed ndarray B.
-    U_opt : ndarray
+    new_a : ndarray
+        The transformed ndarray array_a.
+    new_b : ndarray
+        The transformed ndarray array_b.
+    array_x : ndarray
         The optimum symmetric transformation array.
     e_opt : float
         One-sided orthogonal Procrustes error.
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
+    Given matrix :math:`\mathbf{array_a}_{m \times n}` and a reference
+    :math:`\mathbf{array_b}_{m \times n}`,
     with :math:`m \geqslant n`, find the symmetric matrix :math:`\mathbf{X}_{n \times n}` for which
-    :math:`\mathbf{AX}` is as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
+    :math:`\mathbf{AX}` is as close as possible to :math:`\mathbf{array_b}_{m \times n}`. I.e.,
 
     .. math::
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
-                                \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2 =
+                        \right. \right\}} \|\mathbf{array_a} \mathbf{X} - \mathbf{array_b}\|_{F}^2 =
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
-                                \right. \right\}}
-                \text{Tr}\left[\left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)^\dagger
-                         \left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)\right]
+                        \right. \right\}}
+                \text{Tr}\left[\left(\mathbf{array_a}\mathbf{X} - \mathbf{array_b} \right)^\dagger
+                         \left(\mathbf{array_a}\mathbf{X} - \mathbf{array_b} \right)\right]
 
-    Considering the singular value decomposition of :math:`\mathbf{A}_{m \times n}` as
+    Considering the singular value decomposition of :math:`\mathbf{array_a}_{m \times n}` as
 
     .. math::
-       \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
+       \mathbf{array_a}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
                                  \mathbf{\Sigma}_{m \times m} \\
                                  \mathbf{0}_{m \times (n - m)} \end{bmatrix}
                                  \mathbf{V}_{n \times n}^\dagger
@@ -109,18 +106,18 @@ def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
 
     .. math::
        \mathbf{C}_{m \times n} = \mathbf{U}_{m \times m}^\dagger
-                                 \mathbf{A}_{m \times n}^0 \mathbf{V}_{n \times n}
+                                 \mathbf{array_a}_{m \times n}^0 \mathbf{V}_{n \times n}
 
     Then the elements of the optimal matrix :math:`\mathbf{X}_{n \times n}` are
 
     .. math::
        x_{ij} = \begin{cases}
-              0 && i \text{ and } j > \text{rank} \left(\mathbf{B}\right) \\
+              0 && i \text{ and } j > \text{rank} \left(\mathbf{array_b}\right) \\
               \frac{\sigma_i c_{ij} + \sigma_j c_{ji}}{\sigma_i^2 + \sigma_j^2} && \text{otherwise}
               \end{cases}
 
     Notice that the first part of this constrain only works in the unusual case where
-    :math:`\mathbf{B}` has rank less than :math:`n`.
+    :math:`\mathbf{array_b}` has rank less than :math:`n`.
 
     References
     ----------
@@ -148,17 +145,16 @@ def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
 
     """
     # check inputs
-    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite)
-
-    # compute SVD of A
-    n = A.shape[1]
-    u, s, vt = singular_value_decomposition(A)
+    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                     pad_mode, translate, scale, check_finite)
+    # compute SVD of  new_a
+    n = new_a.shape[1]
+    u, s, vt = singular_value_decomposition(new_a)
 
     # add zeros to the eigenvalue array so it has length n
-    if len(s) < A.shape[1]:
+    if len(s) < new_a.shape[1]:
         s = np.concatenate((s, np.zeros(n - len(s))))
-    c = np.dot(np.dot(u.T, B), vt.T)
+    c = np.dot(np.dot(u.T,  new_b), vt.T)
 
     # create the intermediate array Y and the optimum symmetric transformation array X
     y = np.zeros((n, n))
@@ -167,9 +163,8 @@ def symmetric(A, B, remove_zero_col=True, remove_zero_row=True,
             if s[i] ** 2 + s[j] ** 2 == 0:
                 y[i, j] = 0
             else:
-                y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / \
-                          (s[i] ** 2 + s[j] ** 2)
-    X_opt = np.dot(np.dot(vt.T, y), vt)
-    e_opt = error(A, B, X_opt)
+                y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / (s[i] ** 2 + s[j] ** 2)
+    array_x = np.dot(np.dot(vt.T, y), vt)
+    e_opt = error( new_a,  new_b, array_x)
 
-    return A, B, X_opt, e_opt
+    return new_a, new_b, array_x, e_opt

@@ -154,7 +154,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     # add zeros to the eigenvalue array so it has length n
     if len(s) < new_a.shape[1]:
         s = np.concatenate((s, np.zeros(n - len(s))))
-    c = np.dot(np.dot(u.T,  new_b), vt.T)
+    c = np.dot(np.dot(u.T, new_b), vt.T)
 
     # create the intermediate array Y and the optimum symmetric transformation array X
     y = np.zeros((n, n))
@@ -165,6 +165,6 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
             else:
                 y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / (s[i] ** 2 + s[j] ** 2)
     array_x = np.dot(np.dot(vt.T, y), vt)
-    e_opt = error(new_a,  new_b, array_x)
+    e_opt = error(new_a, new_b, array_x)
 
     return new_a, new_b, array_x, e_opt

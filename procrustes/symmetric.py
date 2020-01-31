@@ -13,7 +13,7 @@
 #
 # Procrustes is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR array_a PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
@@ -37,9 +37,9 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array :math:`\mathbf{array_a}_{m \times n}` which is going to be transformed.
+        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     array_b : ndarray
-        The 2d-array :math:`\mathbf{array_b}_{m \times n}` representing the reference.
+        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed.
         Default=True.
@@ -80,23 +80,23 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
     Notes
     -----
-    Given matrix :math:`\mathbf{array_a}_{m \times n}` and a reference
-    :math:`\mathbf{array_b}_{m \times n}`,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference
+    :math:`\mathbf{B}_{m \times n}`,
     with :math:`m \geqslant n`, find the symmetric matrix :math:`\mathbf{X}_{n \times n}` for which
-    :math:`\mathbf{AX}` is as close as possible to :math:`\mathbf{array_b}_{m \times n}`. I.e.,
+    :math:`\mathbf{AX}` is as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
 
     .. math::
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
-                        \right. \right\}} \|\mathbf{array_a} \mathbf{X} - \mathbf{array_b}\|_{F}^2 =
+                        \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2 =
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
                         \right. \right\}}
-                \text{Tr}\left[\left(\mathbf{array_a}\mathbf{X} - \mathbf{array_b} \right)^\dagger
-                         \left(\mathbf{array_a}\mathbf{X} - \mathbf{array_b} \right)\right]
+                \text{Tr}\left[\left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)\right]
 
-    Considering the singular value decomposition of :math:`\mathbf{array_a}_{m \times n}` as
+    Considering the singular value decomposition of :math:`\mathbf{A}_{m \times n}` as
 
     .. math::
-       \mathbf{array_a}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
+       \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
                                  \mathbf{\Sigma}_{m \times m} \\
                                  \mathbf{0}_{m \times (n - m)} \end{bmatrix}
                                  \mathbf{V}_{n \times n}^\dagger
@@ -106,18 +106,18 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
     .. math::
        \mathbf{C}_{m \times n} = \mathbf{U}_{m \times m}^\dagger
-                                 \mathbf{array_a}_{m \times n}^0 \mathbf{V}_{n \times n}
+                                 \mathbf{A}_{m \times n}^0 \mathbf{V}_{n \times n}
 
     Then the elements of the optimal matrix :math:`\mathbf{X}_{n \times n}` are
 
     .. math::
        x_{ij} = \begin{cases}
-              0 && i \text{ and } j > \text{rank} \left(\mathbf{array_b}\right) \\
+              0 && i \text{ and } j > \text{rank} \left(\mathbf{B}\right) \\
               \frac{\sigma_i c_{ij} + \sigma_j c_{ji}}{\sigma_i^2 + \sigma_j^2} && \text{otherwise}
               \end{cases}
 
     Notice that the first part of this constrain only works in the unusual case where
-    :math:`\mathbf{array_b}` has rank less than :math:`n`.
+    :math:`\mathbf{B}` has rank less than :math:`n`.
 
     References
     ----------
@@ -127,9 +127,9 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     Examples
     --------
     >>> import numpy as np
-    >>> array_a = np.array([[5., 2., 8.],
-                            [2., 2., 3.],
-                            [1., 5., 6.],
+    >>> array_a = np.array([[5., 2., 8.], \
+                            [2., 2., 3.], \
+                            [1., 5., 6.], \
                             [7., 3., 2.]])
     >>> array_b = np.array([[ 52284.5, 209138. , 470560.5],
                             [ 22788.5,  91154. , 205096.5],

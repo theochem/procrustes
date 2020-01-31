@@ -22,12 +22,13 @@
 # --
 """Orthogonal Procrustes Module."""
 
-import numpy as np
-import warnings
 from itertools import product
+import warnings
 
-from procrustes.utils import _get_input_arrays, error
-from procrustes.utils import singular_value_decomposition, eigendecomposition
+import numpy as np
+
+from procrustes.utils import _get_input_arrays, error,\
+    eigendecomposition, singular_value_decomposition
 
 
 def orthogonal(array_a, array_b, remove_zero_col=True,
@@ -394,8 +395,6 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
 
 
 def _2sided(array_a, array_b):
-    r"""
-    """
     array_ua, _, vta = np.linalg.svd(array_a)
     array_ub, _, vtb = np.linalg.svd(array_b)
     u_opt1 = np.dot(array_ua, array_ub.T)
@@ -404,8 +403,6 @@ def _2sided(array_a, array_b):
 
 
 def _2sided_1trans_approx(array_a, array_b, tol):
-    r"""
-    """
     # Calculate the eigenvalue decomposition of array_a and array_b
     _, array_ua = eigendecomposition(array_a, permute_rows=True)
     _, array_ub = eigendecomposition(array_b, permute_rows=True)
@@ -419,8 +416,6 @@ def _2sided_1trans_approx(array_a, array_b, tol):
 
 
 def _2sided_1trans_exact(array_a, array_b):
-    r"""
-    """
     _, array_ua = eigendecomposition(array_a)
     _, array_ub = eigendecomposition(array_b)
 

@@ -26,9 +26,8 @@ from itertools import product
 import warnings
 
 import numpy as np
-
-from procrustes.utils import _get_input_arrays, error,\
-    eigendecomposition, singular_value_decomposition
+from procrustes.utils import _get_input_arrays, eigendecomposition, \
+    error, singular_value_decomposition
 
 
 def orthogonal(array_a, array_b, remove_zero_col=True,

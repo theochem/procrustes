@@ -30,7 +30,7 @@ from procrustes.utils import _get_input_arrays, error
 from procrustes.utils import singular_value_decomposition, eigendecomposition
 
 
-def orthogonal(A, B, remove_zero_col=True,
+def orthogonal(array_a, array_b, remove_zero_col=True,
                remove_zero_row=True, pad_mode='row-col',
                translate=False, scale=False, check_finite=True):
     r"""
@@ -41,9 +41,9 @@ def orthogonal(A, B, remove_zero_col=True,
 
     Parameters
     ----------
-    A : ndarray
+    array_a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    B : ndarray
+    array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed.
@@ -75,11 +75,11 @@ def orthogonal(A, B, remove_zero_col=True,
 
     Returns
     -------
-    A : ndarray
-        The transformed ndarray A.
-    B : ndarray
-        The transformed ndarray B.
-    U_opt : ndarray
+    new_a : ndarray
+        The transformed ndarray :math:`A`.
+    new_b : ndarray
+        The transformed ndarray :math:`B`.
+    u_opt : ndarray
         The optimum transformation matrix.
     e_opt : float
         One-sided orthogonal Procrustes error.
@@ -140,30 +140,29 @@ def orthogonal(A, B, remove_zero_col=True,
 
     """
     # check inputs
-    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite)
+    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col,
+                                     remove_zero_row, pad_mode, translate, scale, check_finite)
 
-    # calculate SVD of A.T * B
-    U, _, VT = singular_value_decomposition(np.dot(A.T, B))
+    # calculate SVD of array_a.T * array_b
+    array_u, _, array_vt = singular_value_decomposition(np.dot(new_a.T, new_b))
     # compute optimum orthogonal transformation
-    U_opt = np.dot(U, VT)
+    array_u_opt = np.dot(array_u, array_vt)
     # compute the error
-    e_opt = error(A, B, U_opt)
-    return A, B, U_opt, e_opt
+    e_opt = error(new_a, new_b, array_u_opt)
+    return new_a, new_b, array_u_opt, e_opt
 
 
-def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
+def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                       pad_mode='row-col', translate=False, scale=False,
-                      single_transform=True, mode="exact", check_finite=True,
-                      tol=1.0e-8):
+                      single_transform=True, mode="exact", check_finite=True, tol=1.0e-8):
     r"""
     Two-Sided Orthogonal Procrustes.
 
     Parameters
     ----------
-    A : ndarray
+    array_a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    B : ndarray
+    array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed.
@@ -202,15 +201,15 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
 
     Returns
     -------
-    A : ndarray
-        The transformed ndarray A.
-    B : ndarray
-        The transformed ndarray B.
-    U_opt1 : ndarray
+    array_a : ndarray
+        The transformed ndarray :math:`A`.
+    array_b : ndarray
+        The transformed ndarray :math:`B`.
+    u_opt1 : ndarray
         The optimal orthogonal left-multiplying transformation ndarray if "single_transform=True".
-    U_opt2 : ndarray
+    u_opt2 : ndarray
         The second transformation ndarray if "single_transform=True".
-    U_opt : ndarray
+    u_opt : ndarray
         The transformation ndarray if "single_transform=False".
     e_opt : float
         The single- or double- sided orthogonal Procrustes error.
@@ -218,9 +217,9 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
     Raises
     ------
     ValueError
-        When input array `A` or `B` is not symmetric.
+        When input array :math:`A` or :math:`A` is not symmetric.
     numpy.linalg.LinAlgError
-        If array `A` or `B` is not diagonalizable when `mode='umeyama'` or
+        If array :math:`A` or :math:`A` is not diagonalizable when `mode='umeyama'` or
         `mode='umeyama_approx'`.
     ValueError
         If the mode is not 'exact' or 'approx' when `single_transform=True`.
@@ -345,13 +344,13 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
     --------
     >>> import numpy as np
     >>> array_a = np.array([[30, 33, 20], [33, 53, 43], [20, 43, 46]])
-    >>> array_b = np.array([
-        [ 22.78131838, -0.58896768,-43.00635291, 0., 0.],
-        [ -0.58896768, 16.77132475,  0.24289990, 0., 0.],
-        [-43.00635291,  0.2428999 , 89.44735687, 0., 0.],
+    >>> array_b = np.array([ \
+        [ 22.78131838, -0.58896768,-43.00635291, 0., 0.], \
+        [ -0.58896768, 16.77132475,  0.24289990, 0., 0.], \
+        [-43.00635291,  0.2428999 , 89.44735687, 0., 0.], \
         [  0.        ,  0.        ,  0.        , 0., 0.]])
-    >>> new_a, new_b, array_u, error_opt = orthogonal_2sided(
-            array_a, array_b, single_transform=True,
+    >>> new_a, new_b, array_u, error_opt = orthogonal_2sided( \
+            array_a, array_b, single_transform=True, \
             remove_zero_col=True, remove_zero_rwo=True, mode='exact')
     >>> array_u
     array([[ 0.25116633,  0.76371527,  0.59468855],
@@ -363,84 +362,83 @@ def orthogonal_2sided(A, B, remove_zero_col=True, remove_zero_row=True,
     """
     # Check symmetry if single_transform=True
     if single_transform:
-        if (not np.allclose(A.T, A)):
-            raise ValueError('Array A should be symmetric.')
-        if (not np.allclose(B.T, B)):
-            raise ValueError('Array B should be symmetric.')
+        if not np.allclose(array_a.T, array_a):
+            raise ValueError("array_a should be symmetric.")
+        if not np.allclose(array_b.T, array_b):
+            raise ValueError("array_b should be symmetric.")
     if translate:
         warnings.warn("The translation matrix was not well defined. \
-                Two sided rotation and translation don't commute.",
-                      stacklevel=2)
+                Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
-    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite)
+    array_a, array_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                         pad_mode, translate, scale, check_finite)
     # Convert mode strings into lowercase
     mode = mode.lower()
     # Do single-transformation computation if requested
     if single_transform:
-        # check A and B are symmetric
+        # check array_a and array_b are symmetric
         if mode == "approx":
-            U = _2sided_1trans_approx(A, B, tol)
-            e_opt = error(A, B, U, U)
+            u_opt = _2sided_1trans_approx(array_a, array_b, tol)
         elif mode == "exact":
-            U, e_opt = _2sided_1trans_exact(A, B, tol)
-            # e_opt = error(A, B, U, U)
+            u_opt, e_opt = _2sided_1trans_exact(array_a, array_b)
         else:
             raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
-        return A, B, U, e_opt
+        # the error
+        e_opt = error(array_a, array_b, u_opt, u_opt)
+        return array_a, array_b, u_opt, e_opt
     # Do regular two-sided orthogonal Procrustes calculations
     else:
-        U_opt1, U_opt2 = _2sided(A, B)
-        e_opt = error(A, B, U_opt1, U_opt2)
-        return A, B, U_opt1, U_opt2, e_opt
+        u_opt1, u_opt2 = _2sided(array_a, array_b)
+        e_opt = error(array_a, array_b, u_opt1, u_opt2)
+        return array_a, array_b, u_opt1, u_opt2, e_opt
 
 
-def _2sided(A, B):
+def _2sided(array_a, array_b):
     r"""
     """
-    UA, _, VTA = np.linalg.svd(A)
-    UB, _, VTB = np.linalg.svd(B)
-    U_opt1 = np.dot(UA, UB.T)
-    U_opt2 = np.dot(VTA.T, VTB)
-    return U_opt1, U_opt2
+    array_ua, _, vta = np.linalg.svd(array_a)
+    array_ub, _, vtb = np.linalg.svd(array_b)
+    u_opt1 = np.dot(array_ua, array_ub.T)
+    u_opt2 = np.dot(vta.T, vtb)
+    return u_opt1, u_opt2
 
 
-def _2sided_1trans_approx(A, B, tol):
+def _2sided_1trans_approx(array_a, array_b, tol):
     r"""
     """
-    # Calculate the eigenvalue decomposition of A and B
-    _, UA = eigendecomposition(A, permute_rows=True)
-    _, UB = eigendecomposition(B, permute_rows=True)
-    # compute U_umeyama
-    U_umeyama = np.dot(np.abs(UA), np.abs(UB.T))
+    # Calculate the eigenvalue decomposition of array_a and array_b
+    _, array_ua = eigendecomposition(array_a, permute_rows=True)
+    _, array_ub = eigendecomposition(array_b, permute_rows=True)
+    # compute u_umeyama
+    u_umeyama = np.dot(np.abs(array_ua), np.abs(array_ub.T))
     # compute the closet unitary transformation to u_umeyama
-    I = np.eye(U_umeyama.shape[0], dtype=U_umeyama.dtype)
-    _, _, U_ortho, _ = orthogonal(I, U_umeyama)
-    U_ortho[np.abs(U_ortho) < tol] = 0
-    return U_ortho
+    array_identity = np.eye(u_umeyama.shape[0], dtype=u_umeyama.dtype)
+    _, _, u_ortho, _ = orthogonal(array_identity, u_umeyama)
+    u_ortho[np.abs(u_ortho) < tol] = 0
+    return u_ortho
 
 
-def _2sided_1trans_exact(A, B, tol):
+def _2sided_1trans_exact(array_a, array_b):
     r"""
     """
-    _, UA = eigendecomposition(A)
-    _, UB = eigendecomposition(B)
+    _, array_ua = eigendecomposition(array_a)
+    _, array_ub = eigendecomposition(array_b)
 
     # 2^n trial-and-error test to find optimum S array
-    diags = product((-1, 1.), repeat=A.shape[0])
+    diags = product((-1, 1.), repeat=array_a.shape[0])
 
     error_list = []
     diag_list = []
     for _, diag in enumerate(diags):
-        S = np.diag(diag)
-        U = np.dot(np.dot(UA, S), UB.T)
-        e_temp = error(A, B, U, U)
+        array_s = np.diag(diag)
+        array_u = np.dot(np.dot(array_ua, array_s), array_ub.T)
+        e_temp = error(array_a, array_b, array_u, array_u)
         error_list.append(e_temp)
-        diag_list.append(S)
+        diag_list.append(array_s)
 
     index = np.argmin(error_list)
-    S_opt = diag_list[index]
-    U_opt = np.dot(np.dot(UA, S_opt), UB.T)
-    e_opt = error(A, B, U_opt, U_opt)
+    s_opt = diag_list[index]
+    u_opt = np.dot(np.dot(array_ua, s_opt), array_ub.T)
+    e_opt = error(array_a, array_b, u_opt, u_opt)
 
-    return U_opt, e_opt
+    return u_opt, e_opt

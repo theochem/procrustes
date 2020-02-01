@@ -22,34 +22,32 @@
 # --
 """The Softassign Procrustes Module."""
 
-import numpy as np
-
+from copy import deepcopy
 import warnings
 
-from copy import deepcopy
-
+import numpy as np
 from procrustes.permutation import permutation
-from procrustes.utils import _get_input_arrays
-from procrustes.utils import error
+from procrustes.utils import _get_input_arrays, error
 
 __all__ = [
     "softassign",
 ]
 
 
-def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, beta_r=1.10,
-               beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3, epsilon_sink=1.e-3, k=0.15,
-               gamma_scaler=1.01, n_stop=3, pad_mode='row-col', remove_zero_col=True,
-               remove_zero_row=True, translate=False, scale=False, check_finite=True,
-               adapted=True, beta_0=None, M_guess=None, iteration_anneal=None):
+def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
+               beta_r=1.10, beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3,
+               epsilon_sink=1.e-3, k=0.15, gamma_scaler=1.01, n_stop=3,
+               pad_mode='row-col', remove_zero_col=True, remove_zero_row=True,
+               translate=False, scale=False, check_finite=True, adapted=True,
+               beta_0=None, m_guess=None, iteration_anneal=None):
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
     Parameters
     ----------
-    A : numpy.ndarray
+    array_a : numpy.ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    B : numpy.ndarray
+    array_b : numpy.ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
@@ -110,18 +108,18 @@ def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, 
         Initial inverse temperature. Default=None.
     beta_f : float, optional
         Final inverse temperature. Default=None.
-    M_guess : numpy.ndarray, optional
+    m_guess : numpy.ndarray, optional
         The initial guess of the doubly-stochastic matrix. Default=None.
     iteration_anneal : int, optional
         Number of iterations for annealing loop. Default=None.
 
     Returns
     -------
-    A : numpy.ndarray
+    new_a : numpy.ndarray
         The transformed numpy.ndarray A.
-    B : numpy.ndarray
+    new_b : numpy.ndarray
         The transformed numpy.ndarray B.
-    M_ai : numpy.ndarray
+    m_ai : numpy.ndarray
         The optimum permutation transformation matrix.
     e_opt : float
         Two-sided Procrustes error.
@@ -188,88 +186,91 @@ def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, 
     0.0
 
     """
+    # pylint: disable-msg=too-many-arguments
+    # pylint: disable-msg=too-many-branches
+    # todo: add linear_cost_func with default value 0
     # Check beta_r
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite)
+    array_a, array_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                         pad_mode, translate, scale, check_finite)
     # Initialization
     # Compute the benefit matrix
-    C = np.kron(A, B)
+    array_c = np.kron(array_a, array_b)
     # Get the shape of A (B and the permutation matrix as well)
-    N = A.shape[0]
-    C_tensor = C.reshape(N, N, N, N)
+    row_num = array_a.shape[0]
+    c_tensor = array_c.reshape(row_num, row_num, row_num, row_num)
     # Compute the beta_0
-    gamma = _compute_gamma(C, N, gamma_scaler)
+    gamma = _compute_gamma(array_c, row_num, gamma_scaler)
     if beta_0 is None:
-        C_gamma = C + gamma * (np.identity(N * N))
-        eival_gamma = np.amax(np.abs(np.linalg.eigvalsh(C_gamma)))
-        beta_0 = gamma_scaler * max(1.e-10, eival_gamma / N)
+        c_gamma = array_c + gamma * (np.identity(row_num * row_num))
+        eival_gamma = np.amax(np.abs(np.linalg.eigvalsh(c_gamma)))
+        beta_0 = gamma_scaler * max(1.e-10, eival_gamma / row_num)
         beta_0 = 1 / beta_0
     else:
-        beta_0 *= N
+        beta_0 *= row_num
     beta = beta_0
 
     # We will use iteration_anneal if provided even if the final inverse temperature is specified
     # iteration_anneal is not None, beta_f can be None or not
     if iteration_anneal is not None:
-        beta_f = beta_0 * np.power(beta_r, iteration_anneal) * N
+        beta_f = beta_0 * np.power(beta_r, iteration_anneal) * row_num
     # iteration_anneal is None and beta_f is not None
     elif iteration_anneal is None and beta_f is not None:
-        beta_f *= N
+        beta_f *= row_num
     # Both iteration_anneal and beta_f are None
     else:
         raise ValueError("We must specify at least one of iteration_anneal and beta_f and "
                          "specify only one is recommended.")
-
-    # Initialization of M_ai
-    # check shape of M_guess
-    if M_guess is not None:
-        if np.any(M_guess < 0):
+    # Initialization of m_ai
+    # check shape of m_guess
+    if m_guess is not None:
+        if np.any(m_guess < 0):
             raise ValueError(
                 "The initial guess of permutation matrix cannot contain any negative values.")
-        if M_guess.shape[0] == N and M_guess.shape[1] == N:
-            M = M_guess
+        if m_guess.shape[0] == row_num and m_guess.shape[1] == row_num:
+            array_m = m_guess
         else:
-            warnings.warn("The shape of M_guess does not match ({}, {})."
-                          "Use random initial guess instead.".format(N, N))
-            M = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(N, N)))
+            warnings.warn("The shape of m_guess does not match ({0}, {0})."
+                          "Use random initial guess instead.".format(row_num))
+            array_m = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(row_num, row_num)))
     else:
-        # M_relax_old = 1 / N + np.random.rand(N, N)
-        M = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(N, N)))
-    M[M < 0] = 0
-    M = M / N
+        # m_relax_old = 1 / N + np.random.rand(N, N)
+        array_m = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(row_num, row_num)))
+    array_m[array_m < 0] = 0
+    array_m = array_m / row_num
 
     nochange = 0
     if adapted:
         epsilon_sink = epsilon_soft * k
     while beta < beta_f:
         # relaxation
-        M_old_beta = deepcopy(M)
+        m_old_beta = deepcopy(array_m)
         # softassign loop
         for _ in np.arange(iteration_soft):
-            M_old_soft = deepcopy(M)
+            m_old_soft = deepcopy(array_m)
             # Compute Z in relaxation step
             # C_gamma_tensor = C_gamma.reshape(N, N, N, N)
             # Z = -np.einsum('ijkl,jl->ik', C_gamma_tensor, M)
             # Z -= linear_cost_func
-            Z = np.einsum('aibj,bj->ai', C_tensor, M)
-            Z += gamma * M
+            array_z = np.einsum('aibj,bj->ai', c_tensor, array_m)
+            array_z += gamma * array_m
             # soft_assign
-            M = np.exp(beta * Z)
+            array_m = np.exp(beta * array_z)
             # Sinkhorn loop
             for _ in np.arange(iteration_sink):
                 # Row normalization
-                M = M / M.sum(axis=1, keepdims=1)
+                array_m = array_m / array_m.sum(axis=1, keepdims=1)
                 # Column normalization
-                M = M / M.sum(axis=0, keepdims=1)
+                array_m = array_m / array_m.sum(axis=0, keepdims=1)
                 # Compute the delata_M_sink
-                if np.amax(np.abs(M.sum(axis=1, keepdims=1) - 1)) < epsilon_sink:
-                    M = M / M.sum(axis=1, keepdims=1)
+                if np.amax(np.abs(array_m.sum(axis=1, keepdims=1) - 1)) < epsilon_sink:
+                    array_m = array_m / array_m.sum(axis=1, keepdims=1)
                     break
 
-            change_soft = np.amax(np.abs(M - M_old_soft))
+            change_soft = np.amax(np.abs(array_m - m_old_soft))
+            # pylint: disable-msg=no-else-break
             if change_soft < epsilon_soft:
                 break
             else:
@@ -278,7 +279,7 @@ def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, 
                 else:
                     continue
 
-        change_annealing = np.amax(np.abs(M - M_old_beta))
+        change_annealing = np.amax(np.abs(array_m - m_old_beta))
         if change_annealing < epsilon:
             nochange += 1
             if nochange > n_stop:
@@ -292,15 +293,15 @@ def softassign(A, B, iteration_soft=50, iteration_sink=200, linear_cost_func=0, 
             epsilon_sink = epsilon_soft * k
 
     # Compute the error
-    _, _, M, _ = permutation(np.eye(M.shape[0]), M)
-    e_opt = error(A, B, M, M)
-    return A, B, M, e_opt
+    _, _, array_m, _ = permutation(np.eye(array_m.shape[0]), array_m)
+    e_opt = error(array_a, array_b, array_m, array_m)
+    return array_a, array_b, array_m, e_opt
 
 
-def _compute_gamma(C, N, gamma_scaler):
+def _compute_gamma(array_c, row_num, gamma_scaler):
     r"""Compute gamma for relaxation."""
-    r = np.eye(N) - np.ones(N) / N
-    R = np.kron(r, r)
-    RCR = np.dot(R, np.dot(C, R))
-    gamma = np.max(np.abs(np.linalg.eigvalsh(RCR))) * gamma_scaler
+    array_r = np.eye(row_num) - np.ones(row_num) / row_num
+    big_r = np.kron(array_r, array_r)
+    rcr = np.dot(big_r, np.dot(array_c, big_r))
+    gamma = np.max(np.abs(np.linalg.eigvalsh(rcr))) * gamma_scaler
     return gamma

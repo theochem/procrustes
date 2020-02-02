@@ -23,9 +23,8 @@
 """Utils module for Procrustes."""
 
 import numpy as np
-
-from procrustes.utils import zero_padding, hide_zero_padding, translate_array, scale_array, \
-    eigendecomposition, is_diagonalizable, optimal_heuristic, error
+from procrustes.utils import eigendecomposition, error, hide_zero_padding, is_diagonalizable, \
+    optimal_heuristic, scale_array, translate_array, zero_padding
 
 
 def test_zero_padding_rows():

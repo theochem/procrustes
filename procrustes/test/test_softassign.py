@@ -20,14 +20,13 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-
-import warnings
+"""Testings for softassign module."""
 
 import itertools
+import warnings
+
 import numpy as np
-
-from numpy.testing import assert_raises, assert_almost_equal
-
+from numpy.testing import assert_almost_equal, assert_raises
 from procrustes import softassign
 
 
@@ -40,10 +39,10 @@ def test_softassign_4by4():
                      [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,
-                                           remove_zero_col=False,
-                                           remove_zero_row=False)
-    assert_almost_equal(M_ai, perm, decimal=6)
+    _, _, m_ai, e_opt = softassign(array_a, array_b,
+                                   remove_zero_col=False,
+                                   remove_zero_row=False)
+    assert_almost_equal(m_ai, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -59,10 +58,10 @@ def test_softassign_4by4_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                            remove_zero_col=False,
-                                            remove_zero_row=False)
-        assert_almost_equal(U, perm, decimal=6)
+        _, _, array_u, e_opt = softassign(array_a, array_b,
+                                          remove_zero_col=False,
+                                          remove_zero_row=False)
+        assert_almost_equal(array_u, perm, decimal=6)
         assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -80,10 +79,10 @@ def test_softassign_4by4_loop_negative():
             # Compute the translated, scaled matrix padded with zeros
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
-            new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                                remove_zero_row=False,
-                                                remove_zero_col=False)
-            assert_almost_equal(U, perm, decimal=6)
+            _, _, array_u, e_opt = softassign(array_a, array_b,
+                                              remove_zero_row=False,
+                                              remove_zero_col=False)
+            assert_almost_equal(array_u, perm, decimal=6)
             assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -96,11 +95,11 @@ def test_softassign_4by4_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
-    new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                        translate=True, scale=True,
-                                        remove_zero_row=False,
-                                        remove_zero_col=False)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, e_opt = softassign(array_a, array_b,
+                                      translate=True, scale=True,
+                                      remove_zero_row=False,
+                                      remove_zero_col=False)
+    assert_almost_equal(array_u, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -117,19 +116,18 @@ def test_softassign_4by4_translate_scale_loop():
         # Compute the translated, scaled matrix padded with zeros
         array_b = np.dot(perm.T, np.dot(3 * array_a + 10, perm))
         # Check
-        new_a, new_b, U, e_opt = softassign(array_a,
-                                            array_b,
-                                            translate=True,
-                                            scale=True)
-        assert_almost_equal(U, perm, decimal=6)
+        _, _, array_u, e_opt = softassign(array_a,
+                                          array_b,
+                                          translate=True,
+                                          scale=True)
+        assert_almost_equal(array_u, perm, decimal=6)
         assert_almost_equal(e_opt, 0, decimal=6)
 
 
 def test_softassign_4by4_translate_scale_zero_padding():
     r"""Test softassign by zero padded 4by4 matrix."""
     # define a random matrix
-    array_a = np.array(
-        [[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     perm = np.array([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
     # Compute the translated, scaled matrix padded with zeros
@@ -140,12 +138,12 @@ def test_softassign_4by4_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
-    new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                        translate=False,
-                                        scale=False,
-                                        remove_zero_row=True,
-                                        remove_zero_col=True)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, e_opt = softassign(array_a, array_b,
+                                      translate=False,
+                                      scale=False,
+                                      remove_zero_row=True,
+                                      remove_zero_col=True)
+    assert_almost_equal(array_u, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -168,12 +166,12 @@ def test_softassign_practical_example():
                      [1, 0, 0, 0, 0]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                        translate=False,
-                                        scale=False,
-                                        remove_zero_row=False,
-                                        remove_zero_col=False)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, e_opt = softassign(array_a, array_b,
+                                      translate=False,
+                                      scale=False,
+                                      remove_zero_row=False,
+                                      remove_zero_col=False)
+    assert_almost_equal(array_u, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -196,12 +194,12 @@ def test_softassign_random_noise():
                      [1, 0, 0, 0, 0]])
     array_b = np.dot(perm.T, np.dot(array_a, perm)) + np.random.randn(5, 5)
     # Check
-    new_a, new_b, U, e_opt = softassign(array_a, array_b,
-                                        translate=False,
-                                        scale=False,
-                                        remove_zero_row=False,
-                                        remove_zero_col=False)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, _ = softassign(array_a, array_b,
+                                  translate=False,
+                                  scale=False,
+                                  remove_zero_row=False,
+                                  remove_zero_col=False)
+    assert_almost_equal(array_u, perm, decimal=6)
 
 
 def test_softassign_invalid_beta_r():
@@ -209,8 +207,7 @@ def test_softassign_invalid_beta_r():
     # define a random matrix and symmetric matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
-                     [0., 1., 0., 0.]])
+    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, softassign, array_a, array_b, beta_r=0.5)
@@ -226,12 +223,12 @@ def test_softassign_4by4_beta_0():
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    new_a, new_b, U, e_opt = softassign(array_a,
-                                        array_b,
-                                        beta_0=1.e-6,
-                                        translate=False,
-                                        scale=False)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, e_opt = softassign(array_a,
+                                      array_b,
+                                      beta_0=1.e-6,
+                                      translate=False,
+                                      scale=False)
+    assert_almost_equal(array_u, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -245,12 +242,12 @@ def test_softassign_4by4_anneal_steps():
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    new_a, new_b, U, e_opt = softassign(array_a,
-                                        array_b,
-                                        iteration_anneal=165,
-                                        translate=False,
-                                        scale=False)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, e_opt = softassign(array_a,
+                                      array_b,
+                                      iteration_anneal=165,
+                                      translate=False,
+                                      scale=False)
+    assert_almost_equal(array_u, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
@@ -266,7 +263,7 @@ def test_softassign_missing_iteration_anneal_beta_f():
     assert_raises(ValueError, softassign, array_a, array_b, iteration_anneal=None, beta_f=None)
 
 
-def test_softassign_M_guess():
+def test_softassign_m_guess():
     r"""Test softassign by given initial permutation guess."""
     # define a random matrix
     array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
@@ -275,31 +272,31 @@ def test_softassign_M_guess():
     perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
-    M_guess1 = np.array([[0, -0.98, 0, 0], [0.8, 0, 0, 0],
+    m_guess1 = np.array([[0, -0.98, 0, 0], [0.8, 0, 0, 0],
                          [0, 0, 1.01, 0], [0, 0, 0, 1]])
-    M_guess2 = np.array([[0, 0.98, 0, 0], [0.8, 0, 0, 0],
+    m_guess2 = np.array([[0, 0.98, 0, 0], [0.8, 0, 0, 0],
                          [0, 0, 1.01, 0], [0, 0, 0, 1]])
-    M_guess3 = np.array([[0, 0.98, 0, 0], [0, 0, 1.01, 0], [0, 0, 0, 1]])
+    m_guess3 = np.array([[0, 0.98, 0, 0], [0, 0, 1.01, 0], [0, 0, 0, 1]])
     # check assert raises
-    assert_raises(ValueError, softassign, array_a, array_b, M_guess=M_guess1)
+    assert_raises(ValueError, softassign, array_a, array_b, m_guess=m_guess1)
     # check if initial guess works
-    new_a, new_b, U, e_opt = softassign(array_a,
-                                        array_b,
-                                        M_guess=M_guess2,
-                                        translate=False,
-                                        scale=False)
-    assert_almost_equal(U, perm, decimal=6)
+    _, _, array_u, e_opt = softassign(array_a,
+                                      array_b,
+                                      m_guess=m_guess2,
+                                      translate=False,
+                                      scale=False)
+    assert_almost_equal(array_u, perm, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
     # check if initial guess given shape not matching
-    with warnings.catch_warnings(record=True) as w:
-        new_a, new_b, U, e_opt = softassign(array_a,
-                                            array_b,
-                                            M_guess=M_guess3,
-                                            translate=False,
-                                            scale=False)
+    with warnings.catch_warnings(record=True) as warn_info:
+        _, _, array_u, e_opt = softassign(array_a,
+                                          array_b,
+                                          m_guess=m_guess3,
+                                          translate=False,
+                                          scale=False)
         # catch the error information
-        assert len(w) == 1
-        assert not str(w[0].message).startswith("We must specify")
-        # chekc the results
-        assert_almost_equal(U, perm, decimal=6)
+        assert len(warn_info) == 1
+        assert not str(warn_info[0].message).startswith("We must specify")
+        # check the results
+        assert_almost_equal(array_u, perm, decimal=6)
         assert_almost_equal(e_opt, 0, decimal=6)

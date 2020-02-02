@@ -23,13 +23,12 @@
 """Utility Module."""
 
 import copy
+import itertools as it
 
 import numpy as np
 
-import itertools as it
 
-
-def zero_padding(array_a, array_b, pad_mode='row-col'):
+def zero_padding(array_a, array_b, pad_mode="row-col"):
     r"""
     Return arrays padded with rows and/or columns of zero.
 
@@ -40,69 +39,69 @@ def zero_padding(array_a, array_b, pad_mode='row-col'):
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
     pad_mode : str
-        Specifying how to padd arrays. Options:
-
-        **'row'**
+        Specifying how to padded arrays. Options:
+        **"row"**
              The array with fewer rows is padded with zero rows so that both have the same
              number of rows.
-        **'col'**
+        **"col"**
              The array with fewer columns is padded with zero columns so that both have the
              same number of columns.
-        **'row-col'**
+        **"row-col"**
              The array with fewer rows is padded with zero rows, and the array with fewer
              columns is padded with zero columns, so that both have the same dimensions.
              This does not necessarily result in square arrays.
-        'square'
+        "square"
              The arrays are padded with zero rows and zero columns so that they are both
              squared arrays. The dimension of square array is specified based on the highest
              dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
 
     Returns
     -------
-    padded_a, padded_b : ndarray, ndarray
-        Padded array_a and array_b arrays.
+    padded_a : ndarray
+        Padded array_a.
+    padded_b : ndarray
+        Padded array_b.
     """
-
     # sanity checks
     if not isinstance(array_a, np.ndarray) or not isinstance(array_b, np.ndarray):
-        raise ValueError('Arguments array_a & array_b should be numpy arrays.')
+        raise ValueError("Arguments array_a & array_b should be numpy arrays.")
     if array_a.ndim != 2 or array_b.ndim != 2:
-        raise ValueError('Arguments array_a & array_b should be 2D arrays.')
+        raise ValueError("Arguments array_a & array_b should be 2D arrays.")
 
     if array_a.shape == array_b.shape:
         # special case of square arrays, mode is set to None so that array_a & array_b are returned.
         pad_mode = None
 
-    if pad_mode == 'square':
+    if pad_mode == "square":
         # calculate desired dimension of square array
-        (n1, m1), (n2, m2) = array_a.shape, array_b.shape
-        dim = max(n1, n2, m1, m2)
+        (a_n1, a_m1), (a_n2, a_m2) = array_a.shape, array_b.shape
+        dim = max(a_n1, a_n2, a_m1, a_m2)
         # padding rows to have both arrays have dim rows
-        if n1 < dim:
-            array_a = np.pad(array_a, [[0, dim - n1], [0, 0]], 'constant', constant_values=0)
-        if n2 < dim:
-            array_b = np.pad(array_b, [[0, dim - n2], [0, 0]], 'constant', constant_values=0)
+        if a_n1 < dim:
+            array_a = np.pad(array_a, [[0, dim - a_n1], [0, 0]], "constant", constant_values=0)
+        if a_n2 < dim:
+            array_b = np.pad(array_b, [[0, dim - a_n2], [0, 0]], "constant", constant_values=0)
         # padding columns to have both arrays have dim columns
-        if m1 < dim:
-            array_a = np.pad(array_a, [[0, 0], [0, dim - m1]], 'constant', constant_values=0)
-        if m2 < dim:
-            array_b = np.pad(array_b, [[0, 0], [0, dim - m2]], 'constant', constant_values=0)
+        if a_m1 < dim:
+            array_a = np.pad(array_a, [[0, 0], [0, dim - a_m1]], "constant", constant_values=0)
+        if a_m2 < dim:
+            array_b = np.pad(array_b, [[0, 0], [0, dim - a_m2]], "constant", constant_values=0)
 
-    if pad_mode == 'row' or pad_mode == 'row-col':
+    if pad_mode in ["row", "row-col"]:
         # padding rows to have both arrays have the same number of rows
         diff = array_a.shape[0] - array_b.shape[0]
         if diff < 0:
-            array_a = np.pad(array_a, [[0, -diff], [0, 0]], 'constant', constant_values=0)
+            array_a = np.pad(array_a, [[0, -diff], [0, 0]], "constant", constant_values=0)
         else:
-            array_b = np.pad(array_b, [[0, diff], [0, 0]], 'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, diff], [0, 0]], "constant", constant_values=0)
 
-    if pad_mode == 'col' or pad_mode == 'row-col':
+    if pad_mode in ["col", "row-col"]:
         # padding columns to have both arrays have the same number of columns
         diff = array_a.shape[1] - array_b.shape[1]
         if diff < 0:
-            array_a = np.pad(array_a, [[0, 0], [0, -diff]], 'constant', constant_values=0)
+            array_a = np.pad(array_a, [[0, 0], [0, -diff]], "constant", constant_values=0)
         else:
-            array_b = np.pad(array_b, [[0, 0], [0, diff]], 'constant', constant_values=0)
+            array_b = np.pad(array_b, [[0, 0], [0, diff]], "constant", constant_values=0)
 
     return array_a, array_b
 
@@ -120,10 +119,12 @@ def translate_array(array_a, array_b=None):
 
     Returns
     -------
-    ndarray, ndarray
+    array_a, ndarray
         If array_b is None, array_a is translated to origin using its centroid.
         If array_b is given, array_a is translated to centroid of array_b (the centroid of
         translated array_a will centroid with the centroid array_b).
+    centroid : float
+        If array_b is given, the centroid is returned.
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
@@ -147,11 +148,13 @@ def scale_array(array_a, array_b=None):
 
     Returns
     -------
-    ndarray, ndarray
-        If array_b is None, array_a is scaled to match norm of unit sphere using array_a's
+    scaled_a, ndarray
+        If array_b is None, array_a is scaled to match norm of unit sphere using array_a"s
         Frobenius norm.
-        If array_b is given, array_a is scaled to match array_b's norm (the norm of array_a
+        If array_b is given, array_a is scaled to match array_b"s norm (the norm of array_a
         will be equal norm of array_b).
+    scale : float
+        The scaling factor to match array_b norm.
     """
     # scaling factor to match unit sphere
     scale = 1. / np.linalg.norm(array_a)
@@ -161,7 +164,7 @@ def scale_array(array_a, array_b=None):
     return array_a * scale, scale
 
 
-def singular_value_decomposition(array):
+def singular_value_decomposition(array_a):
     r"""
     Return singular value decomposition (SVD) factorization of an array.
 
@@ -170,22 +173,22 @@ def singular_value_decomposition(array):
 
     Parameters
     ----------
-    array: ndarray
+    array_a: ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` to factorize.
 
     Returns
     -------
-    u : ndarray
+    array_u : ndarray
         Unitary matrix :math:`\mathbf{U}_{m \times m}`.
-    s : ndarray
+    array_s : ndarray
         The singular values of matrix sorted in descending order.
-    v : ndarray
+    array_v : ndarray
         Unitary matrix :math:`\mathbf{V}_{n \times n}`.
     """
-    return np.linalg.svd(array)
+    return np.linalg.svd(array_a)
 
 
-def eigendecomposition(A, permute_rows=False):
+def eigendecomposition(array_a, permute_rows=False):
     r"""
     Compute the eigenvalue decomposition of an array.
 
@@ -194,41 +197,43 @@ def eigendecomposition(A, permute_rows=False):
 
     Parameters
     ----------
-    array: ndarray
+    array_a: ndarray
        The 2D array to decompose.
     permute_rows : bool, default = False
-        If True, permute rows of eigenvectors according to the greatest
-        to least eigenvalues. Otherwise, permute columns.
+        If True, permute rows of eigenvectors according to the greatest to least eigenvalues.
+        Otherwise, permute columns.
 
     Returns
     -------
-    s : ndarray
+    array_s : ndarray
         The 1D array of the eigenvalues, sorted from greatest to least.
-    V : ndarray
-        The 2D array of eigenvectors, sorted according to greatest to
-        least eigenvalues.
+    array_v : ndarray
+        The 2D array of eigen vectors, sorted according to greatest to least eigenvalues.
 
     """
     # find eigenvalues & eigenvectors
-    s, V = np.linalg.eigh(A)
+    array_s, array_v = np.linalg.eigh(array_a)
     # get index of sorted eigenvalues from largest to smallest
-    idx = s.argsort()[::-1]
+    idx = array_s.argsort()[::-1]
     # Return permuted eigenvalues & eigenvectors
-    return s[idx], V[idx] if permute_rows else V[:, idx]
+    return array_s[idx], array_v[idx] if permute_rows else array_v[:, idx]
 
 
-def hide_zero_padding(A, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
+def hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
     r"""
     Return array with zero-padded rows (bottom) and columns (right) removed.
 
     Parameters
     ----------
-    A : ndarray
+    array_a : ndarray
+        The initial array.
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed.
         Default=True.
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed. Default=True.
+    tol : float
+        Tolerance value.
 
     Returns
     -------
@@ -236,38 +241,38 @@ def hide_zero_padding(A, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8)
 
     """
     # Input checking
-    if A.ndim > 2:
+    if array_a.ndim > 2:
         raise TypeError("Matrix inputs must be 1- or 2- dimensional arrays")
     # Check zero rows from bottom to top
     if remove_zero_row:
-        n = A.shape[0]
-        tmpA = A[..., np.newaxis] if A.ndim == 1 else A
-        for v in tmpA[::-1]:
-            if any(abs(i) > tol for i in v):
+        num_row = array_a.shape[0]
+        tmp_a = array_a[..., np.newaxis] if array_a.ndim == 1 else array_a
+        for array_v in tmp_a[::-1]:
+            if any(abs(i) > tol for i in array_v):
                 break
-            n -= 1
-        A = A[:n]
+            num_row -= 1
+        array_a = array_a[:num_row]
     # Cut off zero rows
     if remove_zero_col:
-        if A.ndim == 2:
+        if array_a.ndim == 2:
             # Check zero columns from right to left
-            m = A.shape[1]
-            for v in A.T[::-1]:
-                if any(abs(i) > tol for i in v):
+            col_m = array_a.shape[1]
+            for array_v in array_a.T[::-1]:
+                if any(abs(i) > tol for i in array_v):
                     break
-                m -= 1
+                col_m -= 1
             # Cut off zero columns
-            A = A[:, :m]
-    return A
+            array_a = array_a[:, :col_m]
+    return array_a
 
 
-def is_diagonalizable(array):
+def is_diagonalizable(array_a):
     """
     Check whether the given array is diagonalizable.
 
     Parameters
     ----------
-    array: ndarray
+    array_a: ndarray
         A square array for which the diagonalizability is checked.
 
     Returns
@@ -276,13 +281,13 @@ def is_diagonalizable(array):
         True if the array is diagonalizable, otherwise False.
     """
     # check array is square
-    array = hide_zero_padding(array)
-    if array.shape[0] != array.shape[1]:
-        raise ValueError('Argument array should be a square array! shape={0}'.format(array.shape))
+    array_a = hide_zero_padding(array_a)
+    if array_a.shape[0] != array_a.shape[1]:
+        raise ValueError("Argument array should be a square array! shape={0}".format(array_a.shape))
     # SVD decomposition of array
-    u, s, vt = singular_value_decomposition(array)
-    rank_u = np.linalg.matrix_rank(u)
-    rank_a = np.linalg.matrix_rank(array)
+    array_u, _, _ = singular_value_decomposition(array_a)
+    rank_u = np.linalg.matrix_rank(array_u)
+    rank_a = np.linalg.matrix_rank(array_a)
     diagonalizable = True
     # If the ranks of u and a are not equal, the eigenvectors cannot span the dimension
     # of the vector space, and the array cannot be diagonalized.
@@ -291,7 +296,7 @@ def is_diagonalizable(array):
     return diagonalizable
 
 
-def error(A, B, U, V=None):
+def error(array_a, array_b, array_u, array_v=None):
     r"""
     Return the single- or double- sided Procrustes error.
 
@@ -310,39 +315,41 @@ def error(A, B, U, V=None):
 
     Parameters
     ----------
-    a : npdarray
+    array_a : npdarray
         The array being transformed.
-    b : npdarray
+    array_b : npdarray
         The reference array.
-    u : ndarray
+    array_u : ndarray
         The 2D array representing the transformation :math:`\mathbf{U}`.
-    v : ndarray, optional
-        The 2D array representing the transformation :math:`\mathbf{V}`.
-        If provided, will compute the double-sided Procrustes error.
-        Otherwise, will compute the single-sided Procrustes error.
+    array_v : ndarray, optional
+        The 2D array representing the transformation :math:`\mathbf{V}`. If provided, it will
+        compute the double-sided Procrustes error. Otherwise, will compute the single-sided
+        Procrustes error.
 
     Returns
     -------
     error : float
 
     """
-    E = np.dot(A, U) if V is None else np.dot(np.dot(U.T, A), V)
-    E -= B
-    return np.trace(np.dot(E.T, E))
+    array_e = np.dot(array_a, array_u) if array_v is None \
+        else np.dot(np.dot(array_u.T, array_a), array_v)
+    array_e -= array_b
+    return np.trace(np.dot(array_e.T, array_e))
 
 
-def optimal_heuristic(perm, A, B, ref_error, k_opt=3):
+def optimal_heuristic(perm, array_a, array_b, ref_error, k_opt=3):
     r"""
-    Perform k-opt local search with every possible valid combination of the swapping mechanism which
-    also includes 2-opt heuristic.
+    K-opt heuristic to improve the accuracy.
+
+    Perform k-opt local search with every possible valid combination of the swapping mechanism.
 
     Parameters
     ----------
     perm : np.ndarray
         The permutation array which remains to be processed with k-opt local search.
-    A : np.ndarray
+    array_a : np.ndarray
         The array to be permuted.
-    B : np.ndarray
+    array_b : np.ndarray
         The reference array.
     ref_error : float
         The reference error value.
@@ -367,7 +374,7 @@ def optimal_heuristic(perm, A, B, ref_error, k_opt=3):
             if comb_perm != comb:
                 perm_kopt = copy.deepcopy(perm)
                 perm_kopt[comb, :] = perm_kopt[comb_perm, :]
-                e_kopt_new = error(A, B, perm_kopt, perm_kopt)
+                e_kopt_new = error(array_a, array_b, perm_kopt, perm_kopt)
                 if e_kopt_new < kopt_error:
                     perm = perm_kopt
                     kopt_error = e_kopt_new
@@ -376,35 +383,35 @@ def optimal_heuristic(perm, A, B, ref_error, k_opt=3):
     return perm, kopt_error
 
 
-def _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
+def _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                       pad_mode, translate, scale, check_finite):
     r"""Check and process array inputs to Procrustes transformation routines."""
-    _check_arraytypes(A, B)
+    _check_arraytypes(array_a, array_b)
     if check_finite:
-        A = np.asarray_chkfinite(A)
-        B = np.asarray_chkfinite(B)
-    A = hide_zero_padding(A, remove_zero_col, remove_zero_row)
-    B = hide_zero_padding(B, remove_zero_col, remove_zero_row)
+        array_a = np.asarray_chkfinite(array_a)
+        array_b = np.asarray_chkfinite(array_b)
+    array_a = hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
+    array_b = hide_zero_padding(array_b, remove_zero_col, remove_zero_row)
     if translate:
-        A, _ = translate_array(A)
-        B, _ = translate_array(B)
+        array_a, _ = translate_array(array_a)
+        array_b, _ = translate_array(array_b)
     if scale:
-        A, _ = scale_array(A)
-        B, _ = scale_array(B)
-    return zero_padding(A, B, pad_mode)
+        array_a, _ = scale_array(array_a)
+        array_b, _ = scale_array(array_b)
+    return zero_padding(array_a, array_b, pad_mode)
 
 
 def _check_arraytypes(*args):
     r"""Check array input types to Procrustes transformation routines."""
-    if any(not isinstance(x, np.ndarray) for x in args):
+    if any(not isinstance(arr_x, np.ndarray) for arr_x in args):
         raise TypeError("Matrix inputs must be NumPy arrays")
     if any(x.ndim != 2 for x in args):
         raise TypeError("Matrix inputs must be 2-dimensional arrays")
 
 
-def _check_rank(A):
+def _check_rank(array_a):
     r"""Check whether the given array is diagonalizable."""
-    A = hide_zero_padding(A)
-    U, _, _ = np.linalg.svd(A)
-    if np.linalg.matrix_rank(U) != np.linalg.matrix_rank(A):
+    array_a = hide_zero_padding(array_a)
+    array_u, _, _ = np.linalg.svd(array_a)
+    if np.linalg.matrix_rank(array_u) != np.linalg.matrix_rank(array_a):
         raise np.linalg.LinAlgError("Matrix cannot be diagonalized")

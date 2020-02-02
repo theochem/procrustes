@@ -131,9 +131,9 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                             [2., 2., 3.], \
                             [1., 5., 6.], \
                             [7., 3., 2.]])
-    >>> array_b = np.array([[ 52284.5, 209138. , 470560.5],
-                            [ 22788.5,  91154. , 205096.5],
-                            [ 46139.5, 184558. , 415255.5],
+    >>> array_b = np.array([[ 52284.5, 209138. , 470560.5], \
+                            [ 22788.5,  91154. , 205096.5], \
+                            [ 46139.5, 184558. , 415255.5], \
                             [ 22788.5,  91154. , 205096.5]])
     >>> new_a, new_b, array_x, error_opt = symmetric(array_a, array_b, translate=True, scale=True)
     >>> array_x # symmetric transformation array
@@ -148,23 +148,24 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                      pad_mode, translate, scale, check_finite)
     # compute SVD of  new_a
-    n = new_a.shape[1]
-    u, s, vt = singular_value_decomposition(new_a)
+    array_n = new_a.shape[1]
+    array_u, array_s, array_vt = singular_value_decomposition(new_a)
 
     # add zeros to the eigenvalue array so it has length n
-    if len(s) < new_a.shape[1]:
-        s = np.concatenate((s, np.zeros(n - len(s))))
-    c = np.dot(np.dot(u.T, new_b), vt.T)
+    if len(array_s) < new_a.shape[1]:
+        array_s = np.concatenate((array_s, np.zeros(array_n - len(array_s))))
+    array_c = np.dot(np.dot(array_u.T, new_b), array_vt.T)
 
     # create the intermediate array Y and the optimum symmetric transformation array X
-    y = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            if s[i] ** 2 + s[j] ** 2 == 0:
-                y[i, j] = 0
+    array_y = np.zeros((array_n, array_n))
+    for i in range(array_n):
+        for j in range(array_n):
+            if array_s[i] ** 2 + array_s[j] ** 2 == 0:
+                array_y[i, j] = 0
             else:
-                y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / (s[i] ** 2 + s[j] ** 2)
-    array_x = np.dot(np.dot(vt.T, y), vt)
+                array_y[i, j] = (array_s[i] * array_c[i, j] + array_s[j] * array_c[j, i]) / (
+                            array_s[i] ** 2 + array_s[j] ** 2)
+    array_x = np.dot(np.dot(array_vt.T, array_y), array_vt)
     e_opt = error(new_a, new_b, array_x)
 
     return new_a, new_b, array_x, e_opt

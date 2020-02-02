@@ -26,6 +26,7 @@ import itertools
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises
+# pylint: disable=too-many-lines
 from procrustes.permutation import _2sided_1trans_initial_guess_normal1, \
     _2sided_1trans_initial_guess_normal2, _2sided_1trans_initial_guess_umeyama, \
     permutation, permutation_2sided, permutation_2sided_explicit
@@ -107,10 +108,10 @@ def test_2sided_1trans_initial_guess_normal1_positive():
     # Build the new matrix array_b
     array_b = np.array(
         [[1, 12, 9, 5], [8, 7, 6, 8], [5, 2, 4, 7], [4, 0, 3, 2]])
-    p = np.power(2, -0.5)
+    weight_p = np.power(2, -0.5)
     weight = np.empty(array_a.shape)
     for row in range(4):
-        weight[row, :] = np.power(p, row)
+        weight[row, :] = np.power(weight_p, row)
     array_b = np.multiply(array_b, weight)
     # Check
     array_new = _2sided_1trans_initial_guess_normal1(array_a)
@@ -125,10 +126,10 @@ def test_2sided_1trans_initial_guess_normal1_negative():
     # Build the new matrix array_b
     array_b = np.array([[1, 12, 9, -5], [-8, 7, -6, 8],
                         [5, 2, 4, -7], [4, 0, 3, 2]])
-    p = np.power(2, -0.5)
+    weight_p = np.power(2, -0.5)
     weight = np.empty(array_a.shape)
     for row in range(4):
-        weight[row, :] = np.power(p, row)
+        weight[row, :] = np.power(weight_p, row)
     array_b = np.multiply(array_b, weight)
     # Check
     array_new = _2sided_1trans_initial_guess_normal1(array_a)
@@ -153,12 +154,12 @@ def test_2sided_1trans_initial_guess_normal2_positive():
                         [28, 28, 22, 32, 28],
                         [3, 1, 16, 19, 10]])
     # Build the new matrix array_b
-    p = np.power(2, -0.5)
+    weight_p = np.power(2, -0.5)
     weight = np.zeros([9, 5])
     weight[0, :] = 1
     for col in range(1, array_a.shape[1]):
-        weight[2 * col - 1, :] = np.power(p, col)
-        weight[2 * col, :] = np.power(p, col)
+        weight[2 * col - 1, :] = np.power(weight_p, col)
+        weight[2 * col, :] = np.power(weight_p, col)
     array_b = np.multiply(array_b, weight)
     # Check
     array_new = _2sided_1trans_initial_guess_normal2(array_a)
@@ -180,12 +181,12 @@ def test_2sided_1trans_initial_guess_normal2_negative():
                         [2, 3, 2, 3],
                         [-1, -1, 3, -1]])
     # Build the new matrix array_b
-    p = np.power(2, -0.5)
+    weight_p = np.power(2, -0.5)
     weight = np.zeros([7, 4])
     weight[0, :] = 1
     for col in range(1, array_a.shape[1]):
-        weight[2 * col - 1, :] = np.power(p, col)
-        weight[2 * col, :] = np.power(p, col)
+        weight[2 * col - 1, :] = np.power(weight_p, col)
+        weight[2 * col, :] = np.power(weight_p, col)
     array_b = np.multiply(array_b, weight)
     # Check
     array_new = _2sided_1trans_initial_guess_normal2(array_a)
@@ -741,8 +742,8 @@ def test_permutation_2sided_regular():
                         [0, 1, 0, 0, 0],
                         [0, 0, 1, 0, 0],
                         [1, 0, 0, 0, 0]])
-    new_m, new_n, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
-                                                           transform_mode="double")
+    _, _, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
+                                                   transform_mode="double")
     assert_almost_equal(new_p, array_p, decimal=6)
     assert_almost_equal(new_q, array_q, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
@@ -761,8 +762,8 @@ def test_permutation_2sided_regular2():
                         [0, 0, 0, 1]])
     array_q = array_p.T
     array_m = np.dot(np.dot(array_p, array_n), array_q)
-    new_m, new_n, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
-                                                           transform_mode="double")
+    _, _, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
+                                                   transform_mode="double")
     assert_almost_equal(new_p, array_p, decimal=6)
     assert_almost_equal(new_q, array_q, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
@@ -775,9 +776,9 @@ def test_permutation_2sided_regular_unsquared():
                        [1, 0, 0, 0], [0, 0, 0, 1]])
     perm_q = np.array([[0, 1], [1, 0]])
     array_m = np.linalg.multi_dot([perm_p, array_n, perm_q])
-    new_m, new_n, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
-                                                           transform_mode="double",
-                                                           iteration=500)
+    _, _, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
+                                                   transform_mode="double",
+                                                   iteration=500)
     assert_almost_equal(new_p, perm_p, decimal=6)
     assert_almost_equal(new_q, perm_q, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
@@ -792,9 +793,9 @@ def test_permutation_2sided_regular_unsquared_negative():
     perm_p = np.random.permutation(np.eye(6, 6))
     perm_q = np.random.permutation(np.eye(4, 4))
     array_m = np.linalg.multi_dot([perm_p, array_n, perm_q])
-    new_m, new_n, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
-                                                           transform_mode="double",
-                                                           iteration=500)
+    _, _, new_p, new_q, e_opt = permutation_2sided(array_m, array_n,
+                                                   transform_mode="double",
+                                                   iteration=500)
     assert_almost_equal(new_p, perm_p, decimal=6)
     assert_almost_equal(new_q, perm_q, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)

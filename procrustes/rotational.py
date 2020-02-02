@@ -20,19 +20,14 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""
-Rotational-Orthogonal Procrustes Module.
-"""
+"""Rotational-Orthogonal Procrustes Module."""
 
 import numpy as np
-
-from procrustes.utils import singular_value_decomposition, _get_input_arrays, \
-    error
+from procrustes.utils import _get_input_arrays, error, singular_value_decomposition
 
 
-def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
-               pad_mode='row-col', translate=False, scale=False,
-               check_finite=True):
+def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
+               pad_mode="row-col", translate=False, scale=False, check_finite=True):
     r"""
     Compute optimal rotational-orthogonal transformation array.
 
@@ -41,9 +36,9 @@ def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
 
     Parameters
     ----------
-    a : ndarray
+    array_a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    b : ndarray
+    array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed.
@@ -52,17 +47,17 @@ def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
         If True, the zero rows on the top will be removed.
         Default= True.
     pad_mode : str, optional
-      Zero padding mode when the sizes of two arrays differ. Default='row-col'.
-      'row': The array with fewer rows is padded with zero rows so that both have the same
+      Zero padding mode when the sizes of two arrays differ. Default="row-col".
+      "row": The array with fewer rows is padded with zero rows so that both have the same
            number of rows.
-      'col': The array with fewer columns is padded with zero columns so that both have the
+      "col": The array with fewer columns is padded with zero columns so that both have the
            same number of columns.
-      'row-col': The array with fewer rows is padded with zero rows, and the array with fewer
+      "row-col": The array with fewer rows is padded with zero rows, and the array with fewer
            columns is padded with zero columns, so that both have the same dimensions.
            This does not necessarily result in square arrays.
-      'square': The arrays are padded with zero rows and zero columns so that they are both
+      "square": The arrays are padded with zero rows and zero columns so that they are both
            squared arrays. The dimension of square array is specified based on the highest
-           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.'
+           dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`."
     translate : bool, optional
         If True, both arrays are translated to be centered at origin.
     scale : bool, optional
@@ -72,10 +67,10 @@ def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
 
     Returns
     -------
-    a : ndarray
-        The transformed ndarray A.
-    b : ndarray
-        The transformed ndarray B.
+    new_a : ndarray
+        The transformed ndarray :math:`A`.
+    new_b : ndarray
+        The transformed ndarray :math:`B`.
     u_opt : ndarray
         The optimum rotation transformation matrix.
     e_opt : float
@@ -134,32 +129,29 @@ def rotational(A, B, remove_zero_col=True, remove_zero_row=True,
     --------
     >>> import numpy as np
     >>> array_a = np.array([[1.5, 7.4], [8.5, 4.5]])
-    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,], [9.19238816, -2.82842712, 0., 0.],
-                            [0., 0., 0., 0.]])
-    >>> new_a, new_b, array_u, error_opt = rotational(array_a, array_b, translate=False, scale=False)
+    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,], \
+                            [9.19238816, -2.82842712, 0., 0.], \
+                            [0.,          0.,         0., 0.]])
+    >>> new_a, new_b, array_u, e_opt = rotational(array_a, array_b, translate=False, scale=False)
     >>> array_u # rotational array
     array([[ 0.70710678, -0.70710678],
-       [ 0.70710678,  0.70710678]])
-    >>> error_opt # error
+           [ 0.70710678,  0.70710678]])
+    >>> e_opt # error
     1.483808210011695e-17
 
     """
     # check inputs
-    A, B = _get_input_arrays(A, B, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite)
-
+    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                     pad_mode, translate, scale, check_finite)
     # compute SVD of A.T * A
-    U, _, VT = singular_value_decomposition(np.dot(A.T, B))
-
+    array_u, _, array_vt = singular_value_decomposition(np.dot(new_a.T, new_b))
     # construct S which is an identity matrix with the smallest
     # singular value replaced by sgn(|U*V^t|).
-    S = np.eye(A.shape[1])
-    S[-1, -1] = np.sign(np.linalg.det(np.dot(U, VT)))
-
+    s_value = np.eye(new_a.shape[1])
+    s_value[-1, -1] = np.sign(np.linalg.det(np.dot(array_u, array_vt)))
     # compute optimum rotation matrix
-    U_opt = np.dot(np.dot(U, S), VT)
-
+    u_opt = np.dot(np.dot(array_u, s_value), array_vt)
     # compute single-sided error error
-    e_opt = error(A, B, U_opt)
+    e_opt = error(new_a, new_b, u_opt)
 
-    return A, B, U_opt, e_opt
+    return new_a, new_b, u_opt, e_opt

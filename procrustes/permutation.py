@@ -562,13 +562,11 @@ def _2sided_1trans_initial_guess_umeyama(A, B, add_noise):
     # add small random noise matrix when matrices are not diagonalizable
     if add_noise:
         A = np.float_(A)
-        shape_A = np.shape(A)
-        A += np.random.random(shape_A) * np.trace(np.abs(A)) / shape_A[
-            0] * 1.e-8
+        A += np.random.random(A.shape) * np.trace(np.abs(A)) \
+            / A.shape[0] * 1.e-8
         B = np.float_(B)
-        shape_B = np.shape(B)
-        B += np.random.random(shape_B) * np.trace(np.abs(B)) / shape_B[
-            0] * 1.e-8
+        B += np.random.random(B.shape) * np.trace(np.abs(B)) \
+            / B.shape[0] * 1.e-8
     # calculate the eigenvalue decomposition of A and B
     _, UA = eigendecomposition(A)
     _, UB = eigendecomposition(B)
@@ -583,24 +581,11 @@ def _2sided_1trans_initial_guess_umeyama(A, B, add_noise):
 def _2sided_1trans_initial_guess_umeyama_approx(A, B, add_noise):
     """
     """
-    # add small random noise matrix when matrices are not diagonalizable
-    if add_noise:
-        A = np.float_(A)
-        shape_A = np.shape(A)
-        A += np.random.random(shape_A) * np.trace(np.abs(A)) / shape_A[
-            0] * 1.e-8
-        B = np.float_(B)
-        shape_B = np.shape(B)
-        B += np.random.random(shape_B) * np.trace(np.abs(B)) / shape_B[
-            0] * 1.e-8
-    # calculate the eigenvalue decomposition of A and B
-    _, UA = eigendecomposition(A)
-    _, UB = eigendecomposition(B)
     # compute U_umeyama
-    U = np.dot(np.abs(UA), np.abs(UB.T))
+    U = _2sided_1trans_initial_guess_umeyama(A, B, add_noise)
     # calculate the approximated umeyama matrix
     U_a, _, VTa = np.linalg.svd(U)
-    U_approx = np.dot(abs(U_a), np.abs(VTa))
+    U_approx = np.dot(np.abs(U_a), np.abs(VTa))
     # compute closest unitary transformation to U
     # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
     return U_approx

@@ -549,9 +549,11 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
     # add small random noise matrix when matrices are not diagonalizable
     if add_noise:
         array_a = np.float_(array_a)
-        array_a += np.random.random(array_a.shape) * np.trace(np.abs(array_a)) / array_a.shape[0] * 1.e-8
+        array_a += np.random.random(array_a.shape) * np.trace(np.abs(array_a)) /\
+            array_a.shape[0] * 1.e-8
         array_b = np.float_(array_b)
-        array_b += np.random.random(array_b.shape) * np.trace(np.abs(array_b)) / array_b.shape[0] * 1.e-8
+        array_b += np.random.random(array_b.shape) * np.trace(np.abs(array_b)) /\
+            array_b.shape[0] * 1.e-8
     # calculate the eigenvalue decomposition of A and B
     _, array_ua = eigendecomposition(array_a)
     _, array_ub = eigendecomposition(array_b)
@@ -564,8 +566,6 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
 
 
 def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, add_noise):
-    """
-    """
     # compute U_umeyama
     array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
     # calculate the approximated umeyama matrix

@@ -28,7 +28,7 @@ from procrustes import rotational
 
 
 def test_rotational_orthogonal_identical():
-    r"""Test rotational Procrustes with identity matrix."""
+    r"""Test rotational Procrustes with identical matrix."""
     # define an arbitrary array
     array_a = np.array([[3, 6, 2, 1], [5, 6, 7, 6], [2, 1, 1, 1]])
     array_b = np.copy(array_a)

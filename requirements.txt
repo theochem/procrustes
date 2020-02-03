@@ -1,0 +1,6 @@
+alabaster==0.7.12
+numpy>=1.14
+scipy>=1.0.0
+pytest>=5.0.0
+sphinx>=2.3.0
+

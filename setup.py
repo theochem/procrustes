@@ -23,13 +23,22 @@
 """Setup and Install Script."""
 
 
+from os import path
+
 from setuptools import find_packages, setup
+
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
 
 
 setup(
     name="procrustes",
     version="0.0",
     description="Procrustes Package",
+    long_description=long_description,
     url="http://github.com/QuantumElephant/procrustes",
     license="GNU (Version 3)",
     author="Ayers Group",

@@ -1,0 +1,11 @@
+skips:
+  # Ignore defensive `assert`s, 80% of repos do this
+  - B101
+  # Standard pseudo-random generators are not suitable for security/cryptographic purposes
+  - B311
+  # Ignore warnings about importing subprocess  
+  - B404 
+  # Ignore warnings about calling subprocess
+  - B603  
+  # Ignore warnings about calling subprocess
+  - B607  

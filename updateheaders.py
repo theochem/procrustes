@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
 # The Procrustes library provides a set of functions for transforming
 # a matrix to make it as similar as possible to a target matrix.
 #
-# Copyright (C) 2017-2018 The Procrustes Development Team
+# Copyright (C) 2017-2020 The Procrustes Development Team
 #
 # This file is part of Procrustes.
 #

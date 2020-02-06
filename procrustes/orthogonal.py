@@ -380,7 +380,7 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
         if mode == "approx":
             u_opt = _2sided_1trans_approx(array_a, array_b, tol)
         elif mode == "exact":
-            u_opt, e_opt = _2sided_1trans_exact(array_a, array_b)
+            u_opt = _2sided_1trans_exact(array_a, array_b)
         else:
             raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
         # the error
@@ -433,6 +433,5 @@ def _2sided_1trans_exact(array_a, array_b):
     index = np.argmin(error_list)
     s_opt = diag_list[index]
     u_opt = np.dot(np.dot(array_ua, s_opt), array_ub.T)
-    e_opt = error(array_a, array_b, u_opt, u_opt)
 
-    return u_opt, e_opt
+    return u_opt

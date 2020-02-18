@@ -2,7 +2,7 @@
 # Procrustes is a collection of interpretive chemical tools for
 # analyzing outputs of the quantum chemistry calculations.
 #
-# Copyright (C) 2017-2018 The Procrustes Development Team
+# Copyright (C) 2017-2020 The Procrustes Development Team
 #
 # This file is part of Procrustes.
 #
@@ -25,7 +25,7 @@
 # -*- coding: utf-8 -*-
 #
 # Procrustes documentation build configuration file, created by
-# sphinx-quickstart on Wed Apr 11 19:35:53 2018.
+# sphinx-quickstart on Wed Apr 11 19:35:53 2020.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -89,7 +89,7 @@ numfig = True
 
 # General information about the project.
 project = 'Procrustes'
-copyright = '2018, Ayers Lab'
+copyright = '2020, Ayers Lab'
 author = 'Ayers Lab'
 
 # The version info for the project you're documenting, acts as replacement for

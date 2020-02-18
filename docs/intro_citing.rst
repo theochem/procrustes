@@ -2,7 +2,7 @@
     : Procrustes is a collection of interpretive chemical tools for
     : analyzing outputs of the quantum chemistry calculations.
     :
-    : Copyright (C) 2017-2018 The Procrustes Development Team
+    : Copyright (C) 2017-2020 The Procrustes Development Team
     :
     : This file is part of Procrustes.
     :

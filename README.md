@@ -3,6 +3,9 @@ Procrustes
 
 <a href='https://docs.python.org/2.7/'><img src='https://img.shields.io/badge/python-2.7-blue.svg'></a>
 <a href='https://docs.python.org/3.6/'><img src='https://img.shields.io/badge/python-3.6-blue.svg'></a>
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![Build Status](https://travis-ci.com/theochem/procrustes.svg?branch=master)](https://travis-ci.com/theochem/procrustes)
+[![Documentation Status](https://readthedocs.org/projects/procrustes/badge/?version=latest)](https://procrustes.readthedocs.io/en/latest/?badge=latest)
 
 
 The Procrustes library provides a set of functions for transforming a matrix to make it

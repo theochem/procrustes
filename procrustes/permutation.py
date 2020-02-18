@@ -207,17 +207,16 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
     possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
 
     .. math::
-       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
-                              \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
-       &= \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
-          \text{Tr}\left[\left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
-                   \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
-       &= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                              \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right
-                              \right\}}
-          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{P}\mathbf{B} \right]
+        &\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+            \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2\\
+        = &\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+            \text{Tr}\left[\left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
+            \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
+        = &\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+            \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{P}\mathbf{B} \right]\\
 
     Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. Given an intial guess, the
     best local minimum can be obtained by the iterative procedure,
@@ -227,6 +226,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
                           \mathbf{P}^{(n)} \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} +
                           \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} \right)^T  \right)
                           \right]_{ij}} }
+
     where,
 
     .. math::
@@ -315,8 +315,8 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         \vdots
        \end{bmatrix}
 
-    In this case, you wuold stop the procedure after
-    :math:``m = \left\lfloor {\frac{{ - 4\ln 10}}{{\ln p}} + 1} \right\rfloor`) rows;` rows.
+    In this case, you would stop the procedure after
+    :math:`m = \left\lfloor {\frac{{ - 4\ln 10}}{{\ln p}} + 1} \right \rfloor` rows.
 
     Then one uses the :class:`procrustes.permutation.PermutationProcrustes` to match the constructed
     matrices :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` instead of :math:`\mathbf{A}` and

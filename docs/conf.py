@@ -25,7 +25,7 @@
 # -*- coding: utf-8 -*-
 #
 # Procrustes documentation build configuration file, created by
-# sphinx-quickstart on Wed Apr 11 19:35:53 2020.
+# sphinx-quickstart on Wed Apr 11 19:35:53 2018.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.

@@ -152,7 +152,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     barrier function which ensures positivity of :math:`M_{ai}`. The
     inverse temperature :math:`\beta` is a deterministic annealing
     control parameter. More detailed information about the algorithm can be
-    referred to Rangarajan's paper.
+    referred to Rangarajan's paper and the details about the algorithm can be found at [2]_.
 
     References
     ----------

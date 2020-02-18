@@ -31,7 +31,7 @@ procrustes method. Suppose we have two compounds with the same formula: CHFClBr 
 chiral carbon atom in each of them. The absolute configuration of the compounds have been labeled in
 the figure.
 
-.. _lable:
+.. _lable2:
 .. figure:: examples/chirality_check/compounds.jpg
     :align: center
     :figclass: align-center

@@ -37,7 +37,7 @@ inspired by the example in https://biomolecularstructures.readthedocs.io/en/late
 The structure is of cyclic - C2 global symmetry, where chain A (magenta) and chain C (green) are
 hemoglobin (deoxy) alpha chains, and chain B and D are hemoglobin (deoxy) beta chains.
 
-.. _lable:
+.. _lable1:
 .. figure:: examples/protein_alignment/protein_symmetry2.png
     :align: center
     :figclass: align-center

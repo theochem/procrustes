@@ -37,7 +37,7 @@ Installation
 
 Download the latest version of Procrustes with the following command.
 ```bash
-    git clone git@github.com:theochem/chemtools.git
+    git clone git@github.com:theochem/procrustes.git
 ```
 
 Then navigate to the Procrustes folder and run with package manager:

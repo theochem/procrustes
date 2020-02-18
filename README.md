@@ -43,6 +43,7 @@ Download the latest version of Procrustes with the following command.
 Then navigate to the Procrustes folder and run with package manager:
 
 ```bash
+   cd procrustes
    pip install -e ./ --user
 ```
 

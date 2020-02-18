@@ -35,7 +35,7 @@ The following dependencies are required to run Procrustes properly,
 Installation
 ------------
 
-Download the latest version of Procrustes with the following command,
+Download the latest version of Procrustes with the following command.
 ```bash
     git clone git@github.com:theochem/chemtools.git
 ```

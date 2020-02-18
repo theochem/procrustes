@@ -48,5 +48,5 @@ setup(
     package_dir={"procrustes": "procrustes"},
     packages=find_packages("procrustes", exclude=["docs", "test"]),
     # test_suite="nose.collector",
-    requires=["numpy", "scipy", "sphinx"],
+    requires=["numpy", "scipy", "pytest", "sphinx"],
 )

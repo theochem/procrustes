@@ -2,7 +2,7 @@
     : Procrustes is a collection of interpretive chemical tools for
     : analyzing outputs of the quantum chemistry calculations.
     :
-    : Copyright (C) 2017-2018 The Procrustes Development Team
+    : Copyright (C) 2017-2020 The Procrustes Development Team
     :
     : This file is part of Procrustes.
     :
@@ -37,7 +37,7 @@ inspired by the example in https://biomolecularstructures.readthedocs.io/en/late
 The structure is of cyclic - C2 global symmetry, where chain A (magenta) and chain C (green) are
 hemoglobin (deoxy) alpha chains, and chain B and D are hemoglobin (deoxy) beta chains.
 
-.. _lable:
+.. _label1:
 .. figure:: examples/protein_alignment/protein_symmetry2.png
     :align: center
     :figclass: align-center

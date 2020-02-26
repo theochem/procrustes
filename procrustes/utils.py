@@ -41,19 +41,19 @@ def zero_padding(array_a, array_b, pad_mode="row-col"):
     pad_mode : str
         Specifying how to padded arrays. Options:
         **"row"**
-             The array with fewer rows is padded with zero rows so that both have the same
-             number of rows.
+        The array with fewer rows is padded with zero rows so that both have the same
+        number of rows.
         **"col"**
-             The array with fewer columns is padded with zero columns so that both have the
-             same number of columns.
+        The array with fewer columns is padded with zero columns so that both have the
+        same number of columns.
         **"row-col"**
-             The array with fewer rows is padded with zero rows, and the array with fewer
-             columns is padded with zero columns, so that both have the same dimensions.
-             This does not necessarily result in square arrays.
+        The array with fewer rows is padded with zero rows, and the array with fewer
+        columns is padded with zero columns, so that both have the same dimensions.
+        This does not necessarily result in square arrays.
         "square"
-             The arrays are padded with zero rows and zero columns so that they are both
-             squared arrays. The dimension of square array is specified based on the highest
-             dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+        The arrays are padded with zero rows and zero columns so that they are both
+        squared arrays. The dimension of square array is specified based on the highest
+        dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
 
     Returns
     -------

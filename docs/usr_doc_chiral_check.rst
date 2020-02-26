@@ -2,7 +2,7 @@
     : Procrustes is a collection of interpretive chemical tools for
     : analyzing outputs of the quantum chemistry calculations.
     :
-    : Copyright (C) 2017-2018 The Procrustes Development Team
+    : Copyright (C) 2017-2020 The Procrustes Development Team
     :
     : This file is part of Procrustes.
     :
@@ -31,7 +31,7 @@ procrustes method. Suppose we have two compounds with the same formula: CHFClBr 
 chiral carbon atom in each of them. The absolute configuration of the compounds have been labeled in
 the figure.
 
-.. _lable:
+.. _label2:
 .. figure:: examples/chirality_check/compounds.jpg
     :align: center
     :figclass: align-center

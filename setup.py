@@ -37,7 +37,7 @@ with io.open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="procrustes",
-    version="0.0",
+    version="0.0.1-alpha",
     description="Procrustes Package",
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -48,5 +48,5 @@ setup(
     package_dir={"procrustes": "procrustes"},
     packages=find_packages("procrustes", exclude=["docs", "test"]),
     # test_suite="nose.collector",
-    requires=["numpy", "scipy", "sphinx"],
+    requires=["numpy", "scipy", "pytest", "sphinx"],
 )

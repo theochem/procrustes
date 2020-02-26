@@ -2,7 +2,7 @@
     : Procrustes is a collection of interpretive chemical tools for
     : analyzing outputs of the quantum chemistry calculations.
     :
-    : Copyright (C) 2017-2018 The Procrustes Development Team
+    : Copyright (C) 2017-2020 The Procrustes Development Team
     :
     : This file is part of Procrustes.
     :
@@ -25,7 +25,19 @@
 Contact Information
 ###################
 
-.. todo::
-    Add contact information for people who contributed
+For general inquiries, please contact:
 
+**Farnaz Heidar-Zadeh**
+    | Department of Chemistry
+    | `Queen's University <https://www.queensu.ca/>`_
+    | 99 University Ave
+    | K7L 3N6 Kingston, ON, Canada
+    | farnazhz@gmail.com
 
+**Paul W. Ayers**
+   | `The Ayers group <http://www.chemistry.mcmaster.ca/ayers/>`_
+   | Department of Chemistry & Chemical Biology
+   | `McMaster University <http://www.mcmaster.ca/>`_
+   | 25-1280 Main Street West
+   | L8S 4M1 Hamilton, ON, Canada
+   | ayers@mcmaster.ca

@@ -15,6 +15,9 @@ jobs:
       sudo: required
       dist: xenial
       env: TOXENV=py37
+    - python: 3.8
+      dist: xenial
+      env: TOXENV=py38
     - python: 3.6
       env: TOXENV=readme
     - python: 3.6
@@ -29,3 +32,4 @@ install: pip install tox coverage
 script: tox
 after_success:
   - coverage report -m
+

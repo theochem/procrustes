@@ -8,7 +8,7 @@ Procrustes
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![Build Status](https://travis-ci.com/theochem/procrustes.svg?branch=master)](https://travis-ci.com/theochem/procrustes)
 [![Documentation Status](https://readthedocs.org/projects/procrustes/badge/?version=latest)](https://procrustes.readthedocs.io/en/latest/?badge=latest)
-
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/git@github.com:theochem/procrustes.git/master)
 
 The Procrustes library provides a set of functions for transforming a matrix to make it
 as similar as possible to a target matrix.

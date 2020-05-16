@@ -25,10 +25,10 @@
 About Procrustes
 ================
 
-`Procrustes <https://github.com/QuantumElephant/procrustes>`_ is a free and open source
-linear algebra Python library. Procrustes can be used as interpretive geometric tools for
-analyzing matrices. The name *Procrustes* originally come from Greek, which means a robber tried to
-make his victims to fit his iron bed by stretching them or cut off their legs. The main idea of
-Procrustes is to identify some linear transformations, including translation, reflection, rotation
-and scaling to match the entries in two matrices.
+`Procrustes <https://github.com/theochem/procrustes>`_ is a free and open source Python library for (generalized) Procrustes Problems. Procrustes problems arise when one wishes to find one or two transformations (which can be permutations, rotations, unitary, or symmetric) that make one matrix, :math:`\mathbf{A}` resemble a second "target" matrix :math:`\mathbf{B}` as closely as possible:
+
+    .. math::
+        \underbrace{\text{min}}_{\mathbf{T}_1 , \mathbf{T}_2 } \|\mathbf{T}_1 \mathbf{A} \mathbf{T}_2 - \mathbf{B}\|_{F}^2
+
+Procrustes problems arise when aligning molecules and other objects, when evaluating optimal basis transformations, when determining optimal mappings between sets, and in many other contexts. This package includes options to translate, scale, and zero-pad matrices, so that matrices with different centers/scaling/sizes can be considered.
 

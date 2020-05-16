@@ -27,7 +27,7 @@ Quick Start
 
 Procrustes is a set of interpretive geometric tools for analyzing matrices. To use the python
 package, the user should make sure Procrustes have been installed properly including all the
-dependencies. You may refer to the *Installization* part for more information.
+dependencies. You may refer to the *Installation* part for more information.
 
 How to use Procrustes
 =====================
@@ -79,7 +79,7 @@ You may refer to the API documentation for technical details. You can also try t
 
 You will get a detailed information about the parameters and returns.
 
-Here is an genric example showing how can Procrustes help people solve problems.
+Here is an generic example showing how can Procrustes help people solve problems.
 
 .. code-block:: python
    :linenos:
@@ -104,5 +104,5 @@ Here is an genric example showing how can Procrustes help people solve problems.
    # Print the orthogonal matrix
    print('orthogonal matrix=', array_u)
    # Print the error
-   print('erro=', error_opt)
+   print('error=', error_opt)
 

@@ -41,7 +41,7 @@ setup(
     description="Procrustes Package",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url="http://github.com/QuantumElephant/procrustes",
+    url="http://github.com/theochem/procrustes",
     license="GNU (Version 3)",
     author="Ayers Group",
     author_email="ayers@mcmaster.ca",

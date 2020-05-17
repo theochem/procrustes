@@ -25,7 +25,7 @@
 import itertools as it
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, eigendecomposition, error
+from procrustes.utils import _get_input_arrays, error
 from scipy.optimize import linear_sum_assignment
 
 __all__ = [
@@ -555,8 +555,8 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
         array_b += np.random.random(array_b.shape) * np.trace(np.abs(array_b)) /\
             array_b.shape[0] * 1.e-8
     # calculate the eigenvalue decomposition of A and B
-    _, array_ua = eigendecomposition(array_a)
-    _, array_ub = eigendecomposition(array_b)
+    _, array_ua = np.linalg.eigh(array_a)
+    _, array_ub = np.linalg.eigh(array_b)
     # compute U_umeyama
     array_u = np.dot(np.abs(array_ua), np.abs(array_ub.T))
     # compute closest permutation matrix to U
@@ -581,8 +581,8 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     a_0 = (array_a + array_a.T) * 0.5 + (array_a - array_a.T) * 0.5 * 1j
     b_0 = (array_b + array_b.T) * 0.5 + (array_b - array_b.T) * 0.5 * 1j
 
-    _, ua_0 = eigendecomposition(a_0)
-    _, ub_0 = eigendecomposition(b_0)
+    _, ua_0 = np.linalg.eigh(a_0)
+    _, ub_0 = np.linalg.eigh(b_0)
     # Compute the magnitudes of each element
     array_ua = np.sqrt(np.imag(ua_0) ** 2 + np.real(ua_0) ** 2)
     array_ub = np.sqrt(np.imag(ub_0) ** 2 + np.real(ub_0) ** 2)

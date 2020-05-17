@@ -26,7 +26,7 @@ from itertools import product
 import warnings
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, eigendecomposition, error
+from procrustes.utils import _get_input_arrays, error
 
 
 def orthogonal(array_a, array_b, remove_zero_col=True,
@@ -375,7 +375,7 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
     mode = mode.lower()
     # Do single-transformation computation if requested
     if single_transform:
-        # check array_a and array_b are symmetric
+        # check array_a and array_b are symmetric.  #FIXME : They are no checks here.
         if mode == "approx":
             u_opt = _2sided_1trans_approx(array_a, array_b, tol)
         elif mode == "exact":
@@ -402,8 +402,8 @@ def _2sided(array_a, array_b):
 
 def _2sided_1trans_approx(array_a, array_b, tol):
     # Calculate the eigenvalue decomposition of array_a and array_b
-    _, array_ua = eigendecomposition(array_a, permute_rows=True)
-    _, array_ub = eigendecomposition(array_b, permute_rows=True)
+    _, array_ua = np.linalg.eigh(array_a)
+    _, array_ub = np.linalg.eigh(array_b)
     # compute u_umeyama
     u_umeyama = np.dot(np.abs(array_ua), np.abs(array_ub.T))
     # compute the closet unitary transformation to u_umeyama
@@ -414,9 +414,8 @@ def _2sided_1trans_approx(array_a, array_b, tol):
 
 
 def _2sided_1trans_exact(array_a, array_b):
-    _, array_ua = eigendecomposition(array_a)
-    _, array_ub = eigendecomposition(array_b)
-
+    a, array_ua = np.linalg.eigh(array_a)
+    b, array_ub = np.linalg.eigh(array_b)
     # 2^n trial-and-error test to find optimum S array
     diags = product((-1, 1.), repeat=array_a.shape[0])
 

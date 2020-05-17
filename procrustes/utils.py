@@ -34,9 +34,6 @@ optimal_heuristic :
 
 """
 
-import copy
-import itertools as it
-
 import numpy as np
 
 
@@ -51,21 +48,22 @@ def zero_padding(array_a, array_b, pad_mode="row-col"):
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
     pad_mode : str
-        Specifying how to padded arrays. Options:
-        **"row"**
-        The array with fewer rows is padded with zero rows so that both have the same
-        number of rows.
-        **"col"**
-        The array with fewer columns is padded with zero columns so that both have the
-        same number of columns.
-        **"row-col"**
-        The array with fewer rows is padded with zero rows, and the array with fewer
-        columns is padded with zero columns, so that both have the same dimensions.
-        This does not necessarily result in square arrays.
-        "square"
-        The arrays are padded with zero rows and zero columns so that they are both
-        squared arrays. The dimension of square array is specified based on the highest
-        dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+        Specifying how to padded arrays. Should be one of
+
+            - "row"
+                The array with fewer rows is padded with zero rows so that both have the same
+                number of rows.
+            - "col"
+                The array with fewer columns is padded with zero columns so that both have the
+                same number of columns.
+            - "row-col"
+                The array with fewer rows is padded with zero rows, and the array with fewer
+                columns is padded with zero columns, so that both have the same dimensions.
+                This does not necessarily result in square arrays.
+            - "square"
+                The arrays are padded with zero rows and zero columns so that they are both
+                squared arrays. The dimension of square array is specified based on the highest
+                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
 
     Returns
     -------
@@ -73,6 +71,7 @@ def zero_padding(array_a, array_b, pad_mode="row-col"):
         Padded array_a.
     padded_b : ndarray
         Padded array_b.
+
     """
     # sanity checks
     if not isinstance(array_a, np.ndarray) or not isinstance(array_b, np.ndarray):
@@ -131,12 +130,13 @@ def translate_array(array_a, array_b=None):
 
     Returns
     -------
-    array_a, ndarray
+    array_a : ndarray
         If array_b is None, array_a is translated to origin using its centroid.
         If array_b is given, array_a is translated to centroid of array_b (the centroid of
         translated array_a will centroid with the centroid array_b).
     centroid : float
         If array_b is given, the centroid is returned.
+
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
@@ -167,6 +167,7 @@ def scale_array(array_a, array_b=None):
         will be equal norm of array_b).
     scale : float
         The scaling factor to match array_b norm.
+
     """
     # scaling factor to match unit sphere
     scale = 1. / np.linalg.norm(array_a)
@@ -236,6 +237,7 @@ def is_diagonalizable(array_a):
     -------
     diagonalizable : bool
         True if the array is diagonalizable, otherwise False.
+
     """
     # check array is square
     array_a = hide_zero_padding(array_a)

@@ -25,19 +25,15 @@ Utility Module.
 
 Functions
 ---------
-zero_padding :
-translate_array :
-scale_array :
-hide_zero_padding :
-is_diagonalizable :
-optimal_heuristic :
+error :
+setup_input_arrays :
 
 """
 
 import numpy as np
 
 
-def zero_padding(array_a, array_b, pad_mode="row-col"):
+def _zero_padding(array_a, array_b, pad_mode="row-col"):
     r"""
     Return arrays padded with rows and/or columns of zero.
 
@@ -117,7 +113,7 @@ def zero_padding(array_a, array_b, pad_mode="row-col"):
     return array_a, array_b
 
 
-def translate_array(array_a, array_b=None):
+def _translate_array(array_a, array_b=None):
     """
     Return translated array_a and translation vector.
 
@@ -147,7 +143,7 @@ def translate_array(array_a, array_b=None):
     return array_a - centroid, -centroid
 
 
-def scale_array(array_a, array_b=None):
+def _scale_array(array_a, array_b=None):
     """
     Return scaled array_a and scaling vector.
 
@@ -177,7 +173,7 @@ def scale_array(array_a, array_b=None):
     return array_a * scale, scale
 
 
-def hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
+def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
     r"""
     Return array with zero-padded rows (bottom) and columns (right) removed.
 
@@ -272,15 +268,15 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     if check_finite:
         array_a = np.asarray_chkfinite(array_a)
         array_b = np.asarray_chkfinite(array_b)
-    array_a = hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
-    array_b = hide_zero_padding(array_b, remove_zero_col, remove_zero_row)
+    array_a = _hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
+    array_b = _hide_zero_padding(array_b, remove_zero_col, remove_zero_row)
     if translate:
-        array_a, _ = translate_array(array_a)
-        array_b, _ = translate_array(array_b)
+        array_a, _ = _translate_array(array_a)
+        array_b, _ = _translate_array(array_b)
     if scale:
-        array_a, _ = scale_array(array_a)
-        array_b, _ = scale_array(array_b)
-    return zero_padding(array_a, array_b, pad_mode)
+        array_a, _ = _scale_array(array_a)
+        array_b, _ = _scale_array(array_b)
+    return _zero_padding(array_a, array_b, pad_mode)
 
 
 def _check_arraytypes(*args):

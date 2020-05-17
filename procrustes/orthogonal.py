@@ -26,7 +26,7 @@ from itertools import product
 import warnings
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, error
+from procrustes.utils import setup_input_arrays, error
 
 
 def orthogonal(array_a, array_b, remove_zero_col=True,
@@ -139,8 +139,8 @@ def orthogonal(array_a, array_b, remove_zero_col=True,
 
     """
     # check inputs
-    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col,
-                                     remove_zero_row, pad_mode, translate, scale, check_finite)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col,
+                                      remove_zero_row, pad_mode, translate, scale, check_finite)
 
     # calculate SVD of array_a.T * array_b
     array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
@@ -369,8 +369,8 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
         warnings.warn("The translation matrix was not well defined. \
                 Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
-    array_a, array_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                         pad_mode, translate, scale, check_finite)
+    array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                          pad_mode, translate, scale, check_finite)
     # Convert mode strings into lowercase
     mode = mode.lower()
     # Do single-transformation computation if requested

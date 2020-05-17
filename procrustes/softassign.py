@@ -27,7 +27,7 @@ import warnings
 
 import numpy as np
 from procrustes.permutation import permutation
-from procrustes.utils import _get_input_arrays, error
+from procrustes.utils import setup_input_arrays, error
 
 __all__ = [
     "softassign",
@@ -193,8 +193,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    array_a, array_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                         pad_mode, translate, scale, check_finite)
+    array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                          pad_mode, translate, scale, check_finite)
     # Initialization
     # Compute the benefit matrix
     array_c = np.kron(array_a, array_b)

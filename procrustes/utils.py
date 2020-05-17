@@ -294,8 +294,8 @@ def error(array_a, array_b, array_u, array_v=None):
     return np.trace(np.dot(array_e.T, array_e))
 
 
-def _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                      pad_mode, translate, scale, check_finite):
+def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                       pad_mode, translate, scale, check_finite):
     r"""Check and process array inputs to Procrustes transformation routines."""
     _check_arraytypes(array_a, array_b)
     if check_finite:

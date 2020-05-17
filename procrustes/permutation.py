@@ -25,7 +25,7 @@
 import itertools as it
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, error
+from procrustes.utils import setup_input_arrays, error
 from scipy.optimize import linear_sum_assignment
 
 __all__ = [
@@ -118,8 +118,8 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
     """
     # check inputs
-    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                     pad_mode, translate, scale, check_finite)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite)
     # compute permutation Procrustes matrix
     array_p = np.dot(new_a.T, new_b)
     array_c = np.full(array_p.shape, np.max(array_p))
@@ -350,8 +350,8 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         \end{bmatrix} \\
     """
     # check inputs
-    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                     pad_mode, translate, scale, check_finite)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite)
     # np.power() can not handle the negatives values
     # Try to convert the matrices to non-negative
     maximum = np.max(np.abs(new_b)) if np.max(np.abs(new_b)) > np.max(
@@ -732,8 +732,8 @@ def permutation_2sided_explicit(array_a, array_b,
     print("Warning: This brute-strength method is computational expensive! \n"
           "But it can be used as a checker for a small dataset.")
     # check inputs
-    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                     pad_mode, translate, scale, check_finite)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite)
     perm1 = np.zeros(np.shape(new_a))
     perm_error1 = np.inf
     for comb in it.permutations(np.arange(np.shape(new_a)[0])):

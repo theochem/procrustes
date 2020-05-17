@@ -23,7 +23,7 @@
 """Rotational-Orthogonal Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, error
+from procrustes.utils import setup_input_arrays, error
 
 
 def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -141,8 +141,8 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
     """
     # check inputs
-    new_a, new_b = _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                     pad_mode, translate, scale, check_finite)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite)
     # compute SVD of A.T * A
     array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
     # construct S which is an identity matrix with the smallest

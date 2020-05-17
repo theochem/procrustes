@@ -39,7 +39,7 @@ def mol_align(A, B):
         A, B, transform_mode='single_undirected',
         remove_zero_col=False, remove_zero_row=False)
     # Compute the transformed molecule A
-    A = _utils._get_input_arrays(A)
+    A = _utils.setup_input_arrays(A)
     new_A = np.dot(U.T, np.dot(A, U))
     # B
     new_B = B
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 #     new_A, new_B, U, e_opt = mol_align(A, B)
 
 # the result new_A
-# A, _ = _utils._get_input_arrays(
+# A, _ = _utils.setup_input_arrays(
 #     A, B, remove_zero_col=False,
 #     remove_zero_row=False, translate=False,
 #     scale=False, check_finite=False)

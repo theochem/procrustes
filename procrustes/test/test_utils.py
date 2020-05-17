@@ -23,8 +23,7 @@
 """Utils module for Procrustes."""
 
 import numpy as np
-from procrustes.utils import error, hide_zero_padding, is_diagonalizable, \
-    scale_array, translate_array, zero_padding
+from procrustes.utils import error, hide_zero_padding, scale_array, translate_array, zero_padding
 
 
 def test_zero_padding_rows():

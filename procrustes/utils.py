@@ -224,37 +224,6 @@ def hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=1
     return array_a
 
 
-def is_diagonalizable(array_a):
-    """
-    Check whether the given array is diagonalizable.
-
-    Parameters
-    ----------
-    array_a: ndarray
-        A square array for which the diagonalizability is checked.
-
-    Returns
-    -------
-    diagonalizable : bool
-        True if the array is diagonalizable, otherwise False.
-
-    """
-    # check array is square
-    array_a = hide_zero_padding(array_a)
-    if array_a.shape[0] != array_a.shape[1]:
-        raise ValueError("Argument array should be a square array! shape={0}".format(array_a.shape))
-    # SVD decomposition of array
-    array_u, _, _ = np.linalg.svd(array_a)
-    rank_u = np.linalg.matrix_rank(array_u)
-    rank_a = np.linalg.matrix_rank(array_a)
-    diagonalizable = True
-    # If the ranks of u and a are not equal, the eigenvectors cannot span the dimension
-    # of the vector space, and the array cannot be diagonalized.
-    if rank_u != rank_a:
-        diagonalizable = False
-    return diagonalizable
-
-
 def error(array_a, array_b, array_u, array_v=None):
     r"""
     Return the single- or double- sided Procrustes error.

@@ -23,7 +23,7 @@
 """Utils module for Procrustes."""
 
 import numpy as np
-from procrustes.utils import eigendecomposition, error, hide_zero_padding, is_diagonalizable, \
+from procrustes.utils import error, hide_zero_padding, is_diagonalizable, \
     optimal_heuristic, scale_array, translate_array, zero_padding
 
 
@@ -286,30 +286,6 @@ def test_scale_array():
     # array_trans_scale should be identical to array after the above analysis
     expected = array_a
     assert (abs(predicted - expected) < 1.e-10).all()
-
-
-def test_eigenvalue_decomposition():
-    r"""Test eigenvaluedecomposition with random array."""
-    array_a = np.array([[-1. / 2, 3. / 2], [3. / 2, -1. / 2]])
-    assert is_diagonalizable(array_a) is True
-    s_predicted, u_predicted = eigendecomposition(array_a)
-    s_expected = np.array([1, -2])
-    assert (abs(np.dot(u_predicted, u_predicted.T) - np.eye(2)) < 1.e-8).all()
-    # The eigenvalue decomposition must return the original array
-    predicted = np.dot(u_predicted, np.dot(np.diag(s_predicted), u_predicted.T))
-    assert (abs(predicted - array_a) < 1.e-8).all()
-    assert (abs(s_predicted - s_expected) < 1.e-8).all()
-    # check that product of u, s, and u.T obtained from eigenvalue_decomposition gives
-    # an original array
-    array_a = np.array([[3, 1], [1, 3]])
-    assert is_diagonalizable(array_a) is True
-    s_predicted, u_predicted = eigendecomposition(array_a)
-    s_expected = np.array([4, 2])
-    assert (abs(np.dot(u_predicted, u_predicted.T) - np.eye(2)) < 1.e-8).all()
-    # The eigenvalue decomposition must return the original array
-    predicted = np.dot(u_predicted, np.dot(np.diag(s_predicted), u_predicted.T))
-    assert (abs(predicted - array_a) < 1.e-8).all()
-    assert (abs(s_predicted - s_expected) < 1.e-8).all()
 
 
 def test_optimal_heuristic():

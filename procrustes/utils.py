@@ -164,37 +164,6 @@ def scale_array(array_a, array_b=None):
     return array_a * scale, scale
 
 
-def eigendecomposition(array_a, permute_rows=False):
-    r"""
-    Compute the eigenvalue decomposition of an array.
-
-    .. math::
-      \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{U}^\dagger
-
-    Parameters
-    ----------
-    array_a: ndarray
-       The 2D array to decompose.
-    permute_rows : bool, default = False
-        If True, permute rows of eigenvectors according to the greatest to least eigenvalues.
-        Otherwise, permute columns.
-
-    Returns
-    -------
-    array_s : ndarray
-        The 1D array of the eigenvalues, sorted from greatest to least.
-    array_v : ndarray
-        The 2D array of eigen vectors, sorted according to greatest to least eigenvalues.
-
-    """
-    # find eigenvalues & eigenvectors
-    array_s, array_v = np.linalg.eigh(array_a)
-    # get index of sorted eigenvalues from largest to smallest
-    idx = array_s.argsort()[::-1]
-    # Return permuted eigenvalues & eigenvectors
-    return array_s[idx], array_v[idx] if permute_rows else array_v[:, idx]
-
-
 def hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
     r"""
     Return array with zero-padded rows (bottom) and columns (right) removed.

@@ -164,30 +164,6 @@ def scale_array(array_a, array_b=None):
     return array_a * scale, scale
 
 
-def singular_value_decomposition(array_a):
-    r"""
-    Return singular value decomposition (SVD) factorization of an array.
-
-    .. math::
-      \mathbf{A} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^\dagger
-
-    Parameters
-    ----------
-    array_a: ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` to factorize.
-
-    Returns
-    -------
-    array_u : ndarray
-        Unitary matrix :math:`\mathbf{U}_{m \times m}`.
-    array_s : ndarray
-        The singular values of matrix sorted in descending order.
-    array_v : ndarray
-        Unitary matrix :math:`\mathbf{V}_{n \times n}`.
-    """
-    return np.linalg.svd(array_a)
-
-
 def eigendecomposition(array_a, permute_rows=False):
     r"""
     Compute the eigenvalue decomposition of an array.
@@ -285,7 +261,7 @@ def is_diagonalizable(array_a):
     if array_a.shape[0] != array_a.shape[1]:
         raise ValueError("Argument array should be a square array! shape={0}".format(array_a.shape))
     # SVD decomposition of array
-    array_u, _, _ = singular_value_decomposition(array_a)
+    array_u, _, _ = np.linalg.svd(array_a)
     rank_u = np.linalg.matrix_rank(array_u)
     rank_a = np.linalg.matrix_rank(array_a)
     diagonalizable = True

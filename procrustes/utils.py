@@ -318,11 +318,3 @@ def _check_arraytypes(*args):
         raise TypeError("Matrix inputs must be NumPy arrays")
     if any(x.ndim != 2 for x in args):
         raise TypeError("Matrix inputs must be 2-dimensional arrays")
-
-
-def _check_rank(array_a):
-    r"""Check whether the given array is diagonalizable."""
-    array_a = hide_zero_padding(array_a)
-    array_u, _, _ = np.linalg.svd(array_a)
-    if np.linalg.matrix_rank(array_u) != np.linalg.matrix_rank(array_a):
-        raise np.linalg.LinAlgError("Matrix cannot be diagonalized")

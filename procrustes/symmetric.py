@@ -23,7 +23,7 @@
 """Symmetric Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, error, singular_value_decomposition
+from procrustes.utils import _get_input_arrays, error
 
 
 def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -149,7 +149,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                                      pad_mode, translate, scale, check_finite)
     # compute SVD of  new_a
     array_n = new_a.shape[1]
-    array_u, array_s, array_vt = singular_value_decomposition(new_a)
+    array_u, array_s, array_vt = np.linalg.svd(new_a)
 
     # add zeros to the eigenvalue array so it has length n
     if len(array_s) < new_a.shape[1]:

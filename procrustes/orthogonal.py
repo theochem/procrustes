@@ -26,8 +26,7 @@ from itertools import product
 import warnings
 
 import numpy as np
-from procrustes.utils import _get_input_arrays, eigendecomposition, \
-    error, singular_value_decomposition
+from procrustes.utils import _get_input_arrays, eigendecomposition, error
 
 
 def orthogonal(array_a, array_b, remove_zero_col=True,
@@ -144,7 +143,7 @@ def orthogonal(array_a, array_b, remove_zero_col=True,
                                      remove_zero_row, pad_mode, translate, scale, check_finite)
 
     # calculate SVD of array_a.T * array_b
-    array_u, _, array_vt = singular_value_decomposition(np.dot(new_a.T, new_b))
+    array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
     # compute optimum orthogonal transformation
     array_u_opt = np.dot(array_u, array_vt)
     # compute the error

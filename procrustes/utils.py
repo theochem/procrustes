@@ -20,7 +20,19 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Utility Module."""
+"""
+Utility Module.
+
+Functions
+---------
+zero_padding :
+translate_array :
+scale_array :
+hide_zero_padding :
+is_diagonalizable :
+optimal_heuristic :
+
+"""
 
 import copy
 import itertools as it
@@ -280,52 +292,6 @@ def error(array_a, array_b, array_u, array_v=None):
         else np.dot(np.dot(array_u.T, array_a), array_v)
     array_e -= array_b
     return np.trace(np.dot(array_e.T, array_e))
-
-
-def optimal_heuristic(perm, array_a, array_b, ref_error, k_opt=3):
-    r"""
-    K-opt heuristic to improve the accuracy.
-
-    Perform k-opt local search with every possible valid combination of the swapping mechanism.
-
-    Parameters
-    ----------
-    perm : np.ndarray
-        The permutation array which remains to be processed with k-opt local search.
-    array_a : np.ndarray
-        The array to be permuted.
-    array_b : np.ndarray
-        The reference array.
-    ref_error : float
-        The reference error value.
-    k_opt : int, optional
-        Order of local search. Default=3.
-
-    Returns
-    -------
-    perm : np.ndarray
-        The permutation array after optimal heuristic search.
-    kopt_error : float
-        The error distance of two arrays with the updated permutation array.
-
-    """
-    if k_opt < 2:
-        raise ValueError("K_opt value must be a integer greater than 2.")
-    num_row = perm.shape[0]
-    kopt_error = ref_error
-    # all the possible row-wise permutations
-    for comb in it.combinations(np.arange(num_row), r=k_opt):
-        for comb_perm in it.permutations(comb, r=k_opt):
-            if comb_perm != comb:
-                perm_kopt = copy.deepcopy(perm)
-                perm_kopt[comb, :] = perm_kopt[comb_perm, :]
-                e_kopt_new = error(array_a, array_b, perm_kopt, perm_kopt)
-                if e_kopt_new < kopt_error:
-                    perm = perm_kopt
-                    kopt_error = e_kopt_new
-                    if kopt_error == 0:
-                        break
-    return perm, kopt_error
 
 
 def _get_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,

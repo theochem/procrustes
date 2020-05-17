@@ -24,7 +24,7 @@
 
 import numpy as np
 from procrustes.utils import error, hide_zero_padding, is_diagonalizable, \
-    optimal_heuristic, scale_array, translate_array, zero_padding
+    scale_array, translate_array, zero_padding
 
 
 def test_zero_padding_rows():
@@ -286,34 +286,3 @@ def test_scale_array():
     # array_trans_scale should be identical to array after the above analysis
     expected = array_a
     assert (abs(predicted - expected) < 1.e-10).all()
-
-
-def test_optimal_heuristic():
-    r"""Test optimal_heuristic with manually set up example."""
-    # test whether it works correctly
-    arr_a = np.array([[3, 6, 1, 0, 7],
-                      [4, 5, 2, 7, 6],
-                      [8, 6, 6, 1, 7],
-                      [4, 4, 7, 9, 4],
-                      [4, 8, 0, 3, 1]])
-    arr_b = np.array([[1, 8, 0, 4, 3],
-                      [6, 5, 2, 4, 7],
-                      [7, 6, 6, 8, 1],
-                      [7, 6, 1, 3, 0],
-                      [4, 4, 7, 4, 9]])
-    perm_guess = np.array([[0, 0, 1, 0, 0],
-                           [1, 0, 0, 0, 0],
-                           [0, 0, 0, 1, 0],
-                           [0, 0, 0, 0, 1],
-                           [0, 1, 0, 0, 0]])
-    perm_exact = np.array([[0, 0, 0, 1, 0],
-                           [0, 1, 0, 0, 0],
-                           [0, 0, 1, 0, 0],
-                           [0, 0, 0, 0, 1],
-                           [1, 0, 0, 0, 0]])
-    error_old = error(arr_a, arr_b, perm_guess, perm_guess)
-    perm, kopt_error = optimal_heuristic(perm_guess, arr_a, arr_b, error_old, 3)
-    np.testing.assert_equal(perm, perm_exact)
-    assert kopt_error == 0
-    # test the error exceptions
-    np.testing.assert_raises(ValueError, optimal_heuristic, perm_guess, arr_a, arr_b, error_old, 1)

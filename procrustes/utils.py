@@ -25,12 +25,17 @@ Utility Module.
 
 Functions
 ---------
-error :
-setup_input_arrays :
+error : Calculates the squared distance between transformed matrices and reference matrix.
+setup_input_arrays : Setups up the arrays for all Procrustes methods.  It checks if the
+                    inputs are all numpy arrays, and two-dimensional.  It does zero-padding to make
+                    sure all arrays are of the same matrix dimensions and translates/scales the
+                    arrays if specified.
 
 """
 
 import numpy as np
+
+__all__ = ["error", "setup_input_arrays"]
 
 
 def _zero_padding(array_a, array_b, pad_mode="row-col"):
@@ -182,8 +187,7 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
     array_a : ndarray
         The initial array.
     remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed.
-        Default=True.
+        If True, the zero columns on the right side will be removed. Default=True.
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed. Default=True.
     tol : float
@@ -222,7 +226,7 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
 
 def error(array_a, array_b, array_u, array_v=None):
     r"""
-    Return the single- or double- sided Procrustes error.
+    Return the single- or double- sided Procrustes/norm-squared error.
 
     The single sided error is defined as
 
@@ -240,9 +244,9 @@ def error(array_a, array_b, array_u, array_v=None):
     Parameters
     ----------
     array_a : npdarray
-        The array being transformed.
+        The 2D array :math:`A` being transformed.
     array_b : npdarray
-        The reference array.
+        The 2D reference array :math:`B`.
     array_u : ndarray
         The 2D array representing the transformation :math:`\mathbf{U}`.
     array_v : ndarray, optional
@@ -253,6 +257,7 @@ def error(array_a, array_b, array_u, array_v=None):
     Returns
     -------
     error : float
+        The squared value of the distance between transformed array and reference.
 
     """
     array_e = np.dot(array_a, array_u) if array_v is None \
@@ -263,11 +268,56 @@ def error(array_a, array_b, array_u, array_v=None):
 
 def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                        pad_mode, translate, scale, check_finite):
-    r"""Check and process array inputs to Procrustes transformation routines."""
+    r"""
+    Check and process array inputs for the Procrustes transformation routines.
+
+    Usually, the precursor step before all Procrustes methods.
+
+    Parameters
+    ----------
+    array_a : npdarray
+        The 2D array :math:`A` being transformed.
+    array_b : npdarray
+        The 2D reference array :math:`B`.
+    remove_zero_col : bool, optional
+        If True, the zero columns on the right side will be removed. Default=True.
+    remove_zero_row : bool, optional
+        If True, the zero rows on the top will be removed. Default=True.
+    pad_mode : str
+        Specifying how to padded arrays. Should be one of
+
+            - "row"
+                The array with fewer rows is padded with zero rows so that both have the same
+                number of rows.
+            - "col"
+                The array with fewer columns is padded with zero columns so that both have the
+                same number of columns.
+            - "row-col"
+                The array with fewer rows is padded with zero rows, and the array with fewer
+                columns is padded with zero columns, so that both have the same dimensions.
+                This does not necessarily result in square arrays.
+            - "square"
+                The arrays are padded with zero rows and zero columns so that they are both
+                squared arrays. The dimension of square array is specified based on the highest
+                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    translate : bool
+        If true, then translate both arrays :math:`A, B` to the origin.
+    scale :
+        If true, then both arrays :math:`A, B` are scaled/normalized.
+    check_finite : bool
+        If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
+
+    Returns
+    -------
+    (ndarray, ndarray) :
+        Returns the padded arrays, in that they have the same matrix dimensions.
+
+    """
     _check_arraytypes(array_a, array_b)
     if check_finite:
         array_a = np.asarray_chkfinite(array_a)
         array_b = np.asarray_chkfinite(array_b)
+    # Sometimes arrays already have zero padding that messes up zero padding below.
     array_a = _hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
     array_b = _hide_zero_padding(array_b, remove_zero_col, remove_zero_row)
     if translate:

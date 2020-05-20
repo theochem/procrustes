@@ -22,15 +22,23 @@
 # --
 """Testings for symmetric Procrustes module."""
 
+
+import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal
+from scipy.optimize import minimize
+
 from procrustes import symmetric
 
 
 def test_symmetric_transformed():
     r"""Test symmetric without translation and scaling."""
     # define arbitrary array and symmetric transformation
-    array_a = np.array([[1, 2, 4, 5], [5, 7, 3, 3], [1, 5, 1, 9], [1, 5, 2, 7], [5, 7, 9, 0]])
+    array_a = np.array([[1, 2, 4, 5],
+                        [5, 7, 3, 3],
+                        [1, 5, 1, 9],
+                        [1, 5, 2, 7],
+                        [5, 7, 9, 0]])
     sym_array = np.dot(np.array([[1, 7, 4, 9]]).T, np.array([[1, 7, 4, 9]]))
     # define array_b by transforming array_a and padding with zero
     array_b = np.dot(array_a, sym_array)
@@ -110,3 +118,52 @@ def test_not_full_rank_case():
     # check transformation is symmetric & error is zero
     assert_almost_equal(array_x, array_x.T, decimal=6)
     assert_almost_equal(e_opt, 0, decimal=6)
+
+
+class TestAgainstNumerical:
+    r"""
+    Testing Procrustes over symmetric matrices against numerical optimization methods.
+
+    Note that there is a unique solution to ||AX - B|| if and only if rank(A) = n. This must be
+    guaranteed for numerical optimization to be exact.
+
+    """
+    def _vector_to_matrix(self, vec, nsize):
+        r"""Given a vector, change it to a matrix."""
+        mat = np.zeros((nsize, nsize))
+        mat[np.triu_indices(nsize)] = vec
+        mat = mat + mat.T - np.diag(np.diag(mat))
+        return mat
+
+    def _objective_func(self, vec, array_a, array_b, nsize):
+        mat = self._vector_to_matrix(vec, nsize)
+        diff = array_a.dot(mat) - array_b
+        return np.trace(diff.T.dot(diff))
+
+    def _optimize(self, array_a, array_b, n):
+        x0 = np.random.random(int(n * (n + 1) / 2.))
+        results = minimize(self._objective_func, x0, args=(array_a, array_b, n),
+                           method="slsqp", options={"eps": 1e-8, 'ftol': 1e-11, "maxiter": 1000})
+        return self._vector_to_matrix(results["x"], n), results["fun"]
+
+    @pytest.mark.parametrize("n", [2, 10, 15])
+    def test_random_tall_rectangular_matrices(self, n):
+        # Generate Random Rectangular Matrices
+        m = np.random.randint(n, n + 10)
+        array_a, array_b = np.random.random((m, n)), np.random.random((m, n))
+
+        desired, desired_func = self._optimize(array_a, array_b, n)
+        _, _, array_x, e_opt = symmetric(array_a, array_b)
+
+        assert np.abs(e_opt - desired_func) < 1e-5
+        assert np.all(np.abs(array_x - desired) < 1e-3)
+
+    def test_fat_rectangular_matrices_raises_error(self):
+        # Generate Random Rectangular Matrices
+        n = 3
+        m = np.random.randint(n + 1, n + 4)
+        array_a, array_b = np.random.random((n, m)), np.random.random((n, m))
+        np.testing.assert_raises(ValueError,
+                                 symmetric,
+                                 array_a,
+                                 array_b, pad_mode="square")

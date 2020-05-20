@@ -148,7 +148,6 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         raise ValueError("Attribute pad_mode should be either 'row-col' or 'square'.")
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                       pad_mode, translate, scale, check_finite)
-    print(new_a.shape, new_b.shape, array_a.shape, array_b.shape, pad_mode)
     if new_a.shape[0] != new_b.shape[0]:
         raise ValueError("The arrays A and B need to have the same number of rows.")
     if new_a.shape[0] < new_a.shape[1]:

@@ -49,7 +49,7 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
     pad_mode : str
-        Specifying how to padded arrays. Should be one of
+        Specifying how to pad the arrays. Should be one of
 
             - "row"
                 The array with fewer rows is padded with zero rows so that both have the same
@@ -284,7 +284,7 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     remove_zero_row : bool, optional
         If True, the zero rows on the top will be removed. Default=True.
     pad_mode : str
-        Specifying how to padded arrays. Should be one of
+        Specifying how to pad the arrays. Should be one of
 
             - "row"
                 The array with fewer rows is padded with zero rows so that both have the same

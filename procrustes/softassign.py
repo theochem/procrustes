@@ -77,7 +77,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         Number of running steps after the calculation converges in the relaxation procedure.
         Default=10.
     pad_mode : str, optional
-        Specifying how to padded arrays, listed below. Default="row-col".
+        Specifying how to pad the arrays, listed below. Default="row-col".
 
             - "row"
                 The array with fewer rows is padded with zero rows so that both have the same

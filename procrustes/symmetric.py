@@ -144,10 +144,16 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
     """
     # check inputs
+    if pad_mode in ["row", "col"]:
+        raise ValueError("pad_mode is either 'row-col' or 'square'")
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                      pad_mode, translate, scale, check_finite)
     if new_a.shape[0] != new_b.shape[0]:
         raise ValueError("The arrays A and B need to have the same number of rows.")
+    if new_a.shape[0] < new_a.shape[1]:
+        raise ValueError("Array A with size (n, m) needs to be  n is greater than equal to m.")
+    if new_b.shape[0] < new_b.shape[1]:
+        raise ValueError("Array B with size (n, m) needs to be  n is greater than equal to m.")
 
     # compute SVD of  new_a
     array_n = new_a.shape[1]

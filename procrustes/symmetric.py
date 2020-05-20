@@ -81,7 +81,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     array_x : ndarray
         The optimum symmetric transformation array.
     e_opt : float
-        One-sided orthogonal Procrustes error.
+        One-sided Procrustes error.
 
     Notes
     -----
@@ -149,9 +149,10 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     4.483083428047388e-31
 
     """
+    # TODO: Make Sure that the rectangular arrays are fat.
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite)
+                                     pad_mode, translate, scale, check_finite)
     # compute SVD of  new_a
     array_n = new_a.shape[1]
     array_u, array_s, array_vt = np.linalg.svd(new_a)

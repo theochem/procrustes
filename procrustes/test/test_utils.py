@@ -117,6 +117,14 @@ def test_zero_padding_square():
     assert square1.shape == square2.shape
     assert square1.shape[0] == square1.shape[1]
 
+    # Test in the scenario they have the same shape but rectangular.
+    array1 = np.array([[60, 85, 86, 1.], [85, 151, 153, 2.], [86, 153, 158, 10.]])
+    array2 = np.array([[60, 85, 86, 1.], [85, 151, 153, 2.], [86, 153, 158, 10.]])
+    square1, square2 = _zero_padding(array1, array2, pad_mode='square')
+    assert square1.shape == square2.shape
+    assert square1.shape[0] == square1.shape[1]
+    assert square1.shape[0] == 4
+
     # Performing the analysis on equally sized square arrays should return the same input arrays
     sym_part = np.array([[1, 7, 8, 4], [6, 4, 8, 1]])
     array1 = np.dot(sym_part, sym_part.T)

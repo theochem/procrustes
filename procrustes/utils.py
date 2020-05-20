@@ -80,7 +80,7 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     if array_a.ndim != 2 or array_b.ndim != 2:
         raise ValueError("Arguments array_a & array_b should be 2D arrays.")
 
-    if array_a.shape == array_b.shape:
+    if array_a.shape == array_b.shape and array_a.shape[0] == array_a.shape[1]:
         # special case of square arrays, mode is set to None so that array_a & array_b are returned.
         pad_mode = None
 

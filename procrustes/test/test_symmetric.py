@@ -120,6 +120,14 @@ def test_not_full_rank_case():
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
+def test_fat_rectangular_matrices_raises_error_no_padding(self):
+    # Generate Random Rectangular Matrices
+    n = 3
+    m = np.random.randint(n + 1, n + 4)
+    array_a, array_b = np.random.random((n, m)), np.random.random((n, m))
+    np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
+
+
 class TestAgainstNumerical:
     r"""
     Testing Procrustes over symmetric matrices against numerical optimization methods.
@@ -157,13 +165,3 @@ class TestAgainstNumerical:
 
         assert np.abs(e_opt - desired_func) < 1e-5
         assert np.all(np.abs(array_x - desired) < 1e-3)
-
-    def test_fat_rectangular_matrices_raises_error(self):
-        # Generate Random Rectangular Matrices
-        n = 3
-        m = np.random.randint(n + 1, n + 4)
-        array_a, array_b = np.random.random((n, m)), np.random.random((n, m))
-        np.testing.assert_raises(ValueError,
-                                 symmetric,
-                                 array_a,
-                                 array_b, pad_mode="square")

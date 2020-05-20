@@ -49,9 +49,6 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     pad_mode : str, optional
         Specifying how to padded arrays, listed below. Default="row-col".
 
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
             - "row-col"
                 The array with fewer rows is padded with zero rows, and the array with fewer
                 columns is padded with zero columns, so that both have the same dimensions.

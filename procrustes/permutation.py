@@ -25,7 +25,7 @@
 import itertools as it
 
 import numpy as np
-from procrustes.utils import setup_input_arrays, error
+from procrustes.utils import error, setup_input_arrays
 from scipy.optimize import linear_sum_assignment
 
 __all__ = [

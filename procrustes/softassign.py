@@ -27,7 +27,7 @@ import warnings
 
 import numpy as np
 from procrustes.permutation import permutation
-from procrustes.utils import setup_input_arrays, error
+from procrustes.utils import error, setup_input_arrays
 
 __all__ = [
     "softassign",

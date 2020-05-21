@@ -77,6 +77,12 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     e_opt : float
         One-sided Procrustes error.
 
+    Raises
+    ------
+    ValueError :
+        Raises error if pad_mode isn't 'row-col' and 'square' or if their matrix dimension (m, n)
+        don't satisfy :math:`m \geq n`.
+
     Notes
     -----
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference
@@ -148,12 +154,10 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         raise ValueError("Attribute pad_mode should be either 'row-col' or 'square'.")
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                       pad_mode, translate, scale, check_finite)
-    if new_a.shape[0] != new_b.shape[0]:
-        raise ValueError("The arrays A and B need to have the same number of rows.")
     if new_a.shape[0] < new_a.shape[1]:
-        raise ValueError("Array A with size (n, m) needs to be  n is greater than equal to m.")
+        raise ValueError("Array A with size (m, n) needs m >= to n, try 'square' for padding.")
     if new_b.shape[0] < new_b.shape[1]:
-        raise ValueError("Array B with size (n, m) needs to be  n is greater than equal to m.")
+        raise ValueError("Array B with size (m, n) needs m >= to n, try 'square' for padding.")
 
     # compute SVD of  new_a
     array_n = new_a.shape[1]

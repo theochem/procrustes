@@ -120,7 +120,7 @@ def test_not_full_rank_case():
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
-def test_fat_rectangular_matrices_raises_error_no_padding(self):
+def test_fat_rectangular_matrices_raises_error_no_padding():
     # Generate Random Rectangular Matrices
     n = 3
     m = np.random.randint(n + 1, n + 4)
@@ -165,3 +165,15 @@ class TestAgainstNumerical:
 
         assert np.abs(e_opt - desired_func) < 1e-5
         assert np.all(np.abs(array_x - desired) < 1e-3)
+
+    @pytest.mark.parametrize("n", [2, 10, 15])
+    def test_fat_rectangular_matrices_raises_error_square_padding(self, n):
+        # Generate Random Rectangular Matrices
+        m = np.random.randint(n + 1, n + 10)
+        array_a, array_b = np.random.random((n, m)), np.random.random((n, m))
+
+        desired, desired_func = self._optimize(array_a, array_b, m)
+        _, _, array_x, e_opt = symmetric(array_a, array_b, pad_mode="square")
+
+        # No uniqueness in solution, thus check that the optimal values are the same.
+        assert np.abs(e_opt - desired_func) < 1e-5

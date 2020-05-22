@@ -121,10 +121,11 @@ def test_not_full_rank_case():
 
 
 def test_fat_rectangular_matrices_raises_error_no_padding():
+    r"""Test Symmetric Procrustes raises error when improper padding."""
     # Generate Random Rectangular Matrices
-    n = 3
-    m = np.random.randint(n + 1, n + 4)
-    array_a, array_b = np.random.random((n, m)), np.random.random((n, m))
+    nrow = 3
+    ncol = np.random.randint(nrow + 1, nrow + 4)
+    array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
     np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
 
 
@@ -136,7 +137,8 @@ class TestAgainstNumerical:
     guaranteed for numerical optimization to be exact.
 
     """
-    def _vector_to_matrix(self, vec, nsize):
+    @staticmethod
+    def _vector_to_matrix(vec, nsize):
         r"""Given a vector, change it to a matrix."""
         mat = np.zeros((nsize, nsize))
         mat[np.triu_indices(nsize)] = vec
@@ -148,32 +150,34 @@ class TestAgainstNumerical:
         diff = array_a.dot(mat) - array_b
         return np.trace(diff.T.dot(diff))
 
-    def _optimize(self, array_a, array_b, n):
-        x0 = np.random.random(int(n * (n + 1) / 2.))
-        results = minimize(self._objective_func, x0, args=(array_a, array_b, n),
+    def _optimize(self, array_a, array_b, ncol):
+        init = np.random.random(int(ncol * (ncol + 1) / 2.))
+        results = minimize(self._objective_func, init, args=(array_a, array_b, ncol),
                            method="slsqp", options={"eps": 1e-8, 'ftol': 1e-11, "maxiter": 1000})
-        return self._vector_to_matrix(results["x"], n), results["fun"]
+        return self._vector_to_matrix(results["x"], ncol), results["fun"]
 
-    @pytest.mark.parametrize("n", [2, 10, 15])
-    def test_random_tall_rectangular_matrices(self, n):
+    @pytest.mark.parametrize("ncol", [2, 10, 15])
+    def test_random_tall_rectangular_matrices(self, ncol):
+        r"""Test Symmetric Procrustes with random tall matrices."""
         # Generate Random Rectangular Matrices
-        m = np.random.randint(n, n + 10)
-        array_a, array_b = np.random.random((m, n)), np.random.random((m, n))
+        nrow = np.random.randint(ncol, ncol + 10)
+        array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
-        desired, desired_func = self._optimize(array_a, array_b, n)
+        desired, desired_func = self._optimize(array_a, array_b, ncol)
         _, _, array_x, e_opt = symmetric(array_a, array_b)
 
         assert np.abs(e_opt - desired_func) < 1e-5
         assert np.all(np.abs(array_x - desired) < 1e-3)
 
-    @pytest.mark.parametrize("n", [2, 10, 15])
-    def test_fat_rectangular_matrices_raises_error_square_padding(self, n):
+    @pytest.mark.parametrize("nrow", [2, 10, 15])
+    def test_fat_rectangular_matrices_raises_error_square_padding(self, nrow):
+        r"""Test Symmetric Procrustes with random wide matrices."""
         # Generate Random Rectangular Matrices
-        m = np.random.randint(n + 1, n + 10)
-        array_a, array_b = np.random.random((n, m)), np.random.random((n, m))
+        ncol = np.random.randint(nrow + 1, nrow + 10)
+        array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
-        desired, desired_func = self._optimize(array_a, array_b, m)
-        _, _, array_x, e_opt = symmetric(array_a, array_b, pad_mode="square")
+        _, desired_func = self._optimize(array_a, array_b, ncol)
+        _, _, _, e_opt = symmetric(array_a, array_b, pad_mode="square")
 
         # No uniqueness in solution, thus check that the optimal values are the same.
         assert np.abs(e_opt - desired_func) < 1e-5

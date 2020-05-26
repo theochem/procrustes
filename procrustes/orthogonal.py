@@ -424,8 +424,8 @@ def _2sided_1trans_approx(array_a, array_b, tol):
 
 
 def _2sided_1trans_exact(array_a, array_b):
-    a, array_ua = np.linalg.eigh(array_a)
-    b, array_ub = np.linalg.eigh(array_b)
+    _, array_ua = np.linalg.eigh(array_a)
+    _, array_ub = np.linalg.eigh(array_b)
     # 2^n trial-and-error test to find optimum S array
     diags = product((-1, 1.), repeat=array_a.shape[0])
 

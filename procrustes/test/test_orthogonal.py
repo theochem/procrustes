@@ -408,9 +408,8 @@ def test_two_sided_orthogonal_single_transformation_scale_3by3():
     assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
     assert_almost_equal(result[3], 0, decimal=8)
     # check transformation array and error of "approx" mode
-    _, _, array_u, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=True,
-        scale=True, single_transform=True, mode="approx")
+    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True,
+                               single_transform=True, mode="approx")
     assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
     # error: 2.1162061737807796

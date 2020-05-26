@@ -266,14 +266,6 @@ def test_two_sided_orthogonal_rotate_reflect_pad():
     r"""Test 2sided orthogonal by 3by3 array with rotation, reflection and zero padding."""
     # define an arbitrary array
     array_a = np.array([[1., 4.], [6., 7]])
-    # rotation by 30 degrees
-    theta = np.pi / 6
-    rot1 = np.array([[np.cos(theta), -np.sin(theta)],
-                     [np.sin(theta), np.cos(theta)]])
-    array_b = np.dot(array_a, rot1)
-    # reflection 1 in x-axis
-    ref1 = np.array([[1, 0], [0, -1]])
-    array_b = np.dot(ref1, array_b)
     # rotation by -45 degrees
     theta = -np.pi / 4
     rot2 = np.array([[np.cos(theta), -np.sin(theta)],

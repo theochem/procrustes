@@ -233,15 +233,13 @@ def test_two_sided_orthogonal_identical():
     # case of identical square arrays
     array_a = np.arange(16).reshape(4, 4)
     array_b = np.copy(array_a)
-    _, _, array_u1, array_u2, e_opt = orthogonal_2sided(
-        array_a, array_b, single_transform=False)
-
+    result = orthogonal_2sided(array_a, array_b, single_transform=False)
     # check transformation array is identity
-    assert_almost_equal(np.linalg.det(array_u1), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(array_u2), 1.0, decimal=6)
-    assert_almost_equal(array_u1, np.eye(4), decimal=6)
-    assert_almost_equal(array_u2, np.eye(4), decimal=6)
-    assert_almost_equal(e_opt, 0., decimal=6)
+    assert_almost_equal(np.linalg.det(result[2]), 1.0, decimal=6)
+    assert_almost_equal(np.linalg.det(result[3]), 1.0, decimal=6)
+    assert_almost_equal(result[2], np.eye(4), decimal=6)
+    assert_almost_equal(result[3], np.eye(4), decimal=6)
+    assert_almost_equal(result[4], 0., decimal=6)
 
 
 def test_two_sided_orthogonal_rotate_reflect():
@@ -254,15 +252,14 @@ def test_two_sided_orthogonal_rotate_reflect():
     # define array_b by transforming array_a
     array_b = np.dot(np.dot(ref, array_a), rot)
     # compute procrustes transformation
-    _, _, array_u1, array_u2, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
     # check transformation array orthogonality
-    assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u1), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(array_u2), 1.0, decimal=6)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.dot(result[3], result[3].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.linalg.det(result[2]), 1.0, decimal=6)
+    assert_almost_equal(np.linalg.det(result[3]), 1.0, decimal=6)
     # transformation should return zero error
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(result[4], 0, decimal=6)
 
 
 def test_two_sided_orthogonal_rotate_reflect_pad():
@@ -286,17 +283,13 @@ def test_two_sided_orthogonal_rotate_reflect_pad():
     array_b = np.concatenate((array_b, np.zeros((2, 6))), axis=0)
 
     # compute Procrustes transformation
-    _, _, array_u1, array_u2, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
     # check transformation array and error
-    # Check orthogonality
-    # product is identity matrix and determinant is 1 or -1
-    assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(2), decimal=6)
-    assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(2), decimal=6)
-    assert_almost_equal(abs(np.linalg.det(array_u1)), 1.0, decimal=6)
-    assert_almost_equal(abs(np.linalg.det(array_u2)), 1.0, decimal=6)
-    # transformation should return zero error
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(2), decimal=6)
+    assert_almost_equal(np.dot(result[3], result[3].T), np.eye(2), decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result[3])), 1.0, decimal=6)
+    assert_almost_equal(result[4], 0, decimal=6)
 
 
 def test_two_sided_orthogonal_translate_scale_rotate_reflect():
@@ -310,15 +303,14 @@ def test_two_sided_orthogonal_translate_scale_rotate_reflect():
     shift = np.array([[16., 41., 33.], [16., 41., 33.], [16., 41., 33.]])
     array_b = np.dot(np.dot(ref, 23.5 * array_a + shift), rot)
     # compute procrustes transformation
-    _, _, array_u1, array_u2, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(3), decimal=6)
-    assert_almost_equal(abs(np.linalg.det(array_u1)), 1.0, decimal=6)
-    assert_almost_equal(abs(np.linalg.det(array_u2)), 1.0, decimal=6)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.dot(result[3], result[3].T), np.eye(3), decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result[3])), 1.0, decimal=6)
     # transformation should return zero error
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(result[4], 0, decimal=6)
 
 
 def test_two_sided_orthogonal_translate_scale_rotate_reflect_3by3():
@@ -332,15 +324,13 @@ def test_two_sided_orthogonal_translate_scale_rotate_reflect_3by3():
     shift = np.array([[146.56, 441.67, 343.56], [146.56, 441.67, 343.56], [146.56, 441.67, 343.56]])
     array_b = np.dot(np.dot(ref, 79.89 * array_a + shift), rot)
     # compute procrustes transformation
-    _, _, array_u1, array_u2, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u1, array_u1.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.dot(array_u2, array_u2.T), np.eye(3), decimal=6)
-    assert_almost_equal(abs(np.linalg.det(array_u1)), 1.0, decimal=6)
-    assert_almost_equal(abs(np.linalg.det(array_u2)), 1.0, decimal=6)
-    # transformation should return zero error
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.dot(result[3], result[3].T), np.eye(3), decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result[3])), 1.0, decimal=6)
+    assert_almost_equal(result[4], 0, decimal=6)
 
 
 def test_two_sided_orthogonal_single_transformation_invalid_mode_argument():
@@ -360,26 +350,22 @@ def test_two_sided_orthogonal_single_transformation_identical():
     array_a = np.array([[2, 5, 4, 1], [5, 3, 1, 2], [8, 9, 1, 0], [1, 5, 6, 7]])
     array_a = np.dot(array_a, array_a.T)
     array_b = np.copy(array_a)
-
     # test the "exact" mode
-    # compute exact 2sided orthogonal Procrustes with one transformation
-    _, _, array_u, e_opt = orthogonal_2sided(array_a, array_b, single_transform=True, mode="exact")
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, mode="exact")
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(4), decimal=8)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(4), decimal=8)
     # the rotations might not be unique
     # assert_almost_equal(abs(array_u), np.eye(4), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
-
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)
     # test the "approx" mode
-    # compute exact 2sided orthogonal Procrustes with one transformation
-    _, _, array_u, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=False, scale=False, single_transform=True, mode="approx")
+    result = orthogonal_2sided(array_a, array_b, translate=False, scale=False,
+                               single_transform=True, mode="approx")
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(4), decimal=8)
-    assert_almost_equal(abs(array_u), np.eye(4), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(4), decimal=8)
+    assert_almost_equal(abs(result[2]), np.eye(4), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)
 
 
 def test_two_sided_orthogonal_single_transformation_rot_reflect_padded():
@@ -398,20 +384,15 @@ def test_two_sided_orthogonal_single_transformation_rot_reflect_padded():
     array_b = np.concatenate((array_b, np.zeros((3, 5))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((5, 8))), axis=0)
 
-    # test the "exact" mode
-    # compute approximate Procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(array_a, array_b, single_transform=True, mode="exact")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
-
-    # test the "approx" mode
-    # compute approximate procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(array_a, array_b, single_transform=True, mode="approx")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
+    # check transformation array and error of "exact" mode
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, mode="exact")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)
+    # check transformation array and error of "approx" mode
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, mode="approx")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
 
 
 def test_two_sided_orthogonal_single_transformation_scale_3by3():
@@ -428,23 +409,18 @@ def test_two_sided_orthogonal_single_transformation_scale_3by3():
     # define array_b by transforming scaled-and-translated array_a
     array_b = np.dot(np.dot(trans.T, 6.9 * array_a), trans)
 
-    # test the "exact" mode
-    # compute approximate procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=False, scale=True, single_transform=True, mode="exact")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
-
-    # test the "approx" mode
-    # compute approximate procrustes transformation
+    # check transformation array and error of "exact" mode
+    result = orthogonal_2sided(array_a, array_b, translate=False, scale=True,
+                               single_transform=True, mode="exact")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)
+    # check transformation array and error of "approx" mode
     _, _, array_u, e_opt = orthogonal_2sided(
         array_a, array_b, translate=True,
         scale=True, single_transform=True, mode="approx")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
     # error: 2.1162061737807796
 
 
@@ -462,21 +438,17 @@ def test_two_sided_orthogonal_single_transformation_scale_rot_ref_2by2():
     # define array_b by transforming scaled array_a
     array_b = np.dot(np.dot(trans.T, 88.89 * array_a), trans)
 
-    # test the "exact" mode
-    # compute approximate procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=False, scale=True, single_transform=True, mode="exact")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(2), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
+    # check transformation array and error of "exact" mode
+    result = orthogonal_2sided(array_a, array_b, translate=False, scale=True,
+                               single_transform=True, mode="exact")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(2), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)
 
-    # test the "approx" mode
-    # compute approximate procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(array_a, array_b, single_transform=True, mode="approx")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(2), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
+    # check transformation array and error of "approx" mode
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, mode="approx")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(2), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
 
 
 def test_two_sided_orthogonal_single_transformation_scale_rot_ref_3by3():
@@ -493,21 +465,16 @@ def test_two_sided_orthogonal_single_transformation_scale_rot_ref_3by3():
     # define array_b by transforming scaled array_a
     array_b = np.dot(np.dot(trans.T, 6.9 * array_a), trans)
 
-    # test the "exact" mode
-    # compute approximate procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(
-        array_a, array_b, translate=False, scale=True, single_transform=True, mode="exact")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
-
-    # test the "approx" mode
-    # compute approximate procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(array_a, array_b, single_transform=True, mode="approx")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
+    # check transformation array and error of "exact" mode
+    result = orthogonal_2sided(array_a, array_b, translate=False, scale=True,
+                               single_transform=True, mode="exact")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)
+    # check transformation array and error of "approx" mode
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, mode="approx")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
 
 
 def test_two_sided_orthogonal_single_transformation_random_orthogonal():
@@ -520,10 +487,8 @@ def test_two_sided_orthogonal_single_transformation_random_orthogonal():
                       [1, 0, 0, 0],
                       [0, 1, 0, 0]])
     array_b = np.dot(np.dot(ortho.T, array_a), ortho)
-    # test the "exact" mode
-    # compute approximate Procrustes transformation
-    _, _, array_u, e_opt = orthogonal_2sided(array_a, array_b, single_transform=True, mode="exact")
-    # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(4), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(array_u)), 1.0, decimal=8)
-    assert_almost_equal(e_opt, 0, decimal=8)
+    # check transformation array and error of "exact" mode
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, mode="exact")
+    assert_almost_equal(np.dot(result[2], result[2].T), np.eye(4), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result[2])), 1.0, decimal=8)
+    assert_almost_equal(result[3], 0, decimal=8)

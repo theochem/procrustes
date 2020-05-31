@@ -29,10 +29,11 @@ from procrustes.utils import error, setup_input_arrays
 def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
               pad_mode='row-col', translate=False, scale=False, check_finite=True):
     r"""
-    Symmetric right-sided procrustes transformation.
+    Symmetric right-sided Procrustes transformation.
 
-    The symmetric procrustes analysis requires two 2d-arrays with the same number of rows, so
-    the array with the smaller number of rows will automatically be padded with zero rows.
+    The symmetric Procrustes requires both matrices to have the number of rows
+    greater than equal to the number of columns. Further, it is assumed that
+    each matrix has the same dimension, if not padding will occur.
 
     Parameters
     ----------
@@ -86,8 +87,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     Raises
     ------
     ValueError :
-        Raises error if pad_mode isn't 'row-col' and 'square' or if their matrix dimension (m, n)
-        don't satisfy :math:`m \geq n`.
+        If their matrix dimension (m, n) don't satisfy :math:`m \geq n` after padding.
 
     Notes
     -----

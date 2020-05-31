@@ -29,7 +29,7 @@ from procrustes.utils import error, setup_input_arrays
 def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                pad_mode="row-col", translate=False, scale=False, check_finite=True):
     r"""
-    Compute optimal rotational-orthogonal transformation array.
+    Compute optimal rotational transformation array.
 
     The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
     array with the smaller number of rows will automatically be padded with zero rows.

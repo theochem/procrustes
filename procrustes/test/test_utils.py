@@ -106,6 +106,23 @@ def test_zero_padding_rows_columns():
     assert (abs(padded1 - array1) < 1.e-10).all()
     assert (abs(padded2 - array2_test) < 1.e-10).all()
 
+    # Test in the scenario they have the same shape but fat rectangular.
+    array1 = np.array([[60, 85, 86, 1.], [85, 151, 153, 2.], [86, 153, 158, 10.]])
+    padded2, padded1 = _zero_padding(array1, array1, pad_mode='row-col')
+    assert np.all(np.abs(array1 - padded2)) < 1e-5
+    assert np.all(np.abs(array1 - padded1)) < 1e-5
+    assert padded1.shape == padded2.shape
+    assert padded1.shape == (3, 4)
+
+    # Test in the scenario they have the same shape but tall rectangular.
+    array1 = np.random.random((2, 10))
+    array2 = np.random.random((2, 10))
+    padded2, padded1 = _zero_padding(array1, array2, pad_mode='row-col')
+    assert np.all(np.abs(array1 - padded2)) < 1e-5
+    assert np.all(np.abs(array2 - padded1)) < 1e-5
+    assert padded1.shape == padded2.shape
+    assert padded1.shape == (2, 10)
+
 
 def test_zero_padding_square():
     r"""Test _zero_padding with squared array."""

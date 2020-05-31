@@ -196,6 +196,7 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
     Returns
     -------
     new_A : ndarray
+        Array, with either near zero columns and/or zero rows are removed.
 
     """
     # Input checking

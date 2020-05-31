@@ -209,6 +209,16 @@ def test_hide_zero_padding_square():
                        [0, 0.0, 0.0, 0, 0],
                        [0, 0.0, 0.0, 0, 0]])
     np.testing.assert_almost_equal(_hide_zero_padding(array4), array0, decimal=6)
+    # check with close to zero values.
+    array4 = np.array([[0, 0.5, 1.0, 1e-6, 1e-8],
+                       [0, 3.1, 4.6, 1e-6, 1e-8],
+                       [0, 7.2, 9.2, 1e-5, 1e-9],
+                       [0, 0.0, 0.0, 0.0, 1e-8],
+                       [0, 0.0, 0.0, 0.0, 0]])
+    actual = np.array([[0, 0.5, 1.0, 1e-6],
+                       [0., 3.1, 4.6, 1e-6],
+                       [0., 7.2, 9.2, 1e-5]])
+    np.testing.assert_almost_equal(_hide_zero_padding(array4), actual, decimal=6)
 
 
 def test_translate_array():

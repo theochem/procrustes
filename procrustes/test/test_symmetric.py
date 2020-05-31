@@ -170,11 +170,14 @@ class TestAgainstNumerical:
         assert np.all(np.abs(array_x - desired) < 1e-3)
 
     @pytest.mark.parametrize("nrow", [2, 10, 15])
-    def test_fat_rectangular_matrices_raises_error_square_padding(self, nrow):
+    def test_fat_rectangular_matrices_with_square_padding(self, nrow):
         r"""Test Symmetric Procrustes with random wide matrices."""
         # Generate Random Rectangular Matrices
         ncol = np.random.randint(nrow + 1, nrow + 10)
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
+
+        with pytest.raises(ValueError):
+            symmetric(array_a, array_b)
 
         _, desired_func = self._optimize(array_a, array_b, ncol)
         _, _, _, e_opt = symmetric(array_a, array_b, pad_mode="square")

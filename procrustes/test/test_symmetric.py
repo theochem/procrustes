@@ -23,12 +23,11 @@
 """Testings for symmetric Procrustes module."""
 
 
-import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal
-from scipy.optimize import minimize
-
 from procrustes import symmetric
+import pytest
+from scipy.optimize import minimize
 
 
 def test_symmetric_transformed():
@@ -137,6 +136,7 @@ class TestAgainstNumerical:
     guaranteed for numerical optimization to be exact.
 
     """
+
     @staticmethod
     def _vector_to_matrix(vec, nsize):
         r"""Given a vector, change it to a matrix."""

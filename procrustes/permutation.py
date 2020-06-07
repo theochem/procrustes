@@ -154,7 +154,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
     remove_zero_col : bool, optional
         If True, the zero columns on the right side will be removed. Default= True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed. Default= True.
+        If True, the zero rows on the bottom will be removed. Default= True.
     pad_mode : str, optional
         Specifying how to pad the arrays, listed below. Default="row-col".
 
@@ -692,7 +692,7 @@ def permutation_2sided_explicit(array_a, array_b,
         If True, the zero columns on the right side will be removed.
         Default=True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed. Default= True.
+        If True, the zero rows on the bottom will be removed. Default= True.
     pad_mode : str, optional
         Zero padding mode when the sizes of two arrays differ. Default="row-col".
         "row": The array with fewer rows is padded with zero rows so that both have the same number

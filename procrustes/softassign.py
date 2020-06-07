@@ -97,7 +97,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         If True, the zero columns on the right side will be removed.
         Default=True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed.
+        If True, the zero rows on the bottom will be removed.
         Default=True.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin.

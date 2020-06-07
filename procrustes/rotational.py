@@ -44,7 +44,7 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         If True, the zero columns on the right side will be removed.
         Default= True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed.
+        If True, the zero rows on the bottom will be removed.
         Default= True.
     pad_mode : str, optional
         Specifying how to pad the arrays, listed below. Default="row-col".

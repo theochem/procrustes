@@ -169,10 +169,10 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
     remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed.
-        Default= True.
+        If True, zero columns (values less than 1e-8) on the right side will be removed.
+        Default=True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the bottom will be removed.
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
         Default= True.
     pad_mode : str, optional
         Specifying how to pad the arrays, listed below. Default="row-col".

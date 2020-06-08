@@ -94,10 +94,10 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                 squared arrays. The dimension of square array is specified based on the highest
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
     remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed.
+        If True, zero columns (values less than 1e-8) on the right side will be removed.
         Default=True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the bottom will be removed.
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
         Default=True.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin.

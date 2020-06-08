@@ -187,9 +187,11 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
     array_a : ndarray
         The initial array.
     remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed. Default=True.
+        If True, zero columns (values less than 1e-8) on the right side will be removed.
+        Default=True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the bottom will be removed. Default=True.
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
+        Default=True.
     tol : float
         Tolerance value.
 
@@ -281,9 +283,10 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     array_b : npdarray
         The 2D reference array :math:`B`.
     remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed. Default=True.
+        If True, zero columns (values less than 1e-8) on the right side will be removed.
+        Default=True.
     remove_zero_row : bool, optional
-        If True, the zero rows on the bottom will be removed. Default=True.
+        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
 

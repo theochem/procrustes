@@ -100,7 +100,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         If True, zero rows (values less than 1e-8) on the bottom will be removed.
         Default=True.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin.
+        If True, both arrays are translated to be centered at origin, ie columns of the arrays
+        will have mean zero.
         Default=False.
     scale : bool, optional
         If True, both arrays are column normalized to unity. Default=False.

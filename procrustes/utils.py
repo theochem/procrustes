@@ -122,6 +122,8 @@ def _translate_array(array_a, array_b=None):
     """
     Return translated array_a and translation vector.
 
+    Columns of both arrays will have mean zero.
+
     Parameters
     ----------
     array_a : ndarray
@@ -305,7 +307,8 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                 squared arrays. The dimension of square array is specified based on the highest
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
     translate : bool
-        If true, then translate both arrays :math:`A, B` to the origin.
+        If true, then translate both arrays :math:`A, B` to the origin, ie columns of the arrays
+        will have mean zero.
     scale :
         If true, then both arrays :math:`A, B` are scaled/normalized.
     check_finite : bool

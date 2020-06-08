@@ -64,7 +64,9 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                 squared arrays. The dimension of square array is specified based on the highest
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin.
+        If True, both arrays are translated to be centered at origin, ie columns of the arrays
+        will have mean zero.
+        Default=False.
     scale : bool, optional
         If True, both arrays are column normalized to unity.
     check_finite : bool, optional

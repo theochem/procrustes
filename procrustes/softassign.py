@@ -104,7 +104,9 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         will have mean zero.
         Default=False.
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Default=False.
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
+        Default=False.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs. Default=True.
     adapted : bool, optional

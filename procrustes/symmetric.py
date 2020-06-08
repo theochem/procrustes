@@ -66,9 +66,12 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.  Default=False.
+        will have mean zero.
+        Default=False.
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Default=False.
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
+        Default=False.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.

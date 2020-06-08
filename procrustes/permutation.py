@@ -67,7 +67,9 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         will have mean zero.
         Default=False.
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Default=False.
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
+        Default=False.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs. Default=True.
 
@@ -180,7 +182,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         will have mean zero.
         Default=False.
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Default=False.
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
+        Default=False.
     mode : string, optional
         Option for choosing the initial guess methods, including "normal1",
         "normal2", "umeyama" and "umeyama_approx". "umeyama_approx" is the

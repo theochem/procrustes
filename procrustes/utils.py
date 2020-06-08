@@ -152,7 +152,7 @@ def _translate_array(array_a, array_b=None):
 
 def _scale_array(array_a, array_b=None):
     """
-    Return scaled array_a and scaling vector.
+    Return scaled/normalized array_a and scaling vector.
 
     Parameters
     ----------
@@ -164,8 +164,7 @@ def _scale_array(array_a, array_b=None):
     Returns
     -------
     scaled_a, ndarray
-        If array_b is None, array_a is scaled to match norm of unit sphere using array_a"s
-        Frobenius norm.
+        If array_b is None, array_a is normalized using the Frobenius norm.
         If array_b is given, array_a is scaled to match array_b"s norm (the norm of array_a
         will be equal norm of array_b).
     scale : float
@@ -310,7 +309,8 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         If true, then translate both arrays :math:`A, B` to the origin, ie columns of the arrays
         will have mean zero.
     scale :
-        If true, then both arrays :math:`A, B` are scaled/normalized.
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
     check_finite : bool
         If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
 

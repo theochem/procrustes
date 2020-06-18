@@ -53,6 +53,9 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
     """
     # check input arrays
     _check_arraytypes(*array_list)
+    # check finite
+    if check_finite:
+        array_list = [np.asarray_chkfinite(arr) for arr in array_list]
 
     # todo: translation and scaling
     if n_iter <= 0:

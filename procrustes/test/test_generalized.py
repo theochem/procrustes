@@ -52,7 +52,7 @@ def test_generalized_with_reference():
     assert_almost_equal(arr_aligned[2], aligned[2], decimal=7)
 
 
-def test_generalized_with_reference():
+def test_generalized_without_reference():
     r"""Test generalized Procrustes without reference."""
     arr_b = np.array([[5, 0], [8, 0], [5, 5]])
     arr_c = np.dot(arr_b, _rotation(30))

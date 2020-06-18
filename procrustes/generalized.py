@@ -21,7 +21,6 @@
 #
 # --
 """Generalized Procrustes Module."""
-import itertools as it
 
 import numpy as np
 from procrustes import orthogonal

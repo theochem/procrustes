@@ -25,11 +25,16 @@
 import itertools
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_raises
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
+
 # pylint: disable=too-many-lines
-from procrustes.permutation import _2sided_1trans_initial_guess_normal1, \
-    _2sided_1trans_initial_guess_normal2, _2sided_1trans_initial_guess_umeyama, \
-    permutation, permutation_2sided, permutation_2sided_explicit
+from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
+                                    _2sided_1trans_initial_guess_normal2,
+                                    _2sided_1trans_initial_guess_umeyama,
+                                    _kopt_heuristic_single, permutation,
+                                    permutation_2sided,
+                                    permutation_2sided_explicit)
+from procrustes.utils import error
 
 
 def test_permutation_columns():
@@ -1004,3 +1009,33 @@ def test_permutation_2sided_add_noise_mode_umeyama_approx():
                                 mode="umeyama_approx", add_noise=True)
     assert_almost_equal(result[2], perm, decimal=6)
     assert_almost_equal(result[3], 0, decimal=6)
+
+
+def test_kopt_heuristic():
+    r"""Test k-opt heuristic search algorithm."""
+    arr_a = np.array([[3, 6, 1, 0, 7],
+                      [4, 5, 2, 7, 6],
+                      [8, 6, 6, 1, 7],
+                      [4, 4, 7, 9, 4],
+                      [4, 8, 0, 3, 1]])
+    arr_b = np.array([[1, 8, 0, 4, 3],
+                      [6, 5, 2, 4, 7],
+                      [7, 6, 6, 8, 1],
+                      [7, 6, 1, 3, 0],
+                      [4, 4, 7, 4, 9]])
+    perm_guess = np.array([[0, 0, 1, 0, 0],
+                           [1, 0, 0, 0, 0],
+                           [0, 0, 0, 1, 0],
+                           [0, 0, 0, 0, 1],
+                           [0, 1, 0, 0, 0]])
+    perm_exact = np.array([[0, 0, 0, 1, 0],
+                           [0, 1, 0, 0, 0],
+                           [0, 0, 1, 0, 0],
+                           [0, 0, 0, 0, 1],
+                           [1, 0, 0, 0, 0]])
+    error_old = error(arr_a, arr_b, perm_guess, perm_guess)
+    perm, kopt_error = _kopt_heuristic_single(perm_guess, arr_a, arr_b, error_old, 3)
+    assert_equal(perm, perm_exact)
+    assert kopt_error == 0
+    # test the error exceptions
+    assert_raises(ValueError, _kopt_heuristic_single, perm_guess, arr_a, arr_b, error_old, 1)

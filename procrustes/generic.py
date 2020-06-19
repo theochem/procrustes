@@ -29,7 +29,7 @@ from procrustes.utils import error, setup_input_arrays
 def generic(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
             pad_mode='row-col', translate=False, scale=False, check_finite=True):
     r"""
-    Generic right-sided Procrustes transformation.
+    Solve the generic right-sided Procrustes problem.
 
     The generic Procrustes solves the least squares optimization problem without any constraints. It
     assumed that each matrix has the same dimension, if not padding will occur.

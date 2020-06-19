@@ -92,7 +92,7 @@ def test_symmetric_transformed_scale():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=True)
+    _, _, _, e_opt = generic(array_a, array_b, translate=False, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(e_opt, 0.0, decimal=6)
 
@@ -108,6 +108,6 @@ def test_symmetric_transformed__traslate_scale():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(4.5*array_a + 9, array_x)
     # compute procrustes transformation
-    _, _, x_computed, e_opt = generic(array_a, array_b, translate=True, scale=True)
+    _, _, _, e_opt = generic(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(e_opt, 0.0, decimal=6)

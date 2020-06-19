@@ -696,15 +696,15 @@ def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt):
 
     Parameters
     ----------
-    perm : np.ndarray
+    perm : ndarray
         The permutation array which remains to be processed with k-opt local search.
-    array_a : np.ndarray
+    array_a : ndarray
         The array to be permuted.
-    array_b : np.ndarray
+    array_b : ndarray
         The reference array.
     ref_error : float
         The reference error value.
-    k_opt : int, optional
+    k_opt : int
         Order of local search.
 
     Returns

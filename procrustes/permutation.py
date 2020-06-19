@@ -136,7 +136,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
                        heuristic=False, k_opt=3, remove_zero_col=True, remove_zero_row=True,
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
-                       add_noise=False, tol=1.0e-8):
+                       add_noise=False, tol=1.0e-8, kopt_tol=1.e-8):
     r"""
     Single sided permutation Procrustes.
 
@@ -193,7 +193,11 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
     add_noise : bool, optional
         Add small noise if the arrays are non-diagonalizable. Default=False.
     tol : float, optional
-        The tolerance value used for updating the initial guess. Default=1.e-8
+        The tolerance value used for updating the initial guess. Default=1.e-8.
+    kopt_tol : float, optional
+        Tolerance value to check if k-opt heuristic converges. Default=1.e-8.
+
+
 
     Returns
     -------
@@ -391,14 +395,16 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         e_opt = error(new_a, new_b, array_u, array_u)
         # k-opt heuristic
         if heuristic:
-            array_u, e_opt = _kopt_heuristic_single(array_u, new_a, new_b, e_opt, k_opt=k_opt)
+            array_u, e_opt = _kopt_heuristic_single(array_u, new_a, new_b,
+                                                    e_opt, k_opt=k_opt, kopt_tol=kopt_tol)
         return new_a, new_b, array_u, e_opt
 
     # Do regular computation
     elif transform_mode == "double":
         array_m = new_a
         array_n = new_b
-        array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol, iteration)
+        array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol,
+                                                  iteration, kopt_tol=kopt_tol)
         # perform k-opt heuristic search twice
         if heuristic:
             raise ValueError("The k-opt heuristic for regular two sided "
@@ -688,7 +694,7 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
     return p_opt
 
 
-def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt):
+def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt, kopt_tol=1.e-7):
     r"""
     K-opt heuristic to improve the accuracy.
 
@@ -706,6 +712,8 @@ def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt):
         The reference error value.
     k_opt : int
         Order of local search.
+    kopt_tol : float
+        Tolerance value to check if k-opt heuristic converges
 
     Returns
     -------
@@ -728,7 +736,7 @@ def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt):
                 if e_kopt_new < kopt_error:
                     perm = perm_kopt
                     kopt_error = e_kopt_new
-                    if kopt_error == 0:
+                    if kopt_error <= kopt_tol:
                         break
     return perm, kopt_error
 

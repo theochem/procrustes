@@ -23,6 +23,7 @@
 """Permutation Procrustes Module."""
 
 import itertools as it
+from copy import deepcopy
 
 import numpy as np
 from procrustes.utils import error, setup_input_arrays
@@ -141,7 +142,7 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
-                       remove_zero_col=True, remove_zero_row=True,
+                       heuristic=False, k_opt=3, remove_zero_col=True, remove_zero_row=True,
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
                        add_noise=False, tol=1.0e-8):
@@ -160,6 +161,10 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         for directed graph matching will be used. Otherwise, transform_mode="double", the
         two-sided permutation Procrustes with two transformations will be performed.
         Default="single_undirected".
+    heuristic : bool, optional
+        If True, the k_opt heuristic search will be performed. Default=False.
+    k-opt : int, optional
+        Defines the n-opt. Default=3.
     remove_zero_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
         Default= True.
@@ -387,6 +392,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         # Compute the permutation matrix by iterations
         array_u = _compute_transform(new_a, new_b, guess, tol, iteration)
         e_opt = error(new_a, new_b, array_u, array_u)
+        # k-opt heuristic
+        if heuristic:
+            array_u, e_opt = _kopt_heuristic_single(array_u, new_a, new_b, e_opt, k_opt=k_opt)
         return new_a, new_b, array_u, e_opt
 
     elif transform_mode == "single_directed":
@@ -395,6 +403,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         # Compute the permutation matrix by iterations
         array_u = _compute_transform_directed(new_a, new_b, guess, tol, iteration)
         e_opt = error(new_a, new_b, array_u, array_u)
+        # k-opt heuristic
+        if heuristic:
+            array_u, e_opt = _kopt_heuristic_single(array_u, new_a, new_b, e_opt, k_opt=k_opt)
         return new_a, new_b, array_u, e_opt
 
     # Do regular computation
@@ -402,6 +413,10 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         array_m = new_a
         array_n = new_b
         array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol, iteration)
+        # perform k-opt heuristic search twice
+        if heuristic:
+            raise ValueError("The k-opt heuristic for regular two sided "
+                             "permutations Procrustes not implemented.")
         return array_m, array_n, array_p, array_q, e_opt
     else:
         raise ValueError(
@@ -540,7 +555,7 @@ def _2sided_1trans_initial_guess_normal2(array_a):
 
     # use inf to represent the diagonal element
     a_inf = array_a - np.diag(np.diag(array_a)) + np.diag([-np.inf] * array_a.shape[0])
-    index_inf = np.argsort(-np.abs((a_inf)), axis=1)
+    index_inf = np.argsort(-np.abs(a_inf), axis=1)
 
     # the weight matrix
     weight_p = np.power(2, -0.5)
@@ -685,6 +700,51 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
     _, _, p_opt, _ = permutation(np.eye(p_new.shape[0]), p_new)
 
     return p_opt
+
+
+def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt):
+    r"""
+    K-opt heuristic to improve the accuracy.
+
+    Perform k-opt local search with every possible valid combination of the swapping mechanism.
+
+    Parameters
+    ----------
+    perm : np.ndarray
+        The permutation array which remains to be processed with k-opt local search.
+    array_a : np.ndarray
+        The array to be permuted.
+    array_b : np.ndarray
+        The reference array.
+    ref_error : float
+        The reference error value.
+    k_opt : int, optional
+        Order of local search.
+
+    Returns
+    -------
+    perm : ndarray
+        The permutation array after optimal heuristic search.
+    kopt_error : float
+        The error distance of two arrays with the updated permutation array.
+    """
+    if k_opt < 2:
+        raise ValueError("K_opt value must be a integer greater than 2.")
+    num_row = perm.shape[0]
+    kopt_error = ref_error
+    # all the possible row-wise permutations
+    for comb in it.combinations(np.arange(num_row), r=k_opt):
+        for comb_perm in it.permutations(comb, r=k_opt):
+            if comb_perm != comb:
+                perm_kopt = deepcopy(perm)
+                perm_kopt[comb, :] = perm_kopt[comb_perm, :]
+                e_kopt_new = error(array_a, array_b, perm_kopt, perm_kopt)
+                if e_kopt_new < kopt_error:
+                    perm = perm_kopt
+                    kopt_error = e_kopt_new
+                    if kopt_error == 0:
+                        break
+    return perm, kopt_error
 
 
 def permutation_2sided_explicit(array_a, array_b,

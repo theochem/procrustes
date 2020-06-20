@@ -22,13 +22,12 @@
 # --
 """Permutation Procrustes Module."""
 
-import itertools as it
 from copy import deepcopy
+import itertools as it
 
 import numpy as np
-from scipy.optimize import linear_sum_assignment
-
 from procrustes.utils import error, setup_input_arrays
+from scipy.optimize import linear_sum_assignment
 
 __all__ = [
     "permutation",

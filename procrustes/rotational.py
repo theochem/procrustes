@@ -23,7 +23,7 @@
 """Rotational-Orthogonal Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, OptResult, setup_input_arrays
 
 
 def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -76,7 +76,7 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         The transformed ndarray :math:`A`.
     new_b : ndarray
         The transformed ndarray :math:`B`.
-    u_opt : ndarray
+    array_u : ndarray
         The optimum rotation transformation matrix.
     e_opt : float
         One-sided orthogonal Procrustes error.
@@ -158,5 +158,5 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     u_opt = np.dot(np.dot(array_u, s_value), array_vt)
     # compute single-sided error error
     e_opt = error(new_a, new_b, u_opt)
-
-    return new_a, new_b, u_opt, e_opt
+    # returns the result object
+    return OptResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)

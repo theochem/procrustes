@@ -398,7 +398,8 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         e_opt = error(new_a, new_b, array_u, array_u)
         # k-opt heuristic
         if heuristic:
-            array_u, e_opt = _kopt_heuristic_single(array_u, new_a, new_b, e_opt, k_opt=k_opt)
+            array_u, e_opt = _kopt_heuristic_single(array_u, new_a, new_b,
+                                                    e_opt, k_opt=k_opt, kopt_tol=kopt_tol)
         return new_a, new_b, array_u, e_opt
 
     elif transform_mode == "single_directed":

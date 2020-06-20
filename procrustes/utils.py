@@ -382,8 +382,8 @@ class OptResult(dict):
     def __repr__(self):
         """Return a human friendly representation."""
         if self.keys():
-            m = max(map(len, list(self.keys()))) + 1
-            return '\n'.join([k.rjust(m) + ': ' + repr(v)
+            max_len = max(map(len, list(self.keys()))) + 1
+            return '\n'.join([k.rjust(max_len) + ': ' + repr(v)
                               for k, v in sorted(self.items())])
         else:
             return self.__class__.__name__ + "()"

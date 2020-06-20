@@ -155,8 +155,8 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     s_value = np.eye(new_a.shape[1])
     s_value[-1, -1] = np.sign(np.linalg.det(np.dot(array_u, array_vt)))
     # compute optimum rotation matrix
-    u_opt = np.dot(np.dot(array_u, s_value), array_vt)
+    array_u = np.dot(np.dot(array_u, s_value), array_vt)
     # compute single-sided error error
-    e_opt = error(new_a, new_b, u_opt)
-    # returns the result object
-    return OptResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
+    e_opt = error(new_a, new_b, array_u)
+    # build the result object
+    return OptResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)

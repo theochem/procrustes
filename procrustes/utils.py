@@ -30,12 +30,15 @@ setup_input_arrays : Setups up the arrays for all Procrustes methods.  It checks
                     inputs are all numpy arrays, and two-dimensional.  It does zero-padding to make
                     sure all arrays are of the same matrix dimensions and translates/scales the
                     arrays if specified.
+Result : Returns the Procrustes analysis result which includes the translated/scaled
+         matrices,  transformation matrix or matrices, the distance between the source
+         matrix and the target matrix.
 
 """
 
 import numpy as np
 
-__all__ = ["error", "setup_input_arrays"]
+__all__ = ["error", "setup_input_arrays", "OptResult"]
 
 
 def _zero_padding(array_a, array_b, pad_mode="row-col"):
@@ -336,3 +339,55 @@ def _check_arraytypes(*args):
         raise TypeError("Matrix inputs must be NumPy arrays")
     if any(x.ndim != 2 for x in args):
         raise TypeError("Matrix inputs must be 2-dimensional arrays")
+
+
+class OptResult(dict):
+    r"""Represents the Procrustes optimization result.
+
+    Attributes
+    ----------
+    new_a : ndarray
+        The translated/scaled numpy ndarray :math:`\mathbf{A}`.
+    new_b : ndarray
+        The translated/scaled numpy ndarray :math:`\mathbf{B}`.
+    array_u : ndarray
+        The right hand side optimum transformation matrix.
+    array_p : ndarray
+        The left hand side transformation matrix for two-sided Procrustes problem with
+        two transformation.
+    array_q : ndarray
+        The right hand side transformation matrix for two-sided Procrustes problem with
+        two transformation.
+    e_opt : float
+        Two-sided permutation Procrustes error.
+
+    Notes
+    -----
+    Some of additional attributes are not listed above can be foundt at specific Procrustes
+    algorithm implementations. Since this class is essentially a subclass of dict with attribute
+    accessors, one can see which attributes are available using the `keys()` method.
+    """
+
+    # modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132
+    def __getattr__(self, name):
+        """Deal with attributes which it doesn't explicitly manage."""
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+    def __repr__(self):
+        """Return a human friendly representation."""
+        if self.keys():
+            m = max(map(len, list(self.keys()))) + 1
+            return '\n'.join([k.rjust(m) + ': ' + repr(v)
+                              for k, v in sorted(self.items())])
+        else:
+            return self.__class__.__name__ + "()"
+
+    def __dir__(self):
+        """Provide basic customization of module attribute access with a list."""
+        return list(self.keys())

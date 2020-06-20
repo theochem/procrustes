@@ -1074,5 +1074,4 @@ def test_kopt_heuristic_double():
                                               array_m=arr_a, array_n=arr_b,
                                               ref_error=e_opt, k_opt=3, kopt_tol=1.e-8)
     assert kopt_error <= e_opt
-    # todo: check if the kopt_error can be zero
     assert kopt_error == 0

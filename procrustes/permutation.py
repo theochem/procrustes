@@ -403,12 +403,14 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
     elif transform_mode == "double":
         array_m = new_a
         array_n = new_b
-        array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol,
-                                                  iteration, kopt_tol=kopt_tol)
+        array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol, iteration)
         # perform k-opt heuristic search twice
         if heuristic:
-            raise ValueError("The k-opt heuristic for regular two sided "
-                             "permutations Procrustes not implemented.")
+            perm_p, perm_q, kopt_error = _kopt_heuristic_double(perm_p=array_p, perm_q=array_q,
+                                                                array_m=array_m, array_n=array_n,
+                                                                ref_error=e_opt, k_opt=k_opt,
+                                                                kopt_tol=kopt_tol)
+            array_p, array_q, e_opt = perm_p, perm_q, kopt_error
         return array_m, array_n, array_p, array_q, e_opt
     else:
         raise ValueError(
@@ -694,7 +696,7 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
     return p_opt
 
 
-def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt, kopt_tol=1.e-7):
+def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt, kopt_tol):
     r"""
     K-opt heuristic to improve the accuracy.
 
@@ -739,6 +741,74 @@ def _kopt_heuristic_single(perm, array_a, array_b, ref_error, k_opt, kopt_tol=1.
                     if kopt_error <= kopt_tol:
                         break
     return perm, kopt_error
+
+
+def _kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, k_opt, kopt_tol):
+    r"""
+    K-opt heuristic for regular two-sided permutation Procrustes to improve the accuracy.
+
+    Perform k-opt local search with every possible valid combination of the swapping mechanism for
+    regular 2-sided permutation Procrustes.
+
+    Parameters
+    ----------
+    perm_p : ndarray
+        The left permutation array which remains to be processed with k-opt local search.
+    perm_q : ndarray
+        The right permutation array which remains to be processed with k-opt local search.
+    array_m : ndarray
+        The array to be permuted.
+    array_n : ndarray
+        The reference array.
+    ref_error : float
+        The reference error value.
+    k_opt : int
+        Order of local search.
+    kopt_tol : float
+        Tolerance value to check if k-opt heuristic converges.
+
+    Returns
+    -------
+    perm_kopt_p : ndarray
+        The left permutation array after optimal heuristic search.
+    perm_kopt_q : ndarray
+        The right permutation array after optimal heuristic search.
+    kopt_error : float
+        The error distance of two arrays with the updated permutation array.
+    """
+    if k_opt < 2:
+        raise ValueError("K_opt value must be a integer greater than 2.")
+    num_row_left = perm_p.shape[0]
+    num_row_right = perm_q.shape[0]
+    kopt_error = ref_error
+    # the left hand side permutation
+    for comb_left in it.combinations(np.arange(num_row_left), r=k_opt):
+        for comb_perm_left in it.permutations(comb_left, r=k_opt):
+            if comb_perm_left != comb_left:
+                perm_kopt_left = deepcopy(perm_p)
+                # the right hand side permutation
+                for comb_right in it.combinations(np.arange(num_row_right), r=k_opt):
+                    for comb_perm_right in it.permutations(comb_right, r=k_opt):
+                        if comb_perm_right != comb_perm_right:
+                            perm_kopt_right = deepcopy(perm_q)
+                            perm_kopt_right[comb_right, :] = perm_kopt_right[comb_perm_right, :]
+                            e_kopt_new_right = error(array_n, array_m, perm_p.T, perm_kopt_right)
+                            if e_kopt_new_right < kopt_error:
+                                perm_q = perm_kopt_right
+                                kopt_error = e_kopt_new_right
+                                if kopt_error <= kopt_tol:
+                                    break
+
+                perm_kopt_left[comb_left, :] = perm_kopt_left[comb_perm_left, :]
+                # perm_kopt_left[:, comb_left] = perm_kopt_left[:, comb_perm_left]
+                e_kopt_new_left = error(array_n, array_m, perm_kopt_left.T, perm_q)
+                if e_kopt_new_left < kopt_error:
+                    perm_p = perm_kopt_left
+                    kopt_error = e_kopt_new_left
+                    if kopt_error <= kopt_tol:
+                        break
+
+    return perm_p, perm_q, kopt_error
 
 
 def permutation_2sided_explicit(array_a, array_b,

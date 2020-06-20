@@ -33,11 +33,11 @@ def test_rotational_orthogonal_identical():
     array_a = np.array([[3, 6, 2, 1], [5, 6, 7, 6], [2, 1, 1, 1]])
     array_b = np.copy(array_a)
     # compute Procrustes transformation
-    _, _, array_u, e_opt = rotational(array_a, array_b, translate=False, scale=False)
+    res = rotational(array_a, array_b, translate=False, scale=False)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(4), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u), 1.0, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(4), decimal=6)
+    assert_almost_equal(np.linalg.det(res["array_u"]), 1.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_rotation_pad():
@@ -51,12 +51,11 @@ def test_rotational_orthogonal_rotation_pad():
     array_b = np.concatenate((array_b, np.zeros((2, 10))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((15, 12))), axis=0)
     # compute procrustes transformation
-    _, _, array_u, e_opt = rotational(
-        array_a, array_b, translate=False, scale=False)
+    res = rotational(array_a, array_b, translate=False, scale=False)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(2), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u), 1.0, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(2), decimal=6)
+    assert_almost_equal(np.linalg.det(res["array_u"]), 1.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_rotation_translate_scale():
@@ -70,11 +69,11 @@ def test_rotational_orthogonal_rotation_translate_scale():
                           [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
     array_b = np.dot(477.412 * array_a + shift, rot_array)
     # compute procrustes transformation
-    _, _, array_u, e_opt = rotational(array_a, array_b, translate=True, scale=True)
+    res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u), 1.0, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.linalg.det(res["array_u"]), 1.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_rotation_translate_scale_4by3():
@@ -90,11 +89,11 @@ def test_rotational_orthogonal_rotation_translate_scale_4by3():
                           [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
     array_b = np.dot(12.54 * array_a + shift, rot_array)
     # compute procrustes transformation
-    _, _, array_u, e_opt = rotational(array_a, array_b, translate=True, scale=True)
+    res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u), 1.0, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.linalg.det(res["array_u"]), 1.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_zero_array():
@@ -110,8 +109,8 @@ def test_rotational_orthogonal_zero_array():
                           [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
     array_b = np.dot(4.12 * array_a + shift, rot_array)
     # compute procrustes transformation
-    _, _, array_u, e_opt = rotational(array_a, array_b, translate=True, scale=True)
+    res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(array_u, array_u.T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(array_u), 1.0, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.linalg.det(res["array_u"]), 1.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0, decimal=6)

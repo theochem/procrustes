@@ -797,6 +797,7 @@ def _kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, k_opt, k
     num_row_right = perm_q.shape[0]
     kopt_error = ref_error
     # the left hand side permutation
+    # pylint: disable=too-many-nested-blocks
     for comb_left in it.combinations(np.arange(num_row_left), r=k_opt):
         for comb_perm_left in it.permutations(comb_left, r=k_opt):
             if comb_perm_left != comb_left:
@@ -815,7 +816,6 @@ def _kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, k_opt, k
                                     break
 
                 perm_kopt_left[comb_left, :] = perm_kopt_left[comb_perm_left, :]
-                # perm_kopt_left[:, comb_left] = perm_kopt_left[:, comb_perm_left]
                 e_kopt_new_left = error(array_n, array_m, perm_kopt_left.T, perm_q)
                 if e_kopt_new_left < kopt_error:
                     perm_p = perm_kopt_left

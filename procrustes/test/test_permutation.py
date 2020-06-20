@@ -21,13 +21,12 @@
 #
 # --
 """Testings for permutation module."""
+# pylint: disable=too-many-lines
 
 import itertools
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
-
-# pylint: disable=too-many-lines
 from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
                                     _2sided_1trans_initial_guess_normal2,
                                     _2sided_1trans_initial_guess_umeyama,

@@ -26,8 +26,9 @@ import itertools as it
 from copy import deepcopy
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays
 from scipy.optimize import linear_sum_assignment
+
+from procrustes.utils import error, setup_input_arrays
 
 __all__ = [
     "permutation",

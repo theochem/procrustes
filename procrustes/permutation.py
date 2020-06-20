@@ -790,7 +790,7 @@ def _kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, k_opt, k
                 # the right hand side permutation
                 for comb_right in it.combinations(np.arange(num_row_right), r=k_opt):
                     for comb_perm_right in it.permutations(comb_right, r=k_opt):
-                        if comb_perm_right != comb_perm_right:
+                        if comb_perm_right != comb_right:
                             perm_kopt_right = deepcopy(perm_q)
                             perm_kopt_right[comb_right, :] = perm_kopt_right[comb_perm_right, :]
                             e_kopt_new_right = error(array_n, array_m, perm_p.T, perm_kopt_right)

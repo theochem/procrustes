@@ -31,6 +31,7 @@ from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
                                     _2sided_1trans_initial_guess_normal2,
                                     _2sided_1trans_initial_guess_umeyama,
+                                    _kopt_heuristic_double,
                                     _kopt_heuristic_single, permutation,
                                     permutation_2sided,
                                     permutation_2sided_explicit)
@@ -1011,7 +1012,7 @@ def test_permutation_2sided_add_noise_mode_umeyama_approx():
     assert_almost_equal(result[3], 0, decimal=6)
 
 
-def test_kopt_heuristic():
+def test_kopt_heuristic_single():
     r"""Test k-opt heuristic search algorithm."""
     arr_a = np.array([[3, 6, 1, 0, 7],
                       [4, 5, 2, 7, 6],
@@ -1034,8 +1035,44 @@ def test_kopt_heuristic():
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
     error_old = error(arr_a, arr_b, perm_guess, perm_guess)
-    perm, kopt_error = _kopt_heuristic_single(perm_guess, arr_a, arr_b, error_old, 3)
+    perm, kopt_error = _kopt_heuristic_single(perm_guess, arr_a, arr_b,
+                                              error_old, 3, kopt_tol=1.e-8)
     assert_equal(perm, perm_exact)
     assert kopt_error == 0
     # test the error exceptions
-    assert_raises(ValueError, _kopt_heuristic_single, perm_guess, arr_a, arr_b, error_old, 1)
+    assert_raises(ValueError, _kopt_heuristic_single, perm_guess,
+                  arr_a, arr_b, error_old, 1, kopt_tol=1.e-8)
+
+
+def test_kopt_heuristic_double():
+    r"""Test double sided k-opt heuristic search algorithm."""
+    np.random.seed(998)
+    arr_b = np.random.randint(low=-10, high=10, size=(4, 3)).astype(np.float)
+    perm1 = np.array([[0., 0., 0., 1.],
+                      [0., 1., 0., 0.],
+                      [1., 0., 0., 0.],
+                      [0., 0., 1., 0.]])
+    perm2 = np.array([[0., 0., 1.],
+                      [1., 0., 0.],
+                      [0., 1., 0.]])
+    arr_a = np.linalg.multi_dot([perm1.T, arr_b, perm2])
+    # shuffle the permutation matrices
+    perm1_shuff = np.array([[0., 0., 0., 1.],
+                            [1., 0., 0., 0.],
+                            [0., 1., 0., 0.],
+                            [0., 0., 1., 0.]])
+    perm2_shuff = np.array([[1., 0., 0.],
+                            [0., 0., 1.],
+                            [0., 1., 0.]])
+    e_opt = error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
+    perm_left, perm_right, kopt_error = _kopt_heuristic_double(perm_p=perm1_shuff,
+                                                               perm_q=perm2_shuff,
+                                                               array_m=arr_a, array_n=arr_b,
+                                                               ref_error=e_opt, k_opt=4,
+                                                               kopt_tol=1.e-8)
+    _, _, kopt_error = _kopt_heuristic_double(perm_p=perm_left, perm_q=perm_right,
+                                              array_m=arr_a, array_n=arr_b,
+                                              ref_error=e_opt, k_opt=3, kopt_tol=1.e-8)
+    assert kopt_error <= e_opt
+    # todo: check if the kopt_error can be zero
+    assert kopt_error == 0

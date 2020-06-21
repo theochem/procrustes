@@ -28,6 +28,7 @@ from numpy.testing import assert_almost_equal
 from procrustes import symmetric
 import pytest
 from scipy.optimize import minimize
+from scipy.stats import ortho_group
 
 
 def test_symmetric_transformed():
@@ -119,6 +120,21 @@ def test_not_full_rank_case():
     assert_almost_equal(e_opt, 0, decimal=6)
 
 
+def test_having_zero_singular_case():
+    r"""Test symmetric that has zero singular values."""
+    # Define a matrix with not full singular values, e.g. 5 and 0 are singular values.
+    sing_mat = np.array([[5., 0.], [0., 0.], [0., 0.], [0., 0.]])
+    array_a = ortho_group.rvs(4).dot(sing_mat).dot(ortho_group.rvs(2))
+
+    sym_array = np.array([[0.38895636, 0.30523869], [0.30523869, 0.30856369]])
+    array_b = np.dot(array_a, sym_array)
+    # compute procrustes transformation
+    _, _, array_x, e_opt = symmetric(array_a, array_b)
+    # check transformation is symmetric & error is zero
+    assert_almost_equal(array_x, array_x.T, decimal=6)
+    assert_almost_equal(e_opt, 0, decimal=6)
+
+
 def test_fat_rectangular_matrices_raises_error_no_padding():
     r"""Test Symmetric Procrustes raises error when improper padding."""
     # Generate Random Rectangular Matrices
@@ -126,6 +142,9 @@ def test_fat_rectangular_matrices_raises_error_no_padding():
     ncol = np.random.randint(nrow + 1, nrow + 4)
     array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
     np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
+
+    array_a = np.random.random((nrow, nrow))
+    np.testing.assert_raises(ValueError, symmetric, array_a, array_b, pad_mode="row")
 
 
 class TestAgainstNumerical:
@@ -159,7 +178,7 @@ class TestAgainstNumerical:
     @pytest.mark.parametrize("ncol", [2, 10, 15])
     def test_random_tall_rectangular_matrices(self, ncol):
         r"""Test Symmetric Procrustes with random tall matrices."""
-        # Generate Random Rectangular Matrices
+        # Generate Random Rectangular Matrices with small singular values
         nrow = np.random.randint(ncol, ncol + 10)
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
@@ -172,6 +191,7 @@ class TestAgainstNumerical:
     @pytest.mark.parametrize("nrow", [2, 10, 15])
     def test_fat_rectangular_matrices_with_square_padding(self, nrow):
         r"""Test Symmetric Procrustes with random wide matrices."""
+        # Square padding is needed or else it returns an error.
         # Generate Random Rectangular Matrices
         ncol = np.random.randint(nrow + 1, nrow + 10)
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))

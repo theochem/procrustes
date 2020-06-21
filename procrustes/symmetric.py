@@ -161,6 +161,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                       pad_mode, translate, scale, check_finite)
+
     if new_a.shape[0] < new_a.shape[1]:
         raise ValueError("Array A with size (m, n) needs m >= to n.")
     if new_b.shape[0] < new_b.shape[1]:
@@ -170,11 +171,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     array_n = new_a.shape[1]
     array_u, array_s, array_vt = np.linalg.svd(new_a)
 
-    # add zeros to the eigenvalue array so it has length n
-    if len(array_s) < new_a.shape[1]:
-        array_s = np.concatenate((array_s, np.zeros(array_n - len(array_s))))
     array_c = np.dot(np.dot(array_u.T, new_b), array_vt.T)
-
     # create the intermediate array Y and the optimum symmetric transformation array X
     array_y = np.zeros((array_n, array_n))
     for i in range(array_n):

@@ -102,6 +102,7 @@ def generic(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     ----------
     1. Gower, J. C. Procrustes Methods. Wiley Interdisciplinary Reviews: Computational Statistics,
        2(4), 503-508, 2010.
+
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,

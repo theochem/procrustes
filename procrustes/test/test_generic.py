@@ -27,9 +27,9 @@ from numpy.testing import assert_almost_equal
 from procrustes.generic import generic
 
 
-def test_symmetric_transformed():
+def test_generic_transformed():
     r"""Test generic Procrustes with random matrices."""
-    # define arbitrary array and symmetric transformation
+    # define arbitrary array and random transformation
     array_a = np.array([[3, 3, 5, 9],
                         [2, 6, 9, 9],
                         [1, 3, 5, 2],
@@ -42,14 +42,14 @@ def test_symmetric_transformed():
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
     _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=False)
-    # check transformation is symmetric & error is zero
+    # check transformation is right & error is zero
     assert_almost_equal(array_x, x_computed, decimal=6)
     assert_almost_equal(e_opt, 0.0, decimal=6)
 
 
-def test_symmetric_transformed_negative():
+def test_generic_transformed_negative():
     r"""Test generic Procrustes with negative matrices."""
-    # define arbitrary array and symmetric transformation
+    # define arbitrary array and random transformation
     np.random.seed(999)
     array_a = np.random.randint(low=-10, high=10, size=(5, 4))
     array_x = np.array([[0.3, 0., 0.3, 0.6],
@@ -59,14 +59,14 @@ def test_symmetric_transformed_negative():
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
     _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=False)
-    # check transformation is symmetric & error is zero
+    # check transformation is right & error is zero
     assert_almost_equal(array_x, x_computed, decimal=6)
     assert_almost_equal(e_opt, 0.0, decimal=6)
 
 
-def test_symmetric_transformed_translate():
+def test_generic_transformed_translate():
     r"""Test generic Procrustes with translation."""
-    # define arbitrary array and symmetric transformation
+    # define arbitrary array and random transformation
     np.random.seed(999)
     array_a = np.random.randint(low=-10, high=10, size=(5, 4))
     array_x = np.array([[0.3, 0., 0.3, 0.6],
@@ -76,14 +76,14 @@ def test_symmetric_transformed_translate():
     array_b = np.dot(array_a, array_x) + 100
     # compute procrustes transformation
     _, _, x_computed, e_opt = generic(array_a, array_b, translate=True, scale=False)
-    # check transformation is symmetric & error is zero
+    # check transformation is right & error is zero
     assert_almost_equal(array_x, x_computed, decimal=6)
     assert_almost_equal(e_opt, 0.0, decimal=6)
 
 
-def test_symmetric_transformed_scale():
+def test_generic_transformed_scale():
     r"""Test generic Procrustes with scaling."""
-    # define arbitrary array and symmetric transformation
+    # define arbitrary array and transformation
     np.random.seed(999)
     array_a = np.random.randint(low=-10, high=10, size=(5, 4))
     array_x = np.array([[0.3, 0., 0.3, 0.6],
@@ -93,21 +93,35 @@ def test_symmetric_transformed_scale():
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
     _, _, _, e_opt = generic(array_a, array_b, translate=False, scale=True)
-    # check transformation is symmetric & error is zero
+    # check transformation is right & error is zero
     assert_almost_equal(e_opt, 0.0, decimal=6)
 
 
-def test_symmetric_transformed__traslate_scale():
+def test_generic_transformed_translate_scale():
     r"""Test generic Procrustes with translation and scaling."""
-    # define arbitrary array and symmetric transformation
+    # define arbitrary array and random transformation
     np.random.seed(999)
     array_a = np.random.randint(low=-10, high=10, size=(5, 4))
     array_x = np.array([[0.3, 0., 0.3, 0.6],
                         [0.7, 0.3, 0., 0.8],
                         [0.4, 0., 0.4, 0.5],
                         [0.3, 0.7, 0.1, 0.7]])
-    array_b = np.dot(4.5*array_a + 9, array_x)
+    array_b = np.dot(4.5 * (array_a + 9), array_x)
     # compute procrustes transformation
     _, _, _, e_opt = generic(array_a, array_b, translate=True, scale=True)
-    # check transformation is symmetric & error is zero
+    # check transformation is error is zero
+    assert_almost_equal(e_opt, 0.0, decimal=6)
+
+
+def test_generic_random_transformation():
+    r"""Test generic Procrustes with randomized transformation matrices."""
+    # define arbitrary array and random transformation
+    np.random.seed(999)
+    array_a = np.random.randint(low=-10, high=10, size=(5, 4))
+    array_x = np.random.randint(low=0, high=20, size=(4, 4)) / 10
+    array_b = np.dot(array_a, array_x)
+    # compute procrustes transformation
+    _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=False)
+    # check transformation is right & error is zero
+    assert_almost_equal(array_x, x_computed, decimal=6)
     assert_almost_equal(e_opt, 0.0, decimal=6)

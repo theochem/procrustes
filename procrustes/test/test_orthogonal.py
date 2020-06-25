@@ -256,8 +256,8 @@ def test_two_sided_orthogonal_rotate_reflect():
     # check transformation array orthogonality
     assert_almost_equal(np.dot(result[2], result[2].T), np.eye(3), decimal=6)
     assert_almost_equal(np.dot(result[3], result[3].T), np.eye(3), decimal=6)
-    assert_almost_equal(np.linalg.det(result[2]), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(result[3]), 1.0, decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(result[2])), 1.0, decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(result[3])), 1.0, decimal=6)
     # transformation should return zero error
     assert_almost_equal(result[4], 0, decimal=6)
 

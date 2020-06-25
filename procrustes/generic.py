@@ -107,7 +107,7 @@ def generic(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                       pad_mode, translate, scale, check_finite)
     # compute the generic solution
-    a_inv = np.linalg.inv(np.dot(new_a.T, new_a))
+    a_inv = np.linalg.pinv(np.dot(new_a.T, new_a))
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     e_opt = error(new_a, new_b, array_x)
     return new_a, new_b, array_x, e_opt

@@ -23,7 +23,7 @@
 """Rotational-Orthogonal Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, OptResult, setup_input_arrays
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 
 def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -72,14 +72,14 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
     Returns
     -------
-    new_a : ndarray
-        The transformed ndarray :math:`A`.
-    new_b : ndarray
-        The transformed ndarray :math:`B`.
-    array_u : ndarray
-        The optimum rotation transformation matrix.
-    e_opt : float
-        One-sided orthogonal Procrustes error.
+    res : ProcrustesResult
+        The rotational Procrustes analysis result respresented as a ``ProcrustesResult`` object.
+        Important attributes inclue: ``new_a`` the transformed/scaled source array :math:`A`,
+        ``new_b`` the transformed/scaled target array :math:`B`, ``array_x`` the rightr-hand side of
+        the transformation array for single transformation problems, ``array_p`` the transformation
+        array for two-sided transformation Procrustes problems with one transformation array,
+        ``e_opt`` for the error or distance the two arrays after Procrustes operation. For other
+        attributes, please refer to `ProcrustesResult` for more details.
 
     Notes
     -----
@@ -134,14 +134,14 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     --------
     >>> import numpy as np
     >>> array_a = np.array([[1.5, 7.4], [8.5, 4.5]])
-    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,], \
-                            [9.19238816, -2.82842712, 0., 0.], \
-                            [0.,          0.,         0., 0.]])
-    >>> new_a, new_b, array_u, e_opt = rotational(array_a, array_b, translate=False, scale=False)
-    >>> array_u # rotational array
+    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,],
+    ...                     [9.19238816, -2.82842712, 0., 0.],
+    ...                     [0.,          0.,         0., 0.]])
+    >>> res = rotational(array_a, array_b, translate=False, scale=False)
+    >>> res['array_u'] # rotational array
     array([[ 0.70710678, -0.70710678],
            [ 0.70710678,  0.70710678]])
-    >>> e_opt # error
+    >>> res['e_opt'] # error
     1.483808210011695e-17
 
     """
@@ -159,4 +159,4 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     # compute single-sided error error
     e_opt = error(new_a, new_b, array_u)
     # build the result object
-    return OptResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)

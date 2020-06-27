@@ -367,12 +367,11 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                       pad_mode, translate, scale, check_finite)
     # np.power() can not handle the negatives values
     # Try to convert the matrices to non-negative
-    maximum = np.max(np.abs(new_b)) if np.max(np.abs(new_b)) > np.max(
-        np.abs(new_a)) else np.max(np.abs(new_a))
-    new_a += maximum
-    new_b += maximum
-    # A += np.min(A, B)
-    # B += np.min(A, B)
+    # shift the the matrices to avoid negative values
+    # otherwise it will cause an error in the Eq. 28 in the research notes
+    maximum = max(np.abs((np.min(new_a), np.min(new_b))))
+    new_a = new_a.astype(np.float) + maximum
+    new_b = new_b.astype(np.float) + maximum
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == "single":
@@ -671,8 +670,6 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
 
 
 def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
-    # shift the the matrices to avoid negative values
-    # otherwise it will cause an error in the Eq. 28
     p_old = guess
     change = np.inf
     step = 0

@@ -32,8 +32,8 @@ setup_input_arrays : Setups up the arrays for all Procrustes methods.  It checks
                     arrays if specified.
 
 """
-import itertools as it
 from copy import deepcopy
+import itertools as it
 
 import numpy as np
 
@@ -347,9 +347,7 @@ def _check_arraytypes(*args):
 
 
 def kopt_heuristic_single(perm, array_a, array_b, ref_error, kopt_k=3, kopt_tol=1.e-8):
-    r"""
-    K-opt heuristic to improve the accuracy for two-sided permutation Procrustes with one
-    transformation.
+    r"""K-opt heuristic to improve the accuracy for two-sided permutation with one transformation.
 
     Perform k-opt local search with every possible valid combination of the swapping mechanism.
 

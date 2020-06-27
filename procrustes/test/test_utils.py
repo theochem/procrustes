@@ -24,7 +24,6 @@
 
 import numpy as np
 from numpy.testing import assert_equal, assert_raises
-
 from procrustes.utils import (_hide_zero_padding, _scale_array,
                               _translate_array, _zero_padding, error,
                               kopt_heuristic_double, kopt_heuristic_single)

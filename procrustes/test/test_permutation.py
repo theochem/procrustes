@@ -264,7 +264,7 @@ def test_permutation_2sided_4by4_umeyama_loop_negative():
 
 
 def test_permutation_2sided_4by4_umeyama_translate_scale():
-    r"""Test 2sided-perm with umeyama guess by 4by4 arrays with trans and scale."""
+    r"""Test 2sided-perm with umeyama guess by 3by3 arrays with trans and scale."""
     # define a random matrix
     array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
     array_a = np.dot(array_a, array_a.T)
@@ -429,8 +429,8 @@ def test_permutation_2sided_4by4_normal1():
     # define a random matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
-                     [0., 1., 0., 0.]])
+    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
+                     [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     _, _, array_u, e_opt = permutation_2sided(
@@ -442,7 +442,6 @@ def test_permutation_2sided_4by4_normal1():
 def test_permutation_2sided_4by4_normal1_loop():
     r"""Test 2sided-perm with "normal1" by 4by4 arrays with all permutations."""
     # define a random matrix
-    # array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     np.random.seed(997)
     array_a = np.arange(16).reshape((4, 4))
     # array_a = np.random.rand(4, 4)
@@ -454,21 +453,11 @@ def test_permutation_2sided_4by4_normal1_loop():
             # get array_b by permutation
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
-            _, _, array_u, e_opt = permutation_2sided(
-                array_a, array_b, transform_mode="single", mode="normal1", iteration=1000)
-            print("array_a:", array_a)
-            print("array_b: ", array_b)
-            print("e_opt", e_opt)
+            _, _, array_u, e_opt = permutation_2sided(array_a, array_b,
+                                                      transform_mode="single",
+                                                      mode="normal1")
             assert_almost_equal(array_u, perm, decimal=6)
             assert_almost_equal(e_opt, 0, decimal=6)
-
-            # try:
-            #     assert_almost_equal(array_u, perm, decimal=6)
-            #     assert_almost_equal(e_opt, 0, decimal=6)
-            # except AssertionError:
-            #     print("array_a:", array_a)
-            #     print("array_b: ", array_b)
-            #     print("e_opt", e_opt)
 
 
 def test_permutation_2sided_4by4_normal1_loop_negative():
@@ -614,8 +603,7 @@ def test_permutation_2sided_4by4_normal2_loop():
 def test_permutation_2sided_4by4_normal2_loop_negative():
     r"""Test 2sided-perm with "normal2" by 4by4 negative arrays with all permutations."""
     # define a random matrix
-    array_a = np.array(
-        [[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     for comb in itertools.permutations(np.arange(4)):
         # Compute the permutation matrix
@@ -650,8 +638,7 @@ def test_permutation_2sided_4by4_normal2_translate_scale():
 def test_permutation_2sided_4by4_normal2_translate_scale_loop():
     r"""Test 2sided-perm with "normal2" by 4by4 arrays with all permutations."""
     # define a random matrix
-    array_a = np.array(
-        [[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     for comb in itertools.permutations(np.arange(4)):
         # Compute the permutation matrix
@@ -670,8 +657,7 @@ def test_permutation_2sided_4by4_normal2_translate_scale_loop():
 def test_permutation_2sided_4by4_normal2_translate_scale_zero_padding():
     r"""Test 2sided-perm with "normal2" by 4by4 with translation, scaling and zero paddings."""
     # define a random matrix
-    array_a = np.array(
-        [[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     perm = np.array([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
     # Compute the translated, scaled matrix padded with zeros
@@ -719,8 +705,7 @@ def test_permutation_2sided_invalid_mode_argument():
     # define a random matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
-                     [0., 1., 0., 0.]])
+    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, permutation_2sided, array_a,
@@ -870,8 +855,8 @@ def test_permutation_2sided_4by4_directed_netative_loop():
 def test_permutation_2sided_4by4_directed_translate_scale():
     r"""Test 2sided-perm with "directed" by 4by4 with translation, scaling."""
     # A random array
-    array_a = np.array([[29, 79, 95, 83.], [37, 86, 67, 93.], [72, 85, 15, 3.],
-                        [38, 39, 58, 24.]])
+    array_a = np.array([[29, 79, 95, 83.], [37, 86, 67, 93.],
+                        [72, 85, 15, 3.],  [38, 39, 58, 24.]])
     # permutation
     perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
     # permuted array_b
@@ -883,7 +868,7 @@ def test_permutation_2sided_4by4_directed_translate_scale():
     assert_almost_equal(result[3], 0., decimal=6)
 
 
-def test_permutation_2sided_4by4_directed_translat_scale_padding():
+def test_permutation_2sided_4by4_directed_translate_scale_padding():
     r"""Test 2sided-perm with "directed" by 4by4 with translation, scaling and zero paddings."""
     # A random array
     array_a = np.array([[29, 79, 95, 83.], [37, 86, 67, 93.], [72, 85, 15, 3.], [38, 39, 58, 24.]])
@@ -978,8 +963,7 @@ def test_permutation_2sided_explicit_4by4_translate_scale_zero_padding():
 def test_permutation_2sided_invalid_transform_mode():
     r"""Test 2-sided permutation with invalid transform_mode."""
     # define a random matrix and symmetric matrix
-    array_a = np.array(
-        [[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
+    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
     perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])
@@ -990,8 +974,7 @@ def test_permutation_2sided_invalid_transform_mode():
 
 def test_permutation_2sided_add_noise_mode_umeyama():
     r"""Test two sided permutation Procrustes with adding noise mode."""
-    array_a = np.array(
-        [[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
+    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
     perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])
@@ -1005,8 +988,7 @@ def test_permutation_2sided_add_noise_mode_umeyama():
 
 def test_permutation_2sided_add_noise_mode_umeyama_approx():
     r"""Test two sided permutation Procrustes with adding noise mode."""
-    array_a = np.array(
-        [[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
+    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
     perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])

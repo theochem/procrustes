@@ -25,10 +25,9 @@
 import itertools as it
 
 import numpy as np
-from scipy.optimize import linear_sum_assignment
-
 from procrustes.utils import (error, kopt_heuristic_double,
                               kopt_heuristic_single, setup_input_arrays)
+from scipy.optimize import linear_sum_assignment
 
 __all__ = [
     "permutation",
@@ -578,10 +577,10 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
     if add_noise:
         array_a = np.float_(array_a)
         array_a += np.random.random(array_a.shape) * np.trace(np.abs(array_a)) / \
-                   array_a.shape[0] * 1.e-8
+            array_a.shape[0] * 1.e-8
         array_b = np.float_(array_b)
         array_b += np.random.random(array_b.shape) * np.trace(np.abs(array_b)) / \
-                   array_b.shape[0] * 1.e-8
+            array_b.shape[0] * 1.e-8
     # calculate the eigenvalue decomposition of A and B
     _, array_ua = np.linalg.eigh(array_a)
     _, array_ub = np.linalg.eigh(array_b)

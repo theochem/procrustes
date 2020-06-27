@@ -856,7 +856,7 @@ def test_permutation_2sided_4by4_directed_translate_scale():
     r"""Test 2sided-perm with "directed" by 4by4 with translation, scaling."""
     # A random array
     array_a = np.array([[29, 79, 95, 83.], [37, 86, 67, 93.],
-                        [72, 85, 15, 3.],  [38, 39, 58, 24.]])
+                        [72, 85, 15, 3.], [38, 39, 58, 24.]])
     # permutation
     perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
     # permuted array_b

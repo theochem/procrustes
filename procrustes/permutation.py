@@ -406,11 +406,10 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
         array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol, iteration)
         # perform k-opt heuristic search twice
         if kopt:
-            perm_p, perm_q, kopt_error = _kopt_heuristic_double(perm_p=array_p, perm_q=array_q,
-                                                                array_m=array_m, array_n=array_n,
-                                                                ref_error=e_opt, kopt_k=kopt_k,
-                                                                kopt_tol=kopt_tol)
-            array_p, array_q, e_opt = perm_p, perm_q, kopt_error
+            array_p, array_q, e_opt = _kopt_heuristic_double(perm_p=array_p, perm_q=array_q,
+                                                             array_m=array_m, array_n=array_n,
+                                                             ref_error=e_opt, kopt_k=kopt_k,
+                                                             kopt_tol=kopt_tol)
         return array_m, array_n, array_p, array_q, e_opt
     else:
         raise ValueError(

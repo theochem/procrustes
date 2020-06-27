@@ -133,10 +133,10 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
-                       heuristic=False, k_opt=3, remove_zero_col=True, remove_zero_row=True,
+                       remove_zero_col=True, remove_zero_row=True,
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
-                       add_noise=False, tol=1.0e-8, kopt_tol=1.e-8):
+                       add_noise=False, tol=1.0e-8, heuristic=False, k_opt=3, kopt_tol=1.e-8):
     r"""
     Single sided permutation Procrustes.
 

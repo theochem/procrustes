@@ -348,13 +348,13 @@ def test_kopt_heuristic_single():
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
     error_old = error(arr_a, arr_b, perm_guess, perm_guess)
-    perm, kopt_error = kopt_heuristic_single(perm_guess, arr_a, arr_b,
-                                             error_old, 3, kopt_tol=1.e-8)
+    perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, error_old,
+                                             perm_guess, 3, kopt_tol=1.e-8)
     assert_equal(perm, perm_exact)
     assert kopt_error == 0
     # test the error exceptions
-    assert_raises(ValueError, kopt_heuristic_single, perm_guess,
-                  arr_a, arr_b, error_old, 1, kopt_tol=1.e-8)
+    assert_raises(ValueError, kopt_heuristic_single, arr_a,
+                  arr_b, error_old, perm_guess, 1, kopt_tol=1.e-8)
 
 
 def test_kopt_heuristic_double():

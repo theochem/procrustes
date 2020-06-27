@@ -346,21 +346,22 @@ def _check_arraytypes(*args):
         raise TypeError("Matrix inputs must be 2-dimensional arrays")
 
 
-def kopt_heuristic_single(perm, array_a, array_b, ref_error, kopt_k=3, kopt_tol=1.e-8):
+def kopt_heuristic_single(array_a, array_b, ref_error, perm=None, kopt_k=3, kopt_tol=1.e-8):
     r"""K-opt heuristic to improve the accuracy for two-sided permutation with one transformation.
 
     Perform k-opt local search with every possible valid combination of the swapping mechanism.
 
     Parameters
     ----------
-    perm : ndarray
-        The permutation array which remains to be processed with k-opt local search.
     array_a : ndarray
         The array to be permuted.
     array_b : ndarray
         The reference array.
     ref_error : float
         The reference error value.
+    perm : ndarray, optional
+        The permutation array which remains to be processed with k-opt local search. Default is the
+        identity matrix with the same shape of array_a.
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
@@ -375,7 +376,10 @@ def kopt_heuristic_single(perm, array_a, array_b, ref_error, kopt_k=3, kopt_tol=
         The error distance of two arrays with the updated permutation array.
     """
     if kopt_k < 2:
-        raise ValueError("K_opt value must be a integer greater than 2.")
+        raise ValueError("Kopt_k value must be a integer greater than 2.")
+    # if perm is not specified, use the identity matrix as default
+    if perm is None:
+        perm = np.identity(np.shape(array_a)[0])
     num_row = perm.shape[0]
     kopt_error = ref_error
     # all the possible row-wise permutations
@@ -393,7 +397,9 @@ def kopt_heuristic_single(perm, array_a, array_b, ref_error, kopt_k=3, kopt_tol=
     return perm, kopt_error
 
 
-def kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, kopt_k=3, kopt_tol=1.e-8):
+def kopt_heuristic_double(array_m, array_n, ref_error,
+                          perm_p=None, perm_q=None,
+                          kopt_k=3, kopt_tol=1.e-8):
     r"""
     K-opt kopt for regular two-sided permutation Procrustes to improve the accuracy.
 
@@ -402,16 +408,18 @@ def kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, kopt_k=3,
 
     Parameters
     ----------
-    perm_p : ndarray
-        The left permutation array which remains to be processed with k-opt local search.
-    perm_q : ndarray
-        The right permutation array which remains to be processed with k-opt local search.
     array_m : ndarray
         The array to be permuted.
     array_n : ndarray
         The reference array.
     ref_error : float
         The reference error value.
+    perm_p : ndarray, optional
+        The left permutation array which remains to be processed with k-opt local search. Default
+        is the identity matrix with the same shape of array_m.
+    perm_q : ndarray, optional
+        The right permutation array which remains to be processed with k-opt local search. Default
+        is the identity matrix with the same shape of array_m.
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
@@ -429,6 +437,13 @@ def kopt_heuristic_double(perm_p, perm_q, array_m, array_n, ref_error, kopt_k=3,
     """
     if kopt_k < 2:
         raise ValueError("Kopt_k value must be a integer greater than 2.")
+    # if perm_p is not specified, use the identity matrix as default
+    if perm_p is None:
+        perm_p = np.identity(np.shape(array_m)[0])
+    # if perm_p is not specified, use the identity matrix as default
+    if perm_q is None:
+        perm_q = np.identity(np.shape(array_m)[0])
+
     num_row_left = perm_p.shape[0]
     num_row_right = perm_q.shape[0]
     kopt_error = ref_error

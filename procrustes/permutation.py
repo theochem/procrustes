@@ -132,7 +132,7 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     return new_a, new_b, array_u, e_opt
 
 
-def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
+def permutation_2sided(array_a, array_b, transform_mode="single",
                        remove_zero_col=True, remove_zero_row=True,
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
@@ -375,28 +375,29 @@ def permutation_2sided(array_a, array_b, transform_mode="single_undirected",
     # B += np.min(A, B)
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
-    if transform_mode == "single_undirected":
-        # the initial guess
-        guess = _guess_initial_permutation(new_a, new_b, mode, add_noise)
-        # Compute the permutation matrix by iterations
-        array_u = _compute_transform(new_a, new_b, guess, tol, iteration)
-        e_opt = error(new_a, new_b, array_u, array_u)
-        # k-opt heuristic
-        if kopt:
-            array_u, e_opt = kopt_heuristic_single(array_u, new_a, new_b,
-                                                   e_opt, kopt_k=kopt_k, kopt_tol=kopt_tol)
-        return new_a, new_b, array_u, e_opt
-
-    elif transform_mode == "single_directed":
-        # the initial guess
-        guess = _2sided_1trans_initial_guess_directed(new_a, new_b)
-        # Compute the permutation matrix by iterations
-        array_u = _compute_transform_directed(new_a, new_b, guess, tol, iteration)
-        e_opt = error(new_a, new_b, array_u, array_u)
-        # k-opt heuristic
-        if kopt:
-            array_u, e_opt = kopt_heuristic_single(array_u, new_a, new_b,
-                                                   e_opt, kopt_k=kopt_k, kopt_tol=kopt_tol)
+    if transform_mode == "single":
+        # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
+        if np.allclose(new_a, new_a.T, rtol=1.e-05, atol=1.e-08) and \
+             np.allclose(new_b, new_b.T, rtol=1.e-05, atol=1.e-08):
+            # the initial guess
+            guess = _guess_initial_permutation(new_a, new_b, mode, add_noise)
+            # Compute the permutation matrix by iterations
+            array_u = _compute_transform(new_a, new_b, guess, tol, iteration)
+            e_opt = error(new_a, new_b, array_u, array_u)
+            # k-opt heuristic
+            if kopt:
+                array_u, e_opt = kopt_heuristic_single(array_u, new_a, new_b, e_opt,
+                                                       kopt_k=kopt_k, kopt_tol=kopt_tol)
+        else:
+            # the initial guess
+            guess = _2sided_1trans_initial_guess_directed(new_a, new_b)
+            # Compute the permutation matrix by iterations
+            array_u = _compute_transform_directed(new_a, new_b, guess, tol, iteration)
+            e_opt = error(new_a, new_b, array_u, array_u)
+            # k-opt heuristic
+            if kopt:
+                array_u, e_opt = kopt_heuristic_single(array_u, new_a, new_b, e_opt,
+                                                       kopt_k=kopt_k, kopt_tol=kopt_tol)
         return new_a, new_b, array_u, e_opt
 
     # Do regular computation

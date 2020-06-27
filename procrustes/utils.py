@@ -38,7 +38,7 @@ Result : Returns the Procrustes analysis result which includes the translated/sc
 
 import numpy as np
 
-__all__ = ["error", "setup_input_arrays", "OptResult"]
+__all__ = ["error", "setup_input_arrays", "ProcrustesResult"]
 
 
 def _zero_padding(array_a, array_b, pad_mode="row-col"):
@@ -341,8 +341,8 @@ def _check_arraytypes(*args):
         raise TypeError("Matrix inputs must be 2-dimensional arrays")
 
 
-class OptResult(dict):
-    r"""Represents the Procrustes optimization result.
+class ProcrustesResult(dict):
+    r"""Represents the Procrustes analysis result.
 
     Attributes
     ----------
@@ -363,11 +363,10 @@ class OptResult(dict):
 
     Notes
     -----
-    Some of additional attributes are not listed above can be foundt at specific Procrustes
+    Some of additional attributes are not listed above can be found at specific Procrustes
     algorithm implementations. Since this class is essentially a subclass of dict with attribute
     accessors, one can see which attributes are available using the `keys()` method.
     """
-
     # modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132
     def __getattr__(self, name):
         """Deal with attributes which it doesn't explicitly manage."""

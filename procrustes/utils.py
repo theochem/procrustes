@@ -361,11 +361,6 @@ class ProcrustesResult(dict):
     e_opt : float
         Two-sided permutation Procrustes error.
 
-    Notes
-    -----
-    Some of additional attributes are not listed above can be found at specific Procrustes
-    algorithm implementations. Since this class is essentially a subclass of dict with attribute
-    accessors, one can see which attributes are available using the `keys()` method.
     """
 
     # modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132

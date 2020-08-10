@@ -48,6 +48,8 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
     -------
     array_aligned : List
         A list of transformed arrays with generalized Procrustes analysis.
+    new_distance_gpa: float
+        The distance for matching all the transformed arrays with generalized Procrustes analysis.
 
     """
     # check input arrays
@@ -80,7 +82,7 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
         if distance_gpa != np.inf and np.abs(new_distance_gpa - distance_gpa) < tol:
             break
         distance_gpa = new_distance_gpa
-    return array_aligned
+    return array_aligned, new_distance_gpa
 
 
 def _orthogonal(arr_a, arr_b):

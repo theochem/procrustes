@@ -36,7 +36,7 @@ def test_generalized_with_reference():
     # arr_list = [arr_a, arr_b, arr_c, arr_d]
     # arr_list = [arr_b, arr_c, arr_d, arr_e]
     arr_list = [arr_c, arr_d, arr_e]
-    arr_aligned = generalized(arr_list, ref=arr_b, tol=1.e-7, n_iter=200)
+    arr_aligned, error = generalized(arr_list, ref=arr_b, tol=1.e-7, n_iter=200)
     # one right alignment
     aligned = [np.array([[5., 0.],
                          [8., 0.],
@@ -50,6 +50,7 @@ def test_generalized_with_reference():
     assert_almost_equal(arr_aligned[0], aligned[0], decimal=7)
     assert_almost_equal(arr_aligned[1], aligned[1], decimal=7)
     assert_almost_equal(arr_aligned[2], aligned[2], decimal=7)
+    assert_almost_equal(error, 0.0)
 
 
 def test_generalized_without_reference():
@@ -60,7 +61,7 @@ def test_generalized_without_reference():
     arr_e = np.dot(arr_b, _rotation(90))
     arr_list = [arr_b, arr_c, arr_d, arr_e]
     # arr_list = [arr_c, arr_d, arr_e]
-    arr_aligned = generalized(arr_list, ref=None, tol=1.e-7, n_iter=200)
+    arr_aligned, error = generalized(arr_list, ref=None, tol=1.e-7, n_iter=200)
     # one right alignment
     aligned = [np.array([[5., 0.],
                          [8., 0.],
@@ -78,6 +79,7 @@ def test_generalized_without_reference():
     assert_almost_equal(arr_aligned[1], aligned[1], decimal=7)
     assert_almost_equal(arr_aligned[2], aligned[2], decimal=7)
     assert_almost_equal(arr_aligned[3], aligned[3], decimal=7)
+    assert_almost_equal(error, 0.0)
 
 
 def _rotation(degree):

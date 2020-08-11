@@ -23,7 +23,7 @@
 """Testings for generalized Procrustes module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_raises
 from procrustes.generalized import generalized
 
 
@@ -80,6 +80,15 @@ def test_generalized_without_reference():
     assert_almost_equal(arr_aligned[2], aligned[2], decimal=7)
     assert_almost_equal(arr_aligned[3], aligned[3], decimal=7)
     assert_almost_equal(error, 0.0)
+
+
+def test_generalized_invalid():
+    arr_b = np.array([[5, 0], [8, 0], [5, 5]])
+    arr_c = np.dot(arr_b, _rotation(30))
+    arr_d = np.dot(arr_b, _rotation(45))
+    arr_e = np.dot(arr_b, _rotation(90))
+    arr_list = [arr_b, arr_c, arr_d, arr_e]
+    assert_raises(ValueError, generalized, arr_list, None, 1.e-7, n_iter=-5)
 
 
 def _rotation(degree):

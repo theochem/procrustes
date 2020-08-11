@@ -28,7 +28,7 @@ from procrustes.utils import _check_arraytypes
 
 
 def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
-    """Generalized Procrustes Analysis.
+    r"""Generalized Procrustes Analysis.
 
     Parameters
     ----------
@@ -50,6 +50,25 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
         A list of transformed arrays with generalized Procrustes analysis.
     new_distance_gpa: float
         The distance for matching all the transformed arrays with generalized Procrustes analysis.
+
+    Notes
+    -----
+    Given a set of matrices, :math:`\mathbf{A}_1, \mathbf{A}_2, \cdots, \mathbf{A}_k` with
+    :math:`k > 2`,  the objective is to minimize in order to superimpose pairs of matrices.
+
+    .. math::
+    \min \quad = \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i  -
+         \mathbf{A}_j \mathbf{T}_j  - \right\| }^2
+
+    This function implements the Equation (20) and the corresponding algorithm in  Gower's paper.
+
+    References
+    ----------
+    1. Stegmann, Mikkel B., and David Delgado Gomez., A brief introduction to statistical shape
+       analysis. Informatics and mathematical modelling, Technical University of Denmark,
+       DTU 15.11, 2002.
+    2. Gower, John C., Procrustes Methods. Wiley Interdisciplinary Reviews: Computational
+       Statistics, 2.4: 503-508, 2010.
 
     """
     # check input arrays

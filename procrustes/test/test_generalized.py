@@ -83,6 +83,7 @@ def test_generalized_without_reference():
 
 
 def test_generalized_invalid():
+    """"Test invalid input of n_iter for generalized Procrustes analysis."""
     arr_b = np.array([[5, 0], [8, 0], [5, 5]])
     arr_c = np.dot(arr_b, _rotation(30))
     arr_d = np.dot(arr_b, _rotation(45))

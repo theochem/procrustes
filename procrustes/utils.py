@@ -134,7 +134,8 @@ def _translate_array(array_a, array_b=None):
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
-    centroid = np.mean(array_a, axis=0)
+    # centroid = np.mean(array_a, axis=0)
+    centroid = np.average(array_a, axis=0)
     if array_b is not None:
         # translation vector to b centroid
         centroid -= np.mean(array_b, axis=0)
@@ -265,7 +266,6 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                        pad_mode, translate, scale, check_finite):
     r"""
     Check and process array inputs for the Procrustes transformation routines.
-
     Usually, the precursor step before all Procrustes methods.
 
     Parameters
@@ -281,7 +281,6 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
-
             - "row"
                 The array with fewer rows is padded with zero rows so that both have the same
                 number of rows.
@@ -311,20 +310,26 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         Returns the padded arrays, in that they have the same matrix dimensions.
 
     """
-    _check_arraytypes(array_a, array_b)
+    array_a = _setup_input_array_lower(array_a, None, check_finite, translate,
+                                       scale, remove_zero_col, remove_zero_row)
+    array_b = _setup_input_array_lower(array_b, None, check_finite, translate,
+                                       scale, remove_zero_col, remove_zero_row)
+    return _zero_padding(array_a, array_b, pad_mode)
+
+
+def _setup_input_array_lower(array_a, array_ref, check_finite, translate,
+                             scale, remove_zero_col, remove_zero_row):
+    """Pre-processing the matrices with translation, scaling."""
+    _check_arraytypes(array_a)
     if check_finite:
         array_a = np.asarray_chkfinite(array_a)
-        array_b = np.asarray_chkfinite(array_b)
-    # Sometimes arrays already have zero padding that messes up zero padding below.
+        # Sometimes arrays already have zero padding that messes up zero padding below.
     array_a = _hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
-    array_b = _hide_zero_padding(array_b, remove_zero_col, remove_zero_row)
     if translate:
         array_a, _ = _translate_array(array_a)
-        array_b, _ = _translate_array(array_b)
     if scale:
-        array_a, _ = _scale_array(array_a)
-        array_b, _ = _scale_array(array_b)
-    return _zero_padding(array_a, array_b, pad_mode)
+        array_a, _ = _scale_array(array_a, array_ref)
+    return array_a
 
 
 def _check_arraytypes(*args):

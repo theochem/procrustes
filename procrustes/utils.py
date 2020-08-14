@@ -109,7 +109,7 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     return array_a, array_b
 
 
-def _translate_array(array_a, array_b=None):
+def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
     """
     Return translated array_a and translation vector.
 
@@ -121,6 +121,11 @@ def _translate_array(array_a, array_b=None):
         The 2d-array to translate.
     array_b : ndarray, default=None
         The 2d-array to translate array_a based on.
+    weight : ndarray
+        The weight matrix. Default=None.
+    check_weight: bool
+        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
+        zero. Default=True.
 
     Returns
     -------
@@ -134,12 +139,24 @@ def _translate_array(array_a, array_b=None):
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
-    # centroid = np.mean(array_a, axis=0)
-    centroid = np.average(array_a, axis=0)
+    if weight is not None and check_weight:
+        # todo: figure out a better way to check the diagonal matrix with
+        #  all off-diagonal elements being zero
+        if weight.shape[0] != weight.shape[1]:
+            raise ValueError("The weight matrix must be symmetric.")
+        if weight[~np.eye(weight.shape[0], dtype=bool)].any() != 0 or \
+                np.diag(weight).sum() != np.sum(weight):
+            raise ValueError("The weight matrix should be a diagonal matrix with "
+                             "off-diagonal elements being zeros.")
+    if weight is not None:
+        weight = np.diag(weight)
+    centroid_a = np.average(array_a, axis=0, weights=weight)
     if array_b is not None:
         # translation vector to b centroid
-        centroid -= np.mean(array_b, axis=0)
-    return array_a - centroid, -centroid
+        centroid_a -= np.average(array_b, axis=0, weights=weight)
+    # array_a_centered = array_a - centroid_a
+    # centroid = -centroid_a
+    return array_a - centroid_a, -centroid_a
 
 
 def _scale_array(array_a, array_b=None):

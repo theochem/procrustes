@@ -23,7 +23,8 @@
 """Utils module for Procrustes."""
 
 import numpy as np
-from numpy.testing import assert_equal, assert_raises
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
+
 from procrustes.utils import (_hide_zero_padding, _scale_array,
                               _translate_array, _zero_padding, error,
                               kopt_heuristic_double, kopt_heuristic_single)
@@ -268,6 +269,41 @@ def test_translate_array():
     # Begin translation analysis
     centroid_a_to_b, _ = _translate_array(array_a, array_translated)
     assert (abs(centroid_a_to_b - array_translated) < 1.e-10).all()
+
+
+def test_translate_weight():
+    r"""Test _translate_array with weighted array."""
+    rng = np.random.RandomState(789)
+    arr = rng.randint(0, 10, (4, 3))
+    weight = np.zeros((4, 4))
+    np.fill_diagonal(weight, np.arange(1, 5))
+    # center the data points to mass of center, the way in the notes
+    arr_weighted = np.dot(weight, arr)
+    col_sum = np.dot(np.ones((arr_weighted.shape[0], arr_weighted.shape[0])), arr_weighted)
+    # center the data points to mass of center
+    arr_centered = arr - col_sum / np.trace(weight)
+    array_a_centered, _ = _translate_array(array_a=arr,
+                                           array_b=None,
+                                           weight=weight,
+                                           check_weight=True)
+    assert_almost_equal(arr_centered, array_a_centered)
+
+
+def test_translate_invalid():
+    """Test _translate_array with invalid input."""
+    rng = np.random.RandomState(789)
+    arr = rng.randint(0, 10, (4, 3))
+    weight1 = np.array([[1., 0., 0., 0., 0.],
+                        [0., 2., 0., 0., 0.],
+                        [0., 0., 3., 0., 0.],
+                        [0., 0., 0., 4., 0.]])
+    # array_a, array_b=None, weight=None, check_weight=False
+    assert_raises(ValueError, _translate_array, arr, None, weight1, True)
+    weight2 = np.array([[1., 0., 0., 0.],
+                        [0., 2., 0., 0.],
+                        [0., 0., 3., 0.],
+                        [0., 0., 987., 4.]])
+    assert_raises(ValueError, _translate_array, arr, None, weight2, True)
 
 
 def test_scale_array():

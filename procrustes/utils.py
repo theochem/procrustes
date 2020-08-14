@@ -154,9 +154,8 @@ def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
     if array_b is not None:
         # translation vector to b centroid
         centroid_a -= np.average(array_b, axis=0, weights=weight)
-    # array_a_centered = array_a - centroid_a
-    # centroid = -centroid_a
-    return array_a - centroid_a, -centroid_a
+    # centroid = -1 * centroid_a
+    return array_a - centroid_a, -1 * centroid_a
 
 
 def _scale_array(array_a, array_b=None):
@@ -284,6 +283,7 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                        check_weight, weight):
     r"""
     Check and process array inputs for the Procrustes transformation routines.
+
     Usually, the precursor step before all Procrustes methods.
 
     Parameters
@@ -321,6 +321,9 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         :math:`Tr(A^T A) = 1`.
     check_finite : bool
         If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
+    check_weight: bool
+        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
+        zero. Default=True.
     weight : A list of ndarray or ndarray
         A list of the weight arrays or one numpy array. When only on numpy array provided,
         it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.

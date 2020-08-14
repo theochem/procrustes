@@ -36,7 +36,8 @@ __all__ = [
 
 def orthogonal(array_a, array_b, remove_zero_col=True,
                remove_zero_row=True, pad_mode='row-col',
-               translate=False, scale=False, check_finite=True):
+               translate=False, scale=False, check_finite=True,
+               check_weight=True, weight=None):
     r"""
     One-sided orthogonal Procrustes.
 
@@ -83,6 +84,11 @@ def orthogonal(array_a, array_b, remove_zero_col=True,
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
+    check_weight: bool
+        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
+        zero. Default=True.
+    weight : ndarray
+        The weighting matrix. Default=None.
 
     Returns
     -------
@@ -152,7 +158,8 @@ def orthogonal(array_a, array_b, remove_zero_col=True,
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col,
-                                      remove_zero_row, pad_mode, translate, scale, check_finite)
+                                      remove_zero_row, pad_mode, translate,
+                                      scale, check_finite, check_weight, weight)
 
     # calculate SVD of array_a.T * array_b
     array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
@@ -165,7 +172,8 @@ def orthogonal(array_a, array_b, remove_zero_col=True,
 
 def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                       pad_mode='row-col', translate=False, scale=False,
-                      single_transform=True, mode="exact", check_finite=True, tol=1.0e-8):
+                      single_transform=True, mode="exact", check_finite=True, tol=1.0e-8,
+                      check_weight=True, weight=None):
     r"""
     Two-Sided Orthogonal Procrustes.
 
@@ -214,6 +222,11 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
         Default=True.
     tol : float, optional
         The tolerance value used for 'approx' mode. Default=1.e-8.
+    check_weight: bool
+        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
+        zero. Default=True.
+    weight : ndarray
+        The weighting matrix. Default=None.
 
     Returns
     -------
@@ -352,7 +365,8 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
                 Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
     array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                          pad_mode, translate, scale, check_finite)
+                                          pad_mode, translate, scale, check_finite,
+                                          check_weight, weight)
     # Convert mode strings into lowercase
     mode = mode.lower()
     # Do single-transformation computation if requested

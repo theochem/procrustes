@@ -274,13 +274,12 @@ def test_translate_weight():
     r"""Test _translate_array with weighted array."""
     rng = np.random.RandomState(789)
     arr = rng.randint(0, 10, (4, 3))
-    weight = np.zeros((4, 4))
-    np.fill_diagonal(weight, np.arange(1, 5))
+    weight = np.arange(1, 5)
     # center the data points to mass of center, the way in the notes
-    arr_weighted = np.dot(weight, arr)
+    arr_weighted = np.dot(np.diag(weight), arr)
     col_sum = np.dot(np.ones((arr_weighted.shape[0], arr_weighted.shape[0])), arr_weighted)
     # center the data points to mass of center
-    arr_centered = arr - col_sum / np.trace(weight)
+    arr_centered = arr - col_sum / weight.sum()
     array_a_centered, _ = _translate_array(array_a=arr,
                                            array_b=None,
                                            weight=weight,
@@ -292,16 +291,10 @@ def test_translate_invalid():
     """Test _translate_array with invalid input."""
     rng = np.random.RandomState(789)
     arr = rng.randint(0, 10, (4, 3))
-    weight1 = np.array([[1., 0., 0., 0., 0.],
-                        [0., 2., 0., 0., 0.],
-                        [0., 0., 3., 0., 0.],
-                        [0., 0., 0., 4., 0.]])
+    weight1 = np.arange(1, 5).reshape(-1, 1)
     # array_a, array_b=None, weight=None, check_weight=False
     assert_raises(ValueError, _translate_array, arr, None, weight1, True)
-    weight2 = np.array([[1., 0., 0., 0.],
-                        [0., 2., 0., 0.],
-                        [0., 0., 3., 0.],
-                        [0., 0., 987., 4.]])
+    weight2 = np.array([-1, 1, 3, 4])
     assert_raises(ValueError, _translate_array, arr, None, weight2, True)
 
 

@@ -122,10 +122,9 @@ def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
     array_b : ndarray, default=None
         The 2d-array to translate array_a based on.
     weight : ndarray
-        The weight matrix. Default=None.
+        The weight vector. Default=None.
     check_weight: bool
-        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
-        zero. Default=True.
+        To check if the weight vector is a 1D row vector. Default=True.
 
     Returns
     -------
@@ -140,21 +139,15 @@ def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
     if weight is not None and check_weight:
-        # todo: figure out a better way to check the diagonal matrix with
-        #  all off-diagonal elements being zero
-        if weight.shape[0] != weight.shape[1]:
-            raise ValueError("The weight matrix must be symmetric.")
-        if weight[~np.eye(weight.shape[0], dtype=bool)].any() != 0 or \
-                np.diag(weight).sum() != np.sum(weight):
-            raise ValueError("The weight matrix should be a diagonal matrix with "
-                             "off-diagonal elements being zeros.")
-    if weight is not None:
-        weight = np.diag(weight)
+        if weight.ndim != 1:
+            raise ValueError("The weight should be a 1d row vector.")
+        if not (weight >= 0).all():
+            raise ValueError("The elements of the weight should be non-negative.")
+
     centroid_a = np.average(array_a, axis=0, weights=weight)
     if array_b is not None:
         # translation vector to b centroid
         centroid_a -= np.average(array_b, axis=0, weights=weight)
-    # centroid = -1 * centroid_a
     return array_a - centroid_a, -1 * centroid_a
 
 

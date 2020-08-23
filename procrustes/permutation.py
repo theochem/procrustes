@@ -150,7 +150,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                        add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3, kopt_tol=1.e-8,
                        check_weight=True, weight=None):
     r"""
-    Single sided permutation Procrustes.
+    Double sided permutation Procrustes.
 
     Parameters
     ----------

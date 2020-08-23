@@ -335,6 +335,74 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     return _zero_padding(array_a, array_b, pad_mode)
 
 
+def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero_row,
+                             pad_mode, translate, scale, check_finite, check_weight, weight):
+    r"""
+    Check and process array inputs for the Procrustes transformation routines.
+    Usually, the precursor step before all Procrustes methods.
+    
+    Parameters
+    ----------
+    array_list : List
+        A list of 2D arrays that being transformed.
+    array_ref : ndarray
+        The 2D reference array :math:`B`.
+    remove_zero_col : bool, optional
+        If True, zero columns (values less than 1e-8) on the right side will be removed.
+        Default=True.
+    remove_zero_row : bool, optional
+        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
+    pad_mode : str
+        Specifying how to pad the arrays. Should be one of
+            - "row"
+                The array with fewer rows is padded with zero rows so that both have the same
+                number of rows.
+            - "col"
+                The array with fewer columns is padded with zero columns so that both have the
+                same number of columns.
+            - "row-col"
+                The array with fewer rows is padded with zero rows, and the array with fewer
+                columns is padded with zero columns, so that both have the same dimensions.
+                This does not necessarily result in square arrays.
+            - "square"
+                The arrays are padded with zero rows and zero columns so that they are both
+                squared arrays. The dimension of square array is specified based on the highest
+                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    translate : bool
+        If true, then translate both arrays :math:`A, B` to the origin, ie columns of the arrays
+        will have mean zero.
+    scale :
+        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+        :math:`Tr(A^T A) = 1`.
+    check_finite : bool
+        If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
+    check_weight: bool
+        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
+        zero. Default=True.
+    weight : A list of ndarray or ndarray
+        A list of the weight arrays or one numpy array. When only on numpy array provided,
+        it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.
+        Default=None.
+
+    Returns
+    -------
+    List of arrays :
+        Returns the padded arrays, in that they have the same matrix dimensions.
+    """
+    array_list_new = [_setup_input_array_lower(array_a=arr,
+                                               array_ref=array_ref,
+                                               check_finite=check_finite,
+                                               check_weight=check_weight,
+                                               translate=translate,
+                                               scale=scale,
+                                               remove_zero_col=remove_zero_col,
+                                               remove_zero_row=remove_zero_row,
+                                               weight=weight)
+                      for arr in array_list]
+    array_list_new = [_zero_padding(arr, pad_mode=pad_mode) for arr in array_list_new]
+    return array_list_new
+
+
 def _setup_input_array_lower(array_a, array_ref, check_finite, check_weight, translate,
                              scale, remove_zero_col, remove_zero_row, weight):
     """Pre-processing the matrices with translation, scaling."""

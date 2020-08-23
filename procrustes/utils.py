@@ -339,8 +339,7 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
                              pad_mode, translate, scale, check_finite, check_weight, weight):
     r"""
     Check and process array inputs for the Procrustes transformation routines.
-    Usually, the precursor step before all Procrustes methods.
-    
+
     Parameters
     ----------
     array_list : List
@@ -399,7 +398,9 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
                                                remove_zero_row=remove_zero_row,
                                                weight=weight)
                       for arr in array_list]
-    array_list_new = [_zero_padding(arr, pad_mode=pad_mode) for arr in array_list_new]
+    arr_shape = np.array([arr.shape for arr in array_list_new])
+    array_b = np.ones(np.max(arr_shape, axis=0), dtype=int)
+    array_list_new = [_zero_padding(arr, array_b, pad_mode=pad_mode) for arr in array_list_new]
     return array_list_new
 
 

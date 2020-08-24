@@ -1,0 +1,32 @@
+name: Test CI
+on:
+    push:
+        # branches: [master, tox]
+    pull_request:
+        branches: [master]
+
+jobs:
+    test:
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, macos-latest, windows-latest]
+                python-version: [2.7, 3.6, 3.7, 3.8]
+                exclude:
+                    - os: windows-latest
+                      python-version: 2.7
+        runs-on: ${{ matrix.os }}
+        steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v2
+          with:
+              python-version: ${{ matrix.python-version }}
+              architecture: x64
+        - name: Install dependencies
+          run: |
+              python -m pip install --upgrade pip
+              pip install tox tox-gh-actions
+        - name: Testing with tox
+          run: tox
+

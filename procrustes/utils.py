@@ -22,16 +22,8 @@
 # --
 """
 Utility Module.
-
-Functions
----------
-error : Calculates the squared distance between transformed matrices and reference matrix.
-setup_input_arrays : Setups up the arrays for all Procrustes methods.  It checks if the
-                    inputs are all numpy arrays, and two-dimensional.  It does zero-padding to make
-                    sure all arrays are of the same matrix dimensions and translates/scales the
-                    arrays if specified.
-
 """
+
 from copy import deepcopy
 import itertools as it
 
@@ -52,21 +44,20 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
         The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+        - "row"
+            The array with fewer rows is padded with zero rows so that both have the same
+            number of rows.
+        - "col"
+            The array with fewer columns is padded with zero columns so that both have the
+            same number of columns.
+        - "row-col"
+            The array with fewer rows is padded with zero rows, and the array with fewer
+            columns is padded with zero columns, so that both have the same dimensions.
+            This does not necessarily result in square arrays.
+        - "square"
+            The arrays are padded with zero rows and zero columns so that they are both
+            squared arrays. The dimension of square array is specified based on the highest
+            dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
 
     Returns
     -------

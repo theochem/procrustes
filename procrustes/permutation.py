@@ -375,6 +375,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
              73 & -116 &  154 &  100 \\
             -62 &  154 &  100 &  127 \\
         \end{bmatrix} \\
+
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,

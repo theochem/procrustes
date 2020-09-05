@@ -141,14 +141,14 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     Examples
     --------
     >>> import numpy as np
-    >>> array_a = np.array([[5., 2., 8.], \
-                            [2., 2., 3.], \
-                            [1., 5., 6.], \
-                            [7., 3., 2.]])
-    >>> array_b = np.array([[ 52284.5, 209138. , 470560.5], \
-                            [ 22788.5,  91154. , 205096.5], \
-                            [ 46139.5, 184558. , 415255.5], \
-                            [ 22788.5,  91154. , 205096.5]])
+    >>> array_a = np.array([[5., 2., 8.],
+    ...                     [2., 2., 3.],
+    ...                     [1., 5., 6.],
+    ...                     [7., 3., 2.]])
+    >>> array_b = np.array([[ 52284.5, 209138. , 470560.5],
+    ...                     [ 22788.5,  91154. , 205096.5],
+    ...                     [ 46139.5, 184558. , 415255.5],
+    ...                     [ 22788.5,  91154. , 205096.5]])
     >>> new_a, new_b, array_x, error_opt = symmetric(array_a, array_b, translate=True, scale=True)
     >>> array_x # symmetric transformation array
     array([[0.0166352 , 0.06654081, 0.14971682],

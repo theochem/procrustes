@@ -24,7 +24,10 @@
 r"""Rotational Procrustes example: chirality check."""
 
 import numpy as np
-from procrustes import *
+from iodata import load_one
+
+from procrustes import rotational
+from rdkit import Chem
 
 
 def chiral_check(A_data, B_data):
@@ -64,17 +67,93 @@ def chiral_check(A_data, B_data):
                                              remove_zero_col=False,
                                              remove_zero_row=False)
 
-    if e_rot/e_ref_rot > 10:
-    	print("These two compounds are enantiomers \
-    		and there is at least one chiral center in each of them.")
+    if e_rot / e_ref_rot > 10:
+        print("These two compounds are enantiomers "
+              "and there is at least one chiral center in each of them.")
     else:
-    	print("These two compounds are not enantiomers \
-    		and there is no chiral center in any of them.")
+        print("These two compounds are not enantiomers "
+              "and there is no chiral center in any of them.")
+
+
+def atom_coordinates_rdkit(sdf_name):
+    r"""Load atomic coordinates from a sdf file with RDKit.
+
+    Parameters
+    ----------
+    sdf_name : string
+        SDF file name.
+
+    Returns
+    -------
+    coords : ndarray
+        3D atomic coordinates.
+    """
+    mol = Chem.SDMolSupplier(sdf_name)[0]
+    conf = mol.GetConformer()
+    return conf.GetPositions()
+
+
+def extract_coordinates(sdf_name):
+    r"""Extract atomic coordinates from a sdf file.
+
+    Parameters
+    ----------
+    sdf_name : string
+        SDF file name.
+
+    Returns
+    -------
+    coords : ndarray
+        3D atomic coordinates.
+    """
+    coordinates = []
+    with open(sdf_name, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line.endswith("V2000") or line.endswith("V3000"):
+                break
+        for line in f:
+            line_seg = line.strip().split()
+            if len(line_seg) == 10:
+                coordinates.append(line_seg[:3])
+            else:
+                break
+    coordinates = np.array(coordinates).astype(np.float)
+    return coordinates
+
+
+def atom_coordinates_iodata(sdf_name):
+    r"""Load atomic coordinates from a sdf file with iodata.
+
+    Parameters
+    ----------
+    sdf_name : string
+        SDF file name.
+
+    Returns
+    -------
+    coords : ndarray
+        3D atomic coordinates.
+    """
+    mol = load_one(sdf_name)
+    coords = mol.atcoords
+    return coords
+
 
 if __name__ == "__main__":
-	chiral_check(A_data, B_data)
+    # use rdkit to load atomic coordinates
+    A_data = atom_coordinates_rdkit("R.sdf")
+    B_data = atom_coordinates_rdkit("S.sdf")
 
+    # use iodata to load atomic coordinates
+    # A_data = atom_coordinates_iodata("R.sdf")
+    # B_data = atom_coordinates_iodata("S.sdf")
 
+    # use numpy to load atomic coordinates
+    # A_data = extract_coordinates("R.sdf")
+    # B_data = extract_coordinates("S.sdf")
+
+    chiral_check(A_data, B_data)
 
 #In [5]: s = np.loadtxt("S.dat")
 #   ...: r = np.loadtxt("R.dat")

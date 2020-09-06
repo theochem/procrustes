@@ -30,15 +30,15 @@ from procrustes import rotational
 from rdkit import Chem
 
 
-def chiral_check(A_data, B_data):
+def chiral_check(A_coords, B_coords):
     r"""Check if a organic compound is chiral.
 
     Parameters
     ----------
-    A_data : string
-        The data file that contains 3D coordinates of the first organic compound A.
-    B_data : string
-        The data file that contains 3D coordinates of the second organic compound B.
+    A_coords : string
+        Atomic coordinates of the first organic compound A.
+    B_coords : string
+        Atomic coordinates of the first organic compound B.
     Returns
     -------
     A : ndarray
@@ -47,25 +47,21 @@ def chiral_check(A_data, B_data):
         3D coordinates of the first organic compound B.
     """
 
-    # get the data
-    A = np.loadtxt(A_data)
-    B = np.loadtxt(B_data)
-
     reflection = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
     # create the reflection of compound A over the yz plane
-    A_ref = np.dot(A, reflection)
+    A_ref = np.dot(A_coords, reflection)
     # Compute the rotational procrustes
-    _, _, U_rot, e_rot = rotational(A, B,
+    _, _, U_rot, e_rot = rotational(A_coords, B_coords,
                                     translate=True,
                                     scale=False,
                                     remove_zero_col=False,
                                     remove_zero_row=False)
     # Compute the error: reflection + rotation
-    _, _, U__ref_rot, e_ref_rot = rotational(A_ref, B,
-                                             translate=True,
-                                             scale=False,
-                                             remove_zero_col=False,
-                                             remove_zero_row=False)
+    _, _, U_ref_rot, e_ref_rot = rotational(A_ref, B_coords,
+                                            translate=True,
+                                            scale=False,
+                                            remove_zero_col=False,
+                                            remove_zero_row=False)
 
     if e_rot / e_ref_rot > 10:
         print("These two compounds are enantiomers "
@@ -107,12 +103,12 @@ def extract_coordinates(sdf_name):
         3D atomic coordinates.
     """
     coordinates = []
-    with open(sdf_name, "r") as f:
-        for line in f:
+    with open(sdf_name, "r") as mol_fname:
+        for line in mol_fname:
             line = line.strip()
             if line.endswith("V2000") or line.endswith("V3000"):
                 break
-        for line in f:
+        for line in mol_fname:
             line_seg = line.strip().split()
             if len(line_seg) == 10:
                 coordinates.append(line_seg[:3])
@@ -142,12 +138,12 @@ def atom_coordinates_iodata(sdf_name):
 
 if __name__ == "__main__":
     # use rdkit to load atomic coordinates
-    A_data = atom_coordinates_rdkit("R.sdf")
-    B_data = atom_coordinates_rdkit("S.sdf")
+    # A_data = atom_coordinates_rdkit("R.sdf")
+    # B_data = atom_coordinates_rdkit("S.sdf")
 
     # use iodata to load atomic coordinates
-    # A_data = atom_coordinates_iodata("R.sdf")
-    # B_data = atom_coordinates_iodata("S.sdf")
+    A_data = atom_coordinates_iodata("R.sdf")
+    B_data = atom_coordinates_iodata("S.sdf")
 
     # use numpy to load atomic coordinates
     # A_data = extract_coordinates("R.sdf")

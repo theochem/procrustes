@@ -24,10 +24,9 @@
 
 r"""Two sided permutation Procrustes example: molecular alignment alignment."""
 
-
 from __future__ import absolute_import, division, print_function
 import numpy as np
-from procrustes import permutation_2sided, _utils
+from procrustes import permutation_2sided, utils
 
 
 def mol_align(A, B):
@@ -35,20 +34,19 @@ def mol_align(A, B):
     transformation.
     """
     # Compute the permutation matrix
-    _, _, U, e_opt = permutation_2sided(
-        A, B, transform_mode='single_undirected',
-        remove_zero_col=False, remove_zero_row=False)
-    # Compute the transformed molecule A
-    A = _utils.setup_input_arrays(A)
+    _, _, U, e_opt = permutation_2sided(A, B,
+                                        transform_mode='single_undirected',
+                                        remove_zero_col=False, remove_zero_row=False)
+    # Compute the transformed coordinates of molecule A
+    A = utils.setup_input_arrays(A)
     new_A = np.dot(U.T, np.dot(A, U))
-    # B
+    # coordinates of molecule B
     new_B = B
 
     return new_A, new_B, U, e_opt
 
 
 if __name__ == "__main__":
-
     # Define molecule A
     # but‐1‐en‐3‐yne
     A = np.array([[6, 3, 0, 0],
@@ -68,45 +66,7 @@ if __name__ == "__main__":
     # Compute the alignment
     new_A, new_B, U, e_opt = mol_align(A, B)
 
-
 # the result new_A
-# array([[6, 3, 0, 0, 0, 0, 0],
-#        [3, 6, 0, 1, 0, 0, 0],
-#        [0, 0, 0, 0, 0, 0, 0],
-#        [0, 1, 0, 6, 2, 0, 0],
-#        [0, 0, 0, 2, 6, 0, 0],
-#        [0, 0, 0, 0, 0, 0, 0],
-#        [0, 0, 0, 0, 0, 0, 0]])
-
-#########################################
-# Rotate A by 180 degrees
-# if __name__ == "__main__":
-#
-#     # Define molecule A
-#     # but‐1‐en‐3‐yne
-#     A = np.array([[6, 2, 0, 0],
-#                   [2, 6, 1, 0],
-#                   [0, 1, 6, 3],
-#                   [0, 0, 3, 6]])
-#
-#     # Define molecule B
-#     # 3,3‐dimethylpent‐1‐en‐4‐yne
-#     B = np.array([[6, 3, 0, 0, 0, 0, 0],
-#                   [3, 6, 1, 0, 0, 0, 0],
-#                   [0, 1, 6, 1, 0, 1, 1],
-#                   [0, 0, 1, 6, 2, 0, 0],
-#                   [0, 0, 0, 2, 6, 0, 0],
-#                   [0, 0, 1, 0, 0, 6, 0],
-#                   [0, 0, 1, 0, 0, 0, 6]])
-#     # Compute the alignment
-#     new_A, new_B, U, e_opt = mol_align(A, B)
-
-# the result new_A
-# A, _ = _utils.setup_input_arrays(
-#     A, B, remove_zero_col=False,
-#     remove_zero_row=False, translate=False,
-#     scale=False, check_finite=False)
-# np.dot(U.T, np.dot(A, U))
 # array([[6, 3, 0, 0, 0, 0, 0],
 #        [3, 6, 0, 1, 0, 0, 0],
 #        [0, 0, 0, 0, 0, 0, 0],

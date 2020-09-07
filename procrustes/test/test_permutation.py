@@ -455,7 +455,8 @@ def test_permutation_2sided_4by4_normal1_loop():
             # Check
             _, _, array_u, e_opt = permutation_2sided(array_a, array_b,
                                                       transform_mode="single",
-                                                      mode="normal1")
+                                                      mode="normal1",
+                                                      iteration=700)
             assert_almost_equal(array_u, perm, decimal=6)
             assert_almost_equal(e_opt, 0, decimal=6)
 

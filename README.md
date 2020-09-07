@@ -1,7 +1,6 @@
 Procrustes
 ==========
 
-<a href='https://docs.python.org/2.7/'><img src='https://img.shields.io/badge/python-2.7-blue.svg'></a>
 <a href='https://docs.python.org/3.6/'><img src='https://img.shields.io/badge/python-3.6-blue.svg'></a>
 <a href='https://docs.python.org/3.7/'><img src='https://img.shields.io/badge/python-3.7-blue.svg'></a>
 <a href='https://docs.python.org/3.8/'><img src='https://img.shields.io/badge/python-3.8-blue.svg'></a>
@@ -26,11 +25,11 @@ Dependencies
 
 The following dependencies are required to run Procrustes properly,
 
-* Python >= 2.7, or Python >= 3.6: http://www.python.org/
+* Python >= 3.6: http://www.python.org/
 * PIP >= 19.0: https://pip.pypa.io/
-* SciPy >= 1.0.0: http://www.scipy.org/
-* NumPy >= 1.14: http://www.numpy.org/
-* PyTest >= 5.3.0: https://docs.pytest.org/
+* SciPy >= 1.5.0: http://www.scipy.org/
+* NumPy >= 1.18.5: http://www.numpy.org/
+* PyTest >= 5.3.4: https://docs.pytest.org/
 * PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/
 
 
@@ -46,19 +45,18 @@ Then navigate to the Procrustes folder and run with package manager:
 
 ```bash
    cd procrustes
-   pip install -e ./ --user
+   pip install .
+```
+
+Or, if you want to install the package in an editable mode, run
+```bash
+    pip install -e .
 ```
 
 To remove the package, run:
 
 ```bash
    pip uninstall procrustes
-```
-
-To install the cloned package, run:
-
-```bash
-   ./setup.py install --user
 ```
 
 Testing

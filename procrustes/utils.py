@@ -20,9 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""
-Utility Module.
-"""
+"""Utility Module."""
 
 from copy import deepcopy
 import itertools as it

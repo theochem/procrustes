@@ -47,5 +47,5 @@ setup(
     author_email="ayers@mcmaster.ca",
     package_dir={"procrustes": "procrustes"},
     packages=["procrustes"],
-    requires=["numpy", "scipy", "pytest", "sphinx"],
+    install_requires=["numpy>=1.18.5", "scipy>=1.5.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
 )

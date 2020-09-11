@@ -375,6 +375,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
              73 & -116 &  154 &  100 \\
             -62 &  154 &  100 &  127 \\
         \end{bmatrix} \\
+
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
@@ -383,34 +384,41 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     # Try to convert the matrices to non-negative
     # shift the the matrices to avoid negative values
     # otherwise it will cause an error in the Eq. 28 in the research notes
-    maximum = max(np.abs((np.min(new_a), np.min(new_b))))
-    new_a = new_a.astype(np.float) + maximum
-    new_b = new_b.astype(np.float) + maximum
+    maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
+    new_a_positive = new_a.astype(np.float) + maximum
+    new_b_positive = new_b.astype(np.float) + maximum
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == "single":
+        # algorithm for undirected graph matching problem
         # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
-        if np.allclose(new_a, new_a.T, rtol=1.e-05, atol=1.e-08) and \
-             np.allclose(new_b, new_b.T, rtol=1.e-05, atol=1.e-08):
+        if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
+                np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation(new_a, new_b, mode, add_noise)
+            guess = _guess_initial_permutation_undirected(new_a_positive,
+                                                          new_b_positive,
+                                                          mode, add_noise)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform(new_a, new_b, guess, tol, iteration)
-            e_opt = error(new_a, new_b, array_u, array_u)
+            array_u = _compute_transform(new_a_positive, new_b_positive,
+                                         guess, tol, iteration)
+            e_opt = error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, e_opt = kopt_heuristic_single(array_u, new_a, new_b, e_opt,
+                array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive,
+                                                       new_b_positive, e_opt,
                                                        kopt_k=kopt_k, kopt_tol=kopt_tol)
+        # algorithm for directed graph matching problem
         else:
             # the initial guess
-            guess = _2sided_1trans_initial_guess_directed(new_a, new_b)
+            guess = _2sided_1trans_initial_guess_directed(new_a_positive, new_b_positive)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform_directed(new_a, new_b, guess, tol, iteration)
-            e_opt = error(new_a, new_b, array_u, array_u)
+            array_u = _compute_transform_directed(new_a_positive, new_b_positive,
+                                                  guess, tol, iteration)
+            e_opt = error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, e_opt = kopt_heuristic_single(array_u, new_a, new_b, e_opt,
-                                                       kopt_k=kopt_k, kopt_tol=kopt_tol)
+                array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive, new_b_positive,
+                                                       e_opt, kopt_k=kopt_k, kopt_tol=kopt_tol)
         return new_a, new_b, array_u, e_opt
 
     # Do regular computation
@@ -632,7 +640,7 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     return array_u
 
 
-def _guess_initial_permutation(array_a, array_b, mode, add_noise):
+def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
     mode = mode.lower()
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
@@ -678,7 +686,9 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
         if step == iteration:
             print("Maximum iteration reached! Change={0}".format(change))
 
-    _, _, p_opt, _ = permutation(np.eye(p_new.shape[0]), p_new)
+    _, _, p_opt, _ = permutation(array_a=np.eye(p_new.shape[0]), array_b=p_new,
+                                 remove_zero_col=False, remove_zero_row=False,
+                                 translate=False, scale=False, check_finite=True)
 
     return p_opt
 

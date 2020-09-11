@@ -138,9 +138,9 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     --------
     >>> import numpy as np
     >>> array_a = np.array([[1.5, 7.4], [8.5, 4.5]])
-    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,], \
-                            [9.19238816, -2.82842712, 0., 0.], \
-                            [0.,          0.,         0., 0.]])
+    >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,],
+    ...                     [9.19238816, -2.82842712, 0., 0.],
+    ...                     [0.,          0.,         0., 0.]])
     >>> new_a, new_b, array_u, e_opt = rotational(array_a, array_b, translate=False, scale=False)
     >>> array_u # rotational array
     array([[ 0.70710678, -0.70710678],

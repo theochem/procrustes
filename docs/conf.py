@@ -215,5 +215,5 @@ texinfo_documents = [
 # for your class when you use the autoclass directive.
 autoclass_content = 'both'
 autodoc_member_order = 'bysource'
-autodoc_default_flags = ['members', 'undoc-members','private-members',
-        'inherited-members', 'special-members', 'show-inheritance']
+utodoc_default_options = ['members', 'undoc-members', 'inherited-members',
+                          'special-members', 'show-inheritance']

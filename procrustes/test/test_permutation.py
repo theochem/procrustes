@@ -455,7 +455,8 @@ def test_permutation_2sided_4by4_normal1_loop():
             # Check
             _, _, array_u, e_opt = permutation_2sided(array_a, array_b,
                                                       transform_mode="single",
-                                                      mode="normal1")
+                                                      mode="normal1",
+                                                      iteration=700)
             assert_almost_equal(array_u, perm, decimal=6)
             assert_almost_equal(e_opt, 0, decimal=6)
 
@@ -998,3 +999,31 @@ def test_permutation_2sided_add_noise_mode_umeyama_approx():
                                 mode="umeyama_approx", add_noise=True)
     assert_almost_equal(result[2], perm, decimal=6)
     assert_almost_equal(result[3], 0, decimal=6)
+
+
+def test_permutation_2sided_dominators_zero():
+    """Test two-sided permutations which has zeros in the dominator in updating step."""
+    array_a = np.array([[6, 3, 0, 0],
+                        [3, 6, 1, 0],
+                        [0, 1, 6, 2],
+                        [0, 0, 2, 6]])
+    array_b = np.array([[6, 3, 0, 0, 0, 0, 0],
+                        [3, 6, 1, 0, 0, 0, 0],
+                        [0, 1, 6, 1, 0, 1, 1],
+                        [0, 0, 1, 6, 2, 0, 0],
+                        [0, 0, 0, 2, 6, 0, 0],
+                        [0, 0, 1, 0, 0, 6, 0],
+                        [0, 0, 1, 0, 0, 0, 6]])
+    _, _, array_perm, _ = permutation_2sided(array_a, array_b,
+                                             transform_mode='single',
+                                             remove_zero_col=False,
+                                             remove_zero_row=False,
+                                             scale=False)
+    perm = np.array([[1, 0, 0, 0, 0, 0, 0],
+                     [0, 1, 0, 0, 0, 0, 0],
+                     [0, 0, 0, 1, 0, 0, 0],
+                     [0, 0, 0, 0, 1, 0, 0],
+                     [0, 0, 1, 0, 0, 0, 0],
+                     [0, 0, 0, 0, 0, 1, 0],
+                     [0, 0, 0, 0, 0, 0, 1]])
+    assert_almost_equal(array_perm, perm)

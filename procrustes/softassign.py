@@ -175,16 +175,16 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     Examples
     --------
     >>> import numpy as np
-    >>> array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],\
-                            [3, 3, 2, 2], [3, 5, 2, 5]])
+    >>> array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
+    ...                     [3, 3, 2, 2], [3, 5, 2, 5]])
         # define a random matrix
-    >>> perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],\
-                         [0., 0., 0., 1.], [0., 1., 0., 0.]])
+    >>> perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
+    ...                  [0., 0., 0., 1.], [0., 1., 0., 0.]])
         # define array_b by permuting array_a
     >>> array_b = np.dot(perm.T, np.dot(array_a, perm))
-    >>> new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,\
-                                               remove_zero_col=False,\
-                                               remove_zero_row=False)
+    >>> new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,
+    ...                                        remove_zero_col=False,
+    ...                                        remove_zero_row=False)
     >>> M_ai # the permutation matrix
     array([[0., 0., 1., 0.],
            [1., 0., 0., 0.],

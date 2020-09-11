@@ -26,7 +26,7 @@
 import io
 from os import path
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -46,7 +46,6 @@ setup(
     author="Ayers Group",
     author_email="ayers@mcmaster.ca",
     package_dir={"procrustes": "procrustes"},
-    packages=find_packages("procrustes", exclude=["docs", "test"]),
-    # test_suite="nose.collector",
-    requires=["numpy", "scipy", "pytest", "sphinx"],
+    packages=["procrustes"],
+    install_requires=["numpy>=1.18.5", "scipy>=1.5.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
 )

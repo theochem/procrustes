@@ -28,6 +28,11 @@ import warnings
 import numpy as np
 from procrustes.utils import error, setup_input_arrays
 
+__all__ = [
+    "orthogonal",
+    "orthogonal_2sided",
+]
+
 
 def orthogonal(array_a, array_b, remove_zero_col=True,
                remove_zero_row=True, pad_mode='row-col',
@@ -122,11 +127,11 @@ def orthogonal(array_a, array_b, remove_zero_col=True,
     --------
     >>> import numpy as np
     >>> array_a = np.array([[-7.3,  2.8], [-7.1, -0.2],
-        [ 4. ,  1.4], [ 1.3,  0. ]])
+    ...                     [ 4. ,  1.4], [ 1.3,  0. ]])
     >>> array_b = np.array([[-5.90207845, -5.12791088],
-        [-6.74021234, -2.24043246],
-        [ 4.23759847,  0.05252849],
-        [ 1.22159856,  0.44463126]])
+    ...                     [-6.74021234, -2.24043246],
+    ...                     [ 4.23759847,  0.05252849],
+    ...                     [ 1.22159856,  0.44463126]])
     >>> new_a, new_b, array_u, error_opt = orthogonal(array_a, array_b)
     >>> new_a
     array([[-7.3,  2.8],

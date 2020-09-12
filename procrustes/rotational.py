@@ -26,9 +26,14 @@ import numpy as np
 from procrustes.utils import error, setup_input_arrays
 
 
-def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
-               pad_mode="row-col", translate=False, scale=False, check_finite=True,
-               check_weight=True, weight=None):
+def rotational(array_a, array_b,
+               remove_zero_col=True,
+               remove_zero_row=True,
+               pad_mode="row-col",
+               translate=False,
+               scale=False,
+               check_finite=True,
+               weight=None):
     r"""
     Compute optimal rotational transformation array.
 
@@ -74,9 +79,6 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         Default=False.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
-    check_weight: bool
-        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
-        zero. Default=True.
     weight : ndarray
         The weighting matrix. Default=None.
 
@@ -157,8 +159,7 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite,
-                                      check_weight, weight)
+                                      pad_mode, translate, scale, check_finite, weight)
     # compute SVD of A.T * A
     array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
     # construct S which is an identity matrix with the smallest

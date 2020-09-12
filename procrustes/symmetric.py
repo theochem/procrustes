@@ -27,8 +27,8 @@ from procrustes.utils import error, setup_input_arrays
 
 
 def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
-              pad_mode='row-col', translate=False, scale=False, check_finite=True,
-              check_weight=True, weight=None):
+              pad_mode='row-col', translate=False, scale=False,
+              check_finite=True, weight=None):
     r"""
     Symmetric right-sided Procrustes transformation.
 
@@ -76,9 +76,6 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
-    check_weight: bool
-        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
-        zero. Default=True.
     weight : ndarray
         The weighting matrix. Default=None.
 
@@ -167,8 +164,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col,
                                       remove_zero_row, pad_mode, translate,
-                                      scale, check_finite,
-                                      check_weight, weight)
+                                      scale, check_finite, weight)
 
     if new_a.shape[0] < new_a.shape[1]:
         raise ValueError("Array A with size (m, n) needs m >= to n.")

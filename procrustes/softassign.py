@@ -39,8 +39,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                epsilon_sink=1.e-3, k=0.15, gamma_scaler=1.01, n_stop=3,
                pad_mode='row-col', remove_zero_col=True, remove_zero_row=True,
                translate=False, scale=False, check_finite=True, adapted=True,
-               beta_0=None, m_guess=None, iteration_anneal=None,
-               check_weight=True, weight=None):
+               beta_0=None, m_guess=None, iteration_anneal=None, weight=None):
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
@@ -121,9 +120,6 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         The initial guess of the doubly-stochastic matrix. Default=None.
     iteration_anneal : int, optional
         Number of iterations for annealing loop. Default=None.
-    check_weight: bool
-        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
-        zero. Default=True.
     weight : ndarray
         The weighting matrix. Default=None.
 
@@ -208,8 +204,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         raise ValueError("Argument beta_r cannot be less than 1.")
 
     array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                          pad_mode, translate, scale, check_finite,
-                                          check_weight, weight)
+                                          pad_mode, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix
     array_c = np.kron(array_a, array_b)

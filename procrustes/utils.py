@@ -27,7 +27,13 @@ import itertools as it
 
 import numpy as np
 
-__all__ = ["error", "setup_input_arrays", "kopt_heuristic_single", "kopt_heuristic_double"]
+__all__ = [
+    "error",
+    "setup_input_arrays",
+    "kopt_heuristic_single",
+    "kopt_heuristic_double",
+    "ProcrustesResult",
+]
 
 
 def _zero_padding(array_a, array_b, pad_mode="row-col"):
@@ -464,3 +470,53 @@ def kopt_heuristic_double(array_m, array_n, ref_error,
                         break
 
     return perm_p, perm_q, kopt_error
+
+
+class ProcrustesResult(dict):
+    r"""Represents the Procrustes analysis result.
+
+    Attributes
+    ----------
+    new_a : ndarray
+        The translated/scaled numpy ndarray :math:`\mathbf{A}`.
+    new_b : ndarray
+        The translated/scaled numpy ndarray :math:`\mathbf{B}`.
+    array_u : ndarray
+        The right hand side optimum transformation matrix.
+    array_p : ndarray
+        The left hand side transformation matrix for two-sided Procrustes problem with
+        two transformation.
+    array_q : ndarray
+        The right hand side transformation matrix for two-sided Procrustes problem with
+        two transformation.
+    e_opt : float
+        Two-sided permutation Procrustes error.
+
+    """
+    # modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132
+    def __getattr__(self, name):
+        """Deal with attributes which it doesn't explicitly manage."""
+        try:
+            return self[name]
+        # Not using raise from makes the traceback inaccurate, because the message implies there
+        # is a bug in the exception-handling code itself, which is a separate situation than
+        # wrapping an exception
+        # W0707 from http://pylint.pycqa.org/en/latest/technical_reference/features.html
+        except KeyError as ke_info:
+            raise AttributeError(name) from ke_info
+
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+    def __repr__(self):
+        """Return a human friendly representation."""
+        if self.keys():
+            max_len = max(map(len, list(self.keys()))) + 1
+            return '\n'.join([k.rjust(max_len) + ': ' + repr(v)
+                              for k, v in sorted(self.items())])
+        else:
+            return self.__class__.__name__ + "()"
+
+    def __dir__(self):
+        """Provide basic customization of module attribute access with a list."""
+        return list(self.keys())

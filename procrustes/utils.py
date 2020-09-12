@@ -109,7 +109,7 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     return array_a, array_b
 
 
-def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
+def _translate_array(array_a, array_b=None, weight=None):
     """
     Return translated array_a and translation vector.
 
@@ -123,8 +123,6 @@ def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
         The 2d-array to translate array_a based on.
     weight : ndarray
         The weight vector. Default=None.
-    check_weight: bool
-        To check if the weight vector is a 1D row vector. Default=True.
 
     Returns
     -------
@@ -138,7 +136,7 @@ def _translate_array(array_a, array_b=None, weight=None, check_weight=False):
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
-    if weight is not None and check_weight:
+    if weight is not None:
         if weight.ndim != 1:
             raise ValueError("The weight should be a 1d row vector.")
         if not (weight >= 0).all():
@@ -272,8 +270,7 @@ def error(array_a, array_b, array_u, array_v=None):
 
 
 def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                       pad_mode, translate, scale, check_finite,
-                       check_weight, weight):
+                       pad_mode, translate, scale, check_finite, weight):
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -314,9 +311,6 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         :math:`Tr(A^T A) = 1`.
     check_finite : bool
         If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
-    check_weight: bool
-        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
-        zero. Default=True.
     weight : A list of ndarray or ndarray
         A list of the weight arrays or one numpy array. When only on numpy array provided,
         it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.
@@ -328,15 +322,15 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         Returns the padded arrays, in that they have the same matrix dimensions.
 
     """
-    array_a = _setup_input_array_lower(array_a, None, check_finite, check_weight, translate,
+    array_a = _setup_input_array_lower(array_a, None, check_finite, translate,
                                        scale, remove_zero_col, remove_zero_row, weight)
-    array_b = _setup_input_array_lower(array_b, None, check_finite, check_weight, translate,
+    array_b = _setup_input_array_lower(array_b, None, check_finite, translate,
                                        scale, remove_zero_col, remove_zero_row, weight)
     return _zero_padding(array_a, array_b, pad_mode)
 
 
 def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite, check_weight, weight):
+                             pad_mode, translate, scale, check_finite, weight):
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -375,9 +369,6 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
         :math:`Tr(A^T A) = 1`.
     check_finite : bool
         If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
-    check_weight: bool
-        To check if the weight matrix is a diagonal matrix with all non-diagonal elements being
-        zero. Default=True.
     weight : A list of ndarray or ndarray
         A list of the weight arrays or one numpy array. When only on numpy array provided,
         it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.
@@ -391,7 +382,6 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
     array_list_new = [_setup_input_array_lower(array_a=arr,
                                                array_ref=array_ref,
                                                check_finite=check_finite,
-                                               check_weight=check_weight,
                                                translate=translate,
                                                scale=scale,
                                                remove_zero_col=remove_zero_col,
@@ -404,7 +394,7 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
     return array_list_new
 
 
-def _setup_input_array_lower(array_a, array_ref, check_finite, check_weight, translate,
+def _setup_input_array_lower(array_a, array_ref, check_finite, translate,
                              scale, remove_zero_col, remove_zero_row, weight):
     """Pre-processing the matrices with translation, scaling."""
     _check_arraytypes(array_a)
@@ -413,7 +403,7 @@ def _setup_input_array_lower(array_a, array_ref, check_finite, check_weight, tra
         # Sometimes arrays already have zero padding that messes up zero padding below.
     array_a = _hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
     if translate:
-        array_a, _ = _translate_array(array_a, array_ref, weight, check_weight)
+        array_a, _ = _translate_array(array_a, array_ref, weight)
     if scale:
         array_a, _ = _scale_array(array_a, array_ref)
     return array_a

@@ -282,8 +282,7 @@ def test_translate_weight():
     arr_centered = arr - col_sum / weight.sum()
     array_a_centered, _ = _translate_array(array_a=arr,
                                            array_b=None,
-                                           weight=weight,
-                                           check_weight=True)
+                                           weight=weight)
     assert_almost_equal(arr_centered, array_a_centered)
 
 
@@ -292,10 +291,10 @@ def test_translate_invalid():
     rng = np.random.RandomState(789)
     arr = rng.randint(0, 10, (4, 3))
     weight1 = np.arange(1, 5).reshape(-1, 1)
-    # array_a, array_b=None, weight=None, check_weight=False
-    assert_raises(ValueError, _translate_array, arr, None, weight1, True)
+    # array_a, array_b=None, weight=None
+    assert_raises(ValueError, _translate_array, arr, None, weight1)
     weight2 = np.array([-1, 1, 3, 4])
-    assert_raises(ValueError, _translate_array, arr, None, weight2, True)
+    assert_raises(ValueError, _translate_array, arr, None, weight2)
 
 
 def test_scale_array():

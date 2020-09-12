@@ -173,7 +173,8 @@ def orthogonal(array_a, array_b,
 
 def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                       pad_mode='row-col', translate=False, scale=False,
-                      single_transform=True, mode="exact", check_finite=True, tol=1.0e-8, weight=None):
+                      single_transform=True, mode="exact", check_finite=True,
+                      tol=1.0e-8, weight=None):
     r"""
     Two-Sided Orthogonal Procrustes.
 

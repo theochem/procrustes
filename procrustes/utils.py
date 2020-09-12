@@ -493,6 +493,7 @@ class ProcrustesResult(dict):
         Two-sided permutation Procrustes error.
 
     """
+
     # modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132
     def __getattr__(self, name):
         """Deal with attributes which it doesn't explicitly manage."""

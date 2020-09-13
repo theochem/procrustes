@@ -404,6 +404,11 @@ def _setup_input_array_lower(array_a, array_ref, check_finite, translate,
     array_a = _hide_zero_padding(array_a, remove_zero_col, remove_zero_row)
     if translate:
         array_a, _ = _translate_array(array_a, array_ref, weight)
+    # scale the matrix when translate is False, but weight is True
+    else:
+        if weight is not None:
+            array_a = np.dot(np.diag(weight), array_a)
+
     if scale:
         array_a, _ = _scale_array(array_a, array_ref)
     return array_a

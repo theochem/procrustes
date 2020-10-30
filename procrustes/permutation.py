@@ -36,8 +36,14 @@ __all__ = [
 ]
 
 
-def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
-                pad_mode="row-col", translate=False, scale=False, check_finite=True):
+def permutation(array_a, array_b,
+                remove_zero_col=True,
+                remove_zero_row=True,
+                pad_mode="row-col",
+                translate=False,
+                scale=False,
+                check_finite=True,
+                weight=None):
     r"""
     Single sided permutation Procrustes.
 
@@ -78,6 +84,8 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         Default=False.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+    weight : ndarray
+        The weighting matrix. Default=None.
 
     Returns
     -------
@@ -129,7 +137,7 @@ def permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite)
+                                      pad_mode, translate, scale, check_finite, weight)
     # compute permutation Procrustes matrix
     array_p = np.dot(new_a.T, new_b)
     array_c = np.full(array_p.shape, np.max(array_p))
@@ -145,9 +153,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                        remove_zero_col=True, remove_zero_row=True,
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
-                       add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3, kopt_tol=1.e-8):
-    r"""
-    Single sided permutation Procrustes.
+                       add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3,
+                       kopt_tol=1.e-8, weight=None):
+    r"""Double sided permutation Procrustes.
 
     Parameters
     ----------
@@ -211,6 +219,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
     kopt_tol : float, optional
         Tolerance value to check if k-opt heuristic converges. Default=1.e-8.
+
 
     Returns
     -------
@@ -379,7 +388,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite)
+                                      pad_mode, translate, scale, check_finite, weight)
     # np.power() can not handle the negatives values
     # Try to convert the matrices to non-negative
     # shift the the matrices to avoid negative values
@@ -720,8 +729,11 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
 def permutation_2sided_explicit(array_a, array_b,
                                 remove_zero_col=True,
                                 remove_zero_row=True,
-                                pad_mode="row-col", translate=False,
-                                scale=False, check_finite=True):
+                                pad_mode="row-col",
+                                translate=False,
+                                scale=False,
+                                check_finite=True,
+                                weight=None):
     r"""
     Two sided permutation Procrustes by explicit method.
 
@@ -760,6 +772,8 @@ def permutation_2sided_explicit(array_a, array_b,
         If True, both arrays are column normalized to unity. Default=False.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+    weight : ndarray
+        The weighting matrix. Default=None.
 
     Returns
     -------
@@ -787,7 +801,7 @@ def permutation_2sided_explicit(array_a, array_b,
           "But it can be used as a checker for a small dataset.")
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite)
+                                      pad_mode, translate, scale, check_finite, weight)
     perm1 = np.zeros(np.shape(new_a))
     perm_error1 = np.inf
     for comb in it.permutations(np.arange(np.shape(new_a)[0])):

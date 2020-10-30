@@ -23,7 +23,7 @@
 """Rotational-Orthogonal Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 
 def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -141,11 +141,11 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,],
     ...                     [9.19238816, -2.82842712, 0., 0.],
     ...                     [0.,          0.,         0., 0.]])
-    >>> new_a, new_b, array_u, e_opt = rotational(array_a, array_b, translate=False, scale=False)
-    >>> array_u # rotational array
+    >>> res = rotational(array_a, array_b, translate=False, scale=False)
+    >>> res['array_u'] # rotational array
     array([[ 0.70710678, -0.70710678],
            [ 0.70710678,  0.70710678]])
-    >>> e_opt # error
+    >>> res['e_opt'] # error
     1.483808210011695e-17
 
     """
@@ -163,4 +163,4 @@ def rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     # compute single-sided error error
     e_opt = error(new_a, new_b, u_opt)
 
-    return new_a, new_b, u_opt, e_opt
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)

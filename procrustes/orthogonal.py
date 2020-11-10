@@ -403,17 +403,3 @@ def _2sided(array_a, array_b):
     u_opt1 = np.dot(array_ua, array_ub.T)
     u_opt2 = np.dot(vta.T, vtb)
     return u_opt1, u_opt2
-
-
-def _2sided_1trans_approx(array_a, array_b, tol):
-    # Calculate the eigenvalue decomposition of array_a and array_b
-    _, array_ua = np.linalg.eigh(array_a)
-    _, array_ub = np.linalg.eigh(array_b)
-    # compute u_umeyama
-    u_umeyama = np.dot(np.abs(array_ua), np.abs(array_ub.T))
-    # compute the closet unitary transformation to u_umeyama
-    array_identity = np.eye(u_umeyama.shape[0], dtype=u_umeyama.dtype)
-    res = orthogonal(array_identity, u_umeyama)
-    u_ortho = res["array_u"]
-    u_ortho[np.abs(u_ortho) < tol] = 0
-    return u_ortho

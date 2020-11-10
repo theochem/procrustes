@@ -417,25 +417,3 @@ def _2sided_1trans_approx(array_a, array_b, tol):
     u_ortho = res["array_u"]
     u_ortho[np.abs(u_ortho) < tol] = 0
     return u_ortho
-
-
-def _2sided_1trans_exact(array_a, array_b):
-    _, array_ua = np.linalg.eigh(array_a)
-    _, array_ub = np.linalg.eigh(array_b)
-    # 2^n trial-and-error test to find optimum S array
-    diags = product((-1, 1.), repeat=array_a.shape[0])
-
-    error_list = []
-    diag_list = []
-    for _, diag in enumerate(diags):
-        array_s = np.diag(diag)
-        array_u = np.dot(np.dot(array_ua, array_s), array_ub.T)
-        e_temp = error(array_a, array_b, array_u, array_u)
-        error_list.append(e_temp)
-        diag_list.append(array_s)
-
-    index = np.argmin(error_list)
-    s_opt = diag_list[index]
-    u_opt = np.dot(np.dot(array_ua, s_opt), array_ub.T)
-
-    return u_opt

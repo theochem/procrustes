@@ -26,7 +26,7 @@ from itertools import product
 import warnings
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, setup_input_arrays, ProcrustesResult
 
 __all__ = [
     "orthogonal",
@@ -168,7 +168,8 @@ def orthogonal(array_a, array_b,
     array_u_opt = np.dot(array_u, array_vt)
     # compute the error
     e_opt = error(new_a, new_b, array_u_opt)
-    return new_a, new_b, array_u_opt, e_opt
+    # return new_a, new_b, array_u_opt, e_opt
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u_opt, e_opt=e_opt)
 
 
 def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -401,7 +402,8 @@ def _2sided_1trans_approx(array_a, array_b, tol):
     u_umeyama = np.dot(np.abs(array_ua), np.abs(array_ub.T))
     # compute the closet unitary transformation to u_umeyama
     array_identity = np.eye(u_umeyama.shape[0], dtype=u_umeyama.dtype)
-    _, _, u_ortho, _ = orthogonal(array_identity, u_umeyama)
+    res = orthogonal(array_identity, u_umeyama)
+    u_ortho = res["array_u"]
     u_ortho[np.abs(u_ortho) < tol] = 0
     return u_ortho
 

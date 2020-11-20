@@ -23,7 +23,7 @@
 """Symmetric Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 
 def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -188,4 +188,4 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     array_x = np.dot(np.dot(array_vt.T, array_y), array_vt)
     e_opt = error(new_a, new_b, array_x)
 
-    return new_a, new_b, array_x, e_opt
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_x, e_opt=e_opt)

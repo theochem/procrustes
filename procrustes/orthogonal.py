@@ -363,27 +363,27 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
         warnings.warn("The translation matrix was not well defined. \
                 Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
-    array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                          pad_mode, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite, weight)
     # Convert mode strings into lowercase
     mode = mode.lower()
     # Do single-transformation computation if requested
     if single_transform:
         # check array_a and array_b are symmetric.  #FIXME : They are no checks here.
         if mode == "approx":
-            u_opt = _2sided_1trans_approx(array_a, array_b, tol)
+            u_opt = _2sided_1trans_approx(new_a, new_b, tol)
         elif mode == "exact":
-            u_opt = _2sided_1trans_exact(array_a, array_b)
+            u_opt = _2sided_1trans_exact(new_a, new_b)
         else:
             raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
         # the error
-        e_opt = error(array_a, array_b, u_opt, u_opt)
-        return array_a, array_b, u_opt, e_opt
+        e_opt = error(new_a, new_b, u_opt, u_opt)
+        return new_a, new_b, u_opt, e_opt
     # Do regular two-sided orthogonal Procrustes calculations
     else:
-        u_opt1, u_opt2 = _2sided(array_a, array_b)
-        e_opt = error(array_a, array_b, u_opt1, u_opt2)
-        return array_a, array_b, u_opt1, u_opt2, e_opt
+        u_opt1, u_opt2 = _2sided(new_a, new_b)
+        e_opt = error(new_a, new_b, u_opt1, u_opt2)
+        return new_a, new_b, u_opt1, u_opt2, e_opt
 
 
 def _2sided(array_a, array_b):

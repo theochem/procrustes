@@ -27,7 +27,7 @@ import warnings
 
 import numpy as np
 from procrustes.permutation import permutation
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 __all__ = [
     "softassign",
@@ -203,13 +203,13 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                          pad_mode, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix
-    array_c = np.kron(array_a, array_b)
+    array_c = np.kron(new_a, new_b)
     # Get the shape of A (B and the permutation matrix as well)
-    row_num = array_a.shape[0]
+    row_num = new_a.shape[0]
     c_tensor = array_c.reshape(row_num, row_num, row_num, row_num)
     # Compute the beta_0
     gamma = _compute_gamma(array_c, row_num, gamma_scaler)
@@ -304,8 +304,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
 
     # Compute the error
     _, _, array_m, _ = permutation(np.eye(array_m.shape[0]), array_m)
-    e_opt = error(array_a, array_b, array_m, array_m)
-    return array_a, array_b, array_m, e_opt
+    e_opt = error(new_a, new_b, array_m, array_m)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, e_opt=e_opt)
 
 
 def _compute_gamma(array_c, row_num, gamma_scaler):

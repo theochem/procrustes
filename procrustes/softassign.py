@@ -303,7 +303,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
             epsilon_sink = epsilon_soft * k
 
     # Compute the error
-    _, _, array_m, _ = permutation(np.eye(array_m.shape[0]), array_m)
+    array_m = permutation(np.eye(array_m.shape[0]), array_m)["array_u"]
     e_opt = error(new_a, new_b, array_m, array_m)
     return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, e_opt=e_opt)
 

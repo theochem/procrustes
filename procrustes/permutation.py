@@ -26,7 +26,7 @@ import itertools as it
 
 import numpy as np
 from procrustes.utils import (error, kopt_heuristic_double,
-                              kopt_heuristic_single, setup_input_arrays)
+                              kopt_heuristic_single, ProcrustesResult, setup_input_arrays)
 from scipy.optimize import linear_sum_assignment
 
 __all__ = [
@@ -146,7 +146,8 @@ def permutation(array_a, array_b,
     # set elements to 1 according to Hungarian algorithm (linear_sum_assignment)
     array_u[linear_sum_assignment(array_c)] = 1
     e_opt = error(new_a, new_b, array_u)
-    return new_a, new_b, array_u, e_opt
+    # return new_a, new_b, array_u, e_opt
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single",
@@ -428,7 +429,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             if kopt:
                 array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive, new_b_positive,
                                                        e_opt, kopt_k=kopt_k, kopt_tol=kopt_tol)
-        return new_a, new_b, array_u, e_opt
+        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
 
     # Do regular computation
     elif transform_mode == "double":
@@ -441,7 +442,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                                             array_m=array_m, array_n=array_n,
                                                             ref_error=e_opt, kopt_k=kopt_k,
                                                             kopt_tol=kopt_tol)
-        return array_m, array_n, array_p, array_q, e_opt
+        # return array_m, array_n, array_p, array_q, e_opt
+        return ProcrustesResult(new_a=new_a, new_b=new_b,
+                                array_p=array_p, array_q=array_q, e_opt=e_opt)
     else:
         raise ValueError(
             """
@@ -654,11 +657,11 @@ def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
         tmp_b = _2sided_1trans_initial_guess_normal1(array_b)
-        _, _, array_u, _, = permutation(tmp_a, tmp_b)
+        array_u = permutation(tmp_a, tmp_b)["array_u"]
     elif mode == "normal2":
         tmp_a = _2sided_1trans_initial_guess_normal2(array_a)
         tmp_b = _2sided_1trans_initial_guess_normal2(array_b)
-        _, _, array_u, _, = permutation(tmp_a, tmp_b)
+        array_u = permutation(tmp_a, tmp_b)["array_u"]
     elif mode == "umeyama":
         array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
     elif mode == "umeyama_approx":
@@ -695,9 +698,9 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
         if step == iteration:
             print("Maximum iteration reached! Change={0}".format(change))
 
-    _, _, p_opt, _ = permutation(array_a=np.eye(p_new.shape[0]), array_b=p_new,
-                                 remove_zero_col=False, remove_zero_row=False,
-                                 translate=False, scale=False, check_finite=True)
+    p_opt = permutation(array_a=np.eye(p_new.shape[0]), array_b=p_new,
+                        remove_zero_col=False, remove_zero_row=False,
+                        translate=False, scale=False, check_finite=True)["array_u"]
 
     return p_opt
 
@@ -721,7 +724,7 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
         p_old = p_new
         if step == iteration:
             print("Maximum iteration reached! Change={0}".format(change))
-    _, _, p_opt, _ = permutation(np.eye(p_new.shape[0]), p_new)
+    p_opt = permutation(np.eye(p_new.shape[0]), p_new)["array_u"]
 
     return p_opt
 
@@ -813,4 +816,5 @@ def permutation_2sided_explicit(array_a, array_b,
         if perm_error2 < perm_error1:
             perm_error1 = perm_error2
             perm1 = perm2
-    return new_a, new_b, perm1, perm_error1
+    # return new_a, new_b, perm1, perm_error1
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=perm1, e_opt=perm_error1)

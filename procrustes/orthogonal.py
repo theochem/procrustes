@@ -26,7 +26,7 @@ from itertools import product
 import warnings
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays, ProcrustesResult
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 __all__ = [
     "orthogonal",

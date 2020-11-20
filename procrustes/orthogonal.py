@@ -378,12 +378,14 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
             raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
         # the error
         e_opt = error(new_a, new_b, u_opt, u_opt)
-        return new_a, new_b, u_opt, e_opt
+        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
     # Do regular two-sided orthogonal Procrustes calculations
     else:
         u_opt1, u_opt2 = _2sided(new_a, new_b)
         e_opt = error(new_a, new_b, u_opt1, u_opt2)
-        return new_a, new_b, u_opt1, u_opt2, e_opt
+        # return new_a, new_b, u_opt1, u_opt2, e_opt
+        return ProcrustesResult(new_a=new_a, new_b=new_b,
+                                array_p=u_opt1, array_q=u_opt2, e_opt=e_opt)
 
 
 def _2sided(array_a, array_b):

@@ -93,12 +93,17 @@ def orthogonal(array_a, array_b,
 
     Returns
     -------
+    res: ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     new_a : ndarray
         The transformed ndarray :math:`A`.
     new_b : ndarray
         The transformed ndarray :math:`B`.
-    u_opt : ndarray
-        The optimum transformation matrix.
+    array_u : ndarray
+        The optimum orthogonal transformation matrix.
     e_opt : float
         One-sided orthogonal Procrustes error.
 
@@ -229,16 +234,21 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
 
     Returns
     -------
+    res : ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     array_a : ndarray
         The transformed ndarray :math:`A`.
     array_b : ndarray
         The transformed ndarray :math:`B`.
-    u_opt1 : ndarray
-        The optimal orthogonal left-multiplying transformation ndarray if "single_transform=True".
-    u_opt2 : ndarray
-        The second transformation ndarray if "single_transform=True".
-    u_opt : ndarray
+    array_u : ndarray
         The transformation ndarray if "single_transform=False".
+    array_p : ndarray
+        The optimal orthogonal left-multiplying transformation ndarray if "single_transform=True".
+    array_q : ndarray
+        The second transformation ndarray if "single_transform=True".
     e_opt : float
         The single- or double- sided orthogonal Procrustes error.
 
@@ -337,14 +347,13 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
     --------
     >>> import numpy as np
     >>> array_a = np.array([[30, 33, 20], [33, 53, 43], [20, 43, 46]])
-    >>> array_b = np.array([ \
-        [ 22.78131838, -0.58896768,-43.00635291, 0., 0.], \
-        [ -0.58896768, 16.77132475,  0.24289990, 0., 0.], \
-        [-43.00635291,  0.2428999 , 89.44735687, 0., 0.], \
-        [  0.        ,  0.        ,  0.        , 0., 0.]])
-    >>> new_a, new_b, array_u, error_opt = orthogonal_2sided( \
-            array_a, array_b, single_transform=True, \
-            remove_zero_col=True, remove_zero_rwo=True, mode='exact')
+    >>> array_b = np.array([[ 22.78131838, -0.58896768,-43.00635291, 0., 0.],
+    ...                     [ -0.58896768, 16.77132475,  0.24289990, 0., 0.],
+    ...                     [-43.00635291,  0.2428999 , 89.44735687, 0., 0.],
+    ...                     [  0.        ,  0.        ,  0.        , 0., 0.]])
+    >>> new_a, new_b, array_u, error_opt = orthogonal_2sided(
+    ...     array_a, array_b, single_transform=True,
+    ...     remove_zero_col=True, remove_zero_rwo=True, mode='exact')
     >>> array_u
     array([[ 0.25116633,  0.76371527,  0.59468855],
         [-0.95144277,  0.08183302,  0.29674906],

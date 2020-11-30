@@ -24,12 +24,10 @@
 
 r"""Two Sided Permutation Procrustes Example: Ranking by Reordering Method."""
 
-
 from __future__ import absolute_import, division, print_function
 import numpy as np
 
 from procrustes import permutation_2sided
-
 
 __all__ = [
     "ranking",
@@ -43,12 +41,12 @@ def ranking(D, perm_mode='normal1'):
     _check_input(D)
 
     R_hat = _rank_differential(D)
-    _, _, Q, e_opt = permutation_2sided(D, R_hat,
-                                        remove_zero_col=False,
-                                        remove_zero_row=False,
-                                        mode=perm_mode)
+    res = permutation_2sided(D, R_hat,
+                             remove_zero_col=False,
+                             remove_zero_row=False,
+                             mode=perm_mode)
     # Compute the rank
-    _, rank = np.where(Q == 1)
+    _, rank = np.where(res["array_u"] == 1)
     rank += 1
 
     return rank
@@ -63,7 +61,7 @@ def _rank_differential(D):
     a = []
     for each in range(N):
         # print(each)
-        a.extend(range(0, N-each))
+        a.extend(range(0, N - each))
     # Get the R_hat
     R_hat[np.triu_indices_from(R_hat, 0)] = a
     return R_hat

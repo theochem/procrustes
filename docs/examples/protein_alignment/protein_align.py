@@ -24,12 +24,9 @@
 
 r"""Rotation Procrustes example: protein backbone alignment."""
 
-
-from __future__ import absolute_import, division, print_function
 import numpy as np
 from Bio.PDB.PDBParser import PDBParser
 from procrustes import rotational
-
 
 __all__ = [
     "align",
@@ -49,16 +46,16 @@ def align(file_name_A, pdb_id_A, chain_id_A,
     # Kabsch algorithm/ Procrustes rotation to
     # align protein structure
     # new_A is just the translated coordinate
-    new_A, new_B, array_rot, _, = rotational(A, B,
-                                             remove_zero_col=False,
-                                             remove_zero_row=False,
-                                             translate=True)
+    res = rotational(A, B,
+                     remove_zero_col=False,
+                     remove_zero_row=False,
+                     translate=True)
     # now new_A is the array after rotation
-    new_A = np.dot(new_A, array_rot)
+    new_A = np.dot(res["new_a"], res["array_u"])
     # Compute the rmsd values
-    rmsd = _compute_rmsd(new_A, new_B)
+    rmsd = _compute_rmsd(new_A, res["new_b"])
 
-    return new_A, new_B, array_rot, rmsd
+    return new_A, res["new_b"], res["array_u"], rmsd
 
 
 def _get_coordinates(file_name, pdb_id, chain_id):
@@ -108,9 +105,9 @@ def _compute_rmsd(A, B):
     # Compute rmsd
     rmsd = 0.0
     for a, b in zip(A, B):
-        rmsd += sum([(a[i] - b[i])**2.0 for i in range(D)])
-    return np.sqrt(rmsd/N)
+        rmsd += sum([(a[i] - b[i]) ** 2.0 for i in range(D)])
+    return np.sqrt(rmsd / N)
+
 
 if __name__ == "__main__":
     align()
-

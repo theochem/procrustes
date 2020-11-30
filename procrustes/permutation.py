@@ -89,11 +89,16 @@ def permutation(array_a, array_b,
 
     Returns
     -------
+    res: ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     A : ndarray
         The transformed ndarray A.
     B : ndarray
         The transformed ndarray B.
-    U_opt : ndarray
+    array_u : ndarray
         The optimum permutation transformation matrix.
     e_opt : float
         One-sided permutation Procrustes error.
@@ -224,6 +229,11 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
 
     Returns
     -------
+    res : ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     new_a : ndarray
         The transformed ndarray A.
     new_b : ndarray

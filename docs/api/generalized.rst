@@ -21,48 +21,13 @@
     :
     : --
 
-.. Procrustes documentation master file, created by
-   sphinx-quickstart on Wed Apr 11 19:35:53 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to Procrustes's documentation!
-======================================
+:mod:`procrustes.generalized`
+=============================
 
-.. toctree::
-   :maxdepth: 2
-
-   intro_about
-   intro_citing
-   intro_license
-   intro_contact
-
-.. toctree::
-   :maxdepth: 3
-   :caption: User Documentation
-
-   usr_doc_installization
-   usr_doc_quick_start
-   usr_doc_tutorials
-   usr_doc_zref
-
-.. toctree::
-   :maxdepth: 3
-   :caption: API Documentation
-
-   api/utils.rst
-   api/generic.rst
-   api/generalized.rst
-   api/orthogonal.rst
-   api/permutation.rst
-   api/softassign.rst
-   api/rotational.rst
-   api/symmetric.rst
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. automodule:: procrustes.generalized
+   :members:
+   :undoc-members:
+   :special-members:
+   :inherited-members:
+   :private-members:

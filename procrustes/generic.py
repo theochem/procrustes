@@ -82,11 +82,16 @@ def generic(array_a, array_b,
 
     Returns
     -------
+    res : ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     new_a : ndarray
         The transformed ndarray array_a.
     new_b : ndarray
         The transformed ndarray array_b.
-    array_x : ndarray
+    array_u : ndarray
         The optimum symmetric transformation array.
     e_opt : float
         One-sided Procrustes error.

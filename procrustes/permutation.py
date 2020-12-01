@@ -790,11 +790,16 @@ def permutation_2sided_explicit(array_a, array_b,
 
     Returns
     -------
+    res : ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     new_a : ndarray
         The transformed ndarray A.
     new_b : ndarray
         The transformed ndarray B.
-    array_p : ndarray
+    array_u : ndarray
         The optimum permutation transformation matrix.
     e_opt : float
         Two-sided orthogonal Procrustes error.

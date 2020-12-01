@@ -57,7 +57,7 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
     :math:`k > 2`,  the objective is to minimize in order to superimpose pairs of matrices.
 
     .. math::
-    \min \quad = \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i  -
+        \min \quad = \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i  -
          \mathbf{A}_j \mathbf{T}_j  - \right\| }^2
 
     This function implements the Equation (20) and the corresponding algorithm in  Gower's paper.

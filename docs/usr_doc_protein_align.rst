@@ -64,12 +64,13 @@ http://biopython.org/DIST/docs/install/Installation.html.
           PDB ID.
       chain_id : string
           Chain ID. Possible inputs can be any of 'A', 'B', 'C', et al., if it exists in the
-protein.
+          protein.
 
       Returns
       -------
       matrix : float
           3D coordinates of the assigned PDB structure.
+
       """
 
       # permissive parser

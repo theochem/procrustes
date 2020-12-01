@@ -178,26 +178,24 @@ In order to perform the alignment of :math:`C_{\alpha}` of the protein scaffold,
    :linenos:
 
    def align(file_name_A, pdb_id_A, chain_id_A,
-          file_name_B, pdb_id_B, chain_id_B):
-        r"""
-        """
+             file_name_B, pdb_id_B, chain_id_B):
 
-        # Get inputs coordinate matrices
-        A = get_coordinates(file_name_A, pdb_id_A, chain_id_A)
-        B = get_coordinates(file_name_B, pdb_id_B, chain_id_B)
-        # Kabsch algorithm/ Procrustes rotation to
-        # align protein structure
-        # new_A is just the translated coordinate
-        res = rotational(A, B,
-                         remove_zero_col=False,
-                         remove_zero_row=False,
-                         translate=True)
-        # now new_A is the array after rotation
-        new_A = np.dot(res["new_a"], res["array_u"])
-        # Compute the rmsd values
-        rmsd = compute_rmsd(new_A, res["new_b"])
+       # Get inputs coordinate matrices
+       A = get_coordinates(file_name_A, pdb_id_A, chain_id_A)
+       B = get_coordinates(file_name_B, pdb_id_B, chain_id_B)
+       # Kabsch algorithm/ Procrustes rotation to
+       # align protein structure
+       # new_A is just the translated coordinate
+       res = rotational(A, B,
+                        remove_zero_col=False,
+                        remove_zero_row=False,
+                        translate=True)
+       # now new_A is the array after rotation
+       new_A = np.dot(res["new_a"], res["array_u"])
+       # Compute the rmsd values
+       rmsd = compute_rmsd(new_A, res["new_b"])
 
-        return new_A, res["new_b"], res["array_u"], rmsd
+       return new_A, res["new_b"], res["array_u"], rmsd
 
 We can perform the alignment by the defined function `align` and plot the coordinates as well.
 
@@ -205,17 +203,16 @@ We can perform the alignment by the defined function `align` and plot the coordi
    :linenos:
 
    # perform the alignment
-   new_A, new_C, rot_array, rmsd = align(
-    file_name_A='2hhb.pdb', pdb_id_A='2hhb', chain_id_A='A',
-    file_name_B='2hhb.pdb', pdb_id_B='2hhb', chain_id_B='C')
+   new_A, new_C, rot_array, rmsd = align(file_name_A='2hhb.pdb', pdb_id_A='2hhb', chain_id_A='A',
+                                         file_name_B='2hhb.pdb', pdb_id_B='2hhb', chain_id_B='C')
 
    fig = plt.figure()
    ax = fig.add_subplot(111, projection='3d')
 
-   ax.scatter(new_A[:,0], new_A[:,1], new_A[:,2], zdir='z', s=55,
-       c='blue', label='chain_A_new')
-   ax.scatter(new_C[:,0], new_C[:,1], new_C[:,2], zdir='z', s=55,
-       c='red', label='chain_C_new')
+   ax.scatter(new_A[:,0], new_A[:,1], new_A[:,2],
+              zdir='z', s=55,c='blue', label='chain_A_new')
+   ax.scatter(new_C[:,0], new_C[:,1], new_C[:,2],
+              zdir='z', s=55, c='red', label='chain_C_new')
 
    ax.set_xlabel('X', fontsize=16)
    ax.set_ylabel('Y', fontsize=16)

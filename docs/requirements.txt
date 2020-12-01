@@ -2,3 +2,4 @@ sphinx>=2.0
 numpydoc>=0.9.0
 sphinx_rtd_theme>=0.4.0
 sphinxcontrib-bibtex>=0.4.2
+sphinx-autoapi>=1.5.1

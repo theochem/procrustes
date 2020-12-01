@@ -44,7 +44,7 @@ a chiral carbon in each molecule.
 
 We have extracted the 3D coordinates of the molecule into two different files, namely "R.dat" and
 "S.dat". We compute the reflection of the first molecule after importing the coordinates, followed
-by a rotation. Morevoer, we perform another rotational alignment without reflection. Now, we are at
+by a rotation. Moreover, we perform another rotational alignment without reflection. Now, we are at
 position to conclusion based the error difference.
 
 
@@ -55,15 +55,15 @@ position to conclusion based the error difference.
   import numpy as np
   from procrustes import *
 
-  def chiral_check(A_data, B_data):
+def chiral_check(A_coords, B_coords):
     r"""Check if a organic compound is chiral.
 
     Parameters
     ----------
-    A_data : string
-        The data file that contains 3D coordinates of the first organic compound A.
-    B_data : string
-        The data file that contains 3D coordinates of the second organic compound B.
+    A_coords : string
+        Atomic coordinates of the first organic compound A.
+    B_coords : string
+        Atomic coordinates of the first organic compound B.
     Returns
     -------
     A : ndarray
@@ -72,29 +72,28 @@ position to conclusion based the error difference.
         3D coordinates of the first organic compound B.
     """
 
-    # get the data
-    A = np.loadtxt(A_data)
-    B = np.loadtxt(B_data)
-
     reflection = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
     # create the reflection of compound A over the yz plane
-    A_ref = np.dot(s, reflection)
+    A_ref = np.dot(A_coords, reflection)
     # Compute the rotational procrustes
-    _, _, U_rot, e_rot = rotational(A_ref, B, translate=True,
-                                    scale=False,
-                                    remove_zero_col=False,
-                                    remove_zero_row=False)
+    res = rotational(A_coords, B_coords,
+                     translate=True,
+                     scale=False,
+                     remove_zero_col=False,
+                     remove_zero_row=False)
     # Compute the error: reflection + rotation
-    _, _, U__ref_rot, e_ref_rot = rotational(A_ref, B,
-                                             translate=True,
-                                             scale=False)
+    res_ref = rotational(A_ref, B_coords,
+                         translate=True,
+                         scale=False,
+                         remove_zero_col=False,
+                         remove_zero_row=False)
 
-    if e_rot/e_ref_rot > 10:
-    	print("These two compounds are enantiomers \
-    		and there is at least one chiral center in each of them.")
+    if res["e_opt"] / res_ref["e_opt"] > 10:
+        print("These two compounds are enantiomers "
+              "and there is at least one chiral center in each of them.")
     else:
-    	print("These two compounds are not enantiomers \
-    		and there is no chiral center in any of them.")
+        print("These two compounds are not enantiomers "
+              "and there is no chiral center in any of them.")
 
   if __name__ == "__main__":
 	  chiral_check(A_data, B_data)

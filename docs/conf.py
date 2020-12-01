@@ -68,7 +68,12 @@ extensions = [
     'sphinx.ext.inheritance_diagram',
 #   'IPython.sphinxext.ipython_console_highlighting',
 #   'IPython.sphinxext.ipython_directive',
+    'autoapi.extension',
     'sphinxcontrib.bibtex']
+
+autoapi_type = 'python'
+autoapi_dirs = ['../procrustes']
+autoapi_generate_api_docs = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -106,7 +111,7 @@ release = '0.0.1-alpha'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'python'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -215,5 +220,9 @@ texinfo_documents = [
 # for your class when you use the autoclass directive.
 autoclass_content = 'both'
 autodoc_member_order = 'bysource'
-utodoc_default_options = ['members', 'undoc-members', 'inherited-members',
-                          'special-members', 'show-inheritance']
+
+# autodoc_default_options = {'members': True,
+#                            'undoc-members': None,
+#                            'inherited-members': None,
+#                            'special-members': None,
+#                            'show-inheritance': None}

@@ -47,17 +47,10 @@ Welcome to Procrustes's documentation!
    usr_doc_zref
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: API Documentation
 
-   api/utils.rst
-   api/generic.rst
-   api/generalized.rst
-   api/orthogonal.rst
-   api/permutation.rst
-   api/softassign.rst
-   api/rotational.rst
-   api/symmetric.rst
+   api/api_index.rst
 
 Indices and tables
 ==================

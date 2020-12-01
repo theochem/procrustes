@@ -42,7 +42,7 @@ def mol_align(A, B):
     # coordinates of molecule B
     new_B = B
 
-    return new_A, new_B, U, e_opt
+    return new_A, new_B, res["array_u"], res["e_opt"]
 
 
 if __name__ == "__main__":

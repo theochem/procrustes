@@ -65,20 +65,21 @@ Now we can compute the atom-atom mapping based on the matrices.
    import numpy as np
    from procrustes import permutation_2sided
 
-   def mol_align(A, B):
+def mol_align(A, B):
     r"""Align two molecules using two sided permutation Procrustes with one
-    transformation."""
+    transformation.
+    """
     # Compute the permutation matrix
-    temp_A, _, U, e_opt = permutation_2sided(
-        A, B, transform_mode='single_undirected',
-        remove_zero_col=False, remove_zero_row=False)
-
-    # Compute the transformed molecule A
-    new_A = np.dot(U.T, np.dot(temp_A, U))
-    # B
+    res = permutation_2sided(A, B,
+                             transform_mode='single_undirected',
+                             remove_zero_col=False, remove_zero_row=False)
+    # Compute the transformed coordinates of molecule A
+    A = utils.setup_input_arrays(A)
+    new_A = np.dot(res["array_u"].T, np.dot(A, res["array_u"]))
+    # coordinates of molecule B
     new_B = B
 
-    return new_A, new_B, U, e_opt
+    return new_A, new_B, res["array_u"], res["e_opt"]
 
 The calculations for our example is very simple,
 

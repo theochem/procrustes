@@ -124,16 +124,15 @@ computation.
 
    def ranking(D, perm_mode='normal1'):
        r""" Compute the ranking vector."""
-
-       #_check_input(D)
+       _check_input(D)
 
        R_hat = _rank_differential(D)
-       _, _, Q, e_opt = permutation_2sided(D, R_hat,
-                                           remove_zero_col=False,
-                                           remove_zero_row=False,
-                                           mode=perm_mode)
+       res = permutation_2sided(D, R_hat,
+                                remove_zero_col=False,
+                                remove_zero_row=False,
+                                mode=perm_mode)
        # Compute the rank
-       _, rank = np.where(Q == 1)
+       _, rank = np.where(res["array_u"] == 1)
        rank += 1
 
        return rank

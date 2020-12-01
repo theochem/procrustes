@@ -53,39 +53,40 @@ http://biopython.org/DIST/docs/install/Installation.html.
   :linenos:
 
   def get_coordinates(file_name, pdb_id, chain_id):
-    r"""
-    Build alpha carbon coordinates matrix from PDB file.
+      r"""
+      Build alpha carbon coordinates matrix from PDB file.
 
-    Parameters
-    ----------
-    file_name : string
-        PDB file name.
-    pdb_id : string
-        PDB ID.
-    chain_id : string
-        Chain ID. Possible inputs can be any of 'A', 'B', 'C', et al., if it exists in the protein.
+      Parameters
+      ----------
+      file_name : string
+          PDB file name.
+      pdb_id : string
+          PDB ID.
+      chain_id : string
+          Chain ID. Possible inputs can be any of 'A', 'B', 'C', et al., if it exists in the
+protein.
 
-    Returns
-    -------
-    matrix : float
-        3D coordinates of the assigned PDB structure.
-    """
+      Returns
+      -------
+      matrix : float
+          3D coordinates of the assigned PDB structure.
+      """
 
-    # permissive parser
-    p = PDBParser(PERMISSIVE=1)
-    structure = p.get_structure(pdb_id, file_name)
-    # get X-ray crystal structure
-    matrix = []
-    chain = structure[0][chain_id]
+      # permissive parser
+      p = PDBParser(PERMISSIVE=1)
+      structure = p.get_structure(pdb_id, file_name)
+      # get X-ray crystal structure
+      matrix = []
+      chain = structure[0][chain_id]
 
-    for residue in chain:
-        for atom in residue:
-            # Using residue['CA'] results in error
-            if atom.get_id() == 'CA':
-                matrix += list(atom.get_vector())
-    matrix = np.asarray(matrix).reshape(-1, 3)
+      for residue in chain:
+          for atom in residue:
+              # Using residue['CA'] results in error
+              if atom.get_id() == 'CA':
+                  matrix += list(atom.get_vector())
+      matrix = np.asarray(matrix).reshape(-1, 3)
 
-    return matrix
+      return matrix
 
 
 The PDBConstructionWarning warnings will not have side effects on extracting the coordinates. This
@@ -96,33 +97,33 @@ calculate the root mean squared derivation (RMSD) values.
 .. code-block:: python
    :linenos:
 
-   def _compute_rmsd(A, B):
-    r"""
-    Calculate root mean square deviation (RMSD).
+   def compute_rmsd(A, B):
+       r"""
+       Calculate root mean square deviation (RMSD).
 
-    Parameters
-    ----------
-    A : ndarray
-    B : ndarray
+       Parameters
+       ----------
+       A : ndarray
+       B : ndarray
 
-    Returns
-    -------
-    rmsd : float
-        RMSD value of A and B.
-    """
+       Returns
+       -------
+       rmsd : float
+           RMSD value of A and B.
+       """
 
-    # Check if A and B are with the same dimension
-    if A.shape != B.shape:
-        raise ValueError("INput matrices must be with the same shape\
-                         for rmsd calculations.")
-    D = len(A[0, :])
-    N = len(A[:, 0])
+       # Check if A and B are with the same dimension
+       if A.shape != B.shape:
+           raise ValueError("INput matrices must be with the same shape\
+                            for rmsd calculations.")
+       D = len(A[0, :])
+       N = len(A[:, 0])
 
-    # Compute rmsd
-    rmsd = 0.0
-    for a, b in zip(A, B):
-        rmsd += sum([(a[i] - b[i])**2.0 for i in range(D)])
-    return np.sqrt(rmsd/N)
+       # Compute rmsd
+       rmsd = 0.0
+       for a, b in zip(A, B):
+           rmsd += sum([(a[i] - b[i])**2.0 for i in range(D)])
+       return np.sqrt(rmsd/N)
 
 Now we can plot the coordinates before alignment which is with rmsd value.
 
@@ -136,8 +137,8 @@ Now we can plot the coordinates before alignment which is with rmsd value.
    from procrustes import rotational
 
    # before align
-   A = _get_coordinates('2hhb.pdb', '2hhb', 'A')
-   C = _get_coordinates('2hhb.pdb', '2hhb', 'C')
+   A = get_coordinates('2hhb.pdb', '2hhb', 'A')
+   C = get_coordinates('2hhb.pdb', '2hhb', 'C')
 
    fig = plt.figure()
    ax = fig.add_subplot(111, projection='3d')
@@ -149,7 +150,7 @@ Now we can plot the coordinates before alignment which is with rmsd value.
    ax.set_ylabel('Y', fontsize=20)
    ax.set_zlabel('Z', fontsize=20)
 
-   rmsd=_compute_rmsd(A, C)
+   rmsd = compute_rmsd(A, C)
 
    #ax.set_title(rmsd, fontsize=24)
    ax.set_title('RMSD=39.468519767018776', fontsize=24)
@@ -178,23 +179,25 @@ In order to perform the alignment of :math:`C_{\alpha}` of the protein scaffold,
 
    def align(file_name_A, pdb_id_A, chain_id_A,
           file_name_B, pdb_id_B, chain_id_B):
-    r"""Align protein or protein chains by Kabsch algorithm."""
-    # Get inputs coordinate matrices
-    A = _get_coordinates(file_name_A, pdb_id_A, chain_id_A)
-    B = _get_coordinates(file_name_B, pdb_id_B, chain_id_B)
-    # Kabsch algorithm/ Procrustes rotation to
-    # align protein structure
-    # new_A is just the translated coordinate
-    new_A, new_B, array_rot, _, = rotational(A, B,
-                                             remove_zero_col=False,
-                                             remove_zero_row=False,
-                                             translate=True)
-    # now new_A is the array after rotation
-    new_A = np.dot(new_A, array_rot)
-    # Compute the rmsd values
-    rmsd = _compute_rmsd(new_A, new_B)
+        r"""
+        """
 
-    return new_A, new_B, array_rot, rmsd
+        # Get inputs coordinate matrices
+        A = get_coordinates(file_name_A, pdb_id_A, chain_id_A)
+        B = get_coordinates(file_name_B, pdb_id_B, chain_id_B)
+        # Kabsch algorithm/ Procrustes rotation to
+        # align protein structure
+        # new_A is just the translated coordinate
+        res = rotational(A, B,
+                         remove_zero_col=False,
+                         remove_zero_row=False,
+                         translate=True)
+        # now new_A is the array after rotation
+        new_A = np.dot(res["new_a"], res["array_u"])
+        # Compute the rmsd values
+        rmsd = compute_rmsd(new_A, res["new_b"])
+
+        return new_A, res["new_b"], res["array_u"], rmsd
 
 We can perform the alignment by the defined function `align` and plot the coordinates as well.
 

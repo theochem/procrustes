@@ -30,8 +30,8 @@ from procrustes import rotational
 
 __all__ = [
     "align",
-    "_get_coordinates",
-    "_compute_rmsd"
+    "get_coordinates",
+    "compute_rmsd"
 ]
 
 
@@ -41,8 +41,8 @@ def align(file_name_A, pdb_id_A, chain_id_A,
     """
 
     # Get inputs coordinate matrices
-    A = _get_coordinates(file_name_A, pdb_id_A, chain_id_A)
-    B = _get_coordinates(file_name_B, pdb_id_B, chain_id_B)
+    A = get_coordinates(file_name_A, pdb_id_A, chain_id_A)
+    B = get_coordinates(file_name_B, pdb_id_B, chain_id_B)
     # Kabsch algorithm/ Procrustes rotation to
     # align protein structure
     # new_A is just the translated coordinate
@@ -53,12 +53,12 @@ def align(file_name_A, pdb_id_A, chain_id_A,
     # now new_A is the array after rotation
     new_A = np.dot(res["new_a"], res["array_u"])
     # Compute the rmsd values
-    rmsd = _compute_rmsd(new_A, res["new_b"])
+    rmsd = compute_rmsd(new_A, res["new_b"])
 
     return new_A, res["new_b"], res["array_u"], rmsd
 
 
-def _get_coordinates(file_name, pdb_id, chain_id):
+def get_coordinates(file_name, pdb_id, chain_id):
     r"""
     Build alpha carbon coordinates matrix from PDB file.
 
@@ -90,7 +90,7 @@ def _get_coordinates(file_name, pdb_id, chain_id):
     return matrix
 
 
-def _compute_rmsd(A, B):
+def compute_rmsd(A, B):
     r"""
     Calculate root mean square deviation (rmsd).
     """

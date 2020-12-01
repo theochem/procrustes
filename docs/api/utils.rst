@@ -27,4 +27,3 @@
 
 .. automodule:: procrustes.utils
    :members:
-   :undoc-members:

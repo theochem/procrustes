@@ -30,4 +30,3 @@
    :undoc-members:
    :special-members:
    :inherited-members:
-   :private-members:

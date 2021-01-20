@@ -24,17 +24,14 @@
 
 r"""Rotation Procrustes example: protein backbone alignment."""
 
-
-from __future__ import absolute_import, division, print_function
 import numpy as np
 from Bio.PDB.PDBParser import PDBParser
 from procrustes import rotational
 
-
 __all__ = [
     "align",
-    "_get_coordinates",
-    "_compute_rmsd"
+    "get_coordinates",
+    "compute_rmsd"
 ]
 
 
@@ -44,24 +41,24 @@ def align(file_name_A, pdb_id_A, chain_id_A,
     """
 
     # Get inputs coordinate matrices
-    A = _get_coordinates(file_name_A, pdb_id_A, chain_id_A)
-    B = _get_coordinates(file_name_B, pdb_id_B, chain_id_B)
+    A = get_coordinates(file_name_A, pdb_id_A, chain_id_A)
+    B = get_coordinates(file_name_B, pdb_id_B, chain_id_B)
     # Kabsch algorithm/ Procrustes rotation to
     # align protein structure
     # new_A is just the translated coordinate
-    new_A, new_B, array_rot, _, = rotational(A, B,
-                                             remove_zero_col=False,
-                                             remove_zero_row=False,
-                                             translate=True)
+    res = rotational(A, B,
+                     remove_zero_col=False,
+                     remove_zero_row=False,
+                     translate=True)
     # now new_A is the array after rotation
-    new_A = np.dot(new_A, array_rot)
+    new_A = np.dot(res["new_a"], res["array_u"])
     # Compute the rmsd values
-    rmsd = _compute_rmsd(new_A, new_B)
+    rmsd = compute_rmsd(new_A, res["new_b"])
 
-    return new_A, new_B, array_rot, rmsd
+    return new_A, res["new_b"], res["array_u"], rmsd
 
 
-def _get_coordinates(file_name, pdb_id, chain_id):
+def get_coordinates(file_name, pdb_id, chain_id):
     r"""
     Build alpha carbon coordinates matrix from PDB file.
 
@@ -93,7 +90,7 @@ def _get_coordinates(file_name, pdb_id, chain_id):
     return matrix
 
 
-def _compute_rmsd(A, B):
+def compute_rmsd(A, B):
     r"""
     Calculate root mean square deviation (rmsd).
     """
@@ -108,9 +105,9 @@ def _compute_rmsd(A, B):
     # Compute rmsd
     rmsd = 0.0
     for a, b in zip(A, B):
-        rmsd += sum([(a[i] - b[i])**2.0 for i in range(D)])
-    return np.sqrt(rmsd/N)
+        rmsd += sum([(a[i] - b[i]) ** 2.0 for i in range(D)])
+    return np.sqrt(rmsd / N)
+
 
 if __name__ == "__main__":
     align()
-

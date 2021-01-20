@@ -101,19 +101,19 @@ In order to compute the *ranking vector*, we need the *fundamental rank-differen
    import numpy as np
    from procrustes import permutation_2sided
 
-   def _rank_differential(D):
-    r""" Compute the rank differential based on the shape of input data."""
-
-    N = np.shape(D)[0]
-    R_hat = np.zeros((N, N))
-    # Compute the upper triangle part of R_hat
-    a = []
-    for each in range(N):
-        # print(each)
-        a.extend(range(0, N-each))
-    # Get the R_hat
-    R_hat[np.triu_indices_from(R_hat, 0)] = a
-    return R_hat
+   def rank_differential(D):
+       r""" Compute the rank differential based on the shape of input data."""
+       
+       N = np.shape(D)[0]
+       R_hat = np.zeros((N, N))
+       # Compute the upper triangle part of R_hat
+       a = []
+       for each in range(N):
+           # print(each)
+           a.extend(range(0, N-each))
+       # Get the R_hat
+       R_hat[np.triu_indices_from(R_hat, 0)] = a
+       return R_hat
 
 Now we can use the function to compute the *fundamental rank-differential matrix*
 :math:`\hat{R}_{n \times n}` by using :math:`D` followed by two sided permutation Procrustes
@@ -124,16 +124,15 @@ computation.
 
    def ranking(D, perm_mode='normal1'):
        r""" Compute the ranking vector."""
+       _check_input(D)
 
-       #_check_input(D)
-
-       R_hat = _rank_differential(D)
-       _, _, Q, e_opt = permutation_2sided(D, R_hat,
-                                           remove_zero_col=False,
-                                           remove_zero_row=False,
-                                           mode=perm_mode)
+       R_hat = rank_differential(D)
+       res = permutation_2sided(D, R_hat,
+                                remove_zero_col=False,
+                                remove_zero_row=False,
+                                mode=perm_mode)
        # Compute the rank
-       _, rank = np.where(Q == 1)
+       _, rank = np.where(res["array_u"] == 1)
        rank += 1
 
        return rank

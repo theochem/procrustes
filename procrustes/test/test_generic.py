@@ -41,10 +41,10 @@ def test_generic_transformed():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=False)
+    res = generic(array_a, array_b, translate=False, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(array_x, x_computed, decimal=6)
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_generic_transformed_negative():
@@ -58,10 +58,10 @@ def test_generic_transformed_negative():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=False)
+    res = generic(array_a, array_b, translate=False, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(array_x, x_computed, decimal=6)
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_generic_transformed_translate():
@@ -75,10 +75,10 @@ def test_generic_transformed_translate():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(array_a, array_x) + 100
     # compute procrustes transformation
-    _, _, x_computed, e_opt = generic(array_a, array_b, translate=True, scale=False)
+    res = generic(array_a, array_b, translate=True, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(array_x, x_computed, decimal=6)
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_generic_transformed_scale():
@@ -92,9 +92,9 @@ def test_generic_transformed_scale():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    _, _, _, e_opt = generic(array_a, array_b, translate=False, scale=True)
+    res = generic(array_a, array_b, translate=False, scale=True)
     # check transformation is right & error is zero
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_generic_transformed_translate_scale():
@@ -108,9 +108,9 @@ def test_generic_transformed_translate_scale():
                         [0.3, 0.7, 0.1, 0.7]])
     array_b = np.dot(4.5 * (array_a + 9), array_x)
     # compute procrustes transformation
-    _, _, _, e_opt = generic(array_a, array_b, translate=True, scale=True)
+    res = generic(array_a, array_b, translate=True, scale=True)
     # check transformation is error is zero
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_generic_random_transformation():
@@ -121,7 +121,7 @@ def test_generic_random_transformation():
     array_x = np.random.randint(low=0, high=20, size=(4, 4)) / 10
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    _, _, x_computed, e_opt = generic(array_a, array_b, translate=False, scale=False)
+    res = generic(array_a, array_b, translate=False, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(array_x, x_computed, decimal=6)
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)

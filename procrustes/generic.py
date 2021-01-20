@@ -23,7 +23,7 @@
 """Generic Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 
 def generic(array_a, array_b,
@@ -82,11 +82,16 @@ def generic(array_a, array_b,
 
     Returns
     -------
+    res : ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
     new_a : ndarray
         The transformed ndarray array_a.
     new_b : ndarray
         The transformed ndarray array_b.
-    array_x : ndarray
+    array_u : ndarray
         The optimum symmetric transformation array.
     e_opt : float
         One-sided Procrustes error.
@@ -119,4 +124,4 @@ def generic(array_a, array_b,
     a_inv = np.linalg.pinv(np.dot(new_a.T, new_a))
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     e_opt = error(new_a, new_b, array_x)
-    return new_a, new_b, array_x, e_opt
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_x, e_opt=e_opt)

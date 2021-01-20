@@ -27,7 +27,7 @@ import warnings
 
 import numpy as np
 from procrustes.permutation import permutation
-from procrustes.utils import error, setup_input_arrays
+from procrustes.utils import error, ProcrustesResult, setup_input_arrays
 
 __all__ = [
     "softassign",
@@ -45,15 +45,15 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
 
     Parameters
     ----------
-    array_a : numpy.ndarray
+    array_a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : numpy.ndarray
+    array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
     iteration_sink ： int, optional
         Number of iterations for Sinkhorn loop. Default=50.
-    linear_cost_func :  numpy.ndarray
+    linear_cost_func :  ndarray
         Linear cost function. Default=0.
     beta_r : float, optional
         Annealing rate which should greater than 1. Default=1.10.
@@ -116,7 +116,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         Initial inverse temperature. Default=None.
     beta_f : float, optional
         Final inverse temperature. Default=None.
-    m_guess : numpy.ndarray, optional
+    m_guess : ndarray, optional
         The initial guess of the doubly-stochastic matrix. Default=None.
     iteration_anneal : int, optional
         Number of iterations for annealing loop. Default=None.
@@ -125,23 +125,26 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
 
     Returns
     -------
-    new_a : numpy.ndarray
-        The transformed numpy.ndarray A.
-    new_b : numpy.ndarray
-        The transformed numpy.ndarray B.
-    m_ai : numpy.ndarray
+    res : ProcrustesResult
+        Procrustes analysis result object.
+
+    Attributes
+    ----------
+    new_a : ndarray
+        The transformed ndarray A.
+    new_b : ndarray
+        The transformed ndarray B.
+    array_u : ndarray
         The optimum permutation transformation matrix.
     e_opt : float
         Two-sided Procrustes error.
 
     Notes
     -----
-    Quadratic assignment problem (QAP) has played a very special but
-    fundamental role in combinatorial optimization problems. The problem can
-    be defined as a optimization problem to minimize the cost to assign a set
-    of facilities to a set of locations. The cost is a function of the flow
-    between the facilities and the geographical distances among various
-    facilities.
+    Quadratic assignment problem (QAP) has played a very special but fundamental role in
+    combinatorial optimization problems. The problem can be defined as a optimization problem to
+    minimize the cost to assign a set of facilities to a set of locations. The cost is a function
+    of the flow between the facilities and the geographical distances among various facilities.
 
     The objective function (also named loss function in machine learning) is
     defined as [1]_
@@ -203,13 +206,13 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    array_a, array_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                          pad_mode, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+                                      pad_mode, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix
-    array_c = np.kron(array_a, array_b)
+    array_c = np.kron(new_a, new_b)
     # Get the shape of A (B and the permutation matrix as well)
-    row_num = array_a.shape[0]
+    row_num = new_a.shape[0]
     c_tensor = array_c.reshape(row_num, row_num, row_num, row_num)
     # Compute the beta_0
     gamma = _compute_gamma(array_c, row_num, gamma_scaler)
@@ -303,9 +306,9 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
             epsilon_sink = epsilon_soft * k
 
     # Compute the error
-    _, _, array_m, _ = permutation(np.eye(array_m.shape[0]), array_m)
-    e_opt = error(array_a, array_b, array_m, array_m)
-    return array_a, array_b, array_m, e_opt
+    array_m = permutation(np.eye(array_m.shape[0]), array_m)["array_u"]
+    e_opt = error(new_a, new_b, array_m, array_m)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, e_opt=e_opt)
 
 
 def _compute_gamma(array_c, row_num, gamma_scaler):

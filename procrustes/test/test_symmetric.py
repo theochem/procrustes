@@ -22,7 +22,6 @@
 # --
 """Testings for symmetric Procrustes module."""
 
-
 import numpy as np
 from numpy.testing import assert_almost_equal
 from procrustes import symmetric
@@ -45,11 +44,11 @@ def test_symmetric_transformed():
     array_b = np.concatenate((array_b, np.zeros((5, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((8, 6))), axis=0)
     # compute procrustes transformation
-    _, _, array_x, e_opt = symmetric(array_a, array_b, translate=False, scale=False)
+    res = symmetric(array_a, array_b, translate=False, scale=False)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(array_x, array_x.T, decimal=6)
-    assert_almost_equal(array_x, sym_array, decimal=6)
-    assert_almost_equal(e_opt, 0.0, decimal=6)
+    assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
+    assert_almost_equal(res["array_u"], sym_array, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_symmetric_scaled_shifted_tranformed():
@@ -62,11 +61,10 @@ def test_symmetric_scaled_shifted_tranformed():
     array_b = 614.5 * array_a + shift
     array_b = np.dot(array_b, sym_array)
     # compute procrustes transformation
-    _, _, array_x, e_opt = symmetric(
-        array_a, array_b, translate=True, scale=True)
+    res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(array_x, array_x.T, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_symmetric_scaled_shifted_tranformed_4by3():
@@ -81,11 +79,10 @@ def test_symmetric_scaled_shifted_tranformed_4by3():
     array_b = 312.5 * array_a + shift
     array_b = np.dot(array_b, sym_array)
     # compute procrustes transformation
-    _, _, array_x, e_opt = symmetric(
-        array_a, array_b, translate=True, scale=True)
+    res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(array_x, array_x.T, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_symmetric():
@@ -100,11 +97,10 @@ def test_symmetric():
     array_b = 6.61e-4 * array_a + shift
     array_b = np.dot(array_b, sym_array)
     # compute procrustes transformation
-    _, _, array_x, e_opt = symmetric(
-        array_a, array_b, translate=True, scale=True)
+    res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(array_x, array_x.T, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_not_full_rank_case():
@@ -114,10 +110,10 @@ def test_not_full_rank_case():
     sym_array = np.array([[0.38895636, 0.30523869], [0.30523869, 0.30856369]])
     array_b = np.dot(array_a, sym_array)
     # compute procrustes transformation
-    _, _, array_x, e_opt = symmetric(array_a, array_b)
+    res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(array_x, array_x.T, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_having_zero_singular_case():
@@ -129,10 +125,10 @@ def test_having_zero_singular_case():
     sym_array = np.array([[0.38895636, 0.30523869], [0.30523869, 0.30856369]])
     array_b = np.dot(array_a, sym_array)
     # compute procrustes transformation
-    _, _, array_x, e_opt = symmetric(array_a, array_b)
+    res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(array_x, array_x.T, decimal=6)
-    assert_almost_equal(e_opt, 0, decimal=6)
+    assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
+    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
 
 
 def test_fat_rectangular_matrices_raises_error_no_padding():
@@ -183,10 +179,10 @@ class TestAgainstNumerical:
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
         desired, desired_func = self._optimize(array_a, array_b, ncol)
-        _, _, array_x, e_opt = symmetric(array_a, array_b)
+        res = symmetric(array_a, array_b)
 
-        assert np.abs(e_opt - desired_func) < 1e-5
-        assert np.all(np.abs(array_x - desired) < 1e-3)
+        assert np.abs(res["e_opt"] - desired_func) < 1e-5
+        assert np.all(np.abs(res["array_u"] - desired) < 1e-3)
 
     @pytest.mark.parametrize("nrow", [2, 10, 15])
     def test_fat_rectangular_matrices_with_square_padding(self, nrow):
@@ -200,7 +196,7 @@ class TestAgainstNumerical:
             symmetric(array_a, array_b)
 
         _, desired_func = self._optimize(array_a, array_b, ncol)
-        _, _, _, e_opt = symmetric(array_a, array_b, pad_mode="square")
+        res = symmetric(array_a, array_b, pad_mode="square")
 
         # No uniqueness in solution, thus check that the optimal values are the same.
-        assert np.abs(e_opt - desired_func) < 1e-5
+        assert np.abs(res["e_opt"] - desired_func) < 1e-5

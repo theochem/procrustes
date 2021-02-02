@@ -176,4 +176,4 @@ def rotational(array_a, array_b,
     # compute single-sided error error
     e_opt = error(new_a, new_b, u_opt)
 
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)

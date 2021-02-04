@@ -22,7 +22,6 @@
 # --
 """Orthogonal Procrustes Module."""
 
-from itertools import product
 import warnings
 
 import numpy as np

@@ -26,11 +26,7 @@ from itertools import product
 import warnings
 
 import numpy as np
-<<<<<<< HEAD
 from procrustes.utils import error, ProcrustesResult, setup_input_arrays
-=======
-from procrustes.utils import error, setup_input_arrays, ProcrustesResult
->>>>>>> Remove else statement and comment for brevity
 
 __all__ = [
     "orthogonal",

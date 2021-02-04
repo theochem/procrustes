@@ -388,7 +388,6 @@ def orthogonal_2sided(array_a, array_b,
     else:
         u_opt1, u_opt2 = _2sided(new_a, new_b)
         e_opt = error(new_a, new_b, u_opt1, u_opt2)
-        # return new_a, new_b, u_opt1, u_opt2, e_opt
         return ProcrustesResult(new_a=new_a, new_b=new_b,
                                 array_p=u_opt1, array_q=u_opt2, e_opt=e_opt)
 

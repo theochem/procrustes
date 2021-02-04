@@ -242,6 +242,29 @@ def test_two_sided_orthogonal_identical():
     assert_almost_equal(result["e_opt"], 0., decimal=6)
 
 
+def test_two_sided_orthogonal_raises_error_non_symmetric_matrices():
+    r"""Test that 2-sided orthogonal procrustes non-symmetric matrices return an error."""
+    # Test simple example with one matrix that is not square
+    array_a = np.array([[1., 2., 3.], [1., 2., 3.]])
+    array_b = np.array([[1., 2.], [2., 1.]])
+    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True)
+    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True)
+
+    # Test one which is square but not symmetric.
+    array_a = np.array([[1., 1.], [2., 2.]])
+    array_b = np.array([[1., 2.], [2., 1.]])
+    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True)
+    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True)
+
+    # Test one that works but removal of rows with bad padding gives an error.
+    array_a = np.array([[1., 0.], [0., 0.]])
+    array_b = np.array([[1., 2.], [2., 1.]])
+    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True,
+                  remove_zero_col=True, pad_mode="row")
+    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True,
+                  remove_zero_col=True, pad_mode="col")
+
+
 def test_two_sided_orthogonal_rotate_reflect():
     r"""Test 2sided orthogonal by 3by3 array with rotation and reflection."""
     # define an arbitrary array
@@ -405,6 +428,7 @@ def test_two_sided_orthogonal_single_transformation_scale_rot_ref_2by2():
     assert_almost_equal(np.dot(result["array_u"], result["array_u"].T), np.eye(2), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result["array_u"])), 1.0, decimal=8)
     assert_almost_equal(result["e_opt"], 0, decimal=8)
+
 
 def test_two_sided_orthogonal_single_transformation_scale_rot_ref_3by3():
     r"""Test 2sided orthogonal by 3by3 array with single translation, scling and rotation."""

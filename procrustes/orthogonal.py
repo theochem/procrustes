@@ -256,11 +256,6 @@ def orthogonal_2sided(array_a, array_b,
     ------
     ValueError
         When input array :math:`A` or :math:`A` is not symmetric.
-    numpy.linalg.LinAlgError
-        If array :math:`A` or :math:`A` is not diagonalizable when `mode='umeyama'` or
-        `mode='umeyama_approx'`.
-    ValueError
-        If the mode is not 'exact' or 'approx' when `single_transform=True`.
 
     Notes
     -----

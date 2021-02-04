@@ -382,7 +382,6 @@ def orthogonal_2sided(array_a, array_b,
         _, array_ub = np.linalg.eigh(new_b)
         u_opt = array_ua.dot(array_ub.T)
         
-        # the error
         e_opt = error(new_a, new_b, u_opt, u_opt)
         return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
     # Do regular two-sided orthogonal Procrustes calculations

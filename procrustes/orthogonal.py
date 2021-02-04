@@ -377,11 +377,10 @@ def orthogonal_2sided(array_a, array_b,
 
     # Do single-transformation computation if requested
     if single_transform:
-        # check array_a and array_b are symmetric.  #FIXME : They are no checks here.
         _, array_ua = np.linalg.eigh(new_a)
         _, array_ub = np.linalg.eigh(new_b)
         u_opt = array_ua.dot(array_ub.T)
-        
+
         e_opt = error(new_a, new_b, u_opt, u_opt)
         return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
     # Do regular two-sided orthogonal Procrustes calculations

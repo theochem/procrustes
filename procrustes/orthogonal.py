@@ -177,10 +177,15 @@ def orthogonal(array_a, array_b,
     return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u_opt, e_opt=e_opt)
 
 
-def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
-                      pad_mode='row-col', translate=False, scale=False,
-                      single_transform=True, mode="exact", check_finite=True,
-                      tol=1.0e-8, weight=None):
+def orthogonal_2sided(array_a, array_b,
+                      remove_zero_col=True,
+                      remove_zero_row=True,
+                      pad_mode='row-col',
+                      translate=False,
+                      scale=False,
+                      single_transform=True,
+                      check_finite=True,
+                      weight=None):
     r"""
     Two-Sided Orthogonal Procrustes.
 
@@ -221,14 +226,9 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
     single_transform : bool
         If True, two-sided orthogonal Procrustes with one transformation
         will be performed. Default=False.
-    mode : string, optional
-        The scheme to solve for unitary transformation.
-        Options: 'exact' and 'approx'. Default="exact".
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
-    tol : float, optional
-        The tolerance value used for 'approx' mode. Default=1.e-8.
     weight : ndarray
         The weighting matrix. Default=None.
 
@@ -373,18 +373,15 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
                 Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
-    # Convert mode strings into lowercase
-    mode = mode.lower()
+                                          pad_mode, translate, scale, check_finite, weight)
+
     # Do single-transformation computation if requested
     if single_transform:
         # check array_a and array_b are symmetric.  #FIXME : They are no checks here.
-        if mode == "approx":
-            u_opt = _2sided_1trans_approx(new_a, new_b, tol)
-        elif mode == "exact":
-            u_opt = _2sided_1trans_exact(new_a, new_b)
-        else:
-            raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
+        _, array_ua = np.linalg.eigh(new_a)
+        _, array_ub = np.linalg.eigh(new_b)
+        u_opt = array_ua.dot(array_ub.T)
+        
         # the error
         e_opt = error(new_a, new_b, u_opt, u_opt)
         return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)

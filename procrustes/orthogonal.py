@@ -362,18 +362,19 @@ def orthogonal_2sided(array_a, array_b,
     1.9646186414076689e-26
 
     """
-    # Check symmetry if single_transform=True
-    if single_transform:
-        if not np.allclose(array_a.T, array_a):
-            raise ValueError("array_a should be symmetric.")
-        if not np.allclose(array_b.T, array_b):
-            raise ValueError("array_b should be symmetric.")
     if translate:
         warnings.warn("The translation matrix was not well defined. \
                 Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                          pad_mode, translate, scale, check_finite, weight)
+                                      pad_mode, translate, scale, check_finite, weight)
+
+    # Check symmetry if single_transform=True
+    if single_transform:
+        if not np.allclose(new_a.T, new_a):
+            raise ValueError("array_a, after removal/padding, should be symmetric.")
+        if not np.allclose(new_b.T, new_b):
+            raise ValueError("array_b, after removal/padding, should be symmetric.")
 
     # Do single-transformation computation if requested
     if single_transform:

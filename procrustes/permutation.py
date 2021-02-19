@@ -169,10 +169,20 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     array_b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    transform_mode : str
-        If transform_mode="single_undirected", two-sided permutation Procrustes with one
-        transformation will be performed. If transform_mode="single_directed", two-sided permutation
-        for directed graph matching will be used. Otherwise, transform_mode="double", the
+    transform_mode : str, optional
+        When transform_mode="single", it is the two-sided permutation Procrustes with one
+        transformation.
+        (1). If the input matrices (adjacency matrices) are symmetric within the threshold of 1.e-5,
+        undirected graph matching algorithm will be applied.
+        (2). If the input matrices (adjacency matrices) are asymmetric, the directed graph
+        matching is applied.
+        When transform_mode="double", the problem becomes two-sided permutation Procrustes with
+        two transformations (denoted as regular two-sided permutation Procrustes here). An flip-flop
+        algorithm taken from  *Parallel solution of SVD-related problems, with applications,
+        Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993* is used to solve
+        the problem.
+        Default="single".
+    Otherwise, transform_mode="double", the
         two-sided permutation Procrustes with two transformations will be performed.
         Default="single_undirected".
     remove_zero_col : bool, optional
@@ -456,10 +466,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         return ProcrustesResult(new_a=new_a, new_b=new_b,
                                 array_p=array_p, array_q=array_q, e_opt=e_opt)
     else:
-        raise ValueError(
-            """
-            Invalid transform_mode argument, use "single_undirected", "single_directed", or "double"
-            """)
+        raise ValueError("""Invalid transform_mode argument, use "single"or "double".""")
 
 
 def _2sided_regular(array_m, array_n, tol, iteration):

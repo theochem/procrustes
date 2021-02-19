@@ -43,7 +43,7 @@ def test_softassign_4by4():
                      remove_zero_col=False,
                      remove_zero_row=False)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_4by4_loop():
@@ -62,7 +62,7 @@ def test_softassign_4by4_loop():
                          remove_zero_col=False,
                          remove_zero_row=False)
         assert_almost_equal(res["array_u"], perm, decimal=6)
-        assert_almost_equal(res["e_opt"], 0, decimal=6)
+        assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_4by4_loop_negative():
@@ -83,7 +83,7 @@ def test_softassign_4by4_loop_negative():
                              remove_zero_row=False,
                              remove_zero_col=False)
             assert_almost_equal(res["array_u"], perm, decimal=6)
-            assert_almost_equal(res["e_opt"], 0, decimal=6)
+            assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_4by4_translate_scale():
@@ -100,7 +100,7 @@ def test_softassign_4by4_translate_scale():
                      remove_zero_row=False,
                      remove_zero_col=False)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_4by4_translate_scale_loop():
@@ -121,7 +121,7 @@ def test_softassign_4by4_translate_scale_loop():
                          translate=True,
                          scale=True)
         assert_almost_equal(res["array_u"], perm, decimal=6)
-        assert_almost_equal(res["e_opt"], 0, decimal=6)
+        assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_4by4_translate_scale_zero_padding():
@@ -144,7 +144,7 @@ def test_softassign_4by4_translate_scale_zero_padding():
                      remove_zero_row=True,
                      remove_zero_col=True)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_practical_example():
@@ -172,7 +172,7 @@ def test_softassign_practical_example():
                      remove_zero_row=False,
                      remove_zero_col=False)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_random_noise():
@@ -229,7 +229,7 @@ def test_softassign_4by4_beta_0():
                      translate=False,
                      scale=False)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_4by4_anneal_steps():
@@ -248,7 +248,7 @@ def test_softassign_4by4_anneal_steps():
                      translate=False,
                      scale=False)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_softassign_missing_iteration_anneal_beta_f():
@@ -286,7 +286,7 @@ def test_softassign_m_guess():
                      translate=False,
                      scale=False)
     assert_almost_equal(res["array_u"], perm, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
     # check if initial guess given shape not matching
     with warnings.catch_warnings(record=True) as warn_info:
         res = softassign(array_a,
@@ -299,4 +299,4 @@ def test_softassign_m_guess():
         assert not str(warn_info[0].message).startswith("We must specify")
         # check the results
         assert_almost_equal(res["array_u"], perm, decimal=6)
-        assert_almost_equal(res["e_opt"], 0, decimal=6)
+        assert_almost_equal(res["error"], 0, decimal=6)

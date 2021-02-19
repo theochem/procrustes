@@ -136,7 +136,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         The transformed ndarray B.
     array_u : ndarray
         The optimum permutation transformation matrix.
-    e_opt : float
+    error : float
         Two-sided Procrustes error.
 
     Notes
@@ -187,7 +187,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     ...                  [0., 0., 0., 1.], [0., 1., 0., 0.]])
         # define array_b by permuting array_a
     >>> array_b = np.dot(perm.T, np.dot(array_a, perm))
-    >>> new_a, new_b, M_ai, e_opt = softassign(array_a, array_b,
+    >>> new_a, new_b, M_ai, error = softassign(array_a, array_b,
     ...                                        remove_zero_col=False,
     ...                                        remove_zero_row=False)
     >>> M_ai # the permutation matrix
@@ -195,7 +195,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
            [1., 0., 0., 0.],
            [0., 0., 0., 1.],
            [0., 1., 0., 0.]])
-    >>> e_opt # the error
+    >>> error # the error
     0.0
 
     """
@@ -307,8 +307,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
 
     # Compute the error
     array_m = permutation(np.eye(array_m.shape[0]), array_m)["array_u"]
-    e_opt = compute_error(new_a, new_b, array_m, array_m)
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, e_opt=e_opt)
+    error = compute_error(new_a, new_b, array_m, array_m)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, error=error)
 
 
 def _compute_gamma(array_c, row_num, gamma_scaler):

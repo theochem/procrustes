@@ -25,7 +25,7 @@
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.utils import (_hide_zero_padding, _scale_array,
-                              _translate_array, _zero_padding, error,
+                              _translate_array, _zero_padding, compute_error,
                               kopt_heuristic_double, kopt_heuristic_single)
 
 
@@ -374,7 +374,7 @@ def test_kopt_heuristic_single():
                            [0, 0, 1, 0, 0],
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
-    error_old = error(arr_a, arr_b, perm_guess, perm_guess)
+    error_old = compute_error(arr_a, arr_b, perm_guess, perm_guess)
     perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, error_old,
                                              perm_guess, 3, kopt_tol=1.e-8)
     assert_equal(perm, perm_exact)
@@ -404,7 +404,7 @@ def test_kopt_heuristic_double():
     perm2_shuff = np.array([[1., 0., 0.],
                             [0., 0., 1.],
                             [0., 1., 0.]])
-    e_opt = error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
+    e_opt = compute_error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
     perm_left, perm_right, kopt_error = kopt_heuristic_double(perm_p=perm1_shuff,
                                                               perm_q=perm2_shuff,
                                                               array_m=arr_a, array_n=arr_b,

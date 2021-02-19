@@ -25,7 +25,7 @@
 import itertools as it
 
 import numpy as np
-from procrustes.utils import (error, kopt_heuristic_double,
+from procrustes.utils import (compute_error, kopt_heuristic_double,
                               kopt_heuristic_single, ProcrustesResult, setup_input_arrays)
 from scipy.optimize import linear_sum_assignment
 
@@ -150,7 +150,7 @@ def permutation(array_a, array_b,
     array_u = np.zeros(array_p.shape)
     # set elements to 1 according to Hungarian algorithm (linear_sum_assignment)
     array_u[linear_sum_assignment(array_c)] = 1
-    e_opt = error(new_a, new_b, array_u)
+    e_opt = compute_error(new_a, new_b, array_u)
     # return new_a, new_b, array_u, e_opt
     return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
 
@@ -421,7 +421,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
-            e_opt = error(new_a_positive, new_b_positive, array_u, array_u)
+            e_opt = compute_error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
                 array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive,
@@ -434,7 +434,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
-            e_opt = error(new_a_positive, new_b_positive, array_u, array_u)
+            e_opt = compute_error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
                 array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive, new_b_positive,
@@ -474,7 +474,7 @@ def _2sided_regular(array_m, array_n, tol, iteration):
     array_p1 = np.eye(array_m.shape[0], array_m.shape[0])
     # Initial guess for Q
     array_q1 = _2sided_hungarian(np.dot(array_n.T, array_m))
-    e_opt1 = error(array_n, array_m, array_p1.T, array_q1)
+    e_opt1 = compute_error(array_n, array_m, array_p1.T, array_q1)
     step1 = 0
 
     # while loop for the original algorithm
@@ -484,12 +484,12 @@ def _2sided_regular(array_m, array_n, tol, iteration):
         array_p1 = _2sided_hungarian(np.dot(np.dot(array_n, array_q1), array_m.T))
         array_p1 = np.transpose(array_p1)
         # Update the error
-        e_opt1 = error(array_n, array_m, array_p1.T, array_q1)
+        e_opt1 = compute_error(array_n, array_m, array_p1.T, array_q1)
         if e_opt1 > tol:
             # Update Q
             array_q1 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p1.T), array_m))
             # Update the error
-            e_opt1 = error(array_n, array_m, array_p1.T, array_q1)
+            e_opt1 = compute_error(array_n, array_m, array_p1.T, array_q1)
         else:
             break
 
@@ -502,7 +502,7 @@ def _2sided_regular(array_m, array_n, tol, iteration):
     # Initial guess for P
     array_p2 = _2sided_hungarian(np.dot(array_n, array_m.T))
     array_p2 = np.transpose(array_p2)
-    e_opt2 = error(array_n, array_m, array_p2.T, array_q2)
+    e_opt2 = compute_error(array_n, array_m, array_p2.T, array_q2)
     step2 = 0
 
     # while loop for the original algorithm
@@ -510,12 +510,12 @@ def _2sided_regular(array_m, array_n, tol, iteration):
         # Update Q
         array_q2 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p2.T), array_m))
         # Update the error
-        e_opt2 = error(array_n, array_m, array_p2.T, array_q1)
+        e_opt2 = compute_error(array_n, array_m, array_p2.T, array_q1)
         if e_opt2 > tol:
             array_p2 = _2sided_hungarian(np.dot(np.dot(array_n, array_q2), array_m.T))
             array_p2 = np.transpose(array_p2)
             # Update the error
-            e_opt2 = error(array_n, array_m, array_p2.T, array_q2)
+            e_opt2 = compute_error(array_n, array_m, array_p2.T, array_q2)
             step2 += 1
         else:
             break
@@ -827,7 +827,7 @@ def permutation_2sided_explicit(array_a, array_b,
         size = np.shape(new_a)[1]
         perm2 = np.zeros((size, size))
         perm2[np.arange(size), comb] = 1
-        perm_error2 = error(new_a, new_b, perm2, perm2)
+        perm_error2 = compute_error(new_a, new_b, perm2, perm2)
         if perm_error2 < perm_error1:
             perm_error1 = perm_error2
             perm1 = perm2

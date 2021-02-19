@@ -27,7 +27,7 @@ import warnings
 
 import numpy as np
 from procrustes.permutation import permutation
-from procrustes.utils import error, ProcrustesResult, setup_input_arrays
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 __all__ = [
     "softassign",
@@ -307,7 +307,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
 
     # Compute the error
     array_m = permutation(np.eye(array_m.shape[0]), array_m)["array_u"]
-    e_opt = error(new_a, new_b, array_m, array_m)
+    e_opt = compute_error(new_a, new_b, array_m, array_m)
     return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, e_opt=e_opt)
 
 

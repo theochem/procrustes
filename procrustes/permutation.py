@@ -100,7 +100,7 @@ def permutation(array_a, array_b,
         The transformed ndarray B.
     array_u : ndarray
         The optimum permutation transformation matrix.
-    e_opt : float
+    error : float
         One-sided permutation Procrustes error.
 
     Notes
@@ -150,9 +150,9 @@ def permutation(array_a, array_b,
     array_u = np.zeros(array_p.shape)
     # set elements to 1 according to Hungarian algorithm (linear_sum_assignment)
     array_u[linear_sum_assignment(array_c)] = 1
-    e_opt = compute_error(new_a, new_b, array_u)
-    # return new_a, new_b, array_u, e_opt
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
+    error = compute_error(new_a, new_b, array_u)
+    # return new_a, new_b, array_u, error
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, error=error)
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single",
@@ -244,7 +244,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         The optimum permutation transformation matrix when using double transform mode.
     array_q : ndarray
         The optimum permutation transformation matrix when using double transform mode.
-    e_opt : float
+    error : float
         Two-sided permutation Procrustes error.
 
     Notes
@@ -421,11 +421,11 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
-            e_opt = compute_error(new_a_positive, new_b_positive, array_u, array_u)
+            error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive,
-                                                       new_b_positive, e_opt,
+                array_u, error = kopt_heuristic_single(array_u, new_a_positive,
+                                                       new_b_positive, error,
                                                        kopt_k=kopt_k, kopt_tol=kopt_tol)
         # algorithm for directed graph matching problem
         else:
@@ -434,27 +434,27 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
-            e_opt = compute_error(new_a_positive, new_b_positive, array_u, array_u)
+            error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive, new_b_positive,
-                                                       e_opt, kopt_k=kopt_k, kopt_tol=kopt_tol)
-        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
+                array_u, error = kopt_heuristic_single(array_u, new_a_positive, new_b_positive,
+                                                       error, kopt_k=kopt_k, kopt_tol=kopt_tol)
+        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, error=error)
 
     # Do regular computation
     elif transform_mode == "double":
         array_m = new_a
         array_n = new_b
-        array_p, array_q, e_opt = _2sided_regular(array_m, array_n, tol, iteration)
+        array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
         # perform k-opt heuristic search twice
         if kopt:
-            array_p, array_q, e_opt = kopt_heuristic_double(perm_p=array_p, perm_q=array_q,
+            array_p, array_q, error = kopt_heuristic_double(perm_p=array_p, perm_q=array_q,
                                                             array_m=array_m, array_n=array_n,
-                                                            ref_error=e_opt, kopt_k=kopt_k,
+                                                            ref_error=error, kopt_k=kopt_k,
                                                             kopt_tol=kopt_tol)
-        # return array_m, array_n, array_p, array_q, e_opt
+        # return array_m, array_n, array_p, array_q, error
         return ProcrustesResult(new_a=new_a, new_b=new_b,
-                                array_p=array_p, array_q=array_q, e_opt=e_opt)
+                                array_p=array_p, array_q=array_q, error=error)
     else:
         raise ValueError(
             """
@@ -474,27 +474,27 @@ def _2sided_regular(array_m, array_n, tol, iteration):
     array_p1 = np.eye(array_m.shape[0], array_m.shape[0])
     # Initial guess for Q
     array_q1 = _2sided_hungarian(np.dot(array_n.T, array_m))
-    e_opt1 = compute_error(array_n, array_m, array_p1.T, array_q1)
+    error1 = compute_error(array_n, array_m, array_p1.T, array_q1)
     step1 = 0
 
     # while loop for the original algorithm
-    while e_opt1 > tol and step1 < iteration:
+    while error1 > tol and step1 < iteration:
         step1 += 1
         # Update P
         array_p1 = _2sided_hungarian(np.dot(np.dot(array_n, array_q1), array_m.T))
         array_p1 = np.transpose(array_p1)
         # Update the error
-        e_opt1 = compute_error(array_n, array_m, array_p1.T, array_q1)
-        if e_opt1 > tol:
+        error1 = compute_error(array_n, array_m, array_p1.T, array_q1)
+        if error1 > tol:
             # Update Q
             array_q1 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p1.T), array_m))
             # Update the error
-            e_opt1 = compute_error(array_n, array_m, array_p1.T, array_q1)
+            error1 = compute_error(array_n, array_m, array_p1.T, array_q1)
         else:
             break
 
         if step1 == iteration:
-            print("Maximum iteration reached in the first case! Error={0}".format(e_opt1))
+            print("Maximum iteration reached in the first case! Error={0}".format(error1))
 
     # Fix Q = I first
     # Initial guess for Q
@@ -502,36 +502,36 @@ def _2sided_regular(array_m, array_n, tol, iteration):
     # Initial guess for P
     array_p2 = _2sided_hungarian(np.dot(array_n, array_m.T))
     array_p2 = np.transpose(array_p2)
-    e_opt2 = compute_error(array_n, array_m, array_p2.T, array_q2)
+    error2 = compute_error(array_n, array_m, array_p2.T, array_q2)
     step2 = 0
 
     # while loop for the original algorithm
-    while e_opt2 > tol and step2 < iteration:
+    while error2 > tol and step2 < iteration:
         # Update Q
         array_q2 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p2.T), array_m))
         # Update the error
-        e_opt2 = compute_error(array_n, array_m, array_p2.T, array_q1)
-        if e_opt2 > tol:
+        error2 = compute_error(array_n, array_m, array_p2.T, array_q1)
+        if error2 > tol:
             array_p2 = _2sided_hungarian(np.dot(np.dot(array_n, array_q2), array_m.T))
             array_p2 = np.transpose(array_p2)
             # Update the error
-            e_opt2 = compute_error(array_n, array_m, array_p2.T, array_q2)
+            error2 = compute_error(array_n, array_m, array_p2.T, array_q2)
             step2 += 1
         else:
             break
         if step2 == iteration:
-            print("Maximum iteration reached in the second case! Error={0}".format(e_opt2))
+            print("Maximum iteration reached in the second case! Error={0}".format(error2))
 
-    if e_opt1 <= e_opt2:
+    if error1 <= error2:
         array_p = array_p1
         array_q = array_q1
-        e_opt = e_opt1
+        error = error1
     else:
         array_p = array_p2
         array_q = array_q2
-        e_opt = e_opt2
+        error = error2
 
-    return array_p, array_q, e_opt
+    return array_p, array_q, error
 
 
 def _2sided_hungarian(profit_matrix):
@@ -801,7 +801,7 @@ def permutation_2sided_explicit(array_a, array_b,
         The transformed ndarray B.
     array_u : ndarray
         The optimum permutation transformation matrix.
-    e_opt : float
+    error : float
         Two-sided orthogonal Procrustes error.
 
     Notes
@@ -832,4 +832,4 @@ def permutation_2sided_explicit(array_a, array_b,
             perm_error1 = perm_error2
             perm1 = perm2
     # return new_a, new_b, perm1, perm_error1
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=perm1, e_opt=perm_error1)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=perm1, error=perm_error1)

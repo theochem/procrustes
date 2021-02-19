@@ -424,8 +424,8 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             e_opt = error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive,
-                                                       new_b_positive, e_opt,
+                array_u, e_opt = kopt_heuristic_single(perm=array_u, array_a=new_a_positive,
+                                                       array_b=new_b_positive, ref_error=e_opt,
                                                        kopt_k=kopt_k, kopt_tol=kopt_tol)
         # algorithm for directed graph matching problem
         else:
@@ -437,8 +437,9 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             e_opt = error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, e_opt = kopt_heuristic_single(array_u, new_a_positive, new_b_positive,
-                                                       e_opt, kopt_k=kopt_k, kopt_tol=kopt_tol)
+                array_u, e_opt = kopt_heuristic_single(perm=array_u, array_a=new_a_positive,
+                                                       array_b=new_b_positive, ref_error=e_opt,
+                                                       kopt_k=kopt_k, kopt_tol=kopt_tol)
         return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, e_opt=e_opt)
 
     # Do regular computation

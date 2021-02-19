@@ -577,7 +577,7 @@ class ProcrustesResult(dict):
     array_q : ndarray
         The right hand side transformation matrix for two-sided Procrustes problem with
         two transformation.
-    e_opt : float
+    error : float
         Two-sided permutation Procrustes error.
 
     """

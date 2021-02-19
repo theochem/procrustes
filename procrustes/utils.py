@@ -22,8 +22,8 @@
 # --
 """Utility Module."""
 
-import itertools as it
 from copy import deepcopy
+import itertools as it
 
 import numpy as np
 

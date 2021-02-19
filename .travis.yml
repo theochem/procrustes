@@ -26,6 +26,9 @@ jobs:
     #   env: TOXENV=linters
 
 # install: pip install tox codecov
+before_install:
+    - sudo apt-get update
+
 install: pip install tox coverage
 script: tox
 after_success:

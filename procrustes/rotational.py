@@ -95,7 +95,7 @@ def rotational(array_a, array_b,
         The transformed ndarray :math:`B`.
     array_u : ndarray
         The optimum rotational transformation matrix.
-    e_opt : float
+    error : float
         One-sided orthogonal Procrustes error.
 
     Notes
@@ -158,7 +158,7 @@ def rotational(array_a, array_b,
     >>> res['array_u'] # rotational array
     array([[ 0.70710678, -0.70710678],
            [ 0.70710678,  0.70710678]])
-    >>> res['e_opt'] # error
+    >>> res['error'] # error
     1.483808210011695e-17
 
     """
@@ -174,6 +174,6 @@ def rotational(array_a, array_b,
     # compute optimum rotation matrix
     u_opt = np.dot(np.dot(array_u, s_value), array_vt)
     # compute single-sided error error
-    e_opt = compute_error(new_a, new_b, u_opt)
+    error = compute_error(new_a, new_b, u_opt)
 
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, error=error)

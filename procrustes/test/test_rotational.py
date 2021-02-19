@@ -37,7 +37,7 @@ def test_rotational_orthogonal_identical():
     # check transformation array and error
     assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(4), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_rotation_pad():
@@ -55,7 +55,7 @@ def test_rotational_orthogonal_rotation_pad():
     # check transformation array and error
     assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(2), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_rotation_translate_scale():
@@ -73,7 +73,7 @@ def test_rotational_orthogonal_rotation_translate_scale():
     # check transformation array and error
     assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_rotation_translate_scale_4by3():
@@ -93,7 +93,7 @@ def test_rotational_orthogonal_rotation_translate_scale_4by3():
     # check transformation array and error
     assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)
 
 
 def test_rotational_orthogonal_zero_array():
@@ -113,4 +113,4 @@ def test_rotational_orthogonal_zero_array():
     # check transformation array and error
     assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
-    assert_almost_equal(res["e_opt"], 0, decimal=6)
+    assert_almost_equal(res["error"], 0, decimal=6)

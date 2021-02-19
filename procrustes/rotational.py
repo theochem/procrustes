@@ -23,7 +23,7 @@
 """Rotational-Orthogonal Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, ProcrustesResult, setup_input_arrays
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
 def rotational(array_a, array_b,
@@ -174,6 +174,6 @@ def rotational(array_a, array_b,
     # compute optimum rotation matrix
     u_opt = np.dot(np.dot(array_u, s_value), array_vt)
     # compute single-sided error error
-    e_opt = error(new_a, new_b, u_opt)
+    e_opt = compute_error(new_a, new_b, u_opt)
 
     return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)

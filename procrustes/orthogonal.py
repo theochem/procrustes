@@ -25,7 +25,8 @@
 import warnings
 
 import numpy as np
-from procrustes.utils import error, ProcrustesResult, setup_input_arrays
+
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 __all__ = [
     "orthogonal",
@@ -171,7 +172,7 @@ def orthogonal(array_a, array_b,
     # compute optimum orthogonal transformation
     array_u_opt = np.dot(array_u, array_vt)
     # compute the error
-    e_opt = error(new_a, new_b, array_u_opt)
+    e_opt = compute_error(new_a, new_b, array_u_opt)
     # return new_a, new_b, array_u_opt, e_opt
     return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u_opt, e_opt=e_opt)
 
@@ -376,11 +377,11 @@ def orthogonal_2sided(array_a, array_b,
         _, array_ub = np.linalg.eigh(new_b)
         u_opt = array_ua.dot(array_ub.T)
 
-        e_opt = error(new_a, new_b, u_opt, u_opt)
+        e_opt = compute_error(new_a, new_b, u_opt, u_opt)
         return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
     # Do regular two-sided orthogonal Procrustes calculations
     u_opt1, u_opt2 = _2sided(new_a, new_b)
-    e_opt = error(new_a, new_b, u_opt1, u_opt2)
+    e_opt = compute_error(new_a, new_b, u_opt1, u_opt2)
     return ProcrustesResult(new_a=new_a, new_b=new_b,
                             array_p=u_opt1, array_q=u_opt2, e_opt=e_opt)
 

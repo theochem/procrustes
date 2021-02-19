@@ -404,14 +404,14 @@ def test_kopt_heuristic_double():
     perm2_shuff = np.array([[1., 0., 0.],
                             [0., 0., 1.],
                             [0., 1., 0.]])
-    e_opt = compute_error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
+    error = compute_error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
     perm_left, perm_right, kopt_error = kopt_heuristic_double(perm_p=perm1_shuff,
                                                               perm_q=perm2_shuff,
                                                               array_m=arr_a, array_n=arr_b,
-                                                              ref_error=e_opt, kopt_k=4,
+                                                              ref_error=error, kopt_k=4,
                                                               kopt_tol=1.e-8)
     _, _, kopt_error = kopt_heuristic_double(perm_p=perm_left, perm_q=perm_right,
                                              array_m=arr_a, array_n=arr_b,
-                                             ref_error=e_opt, kopt_k=3, kopt_tol=1.e-8)
-    assert kopt_error <= e_opt
+                                             ref_error=error, kopt_k=3, kopt_tol=1.e-8)
+    assert kopt_error <= error
     assert kopt_error == 0

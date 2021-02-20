@@ -28,7 +28,7 @@ import itertools as it
 import numpy as np
 
 __all__ = [
-    "error",
+    "compute_error",
     "setup_input_arrays",
     "kopt_heuristic_single",
     "kopt_heuristic_double",
@@ -233,7 +233,7 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
     return array_a
 
 
-def error(array_a, array_b, array_u, array_v=None):
+def compute_error(array_a, array_b, array_u, array_v=None):
     r"""
     Return the single- or double- sided Procrustes/norm-squared error.
 
@@ -470,7 +470,7 @@ def kopt_heuristic_single(array_a, array_b, ref_error, perm=None, kopt_k=3, kopt
             if comb_perm != comb:
                 perm_kopt = deepcopy(perm)
                 perm_kopt[comb, :] = perm_kopt[comb_perm, :]
-                e_kopt_new = error(array_a, array_b, perm_kopt, perm_kopt)
+                e_kopt_new = compute_error(array_a, array_b, perm_kopt, perm_kopt)
                 if e_kopt_new < kopt_error:
                     perm = perm_kopt
                     kopt_error = e_kopt_new
@@ -541,7 +541,8 @@ def kopt_heuristic_double(array_m, array_n, ref_error,
                         if comb_perm_right != comb_right:
                             perm_kopt_right = deepcopy(perm_q)
                             perm_kopt_right[comb_right, :] = perm_kopt_right[comb_perm_right, :]
-                            e_kopt_new_right = error(array_n, array_m, perm_p.T, perm_kopt_right)
+                            e_kopt_new_right = compute_error(array_n, array_m, perm_p.T,
+                                                             perm_kopt_right)
                             if e_kopt_new_right < kopt_error:
                                 perm_q = perm_kopt_right
                                 kopt_error = e_kopt_new_right
@@ -549,7 +550,7 @@ def kopt_heuristic_double(array_m, array_n, ref_error,
                                     break
 
                 perm_kopt_left[comb_left, :] = perm_kopt_left[comb_perm_left, :]
-                e_kopt_new_left = error(array_n, array_m, perm_kopt_left.T, perm_q)
+                e_kopt_new_left = compute_error(array_n, array_m, perm_kopt_left.T, perm_q)
                 if e_kopt_new_left < kopt_error:
                     perm_p = perm_kopt_left
                     kopt_error = e_kopt_new_left
@@ -576,7 +577,7 @@ class ProcrustesResult(dict):
     array_q : ndarray
         The right hand side transformation matrix for two-sided Procrustes problem with
         two transformation.
-    e_opt : float
+    error : float
         Two-sided permutation Procrustes error.
 
     """

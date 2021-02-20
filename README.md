@@ -10,14 +10,16 @@ Procrustes
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/git@github.com:theochem/procrustes.git/master)
 
 The Procrustes library provides a set of functions for transforming a matrix to make it
-as similar as possible to a target matrix.
-More documentation can be found at https://procrustes.readthedocs.io/en/latest/
+as similar as possible to a target matrix. For more information, visit
+[**Procrustes Documentation**](https://procrustes.readthedocs.io/en/latest/).
 
 
-License
--------
+Citation
+--------
 
-Procrustes is distributed under GNU (Version 3) License.
+Please use the following citation in any publication using Procrustes library:
+
+> **"Procrustes: ", F. Meng, et al.**
 
 
 Dependencies
@@ -26,63 +28,36 @@ Dependencies
 The following dependencies are required to run Procrustes properly,
 
 * Python >= 3.6: http://www.python.org/
-* PIP >= 19.0: https://pip.pypa.io/
-* SciPy >= 1.5.0: http://www.scipy.org/
 * NumPy >= 1.18.5: http://www.numpy.org/
+* SciPy >= 1.5.0: http://www.scipy.org/
 * PyTest >= 5.3.4: https://docs.pytest.org/
 * PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/
+* PIP >= 19.0: https://pip.pypa.io/
 
 
 Installation
 ------------
 
-Download the latest version of Procrustes with the following command.
-```bash
-    git clone git@github.com:theochem/procrustes.git
-```
-
-Then navigate to the Procrustes folder and run with package manager:
+To install Procrustes using the conda package management system, install
+[miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
+first, and then:
 
 ```bash
-   cd procrustes
-   pip install .
+    # Create and activate myenv conda environment (optional, but recommended)
+    conda create -n myenv
+    source activate myenv
+
+    # Install the stable release.
+    conda install -c theochem procrustes
 ```
 
-Or, if you want to install the package in an editable mode, run
-```bash
-    pip install -e .
-```
+To install Procrustes with pip, you may want to create a
+[virtual environment](https://docs.python.org/3/tutorial/venv.html), and then:
 
-To remove the package, run:
-
-```bash
-   pip uninstall procrustes
-```
-
-Testing
--------
-
-To run tests with coverage report:
 
 ```bash
-    pytest --cov-config=.coveragerc --cov=procrustes procrustes/test
-```
-Or if one does not want coverage report, run
-```bash
-    pytest .
+    # Install the stable release.
+    pip install qc-procrustes
 ```
 
-Development
------------
-
-Any contributor is welcome regardless of their background or programming proficiency.
-You may refer to the developer guideline for details of how to contribute.
-
-
-References
-----------
-
-If you are using this package, please reference:
-
-*Add a link to download bib or ris files*
-
+See https://procrustes.readthedocs.io/en/latest/usr_doc_installization.html for full details.

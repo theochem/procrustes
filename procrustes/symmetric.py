@@ -23,7 +23,7 @@
 """Symmetric Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import error, ProcrustesResult, setup_input_arrays
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
 def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
@@ -92,7 +92,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
         The transformed ndarray array_b.
     array_u : ndarray
         The optimum symmetric transformation array.
-    e_opt : float
+    error : float
         One-sided Procrustes error.
 
     Raises
@@ -191,6 +191,6 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                 array_y[i, j] = (array_s[i] * array_c[i, j] + array_s[j] * array_c[j, i]) / (
                             array_s[i] ** 2 + array_s[j] ** 2)
     array_x = np.dot(np.dot(array_vt.T, array_y), array_vt)
-    e_opt = error(new_a, new_b, array_x)
+    error = compute_error(new_a, new_b, array_x)
 
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_x, e_opt=e_opt)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_x, error=error)

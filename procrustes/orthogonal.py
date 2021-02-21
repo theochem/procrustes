@@ -22,11 +22,10 @@
 # --
 """Orthogonal Procrustes Module."""
 
-from itertools import product
 import warnings
 
 import numpy as np
-from procrustes.utils import error, ProcrustesResult, setup_input_arrays
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 __all__ = [
     "orthogonal",
@@ -104,7 +103,7 @@ def orthogonal(array_a, array_b,
         The transformed ndarray :math:`B`.
     array_u : ndarray
         The optimum orthogonal transformation matrix.
-    e_opt : float
+    error : float
         One-sided orthogonal Procrustes error.
 
     Notes
@@ -172,15 +171,20 @@ def orthogonal(array_a, array_b,
     # compute optimum orthogonal transformation
     array_u_opt = np.dot(array_u, array_vt)
     # compute the error
-    e_opt = error(new_a, new_b, array_u_opt)
-    # return new_a, new_b, array_u_opt, e_opt
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u_opt, e_opt=e_opt)
+    error = compute_error(new_a, new_b, array_u_opt)
+    # return new_a, new_b, array_u_opt, error
+    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u_opt, error=error)
 
 
-def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
-                      pad_mode='row-col', translate=False, scale=False,
-                      single_transform=True, mode="exact", check_finite=True,
-                      tol=1.0e-8, weight=None):
+def orthogonal_2sided(array_a, array_b,
+                      remove_zero_col=True,
+                      remove_zero_row=True,
+                      pad_mode='row-col',
+                      translate=False,
+                      scale=False,
+                      single_transform=True,
+                      check_finite=True,
+                      weight=None):
     r"""
     Two-Sided Orthogonal Procrustes.
 
@@ -221,14 +225,9 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
     single_transform : bool
         If True, two-sided orthogonal Procrustes with one transformation
         will be performed. Default=False.
-    mode : string, optional
-        The scheme to solve for unitary transformation.
-        Options: 'exact' and 'approx'. Default="exact".
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
-    tol : float, optional
-        The tolerance value used for 'approx' mode. Default=1.e-8.
     weight : ndarray
         The weighting matrix. Default=None.
 
@@ -249,18 +248,13 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
         The optimal orthogonal left-multiplying transformation ndarray if "single_transform=True".
     array_q : ndarray
         The second transformation ndarray if "single_transform=True".
-    e_opt : float
+    error : float
         The single- or double- sided orthogonal Procrustes error.
 
     Raises
     ------
     ValueError
         When input array :math:`A` or :math:`A` is not symmetric.
-    numpy.linalg.LinAlgError
-        If array :math:`A` or :math:`A` is not diagonalizable when `mode='umeyama'` or
-        `mode='umeyama_approx'`.
-    ValueError
-        If the mode is not 'exact' or 'approx' when `single_transform=True`.
 
     Notes
     -----
@@ -362,39 +356,33 @@ def orthogonal_2sided(array_a, array_b, remove_zero_col=True, remove_zero_row=Tr
     1.9646186414076689e-26
 
     """
-    # Check symmetry if single_transform=True
-    if single_transform:
-        if not np.allclose(array_a.T, array_a):
-            raise ValueError("array_a should be symmetric.")
-        if not np.allclose(array_b.T, array_b):
-            raise ValueError("array_b should be symmetric.")
     if translate:
         warnings.warn("The translation matrix was not well defined. \
                 Two sided rotation and translation don't commute.", stacklevel=2)
     # Check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                       pad_mode, translate, scale, check_finite, weight)
-    # Convert mode strings into lowercase
-    mode = mode.lower()
+
+    # Check symmetry if single_transform=True
+    if single_transform:
+        if not np.allclose(new_a.T, new_a):
+            raise ValueError("array_a, after removal/padding, should be symmetric.")
+        if not np.allclose(new_b.T, new_b):
+            raise ValueError("array_b, after removal/padding, should be symmetric.")
+
     # Do single-transformation computation if requested
     if single_transform:
-        # check array_a and array_b are symmetric.  #FIXME : They are no checks here.
-        if mode == "approx":
-            u_opt = _2sided_1trans_approx(new_a, new_b, tol)
-        elif mode == "exact":
-            u_opt = _2sided_1trans_exact(new_a, new_b)
-        else:
-            raise ValueError("Invalid mode argument (use 'exact' or 'approx')")
-        # the error
-        e_opt = error(new_a, new_b, u_opt, u_opt)
-        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, e_opt=e_opt)
+        _, array_ua = np.linalg.eigh(new_a)
+        _, array_ub = np.linalg.eigh(new_b)
+        u_opt = array_ua.dot(array_ub.T)
+
+        error = compute_error(new_a, new_b, u_opt, u_opt)
+        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, error=error)
     # Do regular two-sided orthogonal Procrustes calculations
-    else:
-        u_opt1, u_opt2 = _2sided(new_a, new_b)
-        e_opt = error(new_a, new_b, u_opt1, u_opt2)
-        # return new_a, new_b, u_opt1, u_opt2, e_opt
-        return ProcrustesResult(new_a=new_a, new_b=new_b,
-                                array_p=u_opt1, array_q=u_opt2, e_opt=e_opt)
+    u_opt1, u_opt2 = _2sided(new_a, new_b)
+    error = compute_error(new_a, new_b, u_opt1, u_opt2)
+    return ProcrustesResult(new_a=new_a, new_b=new_b,
+                            array_p=u_opt1, array_q=u_opt2, error=error)
 
 
 def _2sided(array_a, array_b):
@@ -403,39 +391,3 @@ def _2sided(array_a, array_b):
     u_opt1 = np.dot(array_ua, array_ub.T)
     u_opt2 = np.dot(vta.T, vtb)
     return u_opt1, u_opt2
-
-
-def _2sided_1trans_approx(array_a, array_b, tol):
-    # Calculate the eigenvalue decomposition of array_a and array_b
-    _, array_ua = np.linalg.eigh(array_a)
-    _, array_ub = np.linalg.eigh(array_b)
-    # compute u_umeyama
-    u_umeyama = np.dot(np.abs(array_ua), np.abs(array_ub.T))
-    # compute the closet unitary transformation to u_umeyama
-    array_identity = np.eye(u_umeyama.shape[0], dtype=u_umeyama.dtype)
-    res = orthogonal(array_identity, u_umeyama)
-    u_ortho = res["array_u"]
-    u_ortho[np.abs(u_ortho) < tol] = 0
-    return u_ortho
-
-
-def _2sided_1trans_exact(array_a, array_b):
-    _, array_ua = np.linalg.eigh(array_a)
-    _, array_ub = np.linalg.eigh(array_b)
-    # 2^n trial-and-error test to find optimum S array
-    diags = product((-1, 1.), repeat=array_a.shape[0])
-
-    error_list = []
-    diag_list = []
-    for _, diag in enumerate(diags):
-        array_s = np.diag(diag)
-        array_u = np.dot(np.dot(array_ua, array_s), array_ub.T)
-        e_temp = error(array_a, array_b, array_u, array_u)
-        error_list.append(e_temp)
-        diag_list.append(array_s)
-
-    index = np.argmin(error_list)
-    s_opt = diag_list[index]
-    u_opt = np.dot(np.dot(array_ua, s_opt), array_ub.T)
-
-    return u_opt

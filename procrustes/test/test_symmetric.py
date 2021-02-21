@@ -48,7 +48,7 @@ def test_symmetric_transformed():
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
     assert_almost_equal(res["array_u"], sym_array, decimal=6)
-    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
 def test_symmetric_scaled_shifted_tranformed():
@@ -64,7 +64,7 @@ def test_symmetric_scaled_shifted_tranformed():
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
-    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
 def test_symmetric_scaled_shifted_tranformed_4by3():
@@ -82,7 +82,7 @@ def test_symmetric_scaled_shifted_tranformed_4by3():
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
-    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
 def test_symmetric():
@@ -100,7 +100,7 @@ def test_symmetric():
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
-    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
 def test_not_full_rank_case():
@@ -113,7 +113,7 @@ def test_not_full_rank_case():
     res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
-    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
 def test_having_zero_singular_case():
@@ -128,7 +128,7 @@ def test_having_zero_singular_case():
     res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["array_u"], res["array_u"].T, decimal=6)
-    assert_almost_equal(res["e_opt"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
 def test_fat_rectangular_matrices_raises_error_no_padding():
@@ -181,7 +181,7 @@ class TestAgainstNumerical:
         desired, desired_func = self._optimize(array_a, array_b, ncol)
         res = symmetric(array_a, array_b)
 
-        assert np.abs(res["e_opt"] - desired_func) < 1e-5
+        assert np.abs(res["error"] - desired_func) < 1e-5
         assert np.all(np.abs(res["array_u"] - desired) < 1e-3)
 
     @pytest.mark.parametrize("nrow", [2, 10, 15])
@@ -199,4 +199,4 @@ class TestAgainstNumerical:
         res = symmetric(array_a, array_b, pad_mode="square")
 
         # No uniqueness in solution, thus check that the optimal values are the same.
-        assert np.abs(res["e_opt"] - desired_func) < 1e-5
+        assert np.abs(res["error"] - desired_func) < 1e-5

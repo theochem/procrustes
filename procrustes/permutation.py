@@ -25,8 +25,8 @@
 import itertools as it
 
 import numpy as np
-from procrustes.utils import (compute_error, kopt_heuristic_double,
-                              kopt_heuristic_single, ProcrustesResult, setup_input_arrays)
+from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 from scipy.optimize import linear_sum_assignment
 
 __all__ = [

@@ -300,3 +300,55 @@ def test_softassign_m_guess():
         # check the results
         assert_almost_equal(res["array_u"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
+
+
+def test_softassign_kopt():
+    """Test softassign with k-opt heuristic local search."""
+    rng = np.random.default_rng(seed=3456)
+    # define the input matrices
+    array_a = rng.integers(low=-5, high=10, size=(10, 10))
+    # generate random permutation matrix
+    size = array_a.shape[0]
+    perm = np.zeros((size, size))
+    idx = np.arange(size)
+    rng.shuffle(idx)
+    perm[np.arange(size), idx] = 1
+    # build matrix array_b
+    array_b = np.dot(perm.T, np.dot(array_a, perm))
+    # softassign without kopt
+    # default parameters will lead to error=0
+    # changes the parameters to force it fail
+    res_no_kopt = softassign(array_a, array_b,
+                             translate=False,
+                             scale=False,
+                             remove_zero_row=False,
+                             remove_zero_col=False,
+                             kopt=False,
+                             iteration_soft=1,
+                             iteration_sink=1,
+                             beta_r=1.05,
+                             beta_f=1.e3,
+                             epsilon=0.05,
+                             epsilon_soft=1.e-3,
+                             epsilon_sink=1.e-3,
+                             k=0.15,
+                             gamma_scaler=1.5,
+                             n_stop=2)
+    # softassign with kopt
+    res_with_kopt = softassign(array_a, array_b,
+                               translate=False,
+                               scale=False,
+                               remove_zero_row=False,
+                               remove_zero_col=False,
+                               kopt=True,
+                               iteration_soft=1,
+                               iteration_sink=1,
+                               beta_r=1.05,
+                               beta_f=1.e3,
+                               epsilon=0.05,
+                               epsilon_soft=1.e-3,
+                               epsilon_sink=1.e-3,
+                               k=0.15,
+                               gamma_scaler=1.5,
+                               n_stop=2)
+    assert res_no_kopt["error"] >= res_with_kopt["error"]

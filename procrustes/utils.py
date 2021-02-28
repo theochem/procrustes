@@ -262,10 +262,10 @@ def compute_error(a, b, t, s=None):
         \mathbf{A}\mathbf{T}`, and the reference array, :math:`\mathbf{B}`.
 
     """
-    # transform matrix A and, subtract B, and then compute the norm
-    array_e = np.dot(a, t) if s is None else np.dot(np.dot(t.T, a), s)
-    array_e -= b
-    return np.trace(np.dot(array_e.T, array_e))
+    # transform matrix A
+    a_trans = np.dot(a, t) if s is None else np.dot(np.dot(t.T, a), s)
+    # subtract matrix B and compute Frobenius norm squared
+    return np.linalg.norm(a_trans - b, ord=None) ** 2
 
 
 def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,

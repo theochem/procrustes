@@ -33,62 +33,46 @@ __all__ = [
 ]
 
 
-def orthogonal(array_a, array_b,
-               remove_zero_col=True,
-               remove_zero_row=True,
-               pad_mode='row-col',
-               translate=False,
-               scale=False,
-               check_finite=True,
-               weight=None):
-    r"""
-    One-sided orthogonal Procrustes.
+def orthogonal(
+    a,
+    b,
+    pad=True,
+    translate=False,
+    scale=False,
+    remove_zero_col=False,
+    remove_zero_row=False,
+    check_finite=True,
+    weight=None,
+):
+    r"""Perform orthogonal Procrustes.
 
-    The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
-    array with the smaller number of rows will automatically be padded with zero rows.
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
+    have the same shape. If this is not the case, the arguments `pad`, `remove_zero_col`, and
+    `remove_zero_row` can be used to make them have the same shape.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
-    remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed.
-        Default= True.
-    remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed.
-        Default= True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    a : ndarray
+        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    remove_zero_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    remove_zero_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
-        Default=True.
+        If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------
@@ -97,9 +81,9 @@ def orthogonal(array_a, array_b,
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
-    find the unitary/orthogonal transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
-    :math:`\mathbf{A}_{m \times n}` as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{U}_{n \times n}`
+    that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. In other words,
 
     .. math::
        \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
@@ -112,13 +96,13 @@ def orthogonal(array_a, array_b,
                                    \right\}}
           \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
 
-    The solution is obtained by taking the singular value decomposition (SVD) of the product of the
-    matrices,
+    The optimal orthogonal matrix :math:`\mathbf{U}_{\text{opt}}` is obtained using the singular
+    value decomposition (SVD) of the :math:`\mathbf{A}^\dagger \mathbf{B}` matrix through,
 
     .. math::
        \mathbf{A}^\dagger \mathbf{B} &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
                                           \tilde{\mathbf{V}}^{\dagger} \\
-       \mathbf{U}_{\text{optimum}} &= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}
+       \mathbf{U}_{\text{opt}} &= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}
 
     The singular values are always listed in decreasing order, with the smallest singular
     value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.
@@ -132,37 +116,39 @@ def orthogonal(array_a, array_b,
     ...                     [-6.74021234, -2.24043246],
     ...                     [ 4.23759847,  0.05252849],
     ...                     [ 1.22159856,  0.44463126]])
-    >>> new_a, new_b, array_u, error_opt = orthogonal(array_a, array_b)
-    >>> new_a
-    array([[-7.3,  2.8],
-           [-7.1, -0.2],
-           [ 4. ,  1.4],
-           [ 1.3,  0. ]])
-    >>> new_b
-    array([[-5.90207845, -5.12791088],
-           [-6.74021234, -2.24043246],
-           [ 4.23759847,  0.05252849],
-           [ 1.22159856,  0.44463126]])
-    >>> array_u # the optimum orthogonal transformation array
+    >>> res = orthogonal(array_a, array_b)
+    >>> res.t   # orthogonal transformation
     array([[ 0.9396912 ,  0.34202404],
            [ 0.34202404, -0.9396912 ]])
-    >>> error_opt #error
+    >>> res.error   #error
     1.435973366535123e-29
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col,
-                                      remove_zero_row, pad_mode, translate,
-                                      scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        a,
+        b,
+        remove_zero_col,
+        remove_zero_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    if new_a.shape != new_b.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
+            "Check pad, remove_zero_col, and remove_zero_row arguments."
+        )
+    # calculate SVD of A.T * B
+    u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
+    # compute optimal orthogonal transformation
+    u_opt = np.dot(u, vt)
+    # compute one-sided error
+    error = compute_error(new_a, new_b, u_opt)
 
-    # calculate SVD of array_a.T * array_b
-    array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
-    # compute optimum orthogonal transformation
-    array_u_opt = np.dot(array_u, array_vt)
-    # compute the error
-    error = compute_error(new_a, new_b, array_u_opt)
-    # return new_a, new_b, array_u_opt, error
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u_opt, s=None)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=None)
 
 
 def orthogonal_2sided(array_a, array_b,

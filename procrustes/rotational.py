@@ -89,32 +89,32 @@ def rotational(array_a, array_b,
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
-    find the transformation of :math:`\mathbf{A}_{m \times n}` that makes it as close as possible
-    to :math:`\mathbf{B}_{m \times n}`. I.e.,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the rotational transformation matrix :math:`\mathbf{R}_{n \times n}` that makes
+    :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. In other words,
 
     .. math::
-       \underbrace{\min}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
-          \|\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
-       &= \underbrace{\min}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
-          \text{Tr}\left[\left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
-                         \left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
-       &= \underbrace{\max}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
-          \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
+       \underbrace{\min}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+                                \atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+          \|\mathbf{A}\mathbf{R} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\min}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+                                   \atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+          \text{Tr}\left[\left(\mathbf{A}\mathbf{R} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{A}\mathbf{R} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\max}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+                                   \atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{R}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
 
-    Here, :math:`\mathbf{U}_{n \times n}` is the permutation matrix. The solution is obtained by
-    taking the singular value decomposition (SVD) of the product of the matrix,
+    The optimal rotational matrix :math:`\mathbf{R}_{\text{opt}}` is obtained using the singular
+    value decomposition (SVD) of the :math:`\mathbf{A}^\dagger \mathbf{B}` matrix through,
 
     .. math::
        \mathbf{A}^\dagger \mathbf{B} &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
                                           \tilde{\mathbf{V}}^{\dagger} \\
-       \mathbf{U}_{\text{optimum}} &= \tilde{\mathbf{U}} \tilde{\mathbf{S}}
+       \mathbf{R}_{\text{opt}} &= \tilde{\mathbf{U}} \tilde{\mathbf{S}}
                                       \tilde{\mathbf{V}}^{\dagger}
 
-    Where :math:`\tilde{\mathbf{S}}_{n \times m}` is almost an identity matrix,
+    where :math:`\tilde{\mathbf{S}}_{n \times m}` is almost an identity matrix,
 
     .. math::
        \tilde{\mathbf{S}}_{m \times n} \equiv
@@ -127,7 +127,7 @@ def rotational(array_a, array_b,
                                 \left(\left|\mathbf{U}\mathbf{V}^\dagger\right|\right)
        \end{bmatrix}
 
-    I.e. the smallest singular value is replaced by
+    in which the smallest singular value is replaced by
 
     .. math::
        \operatorname{sgn} \left(\left|\tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger\right|\right) =
@@ -143,11 +143,11 @@ def rotational(array_a, array_b,
     >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,],
     ...                     [9.19238816, -2.82842712, 0., 0.],
     ...                     [0.,          0.,         0., 0.]])
-    >>> res = rotational(array_a, array_b, translate=False, scale=False)
-    >>> res['array_u'] # rotational array
+    >>> res = rotational(array_a,array_b,translate=False,scale=False)
+    >>> res.t   # rotational array
     array([[ 0.70710678, -0.70710678],
            [ 0.70710678,  0.70710678]])
-    >>> res['error'] # error
+    >>> res.error   # one-sided Procrustes error
     1.483808210011695e-17
 
     """

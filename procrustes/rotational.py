@@ -29,53 +29,39 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 def rotational(
     a,
     b,
-    remove_zero_col=True,
-    remove_zero_row=True,
-    pad_mode="row-col",
+    pad=True,
     translate=False,
     scale=False,
+    remove_zero_col=False,
+    remove_zero_row=False,
     check_finite=True,
     weight=None,
 ):
     r"""Perform rotational Procrustes.
 
-    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices
-    to have the same shape. If this is not the case, the arguments `pad_mode`, `remove_zero_row`,
-    and `remove_zero_col` can be used to make them have the same shape.
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
+    have the same shape. If this is not the case, the arguments `pad`, `remove_zero_col`, and
+    `remove_zero_row` can be used to make them have the same shape.
 
     Parameters
     ----------
     a : ndarray
         The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
-        The 2D-array :math:`\mathbf{B}` representing the reference array.
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed.
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
-        If True, arrays are centered at origin, i.e., columns of the arrays will have mean zero.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below.
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, arrays are normalized to one with respect to the Frobenius norm, i.e.,
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
         :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
         :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    remove_zero_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    remove_zero_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
@@ -143,7 +129,7 @@ def rotational(
     ...                     [9.19238816, -2.82842712, 0., 0.],
     ...                     [0.,          0.,         0., 0.]])
     >>> res = rotational(array_a,array_b,translate=False,scale=False)
-    >>> res.t   # rotational array
+    >>> res.t   # rotational transformation
     array([[ 0.70710678, -0.70710678],
            [ 0.70710678,  0.70710678]])
     >>> res.error   # one-sided Procrustes error
@@ -156,23 +142,25 @@ def rotational(
         b,
         remove_zero_col,
         remove_zero_row,
-        pad_mode,
+        pad,
         translate,
         scale,
         check_finite,
         weight,
     )
-    if new_a.shape != new_b.shape():
-        raise ValueError(f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
-                         "Check pad_mode, remove_zero_col, and remove_zero_row options.")
+    if new_a.shape != new_b.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
+            "Check pad, remove_zero_col, and remove_zero_row arguments."
+        )
     # compute SVD of A.T * B
     u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
-    # construct S: an identity matrix with the smallest singular value replaced by sgn( |U*V^t|)
+    # construct S: an identity matrix with the smallest singular value replaced by sgn(|U*V^t|)
     s = np.eye(new_a.shape[1])
     s[-1, -1] = np.sign(np.linalg.det(np.dot(u, vt)))
-    # compute optimal rotation matrix
+    # compute optimal rotational transformation
     r_opt = np.dot(np.dot(u, s), vt)
-    # compute single-sided error error
+    # compute single-sided error
     error = compute_error(new_a, new_b, r_opt)
 
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=r_opt, s=None)

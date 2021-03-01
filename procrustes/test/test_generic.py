@@ -43,7 +43,7 @@ def test_generic_transformed():
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["t"], array_x, decimal=6)
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
@@ -60,7 +60,7 @@ def test_generic_transformed_negative():
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["t"], array_x, decimal=6)
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
@@ -77,7 +77,7 @@ def test_generic_transformed_translate():
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=True, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["t"], array_x, decimal=6)
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
@@ -123,5 +123,5 @@ def test_generic_random_transformation():
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
     # check transformation is right & error is zero
-    assert_almost_equal(res["array_u"], array_x, decimal=6)
+    assert_almost_equal(res["t"], array_x, decimal=6)
     assert_almost_equal(res["error"], 0.0, decimal=6)

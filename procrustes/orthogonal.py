@@ -92,19 +92,8 @@ def orthogonal(array_a, array_b,
 
     Returns
     -------
-    res: ProcrustesResult
-        Procrustes analysis result object.
-
-    Attributes
-    ----------
-    new_a : ndarray
-        The transformed ndarray :math:`A`.
-    new_b : ndarray
-        The transformed ndarray :math:`B`.
-    array_u : ndarray
-        The optimum orthogonal transformation matrix.
-    error : float
-        One-sided orthogonal Procrustes error.
+    res : ProcrustesResult
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Notes
     -----
@@ -173,7 +162,7 @@ def orthogonal(array_a, array_b,
     # compute the error
     error = compute_error(new_a, new_b, array_u_opt)
     # return new_a, new_b, array_u_opt, error
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u_opt, error=error)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u_opt, s=None)
 
 
 def orthogonal_2sided(array_a, array_b,
@@ -234,22 +223,7 @@ def orthogonal_2sided(array_a, array_b,
     Returns
     -------
     res : ProcrustesResult
-        Procrustes analysis result object.
-
-    Attributes
-    ----------
-    array_a : ndarray
-        The transformed ndarray :math:`A`.
-    array_b : ndarray
-        The transformed ndarray :math:`B`.
-    array_u : ndarray
-        The transformation ndarray if "single_transform=False".
-    array_p : ndarray
-        The optimal orthogonal left-multiplying transformation ndarray if "single_transform=True".
-    array_q : ndarray
-        The second transformation ndarray if "single_transform=True".
-    error : float
-        The single- or double- sided orthogonal Procrustes error.
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Raises
     ------
@@ -377,12 +351,11 @@ def orthogonal_2sided(array_a, array_b,
         u_opt = array_ua.dot(array_ub.T)
 
         error = compute_error(new_a, new_b, u_opt, u_opt)
-        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, error=error)
+        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=u_opt)
     # Do regular two-sided orthogonal Procrustes calculations
     u_opt1, u_opt2 = _2sided(new_a, new_b)
     error = compute_error(new_a, new_b, u_opt1, u_opt2)
-    return ProcrustesResult(new_a=new_a, new_b=new_b,
-                            array_p=u_opt1, array_q=u_opt2, error=error)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt2, s=u_opt1)
 
 
 def _2sided(array_a, array_b):

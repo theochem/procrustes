@@ -89,8 +89,8 @@ def permutation(array_a, array_b,
 
     Returns
     -------
-    res: ProcrustesResult
-        Procrustes analysis result object.
+    res : ProcrustesResult
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Attributes
     ----------
@@ -152,7 +152,7 @@ def permutation(array_a, array_b,
     array_u[linear_sum_assignment(array_c)] = 1
     error = compute_error(new_a, new_b, array_u)
     # return new_a, new_b, array_u, error
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, error=error)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, t=array_u, error=error)
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single",
@@ -240,22 +240,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     Returns
     -------
     res : ProcrustesResult
-        Procrustes analysis result object.
-
-    Attributes
-    ----------
-    new_a : ndarray
-        The transformed ndarray A.
-    new_b : ndarray
-        The transformed ndarray B.
-    array_u : ndarray
-        The optimum permutation transformation matrix.
-    array_p : ndarray
-        The optimum permutation transformation matrix when using double transform mode.
-    array_q : ndarray
-        The optimum permutation transformation matrix when using double transform mode.
-    error : float
-        Two-sided permutation Procrustes error.
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Notes
     -----
@@ -456,7 +441,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                                        perm=array_u,
                                                        kopt_k=kopt_k,
                                                        kopt_tol=kopt_tol)
-        return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_u, error=error)
+        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
 
     # Do regular computation
     elif transform_mode == "double":
@@ -473,8 +458,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                                                             kopt_k=kopt_k,
                                                             kopt_tol=kopt_tol)
         # return array_m, array_n, array_p, array_q, error
-        return ProcrustesResult(new_a=new_a, new_b=new_b,
-                                array_p=array_p, array_q=array_q, error=error)
+        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
     else:
         raise ValueError("""Invalid transform_mode argument, use "single"or "double".""")
 
@@ -684,11 +668,11 @@ def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
         tmp_b = _2sided_1trans_initial_guess_normal1(array_b)
-        array_u = permutation(tmp_a, tmp_b)["array_u"]
+        array_u = permutation(tmp_a, tmp_b)["t"]
     elif mode == "normal2":
         tmp_a = _2sided_1trans_initial_guess_normal2(array_a)
         tmp_b = _2sided_1trans_initial_guess_normal2(array_b)
-        array_u = permutation(tmp_a, tmp_b)["array_u"]
+        array_u = permutation(tmp_a, tmp_b)["t"]
     elif mode == "umeyama":
         array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
     elif mode == "umeyama_approx":
@@ -727,7 +711,7 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
 
     p_opt = permutation(array_a=np.eye(p_new.shape[0]), array_b=p_new,
                         remove_zero_col=False, remove_zero_row=False,
-                        translate=False, scale=False, check_finite=True)["array_u"]
+                        translate=False, scale=False, check_finite=True)["t"]
 
     return p_opt
 
@@ -751,7 +735,7 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
         p_old = p_new
         if step == iteration:
             print("Maximum iteration reached! Change={0}".format(change))
-    p_opt = permutation(np.eye(p_new.shape[0]), p_new)["array_u"]
+    p_opt = permutation(np.eye(p_new.shape[0]), p_new)["t"]
 
     return p_opt
 
@@ -808,18 +792,7 @@ def permutation_2sided_explicit(array_a, array_b,
     Returns
     -------
     res : ProcrustesResult
-        Procrustes analysis result object.
-
-    Attributes
-    ----------
-    new_a : ndarray
-        The transformed ndarray A.
-    new_b : ndarray
-        The transformed ndarray B.
-    array_u : ndarray
-        The optimum permutation transformation matrix.
-    error : float
-        Two-sided orthogonal Procrustes error.
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Notes
     -----
@@ -848,5 +821,4 @@ def permutation_2sided_explicit(array_a, array_b,
         if perm_error2 < perm_error1:
             perm_error1 = perm_error2
             perm1 = perm2
-    # return new_a, new_b, perm1, perm_error1
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=perm1, error=perm_error1)
+    return ProcrustesResult(error=perm_error1, new_a=new_a, new_b=new_b, t=perm1, s=None)

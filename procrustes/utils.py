@@ -228,46 +228,44 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
     return array_a
 
 
-def compute_error(array_a, array_b, array_u, array_v=None):
-    r"""
-    Return the single- or double- sided Procrustes/norm-squared error.
+def compute_error(a, b, t, s=None):
+    r"""Return the one- or two-sided Procrustes (squared Frobenius norm) error.
 
-    The single sided error is defined as
-
-    .. math::
-       \text{Tr}\left[\left(\mathbf{AU} - \mathbf{B}\right)^\dagger
-                       \left(\mathbf{AU} - \mathbf{B}\right)\right]
-
-    The double sided Procrustes error is defined as
+    The double-sided Procrustes error is defined as
 
     .. math::
+       \|\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\|_{F}^2 =
        \text{Tr}\left[
-            \left(\mathbf{U}_1^\dagger \mathbf{A}\mathbf{U}_2 - \mathbf{B}\right)^\dagger
-            \left(\mathbf{U}_1^\dagger \mathbf{A}\mathbf{U}_2 - \mathbf{B}\right)\right]
+            \left(\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\right)^\dagger
+            \left(\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\right)\right]
+
+    when :math:`\mathbf{S}` is the identity matrix :math:`\mathbf{I}`, this is called the one-sided
+    Procrustes error.
 
     Parameters
     ----------
-    array_a : npdarray
-        The 2D array :math:`A` being transformed.
-    array_b : npdarray
-        The 2D reference array :math:`B`.
-    array_u : ndarray
-        The 2D array representing the transformation :math:`\mathbf{U}`.
-    array_v : ndarray, optional
-        The 2D array representing the transformation :math:`\mathbf{V}`. If provided, it will
-        compute the double-sided Procrustes error. Otherwise, will compute the single-sided
-        Procrustes error.
+    a : ndarray
+        The 2D-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+    b : ndarray
+        The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference matrix.
+    t : ndarray
+        The 2D-array :math:`\mathbf{T}_{n \times n}` representing the right-hand-side transformation
+        matrix.
+    s : ndarray, optional
+        The 2D-array :math:`\mathbf{S}_{m \times m}` representing the left-hand-side transformation
+        matrix. If set to `None`, the one-sided Procrustes error is computed.
 
     Returns
     -------
     error : float
-        The squared value of the distance between transformed array and reference.
+        The squared Frobenius norm of difference between the transformed array, :math:`\mathbf{S}
+        \mathbf{A}\mathbf{T}`, and the reference array, :math:`\mathbf{B}`.
 
     """
-    array_e = np.dot(array_a, array_u) if array_v is None \
-        else np.dot(np.dot(array_u.T, array_a), array_v)
-    array_e -= array_b
-    return np.trace(np.dot(array_e.T, array_e))
+    # transform matrix A
+    a_trans = np.dot(a, t) if s is None else np.dot(np.dot(t.T, a), s)
+    # subtract matrix B and compute Frobenius norm squared
+    return np.linalg.norm(a_trans - b, ord=None) ** 2
 
 
 def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
@@ -428,20 +426,17 @@ class ProcrustesResult(dict):
 
     Attributes
     ----------
+    error : float
+        The Procrustes (squared Frobenius norm) error.
     new_a : ndarray
         The translated/scaled numpy ndarray :math:`\mathbf{A}`.
     new_b : ndarray
         The translated/scaled numpy ndarray :math:`\mathbf{B}`.
-    array_u : ndarray
-        The right hand side optimum transformation matrix.
-    array_p : ndarray
-        The left hand side transformation matrix for two-sided Procrustes problem with
-        two transformation.
-    array_q : ndarray
-        The right hand side transformation matrix for two-sided Procrustes problem with
-        two transformation.
-    error : float
-        Two-sided permutation Procrustes error.
+    t : ndarray
+        The 2D-array :math:`\mathbf{T}` representing the right-hand-side transformation matrix.
+    s : ndarray, optional
+        The 2D-array :math:`\mathbf{S}` representing the left-hand-side transformation
+        matrix. If set to `None`, the one-sided Procrustes is performed.
 
     """
 

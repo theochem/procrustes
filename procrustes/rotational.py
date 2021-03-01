@@ -85,18 +85,7 @@ def rotational(array_a, array_b,
     Returns
     -------
     res : ProcrustesResult
-        Procrustes analysis result object.
-
-    Attributes
-    ----------
-    new_a : ndarray
-        The transformed ndarray :math:`A`.
-    new_b : ndarray
-        The transformed ndarray :math:`B`.
-    array_u : ndarray
-        The optimum rotational transformation matrix.
-    error : float
-        One-sided orthogonal Procrustes error.
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Notes
     -----
@@ -176,4 +165,4 @@ def rotational(array_a, array_b,
     # compute single-sided error error
     error = compute_error(new_a, new_b, u_opt)
 
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=u_opt, error=error)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=None)

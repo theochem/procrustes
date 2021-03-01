@@ -26,34 +26,37 @@ import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
-def rotational(array_a, array_b,
-               remove_zero_col=True,
-               remove_zero_row=True,
-               pad_mode="row-col",
-               translate=False,
-               scale=False,
-               check_finite=True,
-               weight=None):
-    r"""
-    Compute optimal rotational transformation array.
+def rotational(
+    a,
+    b,
+    remove_zero_col=True,
+    remove_zero_row=True,
+    pad_mode="row-col",
+    translate=False,
+    scale=False,
+    check_finite=True,
+    weight=None,
+):
+    r"""Perform rotational Procrustes.
 
-    The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
-    array with the smaller number of rows will automatically be padded with zero rows.
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices
+    to have the same shape. If this is not the case, the arguments `pad_mode`, `remove_zero_row`,
+    and `remove_zero_col` can be used to make them have the same shape.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
+    a : ndarray
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2D-array :math:`\mathbf{B}` representing the reference array.
     remove_zero_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default= True.
     remove_zero_row : bool, optional
         If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default= True.
+    translate : bool, optional
+        If True, arrays are centered at origin, i.e., columns of the arrays will have mean zero.
     pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
+        Specifying how to pad the arrays, listed below.
 
             - "row"
                 The array with fewer rows is padded with zero rows so that both have the same
@@ -69,18 +72,14 @@ def rotational(array_a, array_b,
                 The arrays are padded with zero rows and zero columns so that they are both
                 squared arrays. The dimension of square array is specified based on the highest
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
-    translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
     scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
+        If True, arrays are normalized to one with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
+        If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------
@@ -152,17 +151,28 @@ def rotational(array_a, array_b,
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
-    # compute SVD of A.T * A
-    array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
-    # construct S which is an identity matrix with the smallest
-    # singular value replaced by sgn(|U*V^t|).
-    s_value = np.eye(new_a.shape[1])
-    s_value[-1, -1] = np.sign(np.linalg.det(np.dot(array_u, array_vt)))
-    # compute optimum rotation matrix
-    u_opt = np.dot(np.dot(array_u, s_value), array_vt)
+    new_a, new_b = setup_input_arrays(
+        a,
+        b,
+        remove_zero_col,
+        remove_zero_row,
+        pad_mode,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    if new_a.shape != new_b.shape():
+        raise ValueError(f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
+                         "Check pad_mode, remove_zero_col, and remove_zero_row options.")
+    # compute SVD of A.T * B
+    u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
+    # construct S: an identity matrix with the smallest singular value replaced by sgn( |U*V^t|)
+    s = np.eye(new_a.shape[1])
+    s[-1, -1] = np.sign(np.linalg.det(np.dot(u, vt)))
+    # compute optimal rotation matrix
+    r_opt = np.dot(np.dot(u, s), vt)
     # compute single-sided error error
-    error = compute_error(new_a, new_b, u_opt)
+    error = compute_error(new_a, new_b, r_opt)
 
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=None)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=r_opt, s=None)

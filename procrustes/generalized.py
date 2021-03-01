@@ -112,4 +112,4 @@ def _orthogonal(arr_a, arr_b):
                      translate=False,
                      scale=False)
 
-    return np.dot(res["new_a"], res["array_u"])
+    return np.dot(res["new_a"], res["t"])

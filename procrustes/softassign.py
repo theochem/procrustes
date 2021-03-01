@@ -135,18 +135,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     Returns
     -------
     res : ProcrustesResult
-        Procrustes analysis result object.
-
-    Attributes
-    ----------
-    new_a : ndarray
-        The transformed ndarray A.
-    new_b : ndarray
-        The transformed ndarray B.
-    array_u : ndarray
-        The optimum permutation transformation matrix.
-    error : float
-        Two-sided Procrustes error.
+        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
     Notes
     -----
@@ -315,7 +304,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
             epsilon_sink = epsilon_soft * k
 
     # Compute the error
-    array_m = permutation(np.eye(array_m.shape[0]), array_m)["array_u"]
+    array_m = permutation(np.eye(array_m.shape[0]), array_m)["t"]
     error = compute_error(new_a, new_b, array_m, array_m)
     # k-opt heuristic
     if kopt:
@@ -325,7 +314,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                                                perm=array_m,
                                                kopt_k=kopt_k,
                                                kopt_tol=kopt_tol)
-    return ProcrustesResult(new_a=new_a, new_b=new_b, array_u=array_m, error=error)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_m, s=None)
 
 
 def _compute_gamma(array_c, row_num, gamma_scaler):

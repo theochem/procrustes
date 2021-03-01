@@ -426,20 +426,17 @@ class ProcrustesResult(dict):
 
     Attributes
     ----------
+    error : float
+        The Procrustes (squared Frobenius norm) error.
     new_a : ndarray
         The translated/scaled numpy ndarray :math:`\mathbf{A}`.
     new_b : ndarray
         The translated/scaled numpy ndarray :math:`\mathbf{B}`.
-    array_u : ndarray
-        The right hand side optimum transformation matrix.
-    array_p : ndarray
-        The left hand side transformation matrix for two-sided Procrustes problem with
-        two transformation.
-    array_q : ndarray
-        The right hand side transformation matrix for two-sided Procrustes problem with
-        two transformation.
-    error : float
-        Two-sided permutation Procrustes error.
+    t : ndarray
+        The 2D-array :math:`\mathbf{T}` representing the right-hand-side transformation matrix.
+    s : ndarray, optional
+        The 2D-array :math:`\mathbf{S}` representing the left-hand-side transformation
+        matrix. If set to `None`, the one-sided Procrustes is performed.
 
     """
 

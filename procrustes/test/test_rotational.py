@@ -35,8 +35,8 @@ def test_rotational_orthogonal_identical():
     # compute Procrustes transformation
     res = rotational(array_a, array_b, translate=False, scale=False)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(4), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(4), decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -53,8 +53,8 @@ def test_rotational_orthogonal_rotation_pad():
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=False, scale=False)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(2), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(2), decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -71,8 +71,8 @@ def test_rotational_orthogonal_rotation_translate_scale():
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -91,8 +91,8 @@ def test_rotational_orthogonal_rotation_translate_scale_4by3():
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -111,6 +111,6 @@ def test_rotational_orthogonal_zero_array():
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["array_u"], res["array_u"].T), np.eye(3), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["array_u"])), 1.0, decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)

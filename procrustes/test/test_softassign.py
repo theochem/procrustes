@@ -42,7 +42,7 @@ def test_softassign_4by4():
     res = softassign(array_a, array_b,
                      remove_zero_col=False,
                      remove_zero_row=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -61,7 +61,7 @@ def test_softassign_4by4_loop():
         res = softassign(array_a, array_b,
                          remove_zero_col=False,
                          remove_zero_row=False)
-        assert_almost_equal(res["array_u"], perm, decimal=6)
+        assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -82,7 +82,7 @@ def test_softassign_4by4_loop_negative():
             res = softassign(array_a, array_b,
                              remove_zero_row=False,
                              remove_zero_col=False)
-            assert_almost_equal(res["array_u"], perm, decimal=6)
+            assert_almost_equal(res["t"], perm, decimal=6)
             assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -99,7 +99,7 @@ def test_softassign_4by4_translate_scale():
                      translate=True, scale=True,
                      remove_zero_row=False,
                      remove_zero_col=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -120,7 +120,7 @@ def test_softassign_4by4_translate_scale_loop():
                          array_b,
                          translate=True,
                          scale=True)
-        assert_almost_equal(res["array_u"], perm, decimal=6)
+        assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -143,7 +143,7 @@ def test_softassign_4by4_translate_scale_zero_padding():
                      scale=False,
                      remove_zero_row=True,
                      remove_zero_col=True)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -171,7 +171,7 @@ def test_softassign_practical_example():
                      scale=False,
                      remove_zero_row=False,
                      remove_zero_col=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -199,7 +199,7 @@ def test_softassign_random_noise():
                      scale=False,
                      remove_zero_row=False,
                      remove_zero_col=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
 
 
 def test_softassign_invalid_beta_r():
@@ -228,7 +228,7 @@ def test_softassign_4by4_beta_0():
                      beta_0=1.e-6,
                      translate=False,
                      scale=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -247,7 +247,7 @@ def test_softassign_4by4_anneal_steps():
                      iteration_anneal=165,
                      translate=False,
                      scale=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
@@ -285,7 +285,7 @@ def test_softassign_m_guess():
                      m_guess=m_guess2,
                      translate=False,
                      scale=False)
-    assert_almost_equal(res["array_u"], perm, decimal=6)
+    assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
     # check if initial guess given shape not matching
     with warnings.catch_warnings(record=True) as warn_info:
@@ -298,7 +298,7 @@ def test_softassign_m_guess():
         assert len(warn_info) == 1
         assert not str(warn_info[0].message).startswith("We must specify")
         # check the results
-        assert_almost_equal(res["array_u"], perm, decimal=6)
+        assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
 

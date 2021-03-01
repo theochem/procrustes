@@ -321,10 +321,10 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         Returns the padded arrays, in that they have the same matrix dimensions.
 
     """
-    array_a = _setup_input_array_lower(array_a, None, check_finite, translate,
-                                       scale, remove_zero_col, remove_zero_row, weight)
-    array_b = _setup_input_array_lower(array_b, None, check_finite, translate,
-                                       scale, remove_zero_col, remove_zero_row, weight)
+    array_a = _setup_input_array_lower(array_a, None, remove_zero_col, remove_zero_row, translate,
+                                       scale, check_finite, weight)
+    array_b = _setup_input_array_lower(array_b, None, remove_zero_col, remove_zero_row, translate,
+                                       scale, check_finite, weight)
     return _zero_padding(array_a, array_b, pad_mode)
 
 
@@ -378,23 +378,19 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
     List of arrays :
         Returns the padded arrays, in that they have the same matrix dimensions.
     """
-    array_list_new = [_setup_input_array_lower(array_a=arr,
-                                               array_ref=array_ref,
-                                               check_finite=check_finite,
-                                               translate=translate,
-                                               scale=scale,
-                                               remove_zero_col=remove_zero_col,
-                                               remove_zero_row=remove_zero_row,
-                                               weight=weight)
-                      for arr in array_list]
+    array_list_new = [
+        _setup_input_array_lower(array_a=arr, array_ref=array_ref, remove_zero_col=remove_zero_col,
+                                 remove_zero_row=remove_zero_row, translate=translate, scale=scale,
+                                 check_finite=check_finite, weight=weight)
+        for arr in array_list]
     arr_shape = np.array([arr.shape for arr in array_list_new])
     array_b = np.ones(np.max(arr_shape, axis=0), dtype=int)
     array_list_new = [_zero_padding(arr, array_b, pad_mode=pad_mode) for arr in array_list_new]
     return array_list_new
 
 
-def _setup_input_array_lower(array_a, array_ref, check_finite, translate,
-                             scale, remove_zero_col, remove_zero_row, weight):
+def _setup_input_array_lower(array_a, array_ref, remove_zero_col, remove_zero_row, translate, scale,
+                             check_finite, weight):
     """Pre-processing the matrices with translation, scaling."""
     _check_arraytypes(array_a)
     if check_finite:

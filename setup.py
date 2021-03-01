@@ -36,7 +36,7 @@ with io.open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 
 setup(
-    name="procrustes",
+    name="qc-procrustes",
     version="0.0.1-alpha",
     description="Procrustes Package",
     long_description=long_description,

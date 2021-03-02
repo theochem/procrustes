@@ -44,7 +44,7 @@ def test_symmetric_transformed():
     array_b = np.concatenate((array_b, np.zeros((5, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((8, 6))), axis=0)
     # compute procrustes transformation
-    res = symmetric(array_a, array_b, translate=False, scale=False)
+    res = symmetric(array_a, array_b, remove_zero_row=True, remove_zero_col=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["t"], res["t"].T, decimal=6)
     assert_almost_equal(res["t"], sym_array, decimal=6)
@@ -131,16 +131,16 @@ def test_having_zero_singular_case():
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
-def test_fat_rectangular_matrices_raises_error_no_padding():
-    r"""Test Symmetric Procrustes raises error when improper padding."""
-    # Generate Random Rectangular Matrices
-    nrow = 3
-    ncol = np.random.randint(nrow + 1, nrow + 4)
-    array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
-    np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
-
-    array_a = np.random.random((nrow, nrow))
-    np.testing.assert_raises(ValueError, symmetric, array_a, array_b, pad_mode="row")
+# def test_fat_rectangular_matrices_raises_error_no_padding():
+#     r"""Test Symmetric Procrustes raises error when improper padding."""
+#     # Generate Random Rectangular Matrices
+#     nrow = 3
+#     ncol = np.random.randint(nrow + 1, nrow + 4)
+#     array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
+#     np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
+#
+#     array_a = np.random.random((nrow, nrow))
+#     np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
 
 
 class TestAgainstNumerical:
@@ -179,7 +179,7 @@ class TestAgainstNumerical:
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
         desired, desired_func = self._optimize(array_a, array_b, ncol)
-        res = symmetric(array_a, array_b)
+        res = symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True)
 
         assert np.abs(res["error"] - desired_func) < 1e-5
         assert np.all(np.abs(res["t"] - desired) < 1e-3)
@@ -192,11 +192,8 @@ class TestAgainstNumerical:
         ncol = np.random.randint(nrow + 1, nrow + 10)
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
-        with pytest.raises(ValueError):
-            symmetric(array_a, array_b)
-
         _, desired_func = self._optimize(array_a, array_b, ncol)
-        res = symmetric(array_a, array_b, pad_mode="square")
+        res = symmetric(array_a, array_b, pad=True)
 
         # No uniqueness in solution, thus check that the optimal values are the same.
         assert np.abs(res["error"] - desired_func) < 1e-5

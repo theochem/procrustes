@@ -24,77 +24,64 @@
 
 import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+from procrustes.utils import _zero_padding
 
 
-def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
-              pad_mode='row-col', translate=False, scale=False,
-              check_finite=True, weight=None):
-    r"""
-    Symmetric right-sided Procrustes transformation.
+def symmetric(
+    a,
+    b,
+    pad=True,
+    translate=False,
+    scale=False,
+    remove_zero_col=False,
+    remove_zero_row=False,
+    check_finite=True,
+    weight=None,
+):
+    r"""Perform symmetric Procrustes.
 
-    The symmetric Procrustes requires both matrices to have the number of rows
-    greater than equal to the number of columns. Further, it is assumed that
-    each matrix has the same dimension, if not padding will occur.
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
+    have the same shape with the number of rows greater than or equal to the number of columns.
+    If this is not the case, the arguments `pad`, `remove_zero_col`, and `remove_zero_row` can be
+    used to make them have the same shape.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default=True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    a : ndarray
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape. **If number of
+        rows is not greater than or equal to the number of columns, both matrices are padded with
+        zero rows to have a square shape.**
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    remove_zero_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    remove_zero_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
-        Default=True.
+        If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------
     res : ProcrustesResult
         The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
-    Raises
-    ------
-    ValueError :
-        If their matrix dimension (m, n) don't satisfy :math:`m \geq n` after padding.
-
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference
-    :math:`\mathbf{B}_{m \times n}`,
-    with :math:`m \geqslant n`, find the symmetric matrix :math:`\mathbf{X}_{n \times n}` for which
-    :math:`\mathbf{AX}` is as close as possible to :math:`\mathbf{B}_{m \times n}`. I.e.,
+    Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
+    \times n}` with :math:`m \geqslant n`, find the symmetrix transformation matrix
+    :math:`\mathbf{X}_{n \times n}` that makes :math:`\mathbf{AX}` as close as possible to
+    :math:`\mathbf{B}`. In other words,
 
     .. math::
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
@@ -104,7 +91,7 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
                 \text{Tr}\left[\left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)^\dagger
                          \left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)\right]
 
-    Considering the singular value decomposition of :math:`\mathbf{A}_{m \times n}` as
+    Considering the singular value decomposition of :math:`\mathbf{A}`,
 
     .. math::
        \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
@@ -138,48 +125,59 @@ def symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True,
     Examples
     --------
     >>> import numpy as np
-    >>> array_a = np.array([[5., 2., 8.],
-    ...                     [2., 2., 3.],
-    ...                     [1., 5., 6.],
-    ...                     [7., 3., 2.]])
-    >>> array_b = np.array([[ 52284.5, 209138. , 470560.5],
-    ...                     [ 22788.5,  91154. , 205096.5],
-    ...                     [ 46139.5, 184558. , 415255.5],
-    ...                     [ 22788.5,  91154. , 205096.5]])
-    >>> new_a, new_b, array_x, error_opt = symmetric(array_a, array_b, translate=True, scale=True)
-    >>> array_x # symmetric transformation array
+    >>> a = np.array([[5., 2., 8.],
+    ...               [2., 2., 3.],
+    ...               [1., 5., 6.],
+    ...               [7., 3., 2.]])
+    >>> b = np.array([[ 52284.5, 209138. , 470560.5],
+    ...               [ 22788.5,  91154. , 205096.5],
+    ...               [ 46139.5, 184558. , 415255.5],
+    ...               [ 22788.5,  91154. , 205096.5]])
+    >>> res = symmetric(array_a, array_b, pad=True, translate=True, scale=True)
+    >>> res.t   # symmetric transformation array
     array([[0.0166352 , 0.06654081, 0.14971682],
           [0.06654081, 0.26616324, 0.59886729],
           [0.14971682, 0.59886729, 1.34745141]])
-    >>> error_opt # error
+    >>> res.error   # error
     4.483083428047388e-31
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col,
-                                      remove_zero_row, pad_mode, translate,
-                                      scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        a,
+        b,
+        remove_zero_col,
+        remove_zero_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
 
-    if new_a.shape[0] < new_a.shape[1]:
-        raise ValueError("Array A with size (m, n) needs m >= to n.")
-    if new_b.shape[0] < new_b.shape[1]:
-        raise ValueError("Array B with size (m, n) needs m >= to n.")
+    # if number of rows is less than column, the arrays are made square
+    if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
+        new_a, new_b = _zero_padding(new_a, new_b, "square")
 
-    # compute SVD of  new_a
-    array_n = new_a.shape[1]
-    array_u, array_s, array_vt = np.linalg.svd(new_a)
+    # if new_a.shape[0] < new_a.shape[1]:
+    #     raise ValueError(f"Shape of A {new_a.shape}=(m, n) needs to satisfy m >= n.")
+    #
+    # if new_b.shape[0] < new_b.shape[1]:
+    #     raise ValueError(f"Shape of B {new_b.shape}=(m, n) needs to satisfy m >= n.")
 
-    array_c = np.dot(np.dot(array_u.T, new_b), array_vt.T)
+    # compute SVD of A
+    u, s, vt = np.linalg.svd(new_a)
+
+    c = np.dot(np.dot(u.T, new_b), vt.T)
     # create the intermediate array Y and the optimum symmetric transformation array X
-    array_y = np.zeros((array_n, array_n))
-    for i in range(array_n):
-        for j in range(array_n):
-            if array_s[i] ** 2 + array_s[j] ** 2 == 0:
-                array_y[i, j] = 0
-            else:
-                array_y[i, j] = (array_s[i] * array_c[i, j] + array_s[j] * array_c[j, i]) / (
-                            array_s[i] ** 2 + array_s[j] ** 2)
-    array_x = np.dot(np.dot(array_vt.T, array_y), array_vt)
-    error = compute_error(new_a, new_b, array_x)
+    n = new_a.shape[1]
+    y = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            if s[i] ** 2 + s[j] ** 2 != 0:
+                y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / (s[i] ** 2 + s[j] ** 2)
 
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_x, s=None)
+    x = np.dot(np.dot(vt.T, y), vt)
+    error = compute_error(new_a, new_b, x)
+
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=x, s=None)

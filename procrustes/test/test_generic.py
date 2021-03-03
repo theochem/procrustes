@@ -20,48 +20,44 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Testings for generic Procrustes module."""
+"""Test procrustes.generic module."""
 
+import pytest
 import numpy as np
+
 from numpy.testing import assert_almost_equal
+
 from procrustes.generic import generic
 
 
-def test_generic_transformed():
-    r"""Test generic Procrustes with random matrices."""
-    # define arbitrary array and random transformation
-    array_a = np.array([[3, 3, 5, 9],
-                        [2, 6, 9, 9],
-                        [1, 3, 5, 2],
-                        [0, 4, 2, 9],
-                        [9, 6, 0, 3]])
-    array_x = np.array([[0.3, 0., 0.3, 0.6],
-                        [0.7, 0.3, 0., 0.8],
-                        [0.4, 0., 0.4, 0.5],
-                        [0.3, 0.7, 0.1, 0.7]])
+@pytest.mark.parametrize("m", np.random.randint(2, 100, 25))
+def test_generic_square(m):
+    r"""Test generic Procrustes with random square matrices."""
+    # random input & transformation arrays (size=mxm)
+    array_a = np.random.uniform(-2.0, 2.0, (m, m))
+    array_x = np.random.uniform(-2.0, 2.0, (m, m))
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
-    # check transformation is right & error is zero
-    assert_almost_equal(res["t"], array_x, decimal=6)
+    # check error & transformation array
     assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res["t"], array_x, decimal=4)
 
 
-def test_generic_transformed_negative():
-    r"""Test generic Procrustes with negative matrices."""
-    # define arbitrary array and random transformation
-    np.random.seed(999)
-    array_a = np.random.randint(low=-10, high=10, size=(5, 4))
-    array_x = np.array([[0.3, 0., 0.3, 0.6],
-                        [0.7, 0.3, 0., 0.8],
-                        [0.4, 0., 0.4, 0.5],
-                        [0.3, 0.7, 0.1, 0.7]])
+@pytest.mark.parametrize("m, n", np.random.randint(2, 100, (25, 2)))
+def test_generic_rectangular(m, n):
+    r"""Test generic Procrustes with random rectangular matrices."""
+    # random input & transformation arrays (size=mxn)
+    array_a = np.random.uniform(-2.0, 2.0, (m, n))
+    array_x = np.random.uniform(-3.0, 3.0, (n, n))
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
-    # check transformation is right & error is zero
-    assert_almost_equal(res["t"], array_x, decimal=6)
+    # check error
     assert_almost_equal(res["error"], 0.0, decimal=6)
+    # check transformation array, only if it is unique
+    if m >= n:
+        assert_almost_equal(res["t"], array_x, decimal=4)
 
 
 def test_generic_transformed_translate():

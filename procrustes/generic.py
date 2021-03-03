@@ -79,12 +79,17 @@ def generic(
     that makes :math:`\mathbf{AX}` as close as possible to :math:`\mathbf{B}`. In other words,
 
     .. math::
-       \text{min} \quad \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2
+       \underbrace{\text{min}}_{\mathbf{X}} \quad \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2
 
-    Solving the least squares optimization, the optimal transformation matrix is given by,
+    Solving the least-squares equations, the optimal transformation :math:`\mathbf{X}_\text{opt}`
+    is given by,
 
     .. math::
         \mathbf{X} = {(\mathbf{A}^{\top}\mathbf{A})}^{-1} \mathbf{A}^{\top} \mathbf{B}
+
+    If :math:`m < n`, the transformation matrix :math:`\mathbf{X}_\text{opt}` is not unique,
+    because the system of equations is underdetermined (i.e., there are fewer equations than
+    unknowns).
 
     References
     ----------

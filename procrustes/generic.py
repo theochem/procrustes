@@ -26,59 +26,46 @@ import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
-def generic(array_a, array_b,
-            remove_zero_col=True,
-            remove_zero_row=True,
-            pad_mode='row-col',
-            translate=False,
-            scale=False,
-            check_finite=True,
-            weight=None):
-    r"""
-    Solve the generic right-sided Procrustes problem.
+def generic(
+    a,
+    b,
+    pad=True,
+    translate=False,
+    scale=False,
+    remove_zero_col=False,
+    remove_zero_row=False,
+    check_finite=True,
+    weight=None,
+):
+    r"""Perform generic right-hand-sided Procrustes.
 
-    The generic Procrustes solves the least squares optimization problem without any constraints. It
-    assumed that each matrix has the same dimension, if not padding will occur.
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
+    have the same shape. If this is not the case, the arguments `pad`, `remove_zero_col`, and
+    `remove_zero_row` can be used to make them have the same shape.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed.
-        Default=True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    a : ndarray
+        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin.
-        Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    remove_zero_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    remove_zero_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
-        Default=True.
+        If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------
@@ -87,15 +74,14 @@ def generic(array_a, array_b,
 
     Notes
     -----
-    Given a source matrix :math:`\mathbf{A} \in \mathbb{R}^{m \times n}` and a target matrix
-    :math:`\mathbf{B} \in \mathbb{R}^{m \times n}`, find the transformation matrix
-    :math:`\mathbf{X} \in \mathbb{R}^{n \times n}` for which :math:`\mathbf{AX}` is as close as
-    possible to :math:`\mathbf{B}`. I.e.,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the transformation matrix :math:`\mathbf{X}_{n \times n}`
+    that makes :math:`\mathbf{AX}` as close as possible to :math:`\mathbf{B}`. In other words,
 
     .. math::
        \text{min} \quad \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2
 
-    The optimal transformation matrix :math:`\mathbf{X}` is given by
+    Solving the least squares optimization, the optimal transformation matrix is given by,
 
     .. math::
         \mathbf{X} = {(\mathbf{A}^{\top}\mathbf{A})}^{-1} \mathbf{A}^{\top} \mathbf{B}
@@ -107,10 +93,20 @@ def generic(array_a, array_b,
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        a,
+        b,
+        remove_zero_col,
+        remove_zero_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
     # compute the generic solution
     a_inv = np.linalg.pinv(np.dot(new_a.T, new_a))
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
+    # compute one-sided error
     e_opt = compute_error(new_a, new_b, array_x)
     return ProcrustesResult(error=e_opt, new_a=new_a, new_b=new_b, t=array_x, s=None)

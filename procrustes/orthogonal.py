@@ -110,18 +110,16 @@ def orthogonal(
     Examples
     --------
     >>> import numpy as np
-    >>> array_a = np.array([[-7.3,  2.8], [-7.1, -0.2],
-    ...                     [ 4. ,  1.4], [ 1.3,  0. ]])
-    >>> array_b = np.array([[-5.90207845, -5.12791088],
-    ...                     [-6.74021234, -2.24043246],
-    ...                     [ 4.23759847,  0.05252849],
-    ...                     [ 1.22159856,  0.44463126]])
-    >>> res = orthogonal(array_a, array_b)
-    >>> res.t   # orthogonal transformation
-    array([[ 0.9396912 ,  0.34202404],
-           [ 0.34202404, -0.9396912 ]])
-    >>> res.error   #error
-    1.435973366535123e-29
+    >>> from scipy.stats import ortho_group
+    >>> from procrustes import orthogonal
+    >>> a = np.random.rand(5, 3)   # random input matrix
+    >>> q = ortho_group.rvs(3)     # random orthogonal transformation
+    >>> b = np.dot(a, q) + np.random.rand(1, 3)   # random target matrix
+    >>> result = orthogonal(a, b, translate=True, scale=False)
+    >>> print(result.error)      # error (should be zero)
+    >>> print(result.t)          # transformation matrix (same as q)
+    >>> print(result.new_a)      # translated array a
+    >>> print(result.new_b)      # translated array b
 
     """
     # check inputs

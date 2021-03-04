@@ -23,8 +23,8 @@
 """Symmetric Procrustes Module."""
 
 import numpy as np
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 from procrustes.utils import _zero_padding
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
 def symmetric(

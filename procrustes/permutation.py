@@ -29,85 +29,56 @@ from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 from scipy.optimize import linear_sum_assignment
 
-__all__ = [
-    "permutation",
-    "permutation_2sided",
-    "permutation_2sided_explicit"
-]
+__all__ = ["permutation", "permutation_2sided", "permutation_2sided_explicit"]
 
 
-def permutation(array_a, array_b,
-                remove_zero_col=True,
-                remove_zero_row=True,
-                pad_mode="row-col",
-                translate=False,
-                scale=False,
-                check_finite=True,
-                weight=None):
-    r"""
-    Single sided permutation Procrustes.
+def permutation(
+    a,
+    b,
+    pad=True,
+    translate=False,
+    scale=False,
+    remove_zero_col=False,
+    remove_zero_row=False,
+    check_finite=True,
+    weight=None,
+):
+    r"""Perform single-sided permutation Procrustes.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    remove_zero_col : bool, optional
-        If True, the zero columns on the right side will be removed. Default= True.
-    remove_zero_row : bool, optional
-        If True, the zero rows on the top will be removed. Default= True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    a : ndarray
+        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    remove_zero_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    remove_zero_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+        If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------
     res : ProcrustesResult
         The Procrustes result represented as a class:`utils.ProcrustesResult` object.
 
-    Attributes
-    ----------
-    A : ndarray
-        The transformed ndarray A.
-    B : ndarray
-        The transformed ndarray B.
-    array_u : ndarray
-        The optimum permutation transformation matrix.
-    error : float
-        One-sided permutation Procrustes error.
-
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{n \times n}` and reference :math:`\mathbf{B}_{n \times n}`
-    find a permutation of the rows and/or columns of :math:`\mathbf{A}_{n \times n}` that makes
-    it as close as possible to :math:`\mathbf{B}_{n \times n}`. I.e.,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the permutation transformation matrix :math:`\mathbf{P}_{n \times n}`
+    that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. In other words,
 
     .. math::
        \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
@@ -141,8 +112,17 @@ def permutation(array_a, array_b,
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        a,
+        b,
+        remove_zero_col,
+        remove_zero_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
     # compute permutation Procrustes matrix
     array_p = np.dot(new_a.T, new_b)
     array_c = np.full(array_p.shape, np.max(array_p))
@@ -151,7 +131,7 @@ def permutation(array_a, array_b,
     # set elements to 1 according to Hungarian algorithm (linear_sum_assignment)
     array_u[linear_sum_assignment(array_c)] = 1
     error = compute_error(new_a, new_b, array_u)
-    # return new_a, new_b, array_u, error
+
     return ProcrustesResult(new_a=new_a, new_b=new_b, t=array_u, error=error)
 
 
@@ -709,9 +689,15 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
         if step == iteration:
             print("Maximum iteration reached! Change={0}".format(change))
 
-    p_opt = permutation(array_a=np.eye(p_new.shape[0]), array_b=p_new,
-                        remove_zero_col=False, remove_zero_row=False,
-                        translate=False, scale=False, check_finite=True)["t"]
+    p_opt = permutation(
+        a=np.eye(p_new.shape[0]),
+        b=p_new,
+        translate=False,
+        scale=False,
+        remove_zero_col=False,
+        remove_zero_row=False,
+        check_finite=True,
+    )["t"]
 
     return p_opt
 

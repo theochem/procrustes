@@ -26,61 +26,46 @@ import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
-def rotational(array_a, array_b,
-               remove_zero_col=True,
-               remove_zero_row=True,
-               pad_mode="row-col",
-               translate=False,
-               scale=False,
-               check_finite=True,
-               weight=None):
-    r"""
-    Compute optimal rotational transformation array.
+def rotational(
+    a,
+    b,
+    pad=True,
+    translate=False,
+    scale=False,
+    remove_zero_col=False,
+    remove_zero_row=False,
+    check_finite=True,
+    weight=None,
+):
+    r"""Perform rotational Procrustes.
 
-    The Procrustes analysis requires two 2d-arrays with the same number of rows, so the
-    array with the smaller number of rows will automatically be padded with zero rows.
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
+    have the same shape. If this is not the case, the arguments `pad`, `remove_zero_col`, and
+    `remove_zero_row` can be used to make them have the same shape.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference array.
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default= True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default= True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    a : ndarray
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    remove_zero_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    remove_zero_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
+        If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------
@@ -89,32 +74,32 @@ def rotational(array_a, array_b,
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference :math:`\mathbf{B}_{m \times n}`,
-    find the transformation of :math:`\mathbf{A}_{m \times n}` that makes it as close as possible
-    to :math:`\mathbf{B}_{m \times n}`. I.e.,
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the rotational transformation matrix :math:`\mathbf{R}_{n \times n}` that makes
+    :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. In other words,
 
     .. math::
-       \underbrace{\min}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
-          \|\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
-       &= \underbrace{\min}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
-          \text{Tr}\left[\left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
-                         \left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
-       &= \underbrace{\max}_{\left\{\mathbf{U} \left| {\mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \atop \left| \mathbf{U} \right| = 1} \right. \right\}}
-          \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
+       \underbrace{\min}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+                                \atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+          \|\mathbf{A}\mathbf{R} - \mathbf{B}\|_{F}^2
+       &= \underbrace{\min}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+                                   \atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+          \text{Tr}\left[\left(\mathbf{A}\mathbf{R} - \mathbf{B} \right)^\dagger
+                         \left(\mathbf{A}\mathbf{R} - \mathbf{B} \right)\right] \\
+       &= \underbrace{\max}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+                                   \atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+          \text{Tr}\left[\mathbf{R}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
 
-    Here, :math:`\mathbf{U}_{n \times n}` is the permutation matrix. The solution is obtained by
-    taking the singular value decomposition (SVD) of the product of the matrix,
+    The optimal rotational matrix :math:`\mathbf{R}_{\text{opt}}` is obtained using the singular
+    value decomposition (SVD) of the :math:`\mathbf{A}^\dagger \mathbf{B}` matrix through,
 
     .. math::
        \mathbf{A}^\dagger \mathbf{B} &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
                                           \tilde{\mathbf{V}}^{\dagger} \\
-       \mathbf{U}_{\text{optimum}} &= \tilde{\mathbf{U}} \tilde{\mathbf{S}}
+       \mathbf{R}_{\text{opt}} &= \tilde{\mathbf{U}} \tilde{\mathbf{S}}
                                       \tilde{\mathbf{V}}^{\dagger}
 
-    Where :math:`\tilde{\mathbf{S}}_{n \times m}` is almost an identity matrix,
+    where :math:`\tilde{\mathbf{S}}_{n \times m}` is almost an identity matrix,
 
     .. math::
        \tilde{\mathbf{S}}_{m \times n} \equiv
@@ -127,7 +112,7 @@ def rotational(array_a, array_b,
                                 \left(\left|\mathbf{U}\mathbf{V}^\dagger\right|\right)
        \end{bmatrix}
 
-    I.e. the smallest singular value is replaced by
+    in which the smallest singular value is replaced by
 
     .. math::
        \operatorname{sgn} \left(\left|\tilde{\mathbf{U}} \tilde{\mathbf{V}}^\dagger\right|\right) =
@@ -143,26 +128,39 @@ def rotational(array_a, array_b,
     >>> array_b = np.array([[6.29325035,  4.17193001, 0., 0,],
     ...                     [9.19238816, -2.82842712, 0., 0.],
     ...                     [0.,          0.,         0., 0.]])
-    >>> res = rotational(array_a, array_b, translate=False, scale=False)
-    >>> res['array_u'] # rotational array
+    >>> res = rotational(array_a,array_b,translate=False,scale=False)
+    >>> res.t   # rotational transformation
     array([[ 0.70710678, -0.70710678],
            [ 0.70710678,  0.70710678]])
-    >>> res['error'] # error
+    >>> res.error   # one-sided Procrustes error
     1.483808210011695e-17
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
-    # compute SVD of A.T * A
-    array_u, _, array_vt = np.linalg.svd(np.dot(new_a.T, new_b))
-    # construct S which is an identity matrix with the smallest
-    # singular value replaced by sgn(|U*V^t|).
-    s_value = np.eye(new_a.shape[1])
-    s_value[-1, -1] = np.sign(np.linalg.det(np.dot(array_u, array_vt)))
-    # compute optimum rotation matrix
-    u_opt = np.dot(np.dot(array_u, s_value), array_vt)
-    # compute single-sided error error
-    error = compute_error(new_a, new_b, u_opt)
+    new_a, new_b = setup_input_arrays(
+        a,
+        b,
+        remove_zero_col,
+        remove_zero_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    if new_a.shape != new_b.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
+            "Check pad, remove_zero_col, and remove_zero_row arguments."
+        )
+    # compute SVD of A.T * B
+    u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
+    # construct S: an identity matrix with the smallest singular value replaced by sgn(|U*V^t|)
+    s = np.eye(new_a.shape[1])
+    s[-1, -1] = np.sign(np.linalg.det(np.dot(u, vt)))
+    # compute optimal rotational transformation
+    r_opt = np.dot(np.dot(u, s), vt)
+    # compute single-sided error
+    error = compute_error(new_a, new_b, r_opt)
 
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=None)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=r_opt, s=None)

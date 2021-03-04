@@ -223,7 +223,8 @@ def test_orthogonal_translate_scale2():
     array_b = np.concatenate((array_b, np.zeros((2, 5))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((5, 7))), axis=0)
     # compute procrustes transformation
-    res = orthogonal(array_a, array_b, translate=False, scale=False)
+    res = orthogonal(array_a, array_b, translate=False, scale=False, remove_zero_row=True,
+                     remove_zero_col=True)
     assert_almost_equal(res["t"], np.dot(rot, ref), decimal=6)
     assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
 
@@ -260,9 +261,9 @@ def test_two_sided_orthogonal_raises_error_non_symmetric_matrices():
     array_a = np.array([[1., 0.], [0., 0.]])
     array_b = np.array([[1., 2.], [2., 1.]])
     assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True,
-                  remove_zero_col=True, pad_mode="row")
+                  remove_zero_col=True, pad=False)
     assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True,
-                  remove_zero_col=True, pad_mode="col")
+                  remove_zero_col=True, pad=False)
 
 
 def test_two_sided_orthogonal_rotate_reflect():
@@ -275,7 +276,7 @@ def test_two_sided_orthogonal_rotate_reflect():
     # define array_b by transforming array_a
     array_b = np.dot(np.dot(ref, array_a), rot)
     # compute procrustes transformation
-    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, single_transform=False, translate=True, scale=True)
     # check transformation array orthogonality
     assert_almost_equal(np.dot(result["s"], result["s"].T), np.eye(3), decimal=6)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=6)
@@ -298,7 +299,8 @@ def test_two_sided_orthogonal_rotate_reflect_pad():
     array_b = np.concatenate((array_b, np.zeros((2, 6))), axis=0)
 
     # compute Procrustes transformation
-    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, single_transform=False, translate=True, scale=True,
+                               remove_zero_col=True, remove_zero_row=True)
     # check transformation array and error
     assert_almost_equal(np.dot(result["s"], result["s"].T), np.eye(2), decimal=6)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(2), decimal=6)
@@ -318,7 +320,7 @@ def test_two_sided_orthogonal_translate_scale_rotate_reflect():
     shift = np.array([[16., 41., 33.], [16., 41., 33.], [16., 41., 33.]])
     array_b = np.dot(np.dot(ref, 23.5 * array_a + shift), rot)
     # compute procrustes transformation
-    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, single_transform=False, translate=True, scale=True)
     # check transformation array and error
     assert_almost_equal(np.dot(result["s"], result["s"].T), np.eye(3), decimal=6)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=6)
@@ -339,7 +341,7 @@ def test_two_sided_orthogonal_translate_scale_rotate_reflect_3by3():
     shift = np.array([[146.56, 441.67, 343.56], [146.56, 441.67, 343.56], [146.56, 441.67, 343.56]])
     array_b = np.dot(np.dot(ref, 79.89 * array_a + shift), rot)
     # compute procrustes transformation
-    result = orthogonal_2sided(array_a, array_b, translate=True, scale=True, single_transform=False)
+    result = orthogonal_2sided(array_a, array_b, single_transform=False, translate=True, scale=True)
     # check transformation array and error
     assert_almost_equal(np.dot(result["s"], result["s"].T), np.eye(3), decimal=6)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=6)
@@ -380,7 +382,8 @@ def test_two_sided_orthogonal_single_transformation_rot_reflect_padded():
     array_b = np.concatenate((array_b, np.zeros((5, 8))), axis=0)
 
     # check transformation array and error.
-    result = orthogonal_2sided(array_a, array_b, single_transform=True)
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, remove_zero_col=True,
+                               remove_zero_row=True)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
     assert_almost_equal(result["error"], 0, decimal=8)
@@ -401,7 +404,7 @@ def test_two_sided_orthogonal_single_transformation_scale_3by3():
     array_b = np.dot(np.dot(trans.T, 6.9 * array_a), trans)
 
     # check transformation array and error
-    result = orthogonal_2sided(array_a, array_b, translate=False, scale=True, single_transform=True)
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, translate=False, scale=True)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
     assert_almost_equal(result["error"], 0, decimal=8)
@@ -422,7 +425,7 @@ def test_two_sided_orthogonal_single_transformation_scale_rot_ref_2by2():
     array_b = np.dot(np.dot(trans.T, 88.89 * array_a), trans)
 
     # check transformation array and error
-    result = orthogonal_2sided(array_a, array_b, translate=False, scale=True, single_transform=True)
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, translate=False, scale=True)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(2), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
     assert_almost_equal(result["error"], 0, decimal=8)
@@ -443,7 +446,7 @@ def test_two_sided_orthogonal_single_transformation_scale_rot_ref_3by3():
     array_b = np.dot(np.dot(trans.T, 6.9 * array_a), trans)
 
     # check transformation array and error
-    result = orthogonal_2sided(array_a, array_b, translate=False, scale=True, single_transform=True)
+    result = orthogonal_2sided(array_a, array_b, single_transform=True, translate=False, scale=True)
     assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
     assert_almost_equal(result["error"], 0, decimal=8)

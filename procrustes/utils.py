@@ -269,7 +269,7 @@ def compute_error(a, b, t, s=None):
 
 
 def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                       pad_mode, translate, scale, check_finite, weight):
+                       pad, translate, scale, check_finite, weight):
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -286,22 +286,9 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         Default=True.
     remove_zero_row : bool, optional
         If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
-    pad_mode : str
-        Specifying how to pad the arrays. Should be one of
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool
         If true, then translate both arrays :math:`A, B` to the origin, ie columns of the arrays
         will have mean zero.
@@ -321,11 +308,13 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         Returns the padded arrays, in that they have the same matrix dimensions.
 
     """
-    array_a = _setup_input_array_lower(array_a, None, check_finite, translate,
-                                       scale, remove_zero_col, remove_zero_row, weight)
-    array_b = _setup_input_array_lower(array_b, None, check_finite, translate,
-                                       scale, remove_zero_col, remove_zero_row, weight)
-    return _zero_padding(array_a, array_b, pad_mode)
+    array_a = _setup_input_array_lower(array_a, None, remove_zero_col, remove_zero_row, translate,
+                                       scale, check_finite, weight)
+    array_b = _setup_input_array_lower(array_b, None, remove_zero_col, remove_zero_row, translate,
+                                       scale, check_finite, weight)
+    if pad:
+        array_a, array_b = _zero_padding(array_a, array_b, pad_mode="row-col")
+    return array_a, array_b
 
 
 def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero_row,
@@ -378,23 +367,19 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
     List of arrays :
         Returns the padded arrays, in that they have the same matrix dimensions.
     """
-    array_list_new = [_setup_input_array_lower(array_a=arr,
-                                               array_ref=array_ref,
-                                               check_finite=check_finite,
-                                               translate=translate,
-                                               scale=scale,
-                                               remove_zero_col=remove_zero_col,
-                                               remove_zero_row=remove_zero_row,
-                                               weight=weight)
-                      for arr in array_list]
+    array_list_new = [
+        _setup_input_array_lower(array_a=arr, array_ref=array_ref, remove_zero_col=remove_zero_col,
+                                 remove_zero_row=remove_zero_row, translate=translate, scale=scale,
+                                 check_finite=check_finite, weight=weight)
+        for arr in array_list]
     arr_shape = np.array([arr.shape for arr in array_list_new])
     array_b = np.ones(np.max(arr_shape, axis=0), dtype=int)
     array_list_new = [_zero_padding(arr, array_b, pad_mode=pad_mode) for arr in array_list_new]
     return array_list_new
 
 
-def _setup_input_array_lower(array_a, array_ref, check_finite, translate,
-                             scale, remove_zero_col, remove_zero_row, weight):
+def _setup_input_array_lower(array_a, array_ref, remove_zero_col, remove_zero_row, translate, scale,
+                             check_finite, weight):
     """Pre-processing the matrices with translation, scaling."""
     _check_arraytypes(array_a)
     if check_finite:

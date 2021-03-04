@@ -96,7 +96,7 @@ def iter_subdirs(root):
 
 
 def main():
-    source_dirs = ['.', 'doc', 'scripts', 'tools'] + \
+    source_dirs = ['.', 'docs', 'scripts', 'tools'] + \
                   list(iter_subdirs('procrustes'))
 
     fixers = [

@@ -37,10 +37,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../'))
-#sys.path.append(os.path.abspath('sphinxext'))
+# sys.path.append(os.path.abspath('sphinxext'))
 
 
 # -- General configuration ------------------------------------------------
@@ -60,11 +62,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'numpydoc',
-#   'sphinx.ext.autosummary',
+    # 'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.inheritance_diagram',
-#   'IPython.sphinxext.ipython_console_highlighting',
-#   'IPython.sphinxext.ipython_directive',
+    # 'IPython.sphinxext.ipython_console_highlighting',
+    # 'IPython.sphinxext.ipython_directive',
     'autoapi.extension',
     'sphinxcontrib.bibtex']
 
@@ -121,13 +123,12 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = 'alabaster'
+# html_theme = 'alabaster'
 html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -154,12 +155,10 @@ html_sidebars = {
     ]
 }
 
-
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Procrustesdoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -189,7 +188,6 @@ latex_documents = [
      'Ayers Lab', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -198,7 +196,6 @@ man_pages = [
     (master_doc, 'procrustes', 'Procrustes Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 

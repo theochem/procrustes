@@ -91,8 +91,8 @@ numfig = True
 
 # General information about the project.
 project = 'Procrustes'
-copyright = '2020, Ayers Lab'
-author = 'Ayers Lab'
+copyright = '2017-2021, The QC-Devs Community'
+author = 'The QC-Devs Community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -24,8 +24,8 @@
 
 import numpy as np
 from numpy.testing import assert_almost_equal
-import pytest
 from procrustes.generic import generic
+import pytest
 
 
 @pytest.mark.parametrize("m", np.random.randint(2, 100, 25))

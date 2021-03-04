@@ -30,7 +30,7 @@ Installation
 Downloading Code
 ================
 
-The latest code can be obtained through Github (private at present),
+The latest code can be obtained through theochem (https://github.com/theochem/procrustes) in Github,
 
 .. code-block:: bash
 
@@ -43,145 +43,88 @@ Dependencies
 
 The following dependencies will be necessary for Procrustes to build properly,
 
-* Python >= 2.7, or Python >= 3.6: http://www.python.org/
-* PIP >= 19.0: https://pip.pypa.io/
-* SciPy >= 1.0.0: http://www.scipy.org/
-* NumPy >= 1.14: http://www.numpy.org/
-* PyTest >= 5.3.0: https://docs.pytest.org/
-* PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/
-
-Python Dependencies
-~~~~~~~~~~~~~~~~~~~
-
-There are several different ways of installing python dependencies. A better and preferred
-practice is to creat a virtual environment by using
-
-#. `venv`, https://docs.python.org/3/library/venv.html
-#. `conda`,  https://docs.conda.io/en/latest/
-#. `virtualenv`, https://virtualenv.pypa.io/en/latest/
-
-* **venv**
-
-This is a standard builtin library since Python 3.3.
-
-    .. code-block:: bash
-
-        # mode details at
-        # https://docs.python.org/3/library/venv.html
-        python -m venv myenv
-        # on Windows
-        myenv\Scripts\activate.bat
-        # on Unix or MacOS
-        source myenv/bin/activate
-        # install the dependencies
-        pip install -r requirements.txt
-
-* **conda**
-
-    .. code-block:: bash
-
-        codna create -n myenv python=3.6
-        # activate the virtual environment
-        conda activate myenv
-        # install the dependencies
-        conda install --yes --file requirements.txt
-
-* **virtualenv**
-
-You need to install it with `pip install virtualenv`.
-
-    .. code-block:: bash
-
-        # create the virtual environment
-        virtualenv myenv
-        # on Windows
-        myenv\Scripts\activate
-        # on Unix or MacOS
-        source myenv/bin/activate
-        # install the dependencies
-        pip install -r requirements.txt
-
-
-And then install the package accordingly.
-
-The other option is to install the dependencies in the operating system as follows.
-
-* **Ubuntu Linux 18.04**
-
-  .. code-block:: bash
-
-    sudo apt-get install python-dev python-pip python-numpy python-scipy python-pytest python-pytest-cov
-
-* **Ubuntu Linux 15.04 & 14.04**
-
-  .. code-block:: bash
-
-     sudo apt-get install python-dev python-pip python-numpy python-scipy python-pytest
-     pip install --user --upgrade numpy scipy pytest pytest-cov
-
-* **Fedora 30 and later**
-
-  .. code-block:: bash
-
-    sudo dnf install python3-dev python3-pip python3-numpy python3-scipy python3-pytest python3-pytest-cov
-
-* **Mac OS (using MacPorts)**
-
-  .. code-block:: bash
-
-    # the command line works for python36
-    # change to py37, py38, py39 if you want
-    sudo port install python36; sudo port select --set python python36
-    sudo port install py36-pytest; sudo port select --set pytest py36-pytest
-    sudo port install py36-pytest-cov; sudo port select --set pytest-cov py36-pytest-cov
-    sudo port install py36-numpy py36-scipy
-    sudo port install py36-pip; sudo port select --set pip pip36
+* Python >= 3.6: [http://www.python.org](http://www.python.org/)
+* SciPy >= 1.5.0: [https://www.scipy.org/](http://www.scipy.org/)
+* NumPy >= 1.18.5: [https://www.numpy.org/](http://www.numpy.org/)
+* Pip >= 19.0: [https://pip.pypa.io/](https://pip.pypa.io/)
+* PyTest >= 5.3.4: [https://docs.pytest.org/](https://docs.pytest.org/)
+* PyTest-Cov >= 2.8.0: [https://pypi.org/project/pytest-cov/](https://pypi.org/project/pytest-cov/)
+* Sphinx >= 2.3.0, if one wishes to build the documentation locally:
+  [https://www.sphinx-doc.org/](https://www.sphinx-doc.org/)
 
 Installation
 ============
 
-To install Procrustes:
+The stable release of the package can be easily installed through the *pip* and
+*conda* package management systems, which install the dependencies automatically, if not
+available. To use *pip*, simply run the following command:
 
 .. code-block:: bash
 
-    # download the package
+    pip install qc-procrustes
+
+To use *conda*, one can either install the package through Anaconda Navigator or run the following
+command in a desired *conda* environment:
+
+.. code-block:: bash
+
+    conda install -c theochem procrustes
+
+
+Alternatively, the *Procrustes* source code can be download from GitHub (either the stable version
+or the development version) and then installed from source. For example, one can download the latest
+source code using *git* by:
+
+.. code-block:: bash
+
+    # download source code
     git clone git@github.com:theochem/procrustes.git
-    # navigate to the package folder
     cd procrustes
-    # installation
-   ./setup.py install --user
 
-
-Or by using the python package manager pip:
+From the parent directory, the dependencies can either be installed using *pip* by:
 
 .. code-block:: bash
 
-   pip install -e ./ --user
+    # install dependencies using pip
+    pip install -r requirements.txt
 
-If one wants to remove the package, people can just run:
+
+or, through *conda* by:
 
 .. code-block:: bash
 
-   pip uninstall procrustes
+    # create and activate myenv environment
+    # Procruste works with Python 3.6, 3.7, and 3.8
+    conda create -n myenv python=3.6
+    conda activate myenv
+    # install dependencies using conda
+    conda install --yes --file requirements.txt
 
-.. todo::
-    #. Add Anaconda installation support
-    #. Add MacPorts installation support
-    #. Add pip command line installation support
+
+Finally, the *Procrustes* package can be installed (from source) by:
+
+.. code-block:: bash
+
+    # install Procrustes from source
+    pip install .
 
 .. _usr_testing:
 
 Testing
 =======
 
-To make sure the package is working properly, it is recommended to run tests:
+To make sure that the package is installed properly, the *Procrustes* tests should be executed using
+*pytest* from the parent directory:
 
 .. code-block:: bash
 
-   pytest --cov-config=.coveragerc --cov=procrustes procrustes/test
+    # testing without coverage report
+    pytest -v .
 
-Or simply run
+
+In addition, to generate a coverage report alongside testing, one can use:
 
 .. code-block:: bash
 
-   pytest .
+    # testing with coverage report
+    pytest --cov-config=.coveragerc --cov=procrustes procrustes/test

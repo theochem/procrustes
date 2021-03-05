@@ -25,12 +25,16 @@
 Quick Start
 ###########
 
-Procrustes is a set of interpretive geometric tools for analyzing matrices. To use the python
-package, the user should make sure Procrustes have been installed properly including all the
-dependencies. You may refer to the *Installation* part for more information.
-
-How to use Procrustes
-=====================
+The code block below gives an example of the orthogonal Procrustes problem for random matrices
+:math:`\mathbf{A} \in \mathbb{R}^{m \times n}` and :math:`\mathbf{B} \in \mathbb{R}^{m \times n}`.
+Here, matrix :math:`\mathbf{B} \in \mathbb{R}^{m \times n}` is constructed by shifting an orthogonal
+transformation of matrix :math:`\mathbf{A} \in \mathbb{R}^{m \times n}`, so the matrices can be
+perfectly matched and the error is zero. As is the case with all Procrustes flavours, the user
+can specify whether the matrices should be translated (so that both are centered at origin)
+and/or scaled (so that both are normalized to unity with respect to the Frobenius norm).
+In addition, the other optional arguments (not appearing in the code-block below) specify whether
+the zero columns (on the right-hand side) and rows (at the bottom) should be removed prior to
+transformation.
 
 As a python library, Procrustes can be imported and used in python codes. People may get a better
 understanding of how to use the package by the implemented examples.
@@ -41,31 +45,28 @@ package. Here is a snippet for script.
 .. code-block:: python
    :linenos:
 
-   #!/usr/bin/env python
+   import numpy as np
+   from scipy.stats import ortho_group
+   from procrustes import orthogonal
 
-   # import Procrustes library
-   from procrustes import *
+   # random input 10x7 matrix A
+   a = np.random.rand(10, 7)
 
-   # Implement the script body here
+   # random orthogonal 7x7 matrix T
+   m = ortho_group.rvs(7)
 
-Now you can make your script executable by:
+   # target matrix B (which is a shifted AxT)
+   b = np.dot(a, m) + np.random.rand(1, 7)
 
-.. code-block:: bash
+   # orthogonal Procrustes analysis with translation
+   result = orthogonal(a, b, scale=True, translate=True)
 
-   $ chmod +x script.py
-   $ ./script.py
+   # display Procrustes results
+   print(result.error)    # error (expected to be zero)
+   print(result.t)    # transformation matrix (same as T)
+   print(result.new_b)
+   print(result.new_a)
 
-If you don't want to import every function in Procrustes, you can just import some or just one of
-them.
-
-.. code-block:: python
-   :linenos:
-
-   # import only on function
-   from procrustes import symmetric
-
-   # import some of the functions
-   from procrustes import orthogonal, permutation
 
 Getting Help
 ============
@@ -78,31 +79,3 @@ You may refer to the API documentation for technical details. You can also try t
    help(permutation)
 
 You will get a detailed information about the parameters and returns.
-
-Here is an generic example showing how can Procrustes help people solve problems.
-
-.. code-block:: python
-   :linenos:
-
-   # import the libraries
-   import numpy as np
-   from procrustes import orthogonal
-
-   # Define a random array_a
-   array_a = np.array([[-7.3, 2.8], [-7.1, -0.2],
-                       [ 4. , 1.4], [ 1.3,  0. ]])
-   # Define array_b
-   array_b = np.array([[-5.90207845, -5.12791088],
-                       [-6.74021234, -2.24043246],
-                       [ 4.23759847,  0.05252849],
-                       [ 1.22159856,  0.44463126]])
-   # Find the orthogonal matrix by Procrustes to minimize the distance between them
-   new_a, new_b, array_u, error_opt = orthogonal(array_a, array_b,
-                                                 remove_zero_col=False,
-                                                 remove_zero_row=False,
-                                                 translate=False, scale=False)
-   # Print the orthogonal matrix
-   print('orthogonal matrix=', array_u)
-   # Print the error
-   print('error=', error_opt)
-

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Procrustes is a collection of interpretive chemical tools for
-# analyzing outputs of the quantum chemistry calculations.
+# The Procrustes library provides a set of functions for transforming
+# a matrix to make it as similar as possible to a target matrix.
 #
-# Copyright (C) 2017-2020 The Procrustes Development Team
+# Copyright (C) 2017-2021 The QC-Devs Community
 #
 # This file is part of Procrustes.
 #
@@ -20,10 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-#
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
+
 # Procrustes documentation build configuration file, created by
 # sphinx-quickstart on Wed Apr 11 19:35:53 2018.
 #
@@ -40,10 +37,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../'))
-#sys.path.append(os.path.abspath('sphinxext'))
+# sys.path.append(os.path.abspath('sphinxext'))
 
 
 # -- General configuration ------------------------------------------------
@@ -63,11 +62,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'numpydoc',
-#   'sphinx.ext.autosummary',
+    # 'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.inheritance_diagram',
-#   'IPython.sphinxext.ipython_console_highlighting',
-#   'IPython.sphinxext.ipython_directive',
+    # 'IPython.sphinxext.ipython_console_highlighting',
+    # 'IPython.sphinxext.ipython_directive',
     'autoapi.extension',
     'sphinxcontrib.bibtex']
 
@@ -94,8 +93,8 @@ numfig = True
 
 # General information about the project.
 project = 'Procrustes'
-copyright = '2020, Ayers Lab'
-author = 'Ayers Lab'
+copyright = '2017-2021, The QC-Devs Community'
+author = 'The QC-Devs Community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -124,13 +123,12 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = 'alabaster'
+# html_theme = 'alabaster'
 html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -157,12 +155,10 @@ html_sidebars = {
     ]
 }
 
-
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Procrustesdoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -192,7 +188,6 @@ latex_documents = [
      'Ayers Lab', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -201,7 +196,6 @@ man_pages = [
     (master_doc, 'procrustes', 'Procrustes Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 

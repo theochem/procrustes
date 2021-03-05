@@ -21,11 +21,12 @@
 
 .. toctree::
 
-   utils.rst
-   generic.rst
-   generalized.rst
-   orthogonal.rst
-   permutation.rst
-   softassign.rst
-   rotational.rst
-   symmetric.rst
+    utils.rst
+    kopt.rst
+    generic.rst
+    generalized.rst
+    orthogonal.rst
+    permutation.rst
+    softassign.rst
+    rotational.rst
+    symmetric.rst

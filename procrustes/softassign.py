@@ -308,12 +308,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     error = compute_error(new_a, new_b, array_m, array_m)
     # k-opt heuristic
     if kopt:
-        array_m, error = kopt_heuristic_single(array_a=new_a,
-                                               array_b=new_b,
-                                               ref_error=error,
-                                               perm=array_m,
-                                               kopt_k=kopt_k,
-                                               kopt_tol=kopt_tol)
+        array_m, error = kopt_heuristic_single(a=new_a, b=new_b, ref_error=error, p=array_m,
+                                               k=kopt_k, tol=kopt_tol)
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_m, s=None)
 
 

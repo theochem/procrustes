@@ -64,21 +64,25 @@ def kopt_heuristic_single(a, b, p=None, k=3):
     # assign p to be an identity array, if not specified
     if p is None:
         p = np.identity(np.shape(a)[0])
-    num_row = p.shape[0]
+    # compute 2-sided permutation error of the initial p matrix
     error = compute_error(a, b, p, p)
-    # all the possible row-wise permutations
-    for comb in it.combinations(np.arange(num_row), r=k):
-        for comb_perm in it.permutations(comb, r=k):
-            if comb_perm != comb:
-                p_new = deepcopy(p)
-                p_new[comb, :] = p_new[comb_perm, :]
-                error_new = compute_error(a, b, p_new, p_new)
-                if error_new < error:
-                    p, error = p_new, error_new
-                    # check whether perfect permutation matrix is found
-                    # TODO: smarter threshold based on norm of matrix
-                    if error <= 1.0e-8:
-                        return p, error
+    # swap rows and columns until the permutation matrix is not improved
+    search = True
+    while search:
+        search = False
+        for comb in it.combinations(np.arange(p.shape[0]), r=k):
+            for comb_perm in it.permutations(comb, r=k):
+                if comb_perm != comb:
+                    p_new = deepcopy(p)
+                    p_new[comb, :] = p_new[comb_perm, :]
+                    error_new = compute_error(a, b, p_new, p_new)
+                    if error_new < error:
+                        search = True
+                        p, error = p_new, error_new
+                        # check whether perfect permutation matrix is found
+                        # TODO: smarter threshold based on norm of matrix
+                        if error <= 1.0e-8:
+                            return p, error
     return p, error
 
 

@@ -34,8 +34,8 @@ __all__ = [
 ]
 
 
-def kopt_heuristic_single(a, b, ref_error, p=None, k=3, tol=1.0e-8):
-    r"""K-opt heuristic to improve the accuracy for two-sided permutation with one transformation.
+def kopt_heuristic_single(a, b, p=None, k=3, tol=1.0e-8):
+    r"""Compute locally optimal permutation matrix and its error using k-opt heuristic.
 
     Perform k-opt local search with every possible valid combination of the swapping mechanism.
 
@@ -45,23 +45,20 @@ def kopt_heuristic_single(a, b, ref_error, p=None, k=3, tol=1.0e-8):
         The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
         The 2D-array :math:`\mathbf{B}` representing the reference matrix.
-    ref_error : float
-        The reference error value.
     p : ndarray, optional
-        The 2D-array :math:`\mathbf{P}` representing the initial permutation matrix.
-        The permutation array which remains to be processed with k-opt local search. Default is the
-        identity matrix with the same shape of a.
+        The 2D-array :math:`\mathbf{P}` representing the initial permutation matrix. If `None`, the
+        identity matrix is used.
     k : int, optional
-        Defines the oder of k-opt heuristic local search. For example, k=3 leads to a local
-        search of 3 items and k=2 only searches for two items locally.
+        The order of the permutation. For example, `k=3` swaps all possible 3-permutations of the
+        given p matrix.
     tol : float, optional
-        Tolerance value to check if k-opt heuristic converges.
+        Convergence threshold of the heuristic algorithm.
 
     Returns
     -------
     perm : ndarray
         The permutation array after optimal heuristic search.
-    kopt_error : float
+    error : float
         The error distance of two arrays with the updated permutation array.
     """
     if k < 2 or not isinstance(k, int):
@@ -70,23 +67,22 @@ def kopt_heuristic_single(a, b, ref_error, p=None, k=3, tol=1.0e-8):
     if p is None:
         p = np.identity(np.shape(a)[0])
     num_row = p.shape[0]
-    kopt_error = ref_error
+    error = compute_error(a, b, p, p)
     # all the possible row-wise permutations
     for comb in it.combinations(np.arange(num_row), r=k):
         for comb_perm in it.permutations(comb, r=k):
             if comb_perm != comb:
-                perm_kopt = deepcopy(p)
-                perm_kopt[comb, :] = perm_kopt[comb_perm, :]
-                e_kopt_new = compute_error(a, b, perm_kopt, perm_kopt)
-                if e_kopt_new < kopt_error:
-                    p = perm_kopt
-                    kopt_error = e_kopt_new
-                    if kopt_error <= tol:
+                p_new = deepcopy(p)
+                p_new[comb, :] = p_new[comb_perm, :]
+                error_new = compute_error(a, b, p_new, p_new)
+                if error_new < error:
+                    p, error = p_new, error_new
+                    if error <= tol:
                         break
-    return p, kopt_error
+    return p, error
 
 
-def kopt_heuristic_double(a, b, ref_error, p=None, q=None, k=3, tol=1.0e-8):
+def kopt_heuristic_double(a, b, p=None, q=None, k=3, tol=1.0e-8):
     r"""
     K-opt kopt for regular two-sided permutation Procrustes to improve the accuracy.
 
@@ -99,8 +95,6 @@ def kopt_heuristic_double(a, b, ref_error, p=None, q=None, k=3, tol=1.0e-8):
         The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
         The 2D-array :math:`\mathbf{B}` representing the reference matrix.
-    ref_error : float
-        The reference error value.
     p : ndarray, optional
         The left permutation array which remains to be processed with k-opt local search. Default
         is the identity matrix with the same shape of array_m.
@@ -132,7 +126,7 @@ def kopt_heuristic_double(a, b, ref_error, p=None, q=None, k=3, tol=1.0e-8):
 
     num_row_left = p.shape[0]
     num_row_right = q.shape[0]
-    kopt_error = ref_error
+    kopt_error = compute_error(a, b, p, q)
     # the left hand side permutation
     # pylint: disable=too-many-nested-blocks
     for comb_left in it.combinations(np.arange(num_row_left), r=k):

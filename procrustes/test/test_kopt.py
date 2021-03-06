@@ -51,12 +51,11 @@ def test_kopt_heuristic_single():
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
     error_old = compute_error(arr_a, arr_b, perm_guess, perm_guess)
-    perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, error_old, perm_guess, 3, tol=1.e-8)
+    perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, perm_guess, 3, tol=1.e-8)
     assert_equal(perm, perm_exact)
     assert kopt_error == 0
     # test the error exceptions
-    assert_raises(ValueError, kopt_heuristic_single, arr_a,
-                  arr_b, error_old, perm_guess, 1, tol=1.e-8)
+    assert_raises(ValueError, kopt_heuristic_single, arr_a, arr_b, perm_guess, 1, tol=1.e-8)
 
 
 def test_kopt_heuristic_double():
@@ -80,10 +79,9 @@ def test_kopt_heuristic_double():
                             [0., 0., 1.],
                             [0., 1., 0.]])
     error = compute_error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
-    perm_left, perm_right, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, ref_error=error,
-                                                              p=perm1_shuff, q=perm2_shuff, k=4,
-                                                              tol=1.e-8)
-    _, _, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, ref_error=error, p=perm_left,
-                                             q=perm_right, k=3, tol=1.e-8)
+    perm_left, perm_right, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, p=perm1_shuff,
+                                                              q=perm2_shuff, k=4, tol=1.e-8)
+    _, _, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, p=perm_left, q=perm_right, k=3,
+                                             tol=1.e-8)
     assert kopt_error <= error
     assert kopt_error == 0

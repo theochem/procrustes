@@ -33,6 +33,7 @@ transformations (which can be permutations, rotations, unitary, or symmetric) th
     .. math::
         \underbrace{\min}_{\mathbf{S}, \mathbf{T}} \| \mathbf{S}\mathbf{A}\mathbf{T} -
         \mathbf{B}\|_{F}^2
+
 where :math:`\mathbf{A} \in \mathbb{R}^{m \times n}` is the input matrix,
 :math:`\mathbf{B} \in \mathbb{R}^{m \times n}` is the reference (target) matrix, and
 :math:`\| \cdot \|_{F}` denotes the Frobenius norm defined as,

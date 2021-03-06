@@ -66,6 +66,7 @@ def kopt_heuristic_single(a, b, p=None, k=3):
         p = np.identity(np.shape(a)[0])
     # compute 2-sided permutation error of the initial p matrix
     error = compute_error(a, b, p, p)
+    # pylint: disable=too-many-nested-blocks
     # swap rows and columns until the permutation matrix is not improved
     search = True
     while search:

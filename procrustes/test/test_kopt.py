@@ -50,7 +50,6 @@ def test_kopt_heuristic_single():
                            [0, 0, 1, 0, 0],
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
-    error_old = compute_error(arr_a, arr_b, perm_guess, perm_guess)
     perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, perm_guess, 3)
     assert_equal(perm, perm_exact)
     assert kopt_error == 0

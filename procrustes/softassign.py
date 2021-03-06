@@ -41,7 +41,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                pad_mode='row-col', remove_zero_col=True, remove_zero_row=True,
                translate=False, scale=False, check_finite=True, adapted=True,
                beta_0=None, m_guess=None, iteration_anneal=None, kopt=False,
-               kopt_k=3, kopt_tol=1.e-8, weight=None):
+               kopt_k=3, weight=None):
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
@@ -127,8 +127,6 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    kopt_tol : float, optional
-        Tolerance value to check if k-opt heuristic converges. Default=1.e-8.
     weight : ndarray
         The weighting matrix. Default=None.
 

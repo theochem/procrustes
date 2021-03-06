@@ -28,6 +28,9 @@ from procrustes.generic import generic
 import pytest
 
 
+np.random.seed(2020)
+
+
 @pytest.mark.parametrize("m", np.random.randint(2, 100, 25))
 def test_generic_square(m):
     r"""Test generic Procrustes with random square matrices."""

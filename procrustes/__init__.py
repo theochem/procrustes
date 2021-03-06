@@ -30,3 +30,5 @@ from procrustes.permutation import *
 from procrustes.rotational import *
 from procrustes.softassign import *
 from procrustes.symmetric import *
+from procrustes.generic import *
+from procrustes.generalized import *

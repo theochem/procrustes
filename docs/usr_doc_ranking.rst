@@ -48,10 +48,10 @@ shows the pair-wise relationship for 5 football teams.
 
 We introduce the concept of ranking vector, which can be cast as a permutation of the integer 1 to n
 that ranks all the teams. For example, the
-:math:`{rank\_vec}^{\top} = [1,3,4,5,2]` for team_A, team_B, team_C, team_D, team_E respectively. the
-:math:`rank\_vec` assigns team_A with rank position 1, team_E with rank position 2 and so on. The
-ranking vector with length :math:`n` can result in a :math:`n \times n` *rank-differential matrix*
-which is a symmetric reordering of the *fundamental rank-differential matrix*
+:math:`{rank\_vec}^{\top} = [1,3,4,5,2]` for team_A, team_B, team_C, team_D, team_E respectively.
+the :math:`rank\_vec` assigns team_A with rank position 1, team_E with rank position 2 and so on.
+The ranking vector with length :math:`n` can result in a :math:`n \times n` *rank-differential
+matrix* which is a symmetric reordering of the *fundamental rank-differential matrix*
 :math:`\hat{R}_{n \times n}`.
 
 .. math::
@@ -103,7 +103,7 @@ In order to compute the *ranking vector*, we need the *fundamental rank-differen
 
    def rank_differential(D):
        r""" Compute the rank differential based on the shape of input data."""
-       
+
        N = np.shape(D)[0]
        R_hat = np.zeros((N, N))
        # Compute the upper triangle part of R_hat

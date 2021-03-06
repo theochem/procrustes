@@ -34,7 +34,7 @@ __all__ = [
 ]
 
 
-def kopt_heuristic_single(a, b, p=None, k=3, tol=1.0e-8):
+def kopt_heuristic_single(a, b, p=None, k=3):
     r"""Compute locally optimal permutation matrix and its error using k-opt heuristic.
 
     Perform k-opt local search with every possible valid combination of the swapping mechanism.
@@ -51,8 +51,6 @@ def kopt_heuristic_single(a, b, p=None, k=3, tol=1.0e-8):
     k : int, optional
         The order of the permutation. For example, `k=3` swaps all possible 3-permutations of the
         given p matrix.
-    tol : float, optional
-        Convergence threshold of the heuristic algorithm.
 
     Returns
     -------
@@ -77,8 +75,10 @@ def kopt_heuristic_single(a, b, p=None, k=3, tol=1.0e-8):
                 error_new = compute_error(a, b, p_new, p_new)
                 if error_new < error:
                     p, error = p_new, error_new
-                    if error <= tol:
-                        break
+                    # check whether perfect permutation matrix is found
+                    # TODO: smarter threshold based on norm of matrix
+                    if error <= 1.0e-8:
+                        return p, error
     return p, error
 
 

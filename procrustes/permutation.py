@@ -140,7 +140,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
                        add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3,
-                       kopt_tol=1.e-8, weight=None):
+                       weight=None):
     r"""Double sided permutation Procrustes.
 
     Parameters
@@ -213,9 +213,6 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    kopt_tol : float, optional
-        Tolerance value to check if k-opt heuristic converges. Default=1.e-8.
-
 
     Returns
     -------

@@ -22,12 +22,8 @@
     : --
 
 
-:mod:`procrustes.permutation`
-===============================
+:mod:`procrustes.kopt`
+=============================
 
-.. automodule:: procrustes.permutation
+.. automodule:: procrustes.kopt
    :members:
-   :undoc-members:
-   :special-members:
-   :inherited-members:
-   :private-members:

@@ -112,11 +112,11 @@ def kopt_heuristic_double(a, b, p=None, q=None, k=3):
 
     Returns
     -------
-    perm_kopt_p : ndarray
+    perm_p : ndarray
         The right-hand-side permutation matrix after optimal heuristic search.
-    perm_kopt_q : ndarray
+    perm_q : ndarray
         The left-hand-side permutation matrix after optimal heuristic search.
-    kopt_error : float
+    error : float
         The error distance of two arrays with the updated permutation array.
     """
     if k < 2 or not isinstance(k, int):
@@ -127,39 +127,28 @@ def kopt_heuristic_double(a, b, p=None, q=None, k=3):
     if q is None:
         q = np.identity(np.shape(a)[0])
 
+    # compute 2-sided permutation error of the initial P & Q matrices
+    error = compute_error(a, b, p, q)
+    # pylint: disable=too-many-nested-blocks
     num_row_left = p.shape[0]
     num_row_right = q.shape[0]
-    kopt_error = compute_error(a, b, p, q)
-    # the left hand side permutation
-    # pylint: disable=too-many-nested-blocks
-    for comb_left in it.combinations(np.arange(num_row_left), r=k):
-        for comb_perm_left in it.permutations(comb_left, r=k):
-            if comb_perm_left != comb_left:
-                perm_kopt_left = deepcopy(p)
-                # the right hand side permutation
-                for comb_right in it.combinations(np.arange(num_row_right), r=k):
-                    for comb_perm_right in it.permutations(comb_right, r=k):
-                        if comb_perm_right != comb_right:
-                            perm_kopt_right = deepcopy(q)
-                            perm_kopt_right[comb_right, :] = perm_kopt_right[comb_perm_right, :]
-                            e_kopt_new_right = compute_error(b, a, p.T,
-                                                             perm_kopt_right)
-                            if e_kopt_new_right < kopt_error:
-                                q = perm_kopt_right
-                                kopt_error = e_kopt_new_right
-                                # check whether perfect permutation matrix is found
-                                # TODO: smarter threshold based on norm of matrix
-                                if kopt_error <= 1.0e-8:
-                                    break
 
-                perm_kopt_left[comb_left, :] = perm_kopt_left[comb_perm_left, :]
-                e_kopt_new_left = compute_error(b, a, perm_kopt_left.T, q)
-                if e_kopt_new_left < kopt_error:
-                    p = perm_kopt_left
-                    kopt_error = e_kopt_new_left
-                    # check whether perfect permutation matrix is found
-                    # TODO: smarter threshold based on norm of matrix
-                    if kopt_error <= 1.0e-8:
-                        break
-
-    return p, q, kopt_error
+    for comb_p in it.combinations(np.arange(num_row_left), r=k):
+        for perm_p in it.permutations(comb_p, r=k):
+            for comb_q in it.combinations(np.arange(num_row_right), r=k):
+                for perm_q in it.permutations(comb_q, r=k):
+                    # permute rows of matrix P
+                    p_new = deepcopy(p)
+                    p_new[comb_p, :] = p_new[perm_p, :]
+                    # permute rows of matrix Q
+                    q_new = deepcopy(q)
+                    q_new[comb_q, :] = q_new[perm_q, :]
+                    # compute error with new matrices & compare
+                    error_new = compute_error(b, a, p_new, q_new)
+                    if error_new < error:
+                        p, q, error = p_new, q_new, error_new
+                        # check whether perfect permutation matrix is found
+                        # TODO: smarter threshold based on norm of matrix
+                        if error <= 1.0e-8:
+                            break
+    return p, q, error

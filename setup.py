@@ -23,29 +23,26 @@
 """Setup and Install Script."""
 
 
-import io
-from os import path
-
 from setuptools import setup
 
-here = path.abspath(path.dirname(__file__))
 
-# Get the long description from the README file
-with io.open(path.join(here, "README.md"), encoding="utf-8") as f:
-    long_description = f.read()
+def get_readme():
+    """Load README.rst for display on PyPI."""
+    with open('README.md') as fhandle:
+        return fhandle.read()
 
 
 setup(
     name="qc-procrustes",
     version="0.0.1-alpha",
     description="Procrustes Package",
-    long_description=long_description,
+    long_description=get_readme(),
     long_description_content_type='text/markdown',
     url="http://github.com/theochem/procrustes",
     license="GNU (Version 3)",
     author="QC-Devs Community",
     author_email="qcdevs@gmail.com",
     package_dir={"procrustes": "procrustes"},
-    packages=["procrustes"],
+    packages=["procrustes", "procrustes.test"],
     install_requires=["numpy>=1.18.5", "scipy>=1.5.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
 )

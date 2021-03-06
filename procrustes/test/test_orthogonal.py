@@ -223,8 +223,7 @@ def test_orthogonal_translate_scale2():
     array_b = np.concatenate((array_b, np.zeros((2, 5))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((5, 7))), axis=0)
     # compute procrustes transformation
-    res = orthogonal(array_a, array_b, translate=False, scale=False, remove_zero_row=True,
-                     remove_zero_col=True)
+    res = orthogonal(array_a, array_b, translate=False, scale=False, unpad_col=True, unpad_row=True)
     assert_almost_equal(res["t"], np.dot(rot, ref), decimal=6)
     assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
 

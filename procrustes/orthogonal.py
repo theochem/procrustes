@@ -39,16 +39,29 @@ def orthogonal(
     pad=True,
     translate=False,
     scale=False,
-    remove_zero_col=False,
-    remove_zero_row=False,
+    unpad_col=False,
+    unpad_row=False,
     check_finite=True,
     weight=None,
 ):
     r"""Perform orthogonal Procrustes.
 
+    Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
+    \times n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{U}_{n
+    \times n}`that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`.
+    In other words,
+
+    .. math::
+       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
+                          \|\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
+
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
-    have the same shape. If this is not the case, the arguments `pad`, `remove_zero_col`, and
-    `remove_zero_row` can be used to make them have the same shape.
+    have the same shape, which is gauranteed with the default ``pad`` argument for any given
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
+    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
+    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
+    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
+    rows/columns so they have the same shape.
 
     Parameters
     ----------
@@ -65,14 +78,18 @@ def orthogonal(
         If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
         :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
         :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
-    remove_zero_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
-    remove_zero_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
-    weight : ndarray
-        The weighting matrix.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -81,23 +98,17 @@ def orthogonal(
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
-    n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{U}_{n \times n}`
-    that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. In other words,
+    The optimal orthogonal matrix is obtained by,
 
     .. math::
-       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
-                          \|\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
-       &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \right\}}
-          \text{Tr}\left[\left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
-                         \left(\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
-       &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \right\}}
-          \text{Tr}\left[\mathbf{U}^\dagger {\mathbf{A}}^\dagger \mathbf{B} \right]
+        \mathbf{U}_{\text{opt}} =
+        \arg \underbrace{\min}_{\left\{\mathbf{Q} \left| {\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}
+             \right. \right\}} \|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2 =
+        \arg \underbrace{\max}_{\left\{\mathbf{Q} \left| {\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}
+             \right. \right\}} \text{Tr}\left[\mathbf{Q^\dagger}\mathbf{A^\dagger}\mathbf{B}\right]
 
-    The optimal orthogonal matrix :math:`\mathbf{U}_{\text{opt}}` is obtained using the singular
-    value decomposition (SVD) of the :math:`\mathbf{A}^\dagger \mathbf{B}` matrix through,
+    The solution is obtained using the singular value decomposition (SVD) of the
+    :math:`\mathbf{A}^\dagger \mathbf{B}` matrix,
 
     .. math::
        \mathbf{A}^\dagger \mathbf{B} &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
@@ -124,15 +135,7 @@ def orthogonal(
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a,
-        b,
-        remove_zero_col,
-        remove_zero_row,
-        pad,
-        translate,
-        scale,
-        check_finite,
-        weight,
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
     if new_a.shape != new_b.shape:
         raise ValueError(

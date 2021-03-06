@@ -25,5 +25,5 @@
 Licence Information
 ###################
 
-The Procrustes package is released under the GNU General Public License. Detailed information can be found in http://www.gnu.org/licenses/.
-
+The Procrustes package is released under the GNU General Public License. Detailed information can be
+found in http://www.gnu.org/licenses/.

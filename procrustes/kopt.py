@@ -35,9 +35,17 @@ __all__ = [
 
 
 def kopt_heuristic_single(a, b, p=None, k=3):
-    r"""Compute locally optimal permutation matrix and its error using k-opt heuristic.
+    r"""Find a locally-optimal one-sided permutation matrix using the k-opt (greedy) heuristic.
 
-    Perform k-opt local search with every possible valid combination of the swapping mechanism.
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+       \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+       \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2\\
+
+    All possible 2-, ..., k-fold row-permutations of the initial permutation matrix are tried to
+    identify one which gives a lower error. Starting from this updated permutation matrix, the
+    process is repeated until no further k-fold swaps of a given permutation matrix lower the
+    error.
 
     Parameters
     ----------
@@ -88,11 +96,20 @@ def kopt_heuristic_single(a, b, p=None, k=3):
 
 
 def kopt_heuristic_double(a, b, p=None, q=None, k=3):
-    r"""
-    K-opt kopt for regular two-sided permutation Procrustes to improve the accuracy.
+    r"""Find a locally-optimal two-sided permutation matrices using the k-opt (greedy) heuristic.
 
-    Perform k-opt local search with every possible valid combination of the swapping mechanism for
-    regular 2-sided permutation Procrustes.
+    .. math::
+        &\underbrace{\text{min}}_{\left\{\mathbf{P}_1,\mathbf{P}_2 \left|
+        {[\mathbf{P}_1]_{ij} \in \{0, 1\} \atop \sum_{i=1}^n [\mathbf{P}_1]_{ij} = \sum_{j=1}^n [
+        \mathbf{P}_1]_{ij} = 1} \atop {[\mathbf{P}_2]_{ij} \in \{0, 1\} \atop \sum_{i=1}^n [
+        \mathbf{P}_2]_{ij} = \sum_{j=1}^n [\mathbf{P}_2]_{ij} = 1} \right. \right\}}
+            \|\mathbf{P}_1 \mathbf{A} \mathbf{P}_2 - \mathbf{B}\|_{F}^2\\
+
+    All possible 2-, ..., k-fold permutations of the initial permutation matrices are tried to
+    identify ones which give a lower error. This corresponds to column-swaps for :math:`\mathbf{
+    P}_1` and row-swaps for :math:`\mathbf{P}_2`. Starting from these updated permutation
+    matrices, the process is repeated until no further k-fold swaps of either permutation matrix
+    lower the error.
 
     Parameters
     ----------

@@ -46,10 +46,7 @@ def align(file_name_A, pdb_id_A, chain_id_A,
     # Kabsch algorithm/ Procrustes rotation to
     # align protein structure
     # new_A is just the translated coordinate
-    res = rotational(A, B,
-                     remove_zero_col=False,
-                     remove_zero_row=False,
-                     translate=True)
+    res = rotational(A, B, translate=True, unpad_col=False, unpad_row=False)
     # now new_A is the array after rotation
     new_A = np.dot(res["new_a"], res["array_u"])
     # Compute the rmsd values

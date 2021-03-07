@@ -51,7 +51,7 @@ def test_rotational_orthogonal_rotation_pad():
     array_b = np.concatenate((array_b, np.zeros((2, 10))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((15, 12))), axis=0)
     # compute procrustes transformation
-    res = rotational(array_a, array_b, remove_zero_col=True, remove_zero_row=True)
+    res = rotational(array_a, array_b, unpad_col=True, unpad_row=True)
     # check transformation array and error
     assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(2), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)

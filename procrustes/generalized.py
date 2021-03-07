@@ -106,10 +106,5 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
 
 def _orthogonal(arr_a, arr_b):
     """Orthogonal Procrustes transformation and returns the transformed array."""
-    res = orthogonal(arr_a, arr_b,
-                     remove_zero_col=False,
-                     remove_zero_row=False,
-                     translate=False,
-                     scale=False)
-
+    res = orthogonal(arr_a, arr_b, translate=False, scale=False, unpad_col=False, unpad_row=False)
     return np.dot(res["new_a"], res["t"])

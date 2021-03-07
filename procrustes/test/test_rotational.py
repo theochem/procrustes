@@ -25,17 +25,19 @@
 import numpy as np
 from numpy.testing import assert_almost_equal
 from procrustes import rotational
+import pytest
 
 
-def test_rotational_orthogonal_identical():
-    r"""Test rotational Procrustes with identical matrix."""
+@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
+def test_rotational_orthogonal_identical(m, n):
+    r"""Test rotational Procrustes with identical matrices."""
     # define an arbitrary array
-    array_a = np.array([[3, 6, 2, 1], [5, 6, 7, 6], [2, 1, 1, 1]])
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
     array_b = np.copy(array_a)
     # compute Procrustes transformation
     res = rotational(array_a, array_b, translate=False, scale=False)
-    # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(4), decimal=6)
+    # check result is rotation matrix, and error is zero.
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 

@@ -73,12 +73,11 @@ def test_symmetric_scaled_shifted_transformed(m, n):
 @pytest.mark.parametrize("m, n", np.random.randint(5, 10, (25, 2)))
 def test_symmetric_with_small_values(m, n):
     r"""Test symmetric by arrays with small values."""
-    if n <= m:
-        n = m
     # define an arbitrary array_a, translation matrix & symmetric matrix
-    array_a = np.random.uniform(0.0, 1., (m, n))
-    shift = np.random.uniform(0.0, 1., (m, n))
-    # Random positive Semidefinite symmetric matrix.
+    array_a = np.random.uniform(0.0, 1e-6, (m, n))
+    # Define shift to the rows of the matrices. This repeats a random matrix of size n, m times.
+    shift = np.tile(np.random.uniform(-1.e-6, 1.e-6, (n,)), (m, 1))
+    # Random symmetric matrix.
     rand_array = np.random.uniform(-1., 1., (n, n))
     sym_array = (rand_array + rand_array.T) / 2.0
     # define array_b by scaling, translating and transforming array_a

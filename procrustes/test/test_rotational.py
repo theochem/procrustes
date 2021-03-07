@@ -94,3 +94,18 @@ def test_rotational_orthogonal_almost_zero_array(m, n):
     assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
+
+
+def test_rotational_raises_error_shape_mismatch():
+    r"""Test rotation Procrustes with inputs are not correct."""
+    array_a = np.random.uniform(-10., 10., (100, 100))
+    array_b = array_a.copy()
+    # Set couple of the columns of b and rows of b (at the ends of the matrix) to zero.
+    array_b[:, -3:] = 0.
+    array_b[-4:, :] = 0.
+    with pytest.raises(ValueError):
+        rotational(array_a, array_b, pad=False, unpad_col=True)
+    with pytest.raises(ValueError):
+        rotational(array_a, array_b, pad=False, unpad_row=True)
+    with pytest.raises(ValueError):
+        rotational(array_a, array_b, pad=False, unpad_row=True, unpad_col=True)

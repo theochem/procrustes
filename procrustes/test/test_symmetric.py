@@ -31,7 +31,7 @@ from scipy.stats import ortho_group
 
 
 @pytest.mark.parametrize("m, n, add_cols, add_rows", np.random.randint(50, 100, (5, 4)))
-def test_symmetric__with_unpadding(m, n, add_cols, add_rows):
+def test_symmetric_with_unpadding(m, n, add_cols, add_rows):
     r"""Test symmetric without translation and scaling."""
     # define arbitrary array and generate random symmetric transformation with rank 1.
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
@@ -49,12 +49,16 @@ def test_symmetric__with_unpadding(m, n, add_cols, add_rows):
     assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
-def test_symmetric_scaled_shifted_tranformed():
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
+def test_symmetric_scaled_shifted_transformed(m, n):
     r"""Test symmetric with translation and scaling."""
     # define an arbitrary array_a, translation matrix & symmetric matrix
-    array_a = np.array([[5, 2, 8], [2, 2, 3], [1, 5, 6], [7, 3, 2]], dtype=float)
-    shift = np.array([[9., 4., 3.], [9., 4., 3.], [9., 4., 3.], [9., 4., 3.]])
-    sym_array = np.dot(np.array([[1, 4, 9]]).T, np.array([[1, 4, 9]]))
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    shift = np.random.uniform(-10.0, 10.0, (m, n))
+    # Generate random array with rank with which ever is the smallest.
+    rand_array = np.random.uniform(-10., 10., (m, n))
+    sym_array = np.dot(rand_array.T, rand_array)
+    print(sym_array.shape, array_a.shape, m, n)
     # define array_b by scaling, translating and transforming array_a
     array_b = 614.5 * array_a + shift
     array_b = np.dot(array_b, sym_array)
@@ -62,7 +66,8 @@ def test_symmetric_scaled_shifted_tranformed():
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=4)
+    assert_almost_equal(res["error"], 0.0, decimal=5)
 
 
 def test_symmetric_scaled_shifted_tranformed_4by3():

@@ -162,12 +162,6 @@ def symmetric(
     if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
         new_a, new_b = _zero_padding(new_a, new_b, "square")
 
-    # if new_a.shape[0] < new_a.shape[1]:
-    #     raise ValueError(f"Shape of A {new_a.shape}=(m, n) needs to satisfy m >= n.")
-    #
-    # if new_b.shape[0] < new_b.shape[1]:
-    #     raise ValueError(f"Shape of B {new_b.shape}=(m, n) needs to satisfy m >= n.")
-
     # compute SVD of A
     u, s, vt = np.linalg.svd(new_a)
 

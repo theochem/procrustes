@@ -421,8 +421,8 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
         # perform k-opt heuristic search twice
         if kopt:
-            array_p, array_q, error = kopt_heuristic_double(a=array_m, b=array_n, p=array_p,
-                                                            q=array_q, k=kopt_k)
+            array_p, array_q, error = kopt_heuristic_double(a=array_m, b=array_n, p1=array_p,
+                                                            p2=array_q, k=kopt_k)
         # return array_m, array_n, array_p, array_q, error
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
     else:

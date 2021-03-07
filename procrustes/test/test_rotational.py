@@ -43,7 +43,7 @@ def test_rotational_orthogonal_identical(m, n):
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-@pytest.mark.parametrize("m, n, col_npad, row_npad", np.random.randint(500, 1000, (5, 4)))
+@pytest.mark.parametrize("m, n, col_npad, row_npad", np.random.randint(100, 500, (5, 4)))
 def test_rotational_orthogonal_rotation_unpadding(m, n, col_npad, row_npad):
     r"""Test rotational Procrustes with arrays being unpadded."""
     # define an arbitrary array
@@ -61,20 +61,20 @@ def test_rotational_orthogonal_rotation_unpadding(m, n, col_npad, row_npad):
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_rotational_orthogonal_rotation_translate_scale():
+@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
+def test_rotational_orthogonal_rotation_translate_scale(m, n):
     r"""Test rotational Procrustes with translated and scaled array."""
     # define an arbitrary array
-    array_a = np.array([[1., 7., 8.], [4., 6., 8.], [7., 9., 4.], [6., 8., 23.]])
-    # define array_b by scale and translation of array_a and then rotation
-    shift = np.array([[3., 21., 21.], [3., 21., 21.], [3., 21., 21.], [3., 21., 21.]])
-    theta = 44.3 * np.pi / 5.7
-    rot_array = np.array([[np.cos(theta), -np.sin(theta), 0],
-                          [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
-    array_b = np.dot(477.412 * array_a + shift, rot_array)
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # Translate the rows, generate random rotation array
+    # define array_b by scale and translation of array_a followed by rotation
+    shift = np.array([np.random.uniform(-10., 10., (n,))] * m)
+    rot_array = special_ortho_group.rvs(n)
+    array_b = np.dot(2. * array_a, rot_array) + shift
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 

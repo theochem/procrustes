@@ -54,11 +54,11 @@ def test_symmetric_scaled_shifted_transformed(m, n):
     r"""Test symmetric with translation and scaling."""
     # define an arbitrary array_a, translation matrix & symmetric matrix
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
-    shift = np.random.uniform(-10.0, 10.0, (m, n))
+    # Define shift to the rows of the matrices. This repeats a random matrix of size n, m times.
+    shift = np.tile(np.random.uniform(-10.0, 10.0, (n,)), (m, 1))
     # Generate random array with rank with which ever is the smallest.
     rand_array = np.random.uniform(-10., 10., (m, n))
     sym_array = np.dot(rand_array.T, rand_array)
-    print(sym_array.shape, array_a.shape, m, n)
     # define array_b by scaling, translating and transforming array_a
     array_b = 614.5 * array_a + shift
     array_b = np.dot(array_b, sym_array)
@@ -66,36 +66,21 @@ def test_symmetric_scaled_shifted_transformed(m, n):
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=4)
-    assert_almost_equal(res["error"], 0.0, decimal=5)
-
-
-def test_symmetric_scaled_shifted_tranformed_4by3():
-    r"""Test symmetric by 4by3 array with translation and scaling."""
-    # define an arbitrary array_a, translation matrix & symmetric matrix
-    array_a = np.array([[245.0, 122.4, 538.5], [122.5, 252.2, 352.2],
-                        [152.5, 515.2, 126.5], [357.5, 312.5, 225.5]])
-    shift = np.array([[19.3, 14.2, 13.1], [19.3, 14.2, 13.1],
-                      [19.3, 14.2, 13.1], [19.3, 14.2, 13.1]])
-    sym_array = np.dot(np.array([[111.4, 144.9, 249.6]]).T, np.array([[111.4, 144.9, 249.6]]))
-    # define array_b by scaling, translating and transforming array_a
-    array_b = 312.5 * array_a + shift
-    array_b = np.dot(array_b, sym_array)
-    # compute procrustes transformation
-    res = symmetric(array_a, array_b, translate=True, scale=True)
-    # check transformation is symmetric & error is zero
-    assert_almost_equal(res["t"], res["t"].T, decimal=6)
+    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
-def test_symmetric():
+@pytest.mark.parametrize("m, n", np.random.randint(5, 10, (25, 2)))
+def test_symmetric_with_small_values(m, n):
     r"""Test symmetric by arrays with small values."""
+    if n <= m:
+        n = m
     # define an arbitrary array_a, translation matrix & symmetric matrix
-    array_a = np.array([[5.52e-5, 2.15e-5, 8.12e-5], [2.14e-5, 2.22e-5, 3.14e-5],
-                        [1.11e-5, 5.94e-5, 6.58e-5], [7.15e-5, 3.62e-5, 2.24e-5]])
-    shift = np.array([[9.42e-6, 4.32e-6, 3.22e-5], [9.42e-6, 4.32e-6, 3.22e-5],
-                      [9.42e-6, 4.32e-6, 3.22e-5], [9.42e-6, 4.32e-6, 3.22e-5]])
-    sym_array = np.dot(np.array([[5.2, 6.7, 3.5]]).T, np.array([[5.2, 6.7, 3.5]]))
+    array_a = np.random.uniform(0.0, 1., (m, n))
+    shift = np.random.uniform(0.0, 1., (m, n))
+    # Random positive Semidefinite symmetric matrix.
+    rand_array = np.random.uniform(-1., 1., (n, n))
+    sym_array = (rand_array + rand_array.T) / 2.0
     # define array_b by scaling, translating and transforming array_a
     array_b = 6.61e-4 * array_a + shift
     array_b = np.dot(array_b, sym_array)
@@ -103,7 +88,7 @@ def test_symmetric():
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res["error"], 0.0, decimal=5)
 
 
 def test_not_full_rank_case():

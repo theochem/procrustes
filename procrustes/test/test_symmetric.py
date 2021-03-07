@@ -70,7 +70,7 @@ def test_symmetric_scaled_shifted_transformed(m, n):
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
-@pytest.mark.parametrize("m, n", np.random.randint(5, 10, (25, 2)))
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
 def test_symmetric_with_small_values(m, n):
     r"""Test symmetric by arrays with small values."""
     # define an arbitrary array_a, translation matrix & symmetric matrix
@@ -103,13 +103,19 @@ def test_not_full_rank_case():
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
-def test_having_zero_singular_case():
+@pytest.mark.parametrize("m", np.random.randint(50, 100, (25,)))
+def test_having_zero_eigenvalues_case(m):
     r"""Test symmetric that has zero singular values."""
-    # Define a matrix with not full singular values, e.g. 5 and 0 are singular values.
-    sing_mat = np.array([[5., 0.], [0., 0.], [0., 0.], [0., 0.]])
-    array_a = ortho_group.rvs(4).dot(sing_mat).dot(ortho_group.rvs(2))
-
-    sym_array = np.array([[0.38895636, 0.30523869], [0.30523869, 0.30856369]])
+    numb_nonzero_eigs = int(np.random.randint(1, m - 1))
+    # Define a matrix with not full eigenvalues values, e.g. 5 and 0 are eigenvalues values.
+    sing_mat = list(np.random.uniform(-10.0, 10.0, (numb_nonzero_eigs,)))
+    sing_mat += [0.] * (m - numb_nonzero_eigs)
+    sing_mat = np.diag(sing_mat)
+    array_a = ortho_group.rvs(m).dot(sing_mat).dot(ortho_group.rvs(m))
+    # Random symmetric matrix.
+    rand_array = np.random.uniform(-1., 1., (m, m))
+    sym_array = (rand_array + rand_array.T) / 2.0
+    # Defined array_b
     array_b = np.dot(array_a, sym_array)
     # compute procrustes transformation
     res = symmetric(array_a, array_b)

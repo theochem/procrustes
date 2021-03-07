@@ -25,6 +25,7 @@
 import numpy as np
 from numpy.testing import assert_almost_equal
 from procrustes import rotational
+from scipy.stats import special_ortho_group
 import pytest
 
 
@@ -42,20 +43,20 @@ def test_rotational_orthogonal_identical(m, n):
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_rotational_orthogonal_rotation_pad():
-    r"""Test rotational Procrustes with padded arrays."""
+@pytest.mark.parametrize("m, n, col_npad, row_npad", np.random.randint(500, 1000, (5, 4)))
+def test_rotational_orthogonal_rotation_unpadding(m, n, col_npad, row_npad):
+    r"""Test rotational Procrustes with arrays being unpadded."""
     # define an arbitrary array
-    array_a = np.array([[1, 7], [9, 4]])
-    # define array_b by rotating array_a and pad with zeros
-    theta = np.pi / 4
-    rot_array = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # Generate random rotation array and define array_b by rotating array_a and pad with zeros
+    rot_array = special_ortho_group.rvs(n)
     array_b = np.dot(array_a, rot_array)
-    array_b = np.concatenate((array_b, np.zeros((2, 10))), axis=1)
-    array_b = np.concatenate((array_b, np.zeros((15, 12))), axis=0)
+    array_b = np.concatenate((array_b, np.zeros((m, col_npad))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((row_npad, n + col_npad))), axis=0)
     # compute procrustes transformation
     res = rotational(array_a, array_b, unpad_col=True, unpad_row=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(2), decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 

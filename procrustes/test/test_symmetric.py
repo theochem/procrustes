@@ -30,25 +30,23 @@ from scipy.optimize import minimize
 from scipy.stats import ortho_group
 
 
-def test_symmetric_transformed():
+@pytest.mark.parametrize("m, n, add_cols, add_rows", np.random.randint(50, 100, (5, 4)))
+def test_symmetric__with_unpadding(m, n, add_cols, add_rows):
     r"""Test symmetric without translation and scaling."""
-    # define arbitrary array and symmetric transformation
-    array_a = np.array([[1, 2, 4, 5],
-                        [5, 7, 3, 3],
-                        [1, 5, 1, 9],
-                        [1, 5, 2, 7],
-                        [5, 7, 9, 0]])
-    sym_array = np.dot(np.array([[1, 7, 4, 9]]).T, np.array([[1, 7, 4, 9]]))
+    # define arbitrary array and generate random symmetric transformation with rank 1.
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    rand_array = np.random.uniform(-10., 10., (n,))
+    sym_array = np.outer(rand_array.T, rand_array)
     # define array_b by transforming array_a and padding with zero
     array_b = np.dot(array_a, sym_array)
-    array_b = np.concatenate((array_b, np.zeros((5, 2))), axis=1)
-    array_b = np.concatenate((array_b, np.zeros((8, 6))), axis=0)
+    array_b = np.concatenate((array_b, np.zeros((m, add_cols))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((add_rows, n + add_cols))), axis=0)
     # compute procrustes transformation
     res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["t"], sym_array, decimal=6)
     assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
 def test_symmetric_scaled_shifted_tranformed():

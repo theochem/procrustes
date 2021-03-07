@@ -124,18 +124,6 @@ def test_having_zero_eigenvalues_case(m):
     assert_almost_equal(res["error"], 0.0, decimal=6)
 
 
-# def test_fat_rectangular_matrices_raises_error_no_padding():
-#     r"""Test Symmetric Procrustes raises error when improper padding."""
-#     # Generate Random Rectangular Matrices
-#     nrow = 3
-#     ncol = np.random.randint(nrow + 1, nrow + 4)
-#     array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
-#     np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
-#
-#     array_a = np.random.random((nrow, nrow))
-#     np.testing.assert_raises(ValueError, symmetric, array_a, array_b)
-
-
 class TestAgainstNumerical:
     r"""
     Testing Procrustes over symmetric matrices against numerical optimization methods.

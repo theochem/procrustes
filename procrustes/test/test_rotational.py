@@ -79,26 +79,6 @@ def test_rotational_orthogonal_rotation_translate_scale(m, n):
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_rotational_orthogonal_rotation_translate_scale_4by3():
-    r"""Test rotational Procrustes with 4by3 translated and scaled array."""
-    # define an arbitrary array
-    array_a = np.array([[31.4, 17.5, 18.4], [34.5, 26.5, 28.6],
-                        [17.6, 19.3, 34.6], [46.3, 38.5, 23.3]])
-    # define array_b by scale and translation of array_a and then rotation
-    shift = np.array([[13.3, 21.5, 21.8], [13.3, 21.5, 21.8],
-                      [13.3, 21.5, 21.8], [13.3, 21.5, 21.8]])
-    theta = 4.24 * np.pi / 1.23
-    rot_array = np.array([[np.cos(theta), -np.sin(theta), 0],
-                          [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
-    array_b = np.dot(12.54 * array_a + shift, rot_array)
-    # compute procrustes transformation
-    res = rotational(array_a, array_b, translate=True, scale=True)
-    # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
-    assert_almost_equal(res["error"], 0, decimal=6)
-
-
 def test_rotational_orthogonal_zero_array():
     r"""Test rotational Procrustes with zero array."""
     # define an arbitrary array

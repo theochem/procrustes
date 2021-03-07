@@ -23,7 +23,6 @@
 """K-opt (Greedy) Heuristic Module."""
 
 
-from copy import deepcopy
 import itertools as it
 
 import numpy as np
@@ -91,7 +90,7 @@ def kopt_heuristic_single(a, b, p=None, k=3):
             comb = sorted(perm)
             if perm != comb:
                 # row-swap P matrix & compute error
-                perm_p = deepcopy(p)
+                perm_p = np.copy(p)
                 perm_p[:, comb] = perm_p[:, perm]
                 perm_error = compute_error(a, b, perm_p, perm_p)
                 if perm_error < error:
@@ -166,10 +165,10 @@ def kopt_heuristic_double(a, b, p1=None, p2=None, k=3):
         for perm2 in it.permutations(np.arange(m), r=k):
             comb2 = sorted(perm2)
             # permute rows of matrix P1
-            perm_p1 = deepcopy(p1)
+            perm_p1 = np.copy(p1)
             perm_p1[comb1, :] = perm_p1[perm1, :]
             # permute rows of matrix P2
-            perm_p2 = deepcopy(p2)
+            perm_p2 = np.copy(p2)
             perm_p2[comb2, :] = perm_p2[perm2, :]
             # compute error with new matrices & compare
             perm_error = compute_error(b, a, perm_p1, perm_p2)

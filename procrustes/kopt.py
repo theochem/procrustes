@@ -71,9 +71,15 @@ def kopt_heuristic_single(a, b, p=None, k=3):
     """
     if k < 2 or not isinstance(k, int):
         raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
+    if a.shape[0] != a.shape[1]:
+        raise ValueError(f"Argument a should be a square array. Given shape={a.shape}")
+    if a.shape != b.shape:
+        raise ValueError(f"Argument b should have same shape as a. Given {b.shape} != {a.shape}")
+
     # assign p to be an identity array, if not specified
+    n = a.shape[0]
     if p is None:
-        p = np.identity(np.shape(a)[0])
+        p = np.identity(n)
     # compute 2-sided permutation error of the initial p matrix
     error = compute_error(a, b, p, p)
     # pylint: disable=too-many-nested-blocks
@@ -81,20 +87,20 @@ def kopt_heuristic_single(a, b, p=None, k=3):
     search = True
     while search:
         search = False
-        for comb in it.combinations(np.arange(p.shape[0]), r=k):
-            for comb_perm in it.permutations(comb, r=k):
-                if comb_perm != comb:
-                    # row-swap P matrix & compute error
-                    perm_p = deepcopy(p)
-                    perm_p[comb, :] = perm_p[comb_perm, :]
-                    perm_error = compute_error(a, b, perm_p, perm_p)
-                    if perm_error < error:
-                        search = True
-                        p, error = perm_p, perm_error
-                        # check whether perfect permutation matrix is found
-                        # TODO: smarter threshold based on norm of matrix
-                        if error <= 1.0e-8:
-                            return p, error
+        for perm in it.permutations(np.arange(n), r=k):
+            comb = sorted(perm)
+            if perm != comb:
+                # row-swap P matrix & compute error
+                perm_p = deepcopy(p)
+                perm_p[:, comb] = perm_p[:, perm]
+                perm_error = compute_error(a, b, perm_p, perm_p)
+                if perm_error < error:
+                    search = True
+                    p, error = perm_p, perm_error
+                    # check whether perfect permutation matrix is found
+                    # TODO: smarter threshold based on norm of matrix
+                    if error <= 1.0e-8:
+                        return p, error
     return p, error
 
 

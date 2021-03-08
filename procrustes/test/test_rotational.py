@@ -25,92 +25,87 @@
 import numpy as np
 from numpy.testing import assert_almost_equal
 from procrustes import rotational
+import pytest
+from scipy.stats import special_ortho_group
 
 
-def test_rotational_orthogonal_identical():
-    r"""Test rotational Procrustes with identical matrix."""
+@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
+def test_rotational_orthogonal_identical(m, n):
+    r"""Test rotational Procrustes with identical matrices."""
     # define an arbitrary array
-    array_a = np.array([[3, 6, 2, 1], [5, 6, 7, 6], [2, 1, 1, 1]])
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
     array_b = np.copy(array_a)
     # compute Procrustes transformation
     res = rotational(array_a, array_b, translate=False, scale=False)
-    # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(4), decimal=6)
+    # check result is rotation matrix, and error is zero.
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_rotational_orthogonal_rotation_pad():
-    r"""Test rotational Procrustes with padded arrays."""
+@pytest.mark.parametrize("m, n, col_npad, row_npad", np.random.randint(100, 500, (5, 4)))
+def test_rotational_orthogonal_rotation_unpadding(m, n, col_npad, row_npad):
+    r"""Test rotational Procrustes with arrays being unpadded."""
     # define an arbitrary array
-    array_a = np.array([[1, 7], [9, 4]])
-    # define array_b by rotating array_a and pad with zeros
-    theta = np.pi / 4
-    rot_array = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # Generate random rotation array and define array_b by rotating array_a and pad with zeros
+    rot_array = special_ortho_group.rvs(n)
     array_b = np.dot(array_a, rot_array)
-    array_b = np.concatenate((array_b, np.zeros((2, 10))), axis=1)
-    array_b = np.concatenate((array_b, np.zeros((15, 12))), axis=0)
+    array_b = np.concatenate((array_b, np.zeros((m, col_npad))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((row_npad, n + col_npad))), axis=0)
     # compute procrustes transformation
     res = rotational(array_a, array_b, unpad_col=True, unpad_row=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(2), decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_rotational_orthogonal_rotation_translate_scale():
+@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
+def test_rotational_orthogonal_rotation_translate_scale(m, n):
     r"""Test rotational Procrustes with translated and scaled array."""
     # define an arbitrary array
-    array_a = np.array([[1., 7., 8.], [4., 6., 8.], [7., 9., 4.], [6., 8., 23.]])
-    # define array_b by scale and translation of array_a and then rotation
-    shift = np.array([[3., 21., 21.], [3., 21., 21.], [3., 21., 21.], [3., 21., 21.]])
-    theta = 44.3 * np.pi / 5.7
-    rot_array = np.array([[np.cos(theta), -np.sin(theta), 0],
-                          [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
-    array_b = np.dot(477.412 * array_a + shift, rot_array)
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # Translate the rows, generate random rotation array
+    # define array_b by scale and translation of array_a followed by rotation
+    shift = np.array([np.random.uniform(-10., 10., (n,))] * m)
+    rot_array = special_ortho_group.rvs(n)
+    array_b = np.dot(2. * array_a, rot_array) + shift
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
 
-def test_rotational_orthogonal_rotation_translate_scale_4by3():
-    r"""Test rotational Procrustes with 4by3 translated and scaled array."""
+@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
+def test_rotational_orthogonal_almost_zero_array(m, n):
+    r"""Test rotational Procrustes with matrices with almost zero entries."""
     # define an arbitrary array
-    array_a = np.array([[31.4, 17.5, 18.4], [34.5, 26.5, 28.6],
-                        [17.6, 19.3, 34.6], [46.3, 38.5, 23.3]])
+    array_a = np.random.uniform(0.0, 1e-6, (m, n))
     # define array_b by scale and translation of array_a and then rotation
-    shift = np.array([[13.3, 21.5, 21.8], [13.3, 21.5, 21.8],
-                      [13.3, 21.5, 21.8], [13.3, 21.5, 21.8]])
-    theta = 4.24 * np.pi / 1.23
-    rot_array = np.array([[np.cos(theta), -np.sin(theta), 0],
-                          [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
-    array_b = np.dot(12.54 * array_a + shift, rot_array)
-    # compute procrustes transformation
-    res = rotational(array_a, array_b, translate=True, scale=True)
-    # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
-    assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
-    assert_almost_equal(res["error"], 0, decimal=6)
-
-
-def test_rotational_orthogonal_zero_array():
-    r"""Test rotational Procrustes with zero array."""
-    # define an arbitrary array
-    array_a = np.array([[4.35e-5, 1.52e-5, 8.16e-5], [4.14e-6, 16.41e-5, 18.3e-6],
-                        [17.53e-5, 29.53e-5, 34.56e-5], [26.53e-5, 38.63e-5, 23.36e-5]])
-    # define array_b by scale and translation of array_a and then rotation
-    shift = np.array([[3.25e-6, 21.52e-6, 21.12e-6], [3.25e-6, 21.52e-6, 21.12e-6],
-                      [3.25e-6, 21.52e-6, 21.12e-6], [3.25e-6, 21.52e-6, 21.12e-6]])
-    theta = 1.12525 * np.pi / 5.642
-    rot_array = np.array([[np.cos(theta), -np.sin(theta), 0],
-                          [np.sin(theta), np.cos(theta), 0], [0, 0, 1]])
+    shift = np.array([np.random.uniform(0.0, 1e-5, (n,))] * m)
+    rot_array = special_ortho_group.rvs(n)
     array_b = np.dot(4.12 * array_a + shift, rot_array)
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(3), decimal=6)
+    assert_almost_equal(np.dot(res["t"], res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(np.abs(np.linalg.det(res["t"])), 1.0, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
+
+
+def test_rotational_raises_error_shape_mismatch():
+    r"""Test rotation Procrustes with inputs are not correct."""
+    array_a = np.random.uniform(-10., 10., (100, 100))
+    array_b = array_a.copy()
+    # Set couple of the columns of b and rows of b (at the ends of the matrix) to zero.
+    array_b[:, -3:] = 0.
+    array_b[-4:, :] = 0.
+    with pytest.raises(ValueError):
+        rotational(array_a, array_b, pad=False, unpad_col=True)
+    with pytest.raises(ValueError):
+        rotational(array_a, array_b, pad=False, unpad_row=True)
+    with pytest.raises(ValueError):
+        rotational(array_a, array_b, pad=False, unpad_row=True, unpad_col=True)

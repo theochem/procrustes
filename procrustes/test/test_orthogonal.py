@@ -27,6 +27,8 @@ from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.orthogonal import orthogonal, orthogonal_2sided
 from procrustes.utils import compute_error
 import pytest
+from scipy.linalg import schur
+from scipy.stats import ortho_group
 
 
 def make_rotation_array(theta):
@@ -46,49 +48,23 @@ def test_procrustes_orthogonal_identical(m, n):
     res = orthogonal(array_a, array_b)
     assert_almost_equal(res["new_a"], array_a, decimal=6)
     assert_almost_equal(res["new_b"], array_b, decimal=6)
+    assert_almost_equal(res["t"].dot(res["t"].T), np.eye(n), decimal=6)
     assert_almost_equal(res["error"], 0., decimal=6)
     assert_almost_equal(array_a.dot(res["t"]), array_b)
 
 
-def test_procrustes_rotation_square():
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_procrustes_rotation_square(n):
     r"""Test orthogonal Procrustes with squared array."""
     # square array
-    array_a = np.arange(4).reshape(2, 2)
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # rotation by 90 degree
-    array_b = np.array([[1, 0], [3, -2]])
+    ortho_arr = ortho_group.rvs(n)
+    array_b = array_a.dot(ortho_arr)
     res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], np.array([[0., -1.], [1., 0.]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # rotation by 180 degree
-    array_b = -array_a
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], np.array([[-1., 0.], [0., -1.]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # rotation by 270 degree
-    array_b = np.array([[-1, 0], [-3, 2]])
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], np.array([[0., 1.], [-1., 0.]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # rotation by 45 degree
-    rotation = 0.5 * np.sqrt(2) * np.array([[1, -1], [1, 1]])
-    array_b = np.dot(array_a, rotation)
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], rotation, decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # rotation by 30 degree
-    theta = np.pi / 6
-    rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
-    array_b = np.dot(array_a, rotation)
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], rotation, decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # rotation by 72 degree
-    theta = 1.25664
-    rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
-    array_b = np.dot(array_a, rotation)
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], rotation, decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
+    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res["t"].dot(res["t"].T), np.eye(n), decimal=6)
+    assert_almost_equal(res["t"], ortho_arr)
 
 
 def test_procrustes_reflection_square():

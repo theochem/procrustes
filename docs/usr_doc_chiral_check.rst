@@ -96,7 +96,7 @@ position to conclusion based the error difference.
                 "and there is no chiral center in any of them.")
 
   if __name__ == "__main__":
-	  chiral_check(A_data, B_data)
+      chiral_check(A_data, B_data)
 
 The error for only ration operation is 7.30 while it becomes 1.24e-08 after a reflection operation.
 Therefore, this example showed how we can use rotational procrustes to check chirality in organic

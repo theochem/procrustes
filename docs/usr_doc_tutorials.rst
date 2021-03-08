@@ -43,4 +43,4 @@ download the jupyter notebook from our github repo or just use the online versio
    usr_doc_chiral_check.rst
 
 .. todo::
-   # Add LDM example 
+   # Add LDM example

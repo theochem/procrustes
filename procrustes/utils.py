@@ -262,8 +262,8 @@ def compute_error(a, b, t, s=None):
         \mathbf{A}\mathbf{T}`, and the reference array, :math:`\mathbf{B}`.
 
     """
-    # transform matrix A
-    a_trans = np.dot(a, t) if s is None else np.dot(np.dot(t.T, a), s)
+    # transform matrix A to either AT or SAT
+    a_trans = np.dot(a, t) if s is None else np.dot(np.dot(s, a), t)
     # subtract matrix B and compute Frobenius norm squared
     return np.linalg.norm(a_trans - b, ord=None) ** 2
 

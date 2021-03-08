@@ -398,7 +398,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                 array_u, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
                                                        p=array_u, k=kopt_k)
             else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
+                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
@@ -411,7 +411,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                 array_u, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
                                                        p=array_u, k=kopt_k)
             else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
+                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
 
     # Do regular computation
@@ -441,7 +441,7 @@ def _2sided_regular(array_m, array_n, tol, iteration):
     array_p1 = np.eye(array_m.shape[0], array_m.shape[0])
     # Initial guess for Q
     array_q1 = _2sided_hungarian(np.dot(array_n.T, array_m))
-    error1 = compute_error(array_n, array_m, array_p1.T, array_q1)
+    error1 = compute_error(array_n, array_m, array_q1, array_p1)
     step1 = 0
 
     # while loop for the original algorithm
@@ -451,12 +451,12 @@ def _2sided_regular(array_m, array_n, tol, iteration):
         array_p1 = _2sided_hungarian(np.dot(np.dot(array_n, array_q1), array_m.T))
         array_p1 = np.transpose(array_p1)
         # Update the error
-        error1 = compute_error(array_n, array_m, array_p1.T, array_q1)
+        error1 = compute_error(array_n, array_m, array_q1, array_p1)
         if error1 > tol:
             # Update Q
             array_q1 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p1.T), array_m))
             # Update the error
-            error1 = compute_error(array_n, array_m, array_p1.T, array_q1)
+            error1 = compute_error(array_n, array_m, array_q1, array_p1)
         else:
             break
 
@@ -469,7 +469,7 @@ def _2sided_regular(array_m, array_n, tol, iteration):
     # Initial guess for P
     array_p2 = _2sided_hungarian(np.dot(array_n, array_m.T))
     array_p2 = np.transpose(array_p2)
-    error2 = compute_error(array_n, array_m, array_p2.T, array_q2)
+    error2 = compute_error(array_n, array_m, array_q2, array_p2)
     step2 = 0
 
     # while loop for the original algorithm
@@ -477,12 +477,12 @@ def _2sided_regular(array_m, array_n, tol, iteration):
         # Update Q
         array_q2 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p2.T), array_m))
         # Update the error
-        error2 = compute_error(array_n, array_m, array_p2.T, array_q1)
+        error2 = compute_error(array_n, array_m, array_q1, array_p2)
         if error2 > tol:
             array_p2 = _2sided_hungarian(np.dot(np.dot(array_n, array_q2), array_m.T))
             array_p2 = np.transpose(array_p2)
             # Update the error
-            error2 = compute_error(array_n, array_m, array_p2.T, array_q2)
+            error2 = compute_error(array_n, array_m, array_q2, array_p2)
             step2 += 1
         else:
             break
@@ -789,8 +789,8 @@ def permutation_2sided_explicit(array_a, array_b,
         size = np.shape(new_a)[1]
         perm2 = np.zeros((size, size))
         perm2[np.arange(size), comb] = 1
-        perm_error2 = compute_error(new_a, new_b, perm2, perm2)
+        perm_error2 = compute_error(new_a, new_b, perm2, perm2.T)
         if perm_error2 < perm_error1:
             perm_error1 = perm_error2
             perm1 = perm2
-    return ProcrustesResult(error=perm_error1, new_a=new_a, new_b=new_b, t=perm1, s=None)
+    return ProcrustesResult(error=perm_error1, new_a=new_a, new_b=new_b, t=perm1, s=perm1.T)

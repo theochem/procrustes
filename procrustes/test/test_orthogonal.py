@@ -105,46 +105,25 @@ def test_procrustes_with_translation(m, n):
     assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
-def test_procrustes_rotation_translation():
-    r"""Test orthogonal Procrustes with rotation and translation."""
-    # initial arrays
-    array_a = np.array([[-7.3, 2.8], [-7.1, -0.2], [4.0, 1.4], [1.3, 0]])
-    # rotation by 20 degree & reflection in the x-axis
-    theta = 0.34907
-    rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
-    reflection = np.array([[1, 0], [0, -1]])
-    array_b = np.dot(array_a, np.dot(rotation, reflection))
-    # procrustes without translation and scaling
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_almost_equal(res["t"], np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # procrustes with translation
-    res = orthogonal(array_a, array_b, translate=True)
-    assert_almost_equal(res["new_a"], array_a - np.mean(array_a, axis=0), decimal=6)
-    assert_almost_equal(res["new_b"], array_b - np.mean(array_b, axis=0), decimal=6)
-    assert_almost_equal(res["t"], np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # procrustes with translation and scaling
-    res = orthogonal(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(res["t"], np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-
-
-def test_rotation_translate_scale():
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
+def test_rotation_with_translate_and_scale(m, n):
     r"""Test orthogonal Procrustes with rotation, translation and scaling."""
     # initial arrays
-    array_a = np.array([[5.1, 0], [-1.1, 4.8], [3.9, 7.3], [9.1, 6.3]])
-    # rotation by 68 degree & reflection in the Y=X
-    theta = 1.18682
-    rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
-    reflection = np.array([[0, 1], [1, 0]])
-    array_b = np.dot(4 * array_a + 3.0, np.dot(rotation, reflection))
-    # procrustes with translation and scaling
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # Generate reflection across random hyperplane
+    a = np.random.uniform(-10.0, 10.0, (n))
+    a /= np.linalg.norm(a)
+    reflection = np.eye(n) - 2.0 * np.outer(a, a) / np.linalg.norm(a) ** 2.0
+    rotation = ortho_group.rvs(n)
+    # Translate and shift the rotated and reflected array_a.
+    array_b = 4.0 * np.dot(array_a, rotation.dot(reflection)) + 3.0
+    # Procrustes with translation and scaling
     res = orthogonal(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(res["t"], np.dot(rotation, reflection), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
+    untranslated_array_a = (array_a - np.mean(array_a, axis=0))
+    assert_almost_equal(res["new_a"], untranslated_array_a / np.linalg.norm(untranslated_array_a))
+    assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
+    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
 def test_orthogonal_translate_scale2():

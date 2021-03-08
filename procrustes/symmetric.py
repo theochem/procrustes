@@ -133,11 +133,6 @@ def symmetric(
     .. math::
        \mathbf{X}_\text{opt} = \mathbf{V Y V}^{\dagger}
 
-    References
-    ----------
-    1. Higham, Nicholas J. The Symmetric Procrustes problem.
-       BIT Numerical Mathematics, 28 (1), 133-143, 1988.
-
     Examples
     --------
     >>> import numpy as np

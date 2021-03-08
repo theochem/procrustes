@@ -91,11 +91,6 @@ def generic(
     because the system of equations is underdetermined (i.e., there are fewer equations than
     unknowns).
 
-    References
-    ----------
-    1. Gower, J. C. Procrustes Methods. Wiley Interdisciplinary Reviews: Computational Statistics,
-       2(4), 503-508, 2010.
-
     """
     # check inputs
     new_a, new_b = setup_input_arrays(

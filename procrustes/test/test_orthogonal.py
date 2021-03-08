@@ -71,29 +71,23 @@ def test_procrustes_rotation_square(n):
 def test_procrustes_reflection_square(n):
     r"""Test orthogonal Procrustes with reflected squared array."""
     # square array
-    array_a = np.array([[2.0, 0.1], [0.5, 3.0]])
-    # reflection through origin
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    # reflection through diagonal plane
     array_b = -array_a
     res = orthogonal(array_a, array_b)
     assert_almost_equal(res["new_a"], array_a, decimal=6)
     assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_almost_equal(res["t"], np.array([[-1, 0], [0, -1]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # reflection in the x-axis
-    array_b = np.array([[2.0, -0.1], [0.5, -3.0]])
+    assert_almost_equal(res["t"], -np.eye(n), decimal=6)
+    assert_almost_equal(res["error"], 0., decimal=6)
+    # General reflection through random hyperplane, see Wikipedia "Reflection (mathematics)"
+    a = np.random.uniform(-10.0, 10.0, (n))
+    a /= np.linalg.norm(a)
+    rotation = np.eye(n) - 2.0 * np.outer(a, a) / np.linalg.norm(a)**2.0
+    array_b = array_a.dot(rotation)
     res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], np.array([[1, 0], [0, -1]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # reflection in the y-axis
-    array_b = np.array([[-2.0, 0.1], [-0.5, 3.0]])
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], np.array([[-1, 0], [0, 1]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # reflection in the line y=x
-    array_b = np.array([[0.1, 2.0], [3.0, 0.5]])
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], np.array([[0, 1], [1, 0]]), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
+    assert_almost_equal(res["t"], rotation, decimal=6)
+    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(array_a.dot(rotation), array_b, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))

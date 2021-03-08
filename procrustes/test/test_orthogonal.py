@@ -67,7 +67,8 @@ def test_procrustes_rotation_square(n):
     assert_almost_equal(res["t"], ortho_arr)
 
 
-def test_procrustes_reflection_square():
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_procrustes_reflection_square(n):
     r"""Test orthogonal Procrustes with reflected squared array."""
     # square array
     array_a = np.array([[2.0, 0.1], [0.5, 3.0]])
@@ -95,37 +96,19 @@ def test_procrustes_reflection_square():
     assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
 
 
-def test_procrustes_shifted():
-    r"""Test orthogonal Procrustes with shifted array."""
-    # square array
-    array_a = np.array([[3.5, 0.1, 7.0], [0.5, 2.0, 1.0], [8.1, 0.3, 0.7]])
-    # expected_a = array_a - np.mean(array_a, axis=0)
-    # constant shift
-    array_b = array_a + 4.1
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
+def test_procrustes_with_translation(m, n):
+    r"""Test orthogonal Procrustes with translation."""
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    array_b = array_a + np.random.uniform(-10.0, 10.0, (n,))
     res = orthogonal(array_a, array_b, translate=True)
-    # assert_almost_equal(new_b, array_b, decimal=6)
-    assert_almost_equal(res["t"], np.eye(3), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # different shift along each axis
-    array_b = array_a + np.array([0, 3.2, 5.0])
-    res = orthogonal(array_a, array_b, translate=True)
-    # assert_almost_equal(new_b, array_b, decimal=6)
-    assert_almost_equal(res["t"], np.eye(3), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # rectangular (2 by 3)
-    array_a = np.array([[1, 2, 3], [7, 9, 5]])
-    # expected_a = array_a - np.array([4., 5.5, 4.])
-    # constant shift
-    array_b = array_a + 0.71
-    res = orthogonal(array_a, array_b, translate=True)
-    # assert_almost_equal(new_b, array_b, decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # different shift along each axis
-    array_b = array_a + np.array([0.3, 7.1, 4.2])
-    res = orthogonal(array_a, array_b, translate=True)
-    # assert_almost_equal(new_b, array_b, decimal=6)
-    assert_equal(res["t"].shape, (3, 3))
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
+    # Test that the new A and B are translation of the originals.
+    assert_almost_equal(res["new_a"], array_a - np.mean(array_a, axis=0), decimal=6)
+    assert_almost_equal(res["new_b"], array_a - np.mean(array_a, axis=0), decimal=6)
+    # Test that optimal result is orthogonal, and error is zero
+    assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
+    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
 def test_procrustes_rotation_translation():

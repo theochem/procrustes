@@ -140,28 +140,29 @@ def test_orthogonal_translate_scale_with_unpadding(m, n, ncols, nrows):
     array_b = np.concatenate((array_b, np.zeros((nrows, n + ncols))), axis=0)
     # compute procrustes transformation
     res = orthogonal(array_a, array_b, translate=False, scale=False, unpad_col=True, unpad_row=True)
-    assert_almost_equal(res["new_b"], np.dot(array_a, ortho))
+    assert_almost_equal(res["new_b"], np.dot(array_a, ortho), decimal=6)
     assert_almost_equal(res["error"], 0., decimal=6)
     assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
     assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
-def test_two_sided_orthogonal_identical():
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_two_sided_orthogonal_identical(n):
     r"""Test 2-sided orthogonal with identical matrix."""
     # case of identical square arrays
-    array_a = np.arange(16).reshape(4, 4)
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     array_b = np.copy(array_a)
     result = orthogonal_2sided(array_a, array_b, single_transform=False)
     # check transformation array is identity
     assert_almost_equal(np.linalg.det(result["s"]), 1.0, decimal=6)
     assert_almost_equal(np.linalg.det(result["t"]), 1.0, decimal=6)
-    assert_almost_equal(result["s"], np.eye(4), decimal=6)
-    assert_almost_equal(result["t"], np.eye(4), decimal=6)
+    assert_almost_equal(result["s"], np.eye(n), decimal=6)
+    assert_almost_equal(result["t"], np.eye(n), decimal=6)
     assert_almost_equal(result["error"], 0., decimal=6)
 
 
 def test_two_sided_orthogonal_raises_error_non_symmetric_matrices():
-    r"""Test that 2-sided orthogonal procrustes non-symmetric matrices return an error."""
+    r"""Test that 2-sided orthogonal procrustes non-symmetric matrices raises an error."""
     # Test simple example with one matrix that is not square
     array_a = np.array([[1., 2., 3.], [1., 2., 3.]])
     array_b = np.array([[1., 2.], [2., 1.]])

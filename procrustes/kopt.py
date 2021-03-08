@@ -87,7 +87,7 @@ def kopt_heuristic_single(a, b, p=None, k=3):
     while search:
         search = False
         for perm in it.permutations(np.arange(n), r=k):
-            comb = sorted(perm)
+            comb = tuple(sorted(perm))
             if perm != comb:
                 # row-swap P matrix & compute error
                 perm_p = np.copy(p)
@@ -161,21 +161,22 @@ def kopt_heuristic_double(a, b, p1=None, p2=None, k=3):
     # pylint: disable=too-many-nested-blocks
 
     for perm1 in it.permutations(np.arange(n), r=k):
-        comb1 = sorted(perm1)
+        comb1 = tuple(sorted(perm1))
         for perm2 in it.permutations(np.arange(m), r=k):
-            comb2 = sorted(perm2)
-            # permute rows of matrix P1
-            perm_p1 = np.copy(p1)
-            perm_p1[comb1, :] = perm_p1[perm1, :]
-            # permute rows of matrix P2
-            perm_p2 = np.copy(p2)
-            perm_p2[comb2, :] = perm_p2[perm2, :]
-            # compute error with new matrices & compare
-            perm_error = compute_error(b, a, perm_p1, perm_p2)
-            if perm_error < error:
-                p1, p2, error = perm_p1, perm_p2, perm_error
-                # check whether perfect permutation matrix is found
-                # TODO: smarter threshold based on norm of matrix
-                if error <= 1.0e-8:
-                    break
+            comb2 = tuple(sorted(perm2))
+            if not (perm1 == comb1 and perm2 == comb2):
+                # permute rows of matrix P1
+                perm_p1 = np.copy(p1)
+                perm_p1[comb1, :] = perm_p1[perm1, :]
+                # permute rows of matrix P2
+                perm_p2 = np.copy(p2)
+                perm_p2[comb2, :] = perm_p2[perm2, :]
+                # compute error with new matrices & compare
+                perm_error = compute_error(b, a, perm_p1, perm_p2)
+                if perm_error < error:
+                    p1, p2, error = perm_p1, perm_p2, perm_error
+                    # check whether perfect permutation matrix is found
+                    # TODO: smarter threshold based on norm of matrix
+                    if error <= 1.0e-8:
+                        break
     return p1, p2, error

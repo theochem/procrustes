@@ -50,14 +50,11 @@ def test_kopt_heuristic_single():
                            [0, 0, 1, 0, 0],
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
-    error_old = compute_error(arr_a, arr_b, perm_guess, perm_guess)
-    perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, error_old,
-                                             perm_guess, 3, kopt_tol=1.e-8)
+    perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, perm_guess, 3)
     assert_equal(perm, perm_exact)
     assert kopt_error == 0
     # test the error exceptions
-    assert_raises(ValueError, kopt_heuristic_single, arr_a,
-                  arr_b, error_old, perm_guess, 1, kopt_tol=1.e-8)
+    assert_raises(ValueError, kopt_heuristic_single, arr_a, arr_b, perm_guess, 1)
 
 
 def test_kopt_heuristic_double():
@@ -81,13 +78,8 @@ def test_kopt_heuristic_double():
                             [0., 0., 1.],
                             [0., 1., 0.]])
     error = compute_error(arr_b, arr_a, perm1_shuff.T, perm2_shuff)
-    perm_left, perm_right, kopt_error = kopt_heuristic_double(perm_p=perm1_shuff,
-                                                              perm_q=perm2_shuff,
-                                                              array_m=arr_a, array_n=arr_b,
-                                                              ref_error=error, kopt_k=4,
-                                                              kopt_tol=1.e-8)
-    _, _, kopt_error = kopt_heuristic_double(perm_p=perm_left, perm_q=perm_right,
-                                             array_m=arr_a, array_n=arr_b,
-                                             ref_error=error, kopt_k=3, kopt_tol=1.e-8)
+    perm_left, perm_right, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, p1=perm1_shuff,
+                                                              p2=perm2_shuff, k=4)
+    _, _, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, p1=perm_left, p2=perm_right, k=3)
     assert kopt_error <= error
     assert kopt_error == 0

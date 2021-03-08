@@ -140,7 +140,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
                        pad_mode="row-col", translate=False, scale=False,
                        mode="normal1", check_finite=True, iteration=500,
                        add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3,
-                       kopt_tol=1.e-8, weight=None):
+                       weight=None):
     r"""Double sided permutation Procrustes.
 
     Parameters
@@ -213,9 +213,6 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    kopt_tol : float, optional
-        Tolerance value to check if k-opt heuristic converges. Default=1.e-8.
-
 
     Returns
     -------
@@ -396,15 +393,12 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
-            error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, error = kopt_heuristic_single(array_a=new_a_positive,
-                                                       array_b=new_b_positive,
-                                                       ref_error=error,
-                                                       perm=array_u,
-                                                       kopt_k=kopt_k,
-                                                       kopt_tol=kopt_tol)
+                array_u, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
+                                                       p=array_u, k=kopt_k)
+            else:
+                error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
@@ -412,15 +406,12 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
-            error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
             # k-opt heuristic
             if kopt:
-                array_u, error = kopt_heuristic_single(array_a=new_a_positive,
-                                                       array_b=new_b_positive,
-                                                       ref_error=error,
-                                                       perm=array_u,
-                                                       kopt_k=kopt_k,
-                                                       kopt_tol=kopt_tol)
+                array_u, error = kopt_heuristic_single(a=new_a_positive, b=new_b_positive,
+                                                       p=array_u, k=kopt_k)
+            else:
+                error = compute_error(new_a_positive, new_b_positive, array_u, array_u)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
 
     # Do regular computation
@@ -430,13 +421,8 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
         # perform k-opt heuristic search twice
         if kopt:
-            array_p, array_q, error = kopt_heuristic_double(array_m=array_m,
-                                                            array_n=array_n,
-                                                            ref_error=error,
-                                                            perm_p=array_p,
-                                                            perm_q=array_q,
-                                                            kopt_k=kopt_k,
-                                                            kopt_tol=kopt_tol)
+            array_p, array_q, error = kopt_heuristic_double(a=array_m, b=array_n, p1=array_p,
+                                                            p2=array_q, k=kopt_k)
         # return array_m, array_n, array_p, array_q, error
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
     else:

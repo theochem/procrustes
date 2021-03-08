@@ -47,13 +47,13 @@ def orthogonal(
     r"""Perform orthogonal Procrustes.
 
     Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
-    \times n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{U}_{n
-    \times n}`that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`.
+    \times n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{Q}_{n
+    \times n}` that makes :math:`\mathbf{AQ}` as close as possible to :math:`\mathbf{B}`.
     In other words,
 
     .. math::
-       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
-                          \|\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
+       \underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}
+                          \|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2
 
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
     have the same shape, which is gauranteed with the default ``pad`` argument for any given
@@ -101,7 +101,7 @@ def orthogonal(
     The optimal orthogonal matrix is obtained by,
 
     .. math::
-        \mathbf{U}_{\text{opt}} =
+        \mathbf{Q}^{\text{opt}} =
         \arg \underbrace{\min}_{\left\{\mathbf{Q} \left| {\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}
              \right. \right\}} \|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2 =
         \arg \underbrace{\max}_{\left\{\mathbf{Q} \left| {\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}
@@ -113,7 +113,7 @@ def orthogonal(
     .. math::
        \mathbf{A}^\dagger \mathbf{B} &= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}
                                           \tilde{\mathbf{V}}^{\dagger} \\
-       \mathbf{U}_{\text{opt}} &= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}
+       \mathbf{Q}^{\text{opt}} &= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}
 
     The singular values are always listed in decreasing order, with the smallest singular
     value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.
@@ -159,17 +159,41 @@ def orthogonal_2sided(
     pad=True,
     translate=False,
     scale=False,
-    remove_zero_col=False,
-    remove_zero_row=False,
+    unpad_col=False,
+    unpad_row=False,
     check_finite=True,
     weight=None,
 ):
     r"""Perform two-sided orthogonal Procrustes with one- or two-transformations.
 
+    **Two Transformations:** Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix
+    :math:`\mathbf{B}_{m \times n}`, find two :math:`n \times n` orthogonal (i.e., unitary)
+    transformation matrices :math:`\mathbf{Q}_1^\dagger` and :math:`\mathbf{Q}_2` that makes
+    :math:`\mathbf{Q}_1^\dagger\mathbf{A}\mathbf{Q}_2` as close as possible to :math:`\mathbf{B}`.
+    In other words,
+
+    .. math::
+          \underbrace{\text{min}}_{\left\{ {\mathbf{Q}_1 \atop \mathbf{Q}_2} \left|
+            {\mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \atop \mathbf{Q}_2^{-1} =
+            \mathbf{Q}_2^\dagger} \right. \right\}}
+            \|\mathbf{Q}_1^\dagger \mathbf{A} \mathbf{Q}_2 - \mathbf{B}\|_{F}^2
+
+    **Single Transformations:** Given a **symmetric** matrix :math:`\mathbf{A}_{n \times n}` and
+    a reference :math:`\mathbf{B}_{n \times n}`, find one orthogonal (i.e., unitary) transformation
+    matrix :math:`\mathbf{Q}_{n \times n}` that makes :math:`\mathbf{A}` as close as possible to
+    :math:`\mathbf{B}`. In other words,
+
+    .. math::
+       \underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}
+                          \|\mathbf{Q}^\dagger\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2
+
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
-    have the same shape and be **symmetric** when using one-transformation matrix. If this is not
-    the case, the arguments `pad`, `remove_zero_col`, and `remove_zero_row` can be used to make them
-    have the same shape.
+    have the same shape, which is gauranteed with the default ``pad`` argument for any given
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
+    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
+    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
+    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
+    rows/columns so they have the same shape.
 
     Parameters
     ----------
@@ -188,14 +212,18 @@ def orthogonal_2sided(
         If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
         :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
         :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
-    remove_zero_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
-    remove_zero_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
-    weight : ndarray
-        The weighting matrix.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -204,53 +232,42 @@ def orthogonal_2sided(
 
     Notes
     -----
-    **Two-Sided Orthogonal Procrustes:** Given a matrix :math:`\mathbf{A}_{m \times n}` and a
-    reference matrix :math:`\mathbf{B}_{m \times n}`, find two orthogonal (i.e., unitary)
-    transformation matrices :math:`\mathbf{U}_{n \times n}` that makes :math:`\mathbf{A}` as
-    close as possible to :math:`\mathbf{B}`. In other words,
+    **Two-Sided Orthogonal Procrustes with Two Transformations:**
+    The optimal orthogonal transformations are obtained by:
 
     .. math::
-          \underbrace{\text{min}}_{\left\{ {\mathbf{U}_1 \atop \mathbf{U}_2} \left|
-            {\mathbf{U}_1^{-1} = \mathbf{U}_1^\dagger \atop \mathbf{U}_2^{-1} =
-            \mathbf{U}_2^\dagger} \right. \right\}}
-            \|\mathbf{U}_1^\dagger \mathbf{A} \mathbf{U}_2 - \mathbf{B}\|_{F}^2
-       &= \underbrace{\text{min}}_{\left\{ {\mathbf{U}_1 \atop \mathbf{U}_2} \left|
-             {\mathbf{U}_1^{-1} = \mathbf{U}_1^\dagger \atop \mathbf{U}_2^{-1} =
-             \mathbf{U}_2^\dagger} \right. \right\}}
-        \text{Tr}\left[\left(\mathbf{U}_1^\dagger\mathbf{A}\mathbf{U}_2 - \mathbf{B} \right)^\dagger
-                   \left(\mathbf{U}_1^\dagger\mathbf{A}\mathbf{U}_2 - \mathbf{B} \right)\right] \\
-       &= \underbrace{\text{min}}_{\left\{ {\mathbf{U}_1 \atop \mathbf{U}_2} \left|
-             {\mathbf{U}_1^{-1} = \mathbf{U}_1^\dagger \atop \mathbf{U}_2^{-1} =
-             \mathbf{U}_2^\dagger} \right. \right\}}
-          \text{Tr}\left[\mathbf{U}_2^\dagger\mathbf{A}^\dagger\mathbf{U}_1\mathbf{B} \right]
+       \mathbf{Q}_{1}^{\text{opt}}, \mathbf{Q}_{2}^{\text{opt}} = \arg
+          \underbrace{\text{min}}_{\left\{ {\mathbf{Q}_1 \atop \mathbf{Q}_2} \left|
+            {\mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \atop \mathbf{Q}_2^{-1} =
+            \mathbf{Q}_2^\dagger} \right. \right\}}
+            \|\mathbf{Q}_1^\dagger \mathbf{A} \mathbf{Q}_2 - \mathbf{B}\|_{F}^2 = \arg
+       \underbrace{\text{max}}_{\left\{ {\mathbf{Q}_1 \atop \mathbf{Q}_2} \left|
+             {\mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \atop \mathbf{Q}_2^{-1} =
+             \mathbf{Q}_2^\dagger} \right. \right\}}
+          \text{Tr}\left[\mathbf{Q}_2^\dagger\mathbf{A}^\dagger\mathbf{Q}_1\mathbf{B} \right]
 
-    Using the singular value decomposition (SVD) of :math:`\mathbf{A}` and :math:`\mathbf{B}`,
+    This is solved by taking the singular value decomposition (SVD) of :math:`\mathbf{A}` and
+    :math:`\mathbf{B}`,
 
     .. math::
        \mathbf{A} = \mathbf{U}_A \mathbf{\Sigma}_A \mathbf{V}_A^\dagger \\
        \mathbf{B} = \mathbf{U}_B \mathbf{\Sigma}_B \mathbf{V}_B^\dagger
 
-    The two optimal orthogonal matrices are obtained through,
+    Then the two optimal orthogonal matrices are given by,
 
     .. math::
-       \mathbf{U}_1 = \mathbf{U}_A \mathbf{U}_B^\dagger \\
-       \mathbf{U}_2 = \mathbf{V}_B \mathbf{V}_B^\dagger
+       \mathbf{Q}_1^{\text{opt}} = \mathbf{U}_A \mathbf{U}_B^\dagger \\
+       \mathbf{Q}_2^{\text{opt}} = \mathbf{V}_A \mathbf{V}_B^\dagger
 
-    **Two-Sided Orthogonal Procrustes with Single-Transformation:** Given a **symmetric** matrix
-    :math:`\mathbf{A}_{n \times n}` and a reference :math:`\mathbf{B}_{n \times n}`, find one
-    orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{U}_{n \times n}` that makes
-    :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. I.e.,
+    **Two-Sided Orthogonal Procrustes with Single-Transformation:**
+    The optimal orthogonal transformation is obtained by:
 
     .. math::
-       \underbrace{\min}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger \right\}}
-                          \|\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B}\|_{F}^2
-       &= \underbrace{\text{min}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \right\}}
-          \text{Tr}\left[\left(\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B} \right)^\dagger
-                         \left(\mathbf{U}^\dagger\mathbf{A}\mathbf{U} - \mathbf{B} \right)\right] \\
-       &= \underbrace{\text{max}}_{\left\{\mathbf{U} | \mathbf{U}^{-1} = {\mathbf{U}}^\dagger
-                                   \right\}}
-          \text{Tr}\left[\mathbf{U}^\dagger\mathbf{A}^\dagger\mathbf{U}\mathbf{B} \right]
+       \mathbf{Q}^{\text{opt}} = \arg
+       \underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}
+                          \|\mathbf{Q}^\dagger\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2 = \arg
+       \underbrace{\text{max}}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger\right\}}
+          \text{Tr}\left[\mathbf{Q}^\dagger\mathbf{A}^\dagger\mathbf{Q}\mathbf{B} \right]
 
     Using the singular value decomposition (SVD) of :math:`\mathbf{A}` and :math:`\mathbf{B}`,
 
@@ -258,10 +275,10 @@ def orthogonal_2sided(
        \mathbf{A} = \mathbf{U}_A \mathbf{\Lambda}_A \mathbf{U}_A^\dagger \\
        \mathbf{B} = \mathbf{U}_B \mathbf{\Lambda}_B \mathbf{U}_B^\dagger
 
-    The optimal orthogonal matrix :math:`\mathbf{U}_\text{opt}` is obtained through,
+    The optimal orthogonal matrix :math:`\mathbf{Q}^\text{opt}` is obtained through,
 
     .. math::
-       \mathbf{U}_\text{opt} = \mathbf{U}_A \mathbf{S} \mathbf{U}_A^\dagger
+       \mathbf{Q}^\text{opt} = \mathbf{U}_A \mathbf{S} \mathbf{U}_B^\dagger
 
     where :math:`\mathbf{S}` is a diagonal matrix with :math:`\pm{1}` elements,
 
@@ -276,10 +293,6 @@ def orthogonal_2sided(
 
     The matrix :math:`\mathbf{S}` is chosen to be the identity matrix.
 
-    Please note that the translation operation is not well defined for two sided orthogonal
-    procrustes since two sided rotation and translation don't commute. Therefore, please be careful
-    when setting translate=True.
-
     Examples
     --------
     >>> import numpy as np
@@ -288,7 +301,7 @@ def orthogonal_2sided(
     ...               [ -0.58896768, 16.77132475,  0.24289990, 0., 0.],
     ...               [-43.00635291,  0.2428999 , 89.44735687, 0., 0.],
     ...               [  0.        ,  0.        ,  0.        , 0., 0.]])
-    >>> res = orthogonal_2sided(a, b, single_transform=True, pad=True, remove_zero_col=True)
+    >>> res = orthogonal_2sided(a,b,single_transform=True,pad=True,unpad_col=True)
     >>> res.t
     array([[ 0.25116633,  0.76371527,  0.59468855],
            [-0.95144277,  0.08183302,  0.29674906],
@@ -306,15 +319,7 @@ def orthogonal_2sided(
 
     # Check inputs
     new_a, new_b = setup_input_arrays(
-        a,
-        b,
-        remove_zero_col,
-        remove_zero_row,
-        pad,
-        translate,
-        scale,
-        check_finite,
-        weight,
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
 
     # check symmetry if single_transform=True

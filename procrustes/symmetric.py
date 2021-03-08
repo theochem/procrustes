@@ -33,17 +33,29 @@ def symmetric(
     pad=True,
     translate=False,
     scale=False,
-    remove_zero_col=False,
-    remove_zero_row=False,
+    unpad_col=False,
+    unpad_row=False,
     check_finite=True,
     weight=None,
 ):
     r"""Perform symmetric Procrustes.
 
+    Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
+    \times n}` with :math:`m \geqslant n`, find the symmetrix transformation matrix
+    :math:`\mathbf{X}_{n \times n}` that makes :math:`\mathbf{AX}` as close as possible to
+    :math:`\mathbf{B}`. In other words,
+
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
+                        \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2
+
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
-    have the same shape with the number of rows greater than or equal to the number of columns.
-    If this is not the case, the arguments `pad`, `remove_zero_col`, and `remove_zero_row` can be
-    used to make them have the same shape.
+    have the same shape, which is gauranteed with the default ``pad`` argument for any given
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
+    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
+    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
+    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
+    rows/columns so they have the same shape.
 
     Parameters
     ----------
@@ -53,23 +65,25 @@ def symmetric(
         The 2D-array :math:`\mathbf{B}` representing the reference matrix.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape. **If number of
-        rows is not greater than or equal to the number of columns, both matrices are padded with
-        zero rows to have a square shape.**
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
         If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
         If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
         :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
         :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
-    remove_zero_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
-    remove_zero_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
-    weight : ndarray
-        The weighting matrix.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -78,12 +92,10 @@ def symmetric(
 
     Notes
     -----
-    Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
-    \times n}` with :math:`m \geqslant n`, find the symmetrix transformation matrix
-    :math:`\mathbf{X}_{n \times n}` that makes :math:`\mathbf{AX}` as close as possible to
-    :math:`\mathbf{B}`. In other words,
+    The optimal symmetrix matrix is obtained by,
 
     .. math::
+       \mathbf{X}_{\text{opt}} = \arg
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
                         \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2 =
        \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger
@@ -104,18 +116,22 @@ def symmetric(
 
     .. math::
        \mathbf{C}_{m \times n} = \mathbf{U}_{m \times m}^\dagger
-                                 \mathbf{A}_{m \times n}^0 \mathbf{V}_{n \times n}
+                                 \mathbf{B}_{m \times n} \mathbf{V}_{n \times n}
 
-    Then the elements of the optimal matrix :math:`\mathbf{X}_{n \times n}` are
+    with elements denoted by :math:`c_{ij}`.
+    Then we compute the upper triangle of the symmetric matrix :math:`\mathbf{Y}_{n \times n}` with
 
     .. math::
-       x_{ij} = \begin{cases}
-              0 && i \text{ and } j > \text{rank} \left(\mathbf{B}\right) \\
-              \frac{\sigma_i c_{ij} + \sigma_j c_{ji}}{\sigma_i^2 + \sigma_j^2} && \text{otherwise}
-              \end{cases}
+       [\mathbf{Y}]_{ij} = \begin{cases}
+              0 && i \text{ and } j > \text{rank} \left(\mathbf{A}\right) \\
+              \frac{\sigma_i c_{ij} + \sigma_j c_{ji}}{\sigma_i^2 +
+              \sigma_j^2} && \text{otherwise} \end{cases}
 
-    Notice that the first part of this constrain only works in the unusual case where
-    :math:`\mathbf{B}` has rank less than :math:`n`.
+    It is worth noting that the first part of this definition only applies in the unusual case where
+    :math:`\mathbf{A}` has rank less than :math:`n`. The :math:`\mathbf{X}_\text{opt}` is given by
+
+    .. math::
+       \mathbf{X}_\text{opt} = \mathbf{V Y V}^{\dagger}
 
     References
     ----------
@@ -133,7 +149,7 @@ def symmetric(
     ...               [ 22788.5,  91154. , 205096.5],
     ...               [ 46139.5, 184558. , 415255.5],
     ...               [ 22788.5,  91154. , 205096.5]])
-    >>> res = symmetric(array_a, array_b, pad=True, translate=True, scale=True)
+    >>> res = symmetric(a, b, pad=True, translate=True, scale=True)
     >>> res.t   # symmetric transformation array
     array([[0.0166352 , 0.06654081, 0.14971682],
           [0.06654081, 0.26616324, 0.59886729],
@@ -144,15 +160,7 @@ def symmetric(
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a,
-        b,
-        remove_zero_col,
-        remove_zero_row,
-        pad,
-        translate,
-        scale,
-        check_finite,
-        weight,
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
 
     # if number of rows is less than column, the arrays are made square

@@ -25,8 +25,8 @@
 import numpy as np
 from numpy.testing import assert_almost_equal
 from procrustes import rotational
-from scipy.stats import special_ortho_group
 import pytest
+from scipy.stats import special_ortho_group
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))

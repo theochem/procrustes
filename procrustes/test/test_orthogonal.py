@@ -106,7 +106,7 @@ def test_procrustes_with_translation(m, n):
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
-def test_rotation_with_translate_and_scale(m, n):
+def test_orthogonal_with_translate_and_scale(m, n):
     r"""Test orthogonal Procrustes with rotation, translation and scaling."""
     # initial arrays
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
@@ -126,23 +126,24 @@ def test_rotation_with_translate_and_scale(m, n):
     assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
-def test_orthogonal_translate_scale2():
-    r"""Test orthogonal Procrustes with rotation, translation and scaling with a different array."""
+@pytest.mark.parametrize("m, n, ncols, nrows", np.random.randint(50, 100, (25, 4)))
+def test_orthogonal_translate_scale_with_unpadding(m, n, ncols, nrows):
+    r"""Test orthogonal Procrustes with rotation, translation and scaling with unpadding."""
     # initial array
-    array_a = np.array([[1, 4], [7, 9]])
-    # define a transformation composed of rotation & reflection
-    theta = np.pi / 2
-    rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
-    ref = np.array([[1, 0], [0, -1]])
-    trans = np.dot(rot, ref)
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # obtain random orthogonal matrix
+    ortho = ortho_group.rvs(n)
     # define array_b by transforming array_a and padding with zero
-    array_b = np.dot(array_a, trans)
-    array_b = np.concatenate((array_b, np.zeros((2, 5))), axis=1)
-    array_b = np.concatenate((array_b, np.zeros((5, 7))), axis=0)
+    array_b = np.dot(array_a, ortho)
+    # Pad array b with additional "ncols" columns and "nrows" rows.
+    array_b = np.concatenate((array_b, np.zeros((m, ncols))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((nrows, n + ncols))), axis=0)
     # compute procrustes transformation
     res = orthogonal(array_a, array_b, translate=False, scale=False, unpad_col=True, unpad_row=True)
-    assert_almost_equal(res["t"], np.dot(rot, ref), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
+    assert_almost_equal(res["new_b"], np.dot(array_a, ortho))
+    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
+    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
 
 
 def test_two_sided_orthogonal_identical():

@@ -26,6 +26,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.orthogonal import orthogonal, orthogonal_2sided
 from procrustes.utils import compute_error
+import pytest
 
 
 def make_rotation_array(theta):
@@ -36,33 +37,17 @@ def make_rotation_array(theta):
     return arr
 
 
-def test_procrustes_orthogonal_identical():
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
+def test_procrustes_orthogonal_identical(m, n):
     r"""Test orthogonal Procrustes with identity matrix."""
     # case of identical square arrays
-    array_a = np.arange(9).reshape(3, 3)
-    array_b = np.copy(array_a)
-    res = orthogonal(array_a, array_b)
-    # check transformation array is identity
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # case of identical rectangular arrays (2 by 4)
-    array_a = np.array([[1, 5, 6, 7], [1, 2, 9, 4]])
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
     array_b = np.copy(array_a)
     res = orthogonal(array_a, array_b)
     assert_almost_equal(res["new_a"], array_a, decimal=6)
     assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_equal(res["t"].shape, (4, 4))
-    # assert_almost_equal(array_u, np.eye(4), decimal=6)
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
-    # case of identical rectangular arrays (5 by 3)
-    array_a = np.arange(15).reshape(5, 3)
-    array_b = np.copy(array_a)
-    res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_equal(res["t"].shape, (3, 3))
-    assert_almost_equal(compute_error(res["new_a"], res["new_b"], res["t"]), 0., decimal=6)
+    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(array_a.dot(res["t"]), array_b)
 
 
 def test_procrustes_rotation_square():

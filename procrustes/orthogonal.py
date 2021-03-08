@@ -47,8 +47,13 @@ def orthogonal(
     r"""Perform orthogonal Procrustes.
 
     Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
+<<<<<<< HEAD
     \times n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{Q}_{n
     \times n}` that makes :math:`\mathbf{AQ}` as close as possible to :math:`\mathbf{B}`.
+=======
+    \times n}`, find the orthogonal transformation matrix :math:`\mathbf{U}_{n
+    \times n}`that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`.
+>>>>>>> Removed unitary word in the docs
     In other words,
 
     .. math::

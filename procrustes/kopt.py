@@ -80,7 +80,7 @@ def kopt_heuristic_single(a, b, p=None, k=3):
     if p is None:
         p = np.identity(n)
     # compute 2-sided permutation error of the initial p matrix
-    error = compute_error(a, b, p, p)
+    error = compute_error(a, b, p, p.T)
     # pylint: disable=too-many-nested-blocks
     # swap rows and columns until the permutation matrix is not improved
     search = True
@@ -92,7 +92,7 @@ def kopt_heuristic_single(a, b, p=None, k=3):
                 # row-swap P matrix & compute error
                 perm_p = np.copy(p)
                 perm_p[:, comb] = perm_p[:, perm]
-                perm_error = compute_error(a, b, perm_p, perm_p)
+                perm_error = compute_error(a, b, perm_p, perm_p.T)
                 if perm_error < error:
                     search = True
                     p, error = perm_p, perm_error
@@ -157,7 +157,7 @@ def kopt_heuristic_double(a, b, p1=None, p2=None, k=3):
         p2 = np.identity(m)
 
     # compute 2-sided permutation error of the initial P & Q matrices
-    error = compute_error(a, b, p1, p2)
+    error = compute_error(a, b, p2, p1.T)
     # pylint: disable=too-many-nested-blocks
 
     for perm1 in it.permutations(np.arange(n), r=k):
@@ -172,7 +172,7 @@ def kopt_heuristic_double(a, b, p1=None, p2=None, k=3):
                 perm_p2 = np.copy(p2)
                 perm_p2[comb2, :] = perm_p2[perm2, :]
                 # compute error with new matrices & compare
-                perm_error = compute_error(b, a, perm_p1, perm_p2)
+                perm_error = compute_error(b, a, perm_p2, perm_p1.T)
                 if perm_error < error:
                     p1, p2, error = perm_p1, perm_p2, perm_error
                     # check whether perfect permutation matrix is found

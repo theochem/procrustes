@@ -336,13 +336,13 @@ def orthogonal_2sided(
         _, ub = np.linalg.eigh(new_b)
         u_opt = np.dot(ua, ub.T)
         # compute one-sided error
-        error = compute_error(new_a, new_b, u_opt, u_opt)
-        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=u_opt)
+        error = compute_error(new_a, new_b, u_opt, u_opt.T)
+        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=u_opt.T)
 
     # two-sided orthogonal Procrustes with two-transformations
     ua, _, vta = np.linalg.svd(new_a)
     ub, _, vtb = np.linalg.svd(new_b)
     u_opt1 = np.dot(ua, ub.T)
     u_opt2 = np.dot(vta.T, vtb)
-    error = compute_error(new_a, new_b, u_opt1, u_opt2)
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt2, s=u_opt1)
+    error = compute_error(new_a, new_b, u_opt2, u_opt1.T)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt2, s=u_opt1.T)

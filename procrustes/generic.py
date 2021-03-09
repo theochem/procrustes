@@ -32,16 +32,27 @@ def generic(
     pad=True,
     translate=False,
     scale=False,
-    remove_zero_col=False,
-    remove_zero_row=False,
+    unpad_col=False,
+    unpad_row=False,
     check_finite=True,
     weight=None,
 ):
-    r"""Perform generic right-hand-sided Procrustes.
+    r"""Perform generic one-sided Procrustes.
+
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the transformation matrix :math:`\mathbf{T}_{n \times n}` that makes
+    :math:`\mathbf{AT}` as close as possible to :math:`\mathbf{B}`. In other words,
+
+    .. math::
+       \underbrace{\text{min}}_{\mathbf{T}} \quad \|\mathbf{A} \mathbf{T} - \mathbf{B}\|_{F}^2
 
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
-    have the same shape. If this is not the case, the arguments `pad`, `remove_zero_col`, and
-    `remove_zero_row` can be used to make them have the same shape.
+    have the same shape, which is gauranteed with the default ``pad`` argument for any given
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
+    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
+    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
+    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
+    rows/columns so they have the same shape.
 
     Parameters
     ----------
@@ -58,14 +69,18 @@ def generic(
         If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
         :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
         :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
-    remove_zero_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
-    remove_zero_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
-    weight : ndarray
-        The weighting matrix.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -74,40 +89,19 @@ def generic(
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
-    n}`, find the transformation matrix :math:`\mathbf{X}_{n \times n}`
-    that makes :math:`\mathbf{AX}` as close as possible to :math:`\mathbf{B}`. In other words,
+    The optimal transformation matrix is obtained by solving the least-squares equations,
 
     .. math::
-       \underbrace{\text{min}}_{\mathbf{X}} \quad \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2
+        \mathbf{X}_\text{opt} = {(\mathbf{A}^{\top}\mathbf{A})}^{-1} \mathbf{A}^{\top} \mathbf{B}
 
-    Solving the least-squares equations, the optimal transformation :math:`\mathbf{X}_\text{opt}`
-    is given by,
-
-    .. math::
-        \mathbf{X} = {(\mathbf{A}^{\top}\mathbf{A})}^{-1} \mathbf{A}^{\top} \mathbf{B}
-
-    If :math:`m < n`, the transformation matrix :math:`\mathbf{X}_\text{opt}` is not unique,
+    If :math:`m < n`, the transformation matrix :math:`\mathbf{T}_\text{opt}` is not unique,
     because the system of equations is underdetermined (i.e., there are fewer equations than
     unknowns).
-
-    References
-    ----------
-    1. Gower, J. C. Procrustes Methods. Wiley Interdisciplinary Reviews: Computational Statistics,
-       2(4), 503-508, 2010.
 
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a,
-        b,
-        remove_zero_col,
-        remove_zero_row,
-        pad,
-        translate,
-        scale,
-        check_finite,
-        weight,
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
     # compute the generic solution
     a_inv = np.linalg.pinv(np.dot(new_a.T, new_a))

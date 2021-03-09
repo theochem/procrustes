@@ -62,14 +62,6 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
 
     This function implements the Equation (20) and the corresponding algorithm in  Gower's paper.
 
-    References
-    ----------
-    1. Stegmann, Mikkel B., and David Delgado Gomez., A brief introduction to statistical shape
-       analysis. Informatics and mathematical modelling, Technical University of Denmark,
-       DTU 15.11, 2002.
-    2. Gower, John C., Procrustes Methods. Wiley Interdisciplinary Reviews: Computational
-       Statistics, 2.4: 503-508, 2010.
-
     """
     # check input arrays
     _check_arraytypes(*array_list)

@@ -163,16 +163,6 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     control parameter. More detailed information about the algorithm can be
     referred to Rangarajan's paper and the details about the algorithm can be found at [2]_.
 
-    References
-    ----------
-    .. [1] Rangarajan, Anand and Yuille, Alan L and Gold, Steven and
-       Mjolsness, Eric, "A convergence proof for the softassign quadratic
-       assignment algorithm", Advances in Neural Information Processing
-       Systems, page 620-626, 1997.
-    .. [2] Stefan Roth, "Analysis of a Deterministic Annealing Method for Graph Matching and
-       Quadratic Assignment", Ph.D. thesis, University of Mannheim, 2001
-
-
     Examples
     --------
     >>> import numpy as np

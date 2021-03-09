@@ -44,7 +44,7 @@ def test_symmetric_transformed():
     array_b = np.concatenate((array_b, np.zeros((5, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((8, 6))), axis=0)
     # compute procrustes transformation
-    res = symmetric(array_a, array_b, remove_zero_row=True, remove_zero_col=True)
+    res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
     # check transformation is symmetric & error is zero
     assert_almost_equal(res["t"], res["t"].T, decimal=6)
     assert_almost_equal(res["t"], sym_array, decimal=6)
@@ -179,7 +179,7 @@ class TestAgainstNumerical:
         array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
         desired, desired_func = self._optimize(array_a, array_b, ncol)
-        res = symmetric(array_a, array_b, remove_zero_col=True, remove_zero_row=True)
+        res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
 
         assert np.abs(res["error"] - desired_func) < 1e-5
         assert np.all(np.abs(res["t"] - desired) < 1e-3)

@@ -248,19 +248,20 @@ def test_two_sided_orthogonal_with_translation_and_scaling(m, n):
     assert_almost_equal(result.error, 0, decimal=4)
 
 
-def test_two_sided_orthogonal_single_transformation_identical():
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_two_sided_orthogonal_single_transformation_identical(n):
     r"""Test 2sided orthogonal with identical arrays."""
     # define an arbitrary symmetric array
-    array_a = np.array([[2, 5, 4, 1], [5, 3, 1, 2], [8, 9, 1, 0], [1, 5, 6, 7]])
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     array_a = np.dot(array_a, array_a.T)
-    array_b = np.copy(array_a)
+    array_b = np.copy(array_a)  
 
     result = orthogonal_2sided(array_a, array_b, single_transform=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(4), decimal=8)
-    assert_almost_equal(abs(result["t"]), np.eye(4), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
-    assert_almost_equal(result["error"], 0, decimal=8)
+    assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=8)
+    assert_almost_equal(abs(result.t), np.eye(n), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result.t)), 1.0, decimal=8)
+    assert_almost_equal(result.error, 0, decimal=8)
 
 
 def test_two_sided_orthogonal_single_transformation_rot_reflect_padded():

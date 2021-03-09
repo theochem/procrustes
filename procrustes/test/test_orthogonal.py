@@ -44,11 +44,11 @@ def test_procrustes_orthogonal_identical(m, n):
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
     array_b = np.copy(array_a)
     res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_almost_equal(res["t"].dot(res["t"].T), np.eye(n), decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
-    assert_almost_equal(array_a.dot(res["t"]), array_b)
+    assert_almost_equal(res.new_a, array_a, decimal=6)
+    assert_almost_equal(res.new_b, array_b, decimal=6)
+    assert_almost_equal(res.t.dot(res.t.T), np.eye(n), decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_almost_equal(array_a.dot(res.t), array_b)
 
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
@@ -60,9 +60,9 @@ def test_procrustes_rotation_square(n):
     ortho_arr = ortho_group.rvs(n)
     array_b = array_a.dot(ortho_arr)
     res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["error"], 0., decimal=6)
-    assert_almost_equal(res["t"].dot(res["t"].T), np.eye(n), decimal=6)
-    assert_almost_equal(res["t"], ortho_arr)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_almost_equal(res.t.dot(res.t.T), np.eye(n), decimal=6)
+    assert_almost_equal(res.t, ortho_arr)
 
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
@@ -73,18 +73,18 @@ def test_procrustes_reflection_square(n):
     # reflection through diagonal plane
     array_b = -array_a
     res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
-    assert_almost_equal(res["t"], -np.eye(n), decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res.new_a, array_a, decimal=6)
+    assert_almost_equal(res.new_b, array_b, decimal=6)
+    assert_almost_equal(res.t, -np.eye(n), decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
     # General reflection through random hyperplane, see Wikipedia "Reflection (mathematics)"
     a = np.random.uniform(-10.0, 10.0, (n))
     a /= np.linalg.norm(a)
     rotation = np.eye(n) - 2.0 * np.outer(a, a) / np.linalg.norm(a)**2.0
     array_b = array_a.dot(rotation)
     res = orthogonal(array_a, array_b)
-    assert_almost_equal(res["t"], rotation, decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res.t, rotation, decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
     assert_almost_equal(array_a.dot(rotation), array_b, decimal=6)
 
 
@@ -95,12 +95,12 @@ def test_procrustes_with_translation(m, n):
     array_b = array_a + np.random.uniform(-10.0, 10.0, (n,))
     res = orthogonal(array_a, array_b, translate=True)
     # Test that the new A and B are translation of the originals.
-    assert_almost_equal(res["new_a"], array_a - np.mean(array_a, axis=0), decimal=6)
-    assert_almost_equal(res["new_b"], array_a - np.mean(array_a, axis=0), decimal=6)
+    assert_almost_equal(res.new_a, array_a - np.mean(array_a, axis=0), decimal=6)
+    assert_almost_equal(res.new_b, array_a - np.mean(array_a, axis=0), decimal=6)
     # Test that optimal result is orthogonal, and error is zero
-    assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
-    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
+    assert_almost_equal(res.t.T.dot(res.t), np.eye(n), decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
@@ -118,10 +118,10 @@ def test_orthogonal_with_translate_and_scale(m, n):
     # Procrustes with translation and scaling
     res = orthogonal(array_a, array_b, translate=True, scale=True)
     untranslated_array_a = (array_a - np.mean(array_a, axis=0))
-    assert_almost_equal(res["new_a"], untranslated_array_a / np.linalg.norm(untranslated_array_a))
-    assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
-    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
+    assert_almost_equal(res.new_a, untranslated_array_a / np.linalg.norm(untranslated_array_a))
+    assert_almost_equal(res.t.T.dot(res.t), np.eye(n), decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
 
 
 @pytest.mark.parametrize("m, n, ncols, nrows", np.random.randint(50, 100, (25, 4)))
@@ -138,10 +138,10 @@ def test_orthogonal_translate_scale_with_unpadding(m, n, ncols, nrows):
     array_b = np.concatenate((array_b, np.zeros((nrows, n + ncols))), axis=0)
     # compute procrustes transformation
     res = orthogonal(array_a, array_b, translate=False, scale=False, unpad_col=True, unpad_row=True)
-    assert_almost_equal(res["new_b"], np.dot(array_a, ortho), decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
-    assert_almost_equal(res["t"].T.dot(res["t"]), np.eye(n), decimal=6)
-    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
+    assert_almost_equal(res.new_b, np.dot(array_a, ortho), decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_almost_equal(res.t.T.dot(res.t), np.eye(n), decimal=6)
+    assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
 
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
@@ -152,11 +152,11 @@ def test_two_sided_orthogonal_identical(n):
     array_b = np.copy(array_a)
     result = orthogonal_2sided(array_a, array_b, single_transform=False)
     # check transformation array is identity
-    assert_almost_equal(np.linalg.det(result["s"]), 1.0, decimal=6)
-    assert_almost_equal(np.linalg.det(result["t"]), 1.0, decimal=6)
-    assert_almost_equal(result["s"], np.eye(n), decimal=6)
-    assert_almost_equal(result["t"], np.eye(n), decimal=6)
-    assert_almost_equal(result["error"], 0., decimal=6)
+    assert_almost_equal(np.linalg.det(result.s), 1.0, decimal=6)
+    assert_almost_equal(np.linalg.det(result.t), 1.0, decimal=6)
+    assert_almost_equal(result.s, np.eye(n), decimal=6)
+    assert_almost_equal(result.t, np.eye(n), decimal=6)
+    assert_almost_equal(result.error, 0., decimal=6)
 
 
 def test_two_sided_orthogonal_raises_error_non_symmetric_matrices():
@@ -195,18 +195,16 @@ def test_two_sided_orthogonal_rotate_reflect(m, n):
     # compute procrustes transformation
     result = orthogonal_2sided(array_a, array_b, single_transform=False)
     # check transformation array orthogonality
-    assert_almost_equal(np.dot(result["s"], result["s"].T), np.eye(m), decimal=6)
-    assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(n), decimal=6)
-    assert_almost_equal(result["s"].T.dot(result["new_a"].dot(result["t"])),
-                        result["new_b"], decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    assert_almost_equal(np.dot(result.s, result.s.T), np.eye(m), decimal=6)
+    assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
 
 
 @pytest.mark.parametrize("m, n, ncols, nrows", np.random.randint(50, 100, (25, 4)))
 def test_two_sided_orthogonal_rotate_with_unpadding(m, n, ncols, nrows):
     r"""Test two sided orthogonal with unpadding."""
     # define an arbitrary array
-    array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
     # define rotation and reflection arrays
     rot = ortho_group.rvs(n)
     array_b = np.dot(array_a, rot)
@@ -217,11 +215,11 @@ def test_two_sided_orthogonal_rotate_with_unpadding(m, n, ncols, nrows):
     result = orthogonal_2sided(array_a, array_b, single_transform=False, translate=True, scale=True,
                                unpad_col=True, unpad_row=True)
     # check transformation array and error
-    assert_almost_equal(np.dot(result["s"], result["s"].T), np.eye(m), decimal=6)
-    assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(n), decimal=6)
-    assert_almost_equal(abs(np.linalg.det(result["s"])), 1.0, decimal=6)
-    assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    assert_almost_equal(np.dot(result.s, result.s.T), np.eye(m), decimal=6)
+    assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result.s)), 1.0, decimal=6)
+    assert_almost_equal(abs(np.linalg.det(result.t)), 1.0, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))

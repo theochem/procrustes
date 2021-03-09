@@ -28,7 +28,7 @@ from procrustes.generic import generic
 import pytest
 
 
-np.random.seed(2020)
+np.random.seed(2021)
 
 
 @pytest.mark.parametrize("m", np.random.randint(2, 100, 25))

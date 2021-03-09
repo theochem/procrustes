@@ -287,27 +287,6 @@ def test_two_sided_orthogonal_single_transformation_rot_reflect_unpadded(n, ncol
     assert_almost_equal(result.error, 0, decimal=8)
 
 
-def test_two_sided_orthogonal_single_transformation_scale_3by3():
-    r"""Test 2sided orthogonal by 3by3 array with translation and scaling."""
-    # define an arbitrary symmetric array
-    array_a = np.array([[12.43, 16.15, 17.61], [11.4, 21.5, 16.7], [16.4, 19.4, 14.9]])
-    array_a = np.dot(array_a, array_a.T)
-    # define transformation composed of rotation and reflection
-    theta = np.pi / 2
-    rot = np.array([[np.cos(theta), -np.sin(theta), 0.],
-                    [np.sin(theta), np.cos(theta), 0.], [0., 0., 1.]])
-    ref = np.array([[1, -2, -2], [-2, 1, -2], [-2, -2, 1]])
-    trans = np.dot(ref, rot) / 3
-    # define array_b by transforming scaled-and-translated array_a
-    array_b = np.dot(np.dot(trans.T, 6.9 * array_a), trans)
-
-    # check transformation array and error
-    result = orthogonal_2sided(array_a, array_b, single_transform=True, translate=False, scale=True)
-    assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(3), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
-    assert_almost_equal(result["error"], 0, decimal=8)
-
-
 def test_two_sided_orthogonal_single_transformation_scale_rot_ref_2by2():
     r"""Test 2sided orthogonal by 3by3 array with scaling, rotation and reflection."""
     # define an arbitrary symmetric array

@@ -22,6 +22,8 @@
     : --
 
 
+.. _rotational:
+
 :mod:`procrustes.rotational`
 =============================
 

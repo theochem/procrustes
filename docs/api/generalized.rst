@@ -22,6 +22,9 @@
     : --
 
 
+.. _generalized:
+
+
 :mod:`procrustes.generalized`
 =============================
 

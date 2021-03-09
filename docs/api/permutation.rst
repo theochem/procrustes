@@ -22,6 +22,9 @@
     : --
 
 
+.. _permutation:
+
+
 :mod:`procrustes.permutation`
 ===============================
 

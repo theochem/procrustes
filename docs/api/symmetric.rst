@@ -22,6 +22,9 @@
     : --
 
 
+.. _symmetric:
+
+
 :mod:`procrustes.symmetric`
 =============================
 

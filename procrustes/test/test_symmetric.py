@@ -44,9 +44,9 @@ def test_symmetric_with_unpadding(m, n, add_cols, add_rows):
     # compute procrustes transformation
     res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=6)
-    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
+    assert_almost_equal(res.t, res.t.T, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
+    assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
@@ -65,9 +65,9 @@ def test_symmetric_scaled_shifted_transformed(m, n):
     # compute procrustes transformation
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["new_a"].dot(res["t"]), res["new_b"], decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res.t, res.t.T, decimal=6)
+    assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
@@ -86,8 +86,8 @@ def test_symmetric_with_small_values(m, n):
     # compute procrustes transformation
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=5)
+    assert_almost_equal(res.t, res.t.T, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=5)
 
 
 def test_not_full_rank_case():
@@ -99,8 +99,8 @@ def test_not_full_rank_case():
     # compute procrustes transformation
     res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res.t, res.t.T, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
 
 
 @pytest.mark.parametrize("m", np.random.randint(50, 100, (25,)))
@@ -120,8 +120,8 @@ def test_having_zero_eigenvalues_case(m):
     # compute procrustes transformation
     res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
-    assert_almost_equal(res["t"], res["t"].T, decimal=6)
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res.t, res.t.T, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
 
 
 class TestAgainstNumerical:
@@ -162,8 +162,8 @@ class TestAgainstNumerical:
         desired, desired_func = self._optimize(array_a, array_b, ncol)
         res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
 
-        assert np.abs(res["error"] - desired_func) < 1e-5
-        assert np.all(np.abs(res["t"] - desired) < 1e-3)
+        assert np.abs(res.error - desired_func) < 1e-5
+        assert np.all(np.abs(res.t - desired) < 1e-3)
 
     @pytest.mark.parametrize("nrow", [2, 10, 15])
     def test_fat_rectangular_matrices_with_square_padding(self, nrow):

@@ -24,6 +24,7 @@
 
 import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+from scipy.linalg import pinv
 
 
 def generic(
@@ -104,9 +105,7 @@ def generic(
         a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
     # compute the generic solution
-    # set a smarter default for small singular values cutoff
-    rcond = 1.0e-15 * new_a.shape[-1]
-    a_inv = np.linalg.pinv(np.dot(new_a.T, new_a), rcond=rcond)
+    a_inv = pinv(np.dot(new_a.T, new_a))
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     # compute one-sided error
     e_opt = compute_error(new_a, new_b, array_x)

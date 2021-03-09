@@ -165,6 +165,18 @@ def test_two_sided_orthogonal_identical(n):
     assert_almost_equal(result.error, 0., decimal=6)
 
 
+def test_orthogonal_raises_error():
+    r"""Test that orthogonal with incorrect shape raises error"""
+    array_a = np.random.uniform(-10.0, 10.0, (10, 20))
+    array_b = array_a.copy()
+    array_b = np.concatenate((array_b, np.zeros((10, 5))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((3, 25))), axis=0)
+    assert_raises(ValueError, orthogonal, array_a, array_b, unpad_col=False, pad=False)
+    assert_raises(ValueError, orthogonal, array_a, array_b, unpad_row=False, pad=False)
+    assert_raises(ValueError, orthogonal, array_a, array_b, unpad_col=False, unpad_row=False,
+                  pad=False)
+
+
 def test_two_sided_orthogonal_raises_error_non_symmetric_matrices():
     r"""Test that 2-sided orthogonal procrustes non-symmetric matrices raises an error."""
     # Test simple example with one matrix that is not square

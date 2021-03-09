@@ -289,7 +289,7 @@ def test_two_sided_orthogonal_single_transformation_rot_reflect_unpadded(n, ncol
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
 def test_two_sided_orthogonal_single_transformation_with_scaling(n):
-    r"""Test 2sided orthogonal by 3by3 array with scaling, rotation and reflection."""
+    r"""Test 2sided orthogonal by array with scaling, rotation and reflection."""
     # define an arbitrary symmetric array
     array_a = np.random.uniform(-10.0, 10.0, (n, n))
     array_a = np.dot(array_a, array_a.T)
@@ -299,7 +299,6 @@ def test_two_sided_orthogonal_single_transformation_with_scaling(n):
     trans = np.dot(ref, rot)
     # define array_b by transforming scaled array_a
     array_b = np.dot(np.dot(trans.T, 88.89 * array_a), trans)
-
     # check transformation array and error
     result = orthogonal_2sided(array_a, array_b, single_transform=True, translate=False, scale=True)
     assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=8)
@@ -307,18 +306,18 @@ def test_two_sided_orthogonal_single_transformation_with_scaling(n):
     assert_almost_equal(result.error, 0, decimal=8)
 
 
-def test_two_sided_orthogonal_single_transformation_random_orthogonal():
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_two_sided_orthogonal_single_transformation_random_orthogonal(n):
     r"""Test 2sided orthogonal by 3by3 array."""
-    # define random array
-    array_a = np.array([[0, 5, 8, 6], [5, 0, 5, 1],
-                        [8, 5, 0, 2], [6, 1, 2, 0]])
-    ortho = np.array([[0, 0, 1, 0],
-                      [0, 0, 0, 1],
-                      [1, 0, 0, 0],
-                      [0, 1, 0, 0]])
+    # define random symmetric array
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    array_a = (array_a + array_a.T) / 2.0
+    # Obtain random orthogonal matrix.
+    ortho = ortho_group.rvs(n)
     array_b = np.dot(np.dot(ortho.T, array_a), ortho)
     # check transformation array and error
     result = orthogonal_2sided(array_a, array_b, single_transform=True)
-    assert_almost_equal(np.dot(result["t"], result["t"].T), np.eye(4), decimal=8)
-    assert_almost_equal(abs(np.linalg.det(result["t"])), 1.0, decimal=8)
-    assert_almost_equal(result["error"], 0, decimal=8)
+
+    assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=8)
+    assert_almost_equal(abs(np.linalg.det(result.t)), 1.0, decimal=8)
+    assert_almost_equal(result.error, 0, decimal=8)

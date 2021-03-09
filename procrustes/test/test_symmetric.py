@@ -25,8 +25,8 @@
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal
 from procrustes import symmetric
+from procrustes.test.common import minimize_one_transformation
 import pytest
-from scipy.optimize import minimize
 from scipy.stats import ortho_group
 
 
@@ -129,57 +129,28 @@ def test_having_zero_eigenvalues_case(m):
     assert_almost_equal(res.error, 0.0, decimal=6)
 
 
-class TestAgainstNumerical:
-    r"""
-    Testing Procrustes over symmetric matrices against numerical optimization methods.
+@pytest.mark.parametrize("ncol", [2, 10, 15])
+def test_random_tall_rectangular_matrices(ncol):
+    r"""Test Symmetric Procrustes with random tall matrices."""
+    nrow = np.random.randint(ncol, ncol + 10)
+    array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
-    Note that there is a unique solution to ||AX - B|| if and only if rank(A) = n. This must be
-    guaranteed for numerical optimization to be exact.
+    desired, desired_func = minimize_one_transformation(array_a, array_b, ncol)
+    res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
 
-    """
+    assert np.abs(res.error - desired_func) < 1e-5
+    assert np.all(np.abs(res.t - desired) < 1e-3)
 
-    @staticmethod
-    def _vector_to_matrix(vec, nsize):
-        r"""Given a vector, change it to a matrix."""
-        mat = np.zeros((nsize, nsize))
-        mat[np.triu_indices(nsize)] = vec
-        mat = mat + mat.T - np.diag(np.diag(mat))
-        return mat
 
-    def _objective_func(self, vec, array_a, array_b, nsize):
-        mat = self._vector_to_matrix(vec, nsize)
-        diff = array_a.dot(mat) - array_b
-        return np.trace(diff.T.dot(diff))
+@pytest.mark.parametrize("nrow", [2, 10, 15])
+def test_fat_rectangular_matrices_with_square_padding(nrow):
+    r"""Test Symmetric Procrustes with random wide matrices."""
+    # generate Random Rectangular Matrices
+    ncol = np.random.randint(nrow + 1, nrow + 10)
+    array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
 
-    def _optimize(self, array_a, array_b, ncol):
-        init = np.random.random(int(ncol * (ncol + 1) / 2.))
-        results = minimize(self._objective_func, init, args=(array_a, array_b, ncol),
-                           method="slsqp", options={"eps": 1e-8, 'ftol': 1e-11, "maxiter": 1000})
-        return self._vector_to_matrix(results["x"], ncol), results["fun"]
+    _, desired_func = minimize_one_transformation(array_a, array_b, ncol)
+    res = symmetric(array_a, array_b, pad=True)
 
-    @pytest.mark.parametrize("ncol", [2, 10, 15])
-    def test_random_tall_rectangular_matrices(self, ncol):
-        r"""Test Symmetric Procrustes with random tall matrices."""
-        # Generate Random Rectangular Matrices with small singular values
-        nrow = np.random.randint(ncol, ncol + 10)
-        array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
-
-        desired, desired_func = self._optimize(array_a, array_b, ncol)
-        res = symmetric(array_a, array_b, unpad_col=True, unpad_row=True)
-
-        assert np.abs(res.error - desired_func) < 1e-5
-        assert np.all(np.abs(res.t - desired) < 1e-3)
-
-    @pytest.mark.parametrize("nrow", [2, 10, 15])
-    def test_fat_rectangular_matrices_with_square_padding(self, nrow):
-        r"""Test Symmetric Procrustes with random wide matrices."""
-        # Square padding is needed or else it returns an error.
-        # Generate Random Rectangular Matrices
-        ncol = np.random.randint(nrow + 1, nrow + 10)
-        array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
-
-        _, desired_func = self._optimize(array_a, array_b, ncol)
-        res = symmetric(array_a, array_b, pad=True)
-
-        # No uniqueness in solution, thus check that the optimal values are the same.
-        assert np.abs(res["error"] - desired_func) < 1e-5
+    # No uniqueness in solution, thus check that the optimal values are the same.
+    assert np.abs(res["error"] - desired_func) < 1e-5

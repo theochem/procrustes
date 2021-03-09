@@ -44,6 +44,7 @@ def test_procrustes_orthogonal_identical(m, n):
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
     array_b = np.copy(array_a)
     res = orthogonal(array_a, array_b)
+    assert_equal(res.s, None)
     assert_almost_equal(res.new_a, array_a, decimal=6)
     assert_almost_equal(res.new_b, array_b, decimal=6)
     assert_almost_equal(res.t.dot(res.t.T), np.eye(n), decimal=6)
@@ -63,6 +64,7 @@ def test_procrustes_rotation_square(n):
     assert_almost_equal(res.error, 0., decimal=6)
     assert_almost_equal(res.t.dot(res.t.T), np.eye(n), decimal=6)
     assert_almost_equal(res.t, ortho_arr)
+    assert_equal(res.s, None)
 
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
@@ -86,6 +88,7 @@ def test_procrustes_reflection_square(n):
     assert_almost_equal(res.t, rotation, decimal=6)
     assert_almost_equal(res.error, 0., decimal=6)
     assert_almost_equal(array_a.dot(rotation), array_b, decimal=6)
+    assert_equal(res.s, None)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
@@ -101,6 +104,7 @@ def test_procrustes_with_translation(m, n):
     assert_almost_equal(res.t.T.dot(res.t), np.eye(n), decimal=6)
     assert_almost_equal(res.error, 0., decimal=6)
     assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
+    assert_equal(res.s, None)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
@@ -122,6 +126,7 @@ def test_orthogonal_with_translate_and_scale(m, n):
     assert_almost_equal(res.t.T.dot(res.t), np.eye(n), decimal=6)
     assert_almost_equal(res.error, 0., decimal=6)
     assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
+    assert_equal(res.s, None)
 
 
 @pytest.mark.parametrize("m, n, ncols, nrows", np.random.randint(50, 100, (25, 4)))
@@ -142,6 +147,7 @@ def test_orthogonal_translate_scale_with_unpadding(m, n, ncols, nrows):
     assert_almost_equal(res.error, 0., decimal=6)
     assert_almost_equal(res.t.T.dot(res.t), np.eye(n), decimal=6)
     assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
+    assert_equal(res.s, None)
 
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))

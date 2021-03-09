@@ -23,7 +23,7 @@
 """Testings for symmetric Procrustes module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_equal
 from procrustes import symmetric
 import pytest
 from scipy.optimize import minimize
@@ -46,6 +46,7 @@ def test_symmetric_with_unpadding(m, n, add_cols, add_rows):
     # check transformation is symmetric & error is zero
     assert_almost_equal(res.t, res.t.T, decimal=6)
     assert_almost_equal(res.error, 0.0, decimal=6)
+    assert_equal(res.s, None)
     assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
 
 
@@ -67,6 +68,7 @@ def test_symmetric_scaled_shifted_transformed(m, n):
     # check transformation is symmetric & error is zero
     assert_almost_equal(res.t, res.t.T, decimal=6)
     assert_almost_equal(res.new_a.dot(res.t), res.new_b, decimal=6)
+    assert_equal(res.s, None)
     assert_almost_equal(res.error, 0.0, decimal=6)
 
 
@@ -86,6 +88,7 @@ def test_symmetric_with_small_values(m, n):
     # compute procrustes transformation
     res = symmetric(array_a, array_b, translate=True, scale=True)
     # check transformation is symmetric & error is zero
+    assert_equal(res.s, None)
     assert_almost_equal(res.t, res.t.T, decimal=6)
     assert_almost_equal(res.error, 0.0, decimal=5)
 
@@ -99,6 +102,7 @@ def test_not_full_rank_case():
     # compute procrustes transformation
     res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
+    assert_equal(res.s, None)
     assert_almost_equal(res.t, res.t.T, decimal=6)
     assert_almost_equal(res.error, 0.0, decimal=6)
 
@@ -120,6 +124,7 @@ def test_having_zero_eigenvalues_case(m):
     # compute procrustes transformation
     res = symmetric(array_a, array_b)
     # check transformation is symmetric & error is zero
+    assert_equal(res.s, None)
     assert_almost_equal(res.t, res.t.T, decimal=6)
     assert_almost_equal(res.error, 0.0, decimal=6)
 

@@ -25,9 +25,7 @@ r"""Testings for orthogonal Procrustes module."""
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.orthogonal import orthogonal, orthogonal_2sided
-from procrustes.utils import compute_error
 import pytest
-from scipy.linalg import schur
 from scipy.stats import ortho_group
 
 

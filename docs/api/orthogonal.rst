@@ -22,6 +22,8 @@
     : --
 
 
+.. _orthogonal:
+
 :mod:`procrustes.orthogonal`
 =============================
 

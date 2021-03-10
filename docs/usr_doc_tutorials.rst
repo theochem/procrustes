@@ -37,10 +37,10 @@ download the jupyter notebook from our github repo or just use the online versio
    :maxdepth: 3
    :caption: Practical Examples
 
-   usr_doc_atom_mapping.rst
    usr_doc_protein_align.rst
-   usr_doc_ranking.rst
    usr_doc_chiral_check.rst
+   usr_doc_atom_mapping.rst
+   usr_doc_ranking.rst
 
 .. todo::
    # Add LDM example

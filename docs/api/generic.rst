@@ -22,6 +22,9 @@
     : --
 
 
+.. _generic:
+
+
 :mod:`procrustes.generic`
 =============================
 

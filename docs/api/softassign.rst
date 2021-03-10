@@ -22,6 +22,8 @@
     : --
 
 
+.. _softassign:
+
 :mod:`procrustes.softassign`
 =============================
 

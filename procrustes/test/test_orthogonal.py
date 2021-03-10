@@ -166,7 +166,7 @@ def test_two_sided_orthogonal_identical(n):
 
 
 def test_orthogonal_raises_error():
-    r"""Test that orthogonal with incorrect shape raises error"""
+    r"""Test that orthogonal with incorrect shape raises error."""
     array_a = np.random.uniform(-10.0, 10.0, (10, 20))
     array_b = array_a.copy()
     array_b = np.concatenate((array_b, np.zeros((10, 5))), axis=1)

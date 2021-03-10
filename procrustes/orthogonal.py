@@ -47,7 +47,7 @@ def orthogonal(
     r"""Perform orthogonal Procrustes.
 
     Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
-    \times n}`, find the orthogonal (i.e., unitary) transformation matrix :math:`\mathbf{Q}_{n
+    \times n}`, find the orthogonal transformation matrix :math:`\mathbf{Q}_{n
     \times n}` that makes :math:`\mathbf{AQ}` as close as possible to :math:`\mathbf{B}`.
     In other words,
 
@@ -167,7 +167,7 @@ def orthogonal_2sided(
     r"""Perform two-sided orthogonal Procrustes with one- or two-transformations.
 
     **Two Transformations:** Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix
-    :math:`\mathbf{B}_{m \times n}`, find two :math:`n \times n` orthogonal (i.e., unitary)
+    :math:`\mathbf{B}_{m \times n}`, find two :math:`n \times n` orthogonal
     transformation matrices :math:`\mathbf{Q}_1^\dagger` and :math:`\mathbf{Q}_2` that makes
     :math:`\mathbf{Q}_1^\dagger\mathbf{A}\mathbf{Q}_2` as close as possible to :math:`\mathbf{B}`.
     In other words,
@@ -179,7 +179,7 @@ def orthogonal_2sided(
             \|\mathbf{Q}_1^\dagger \mathbf{A} \mathbf{Q}_2 - \mathbf{B}\|_{F}^2
 
     **Single Transformations:** Given a **symmetric** matrix :math:`\mathbf{A}_{n \times n}` and
-    a reference :math:`\mathbf{B}_{n \times n}`, find one orthogonal (i.e., unitary) transformation
+    a reference :math:`\mathbf{B}_{n \times n}`, find one orthogonal transformation
     matrix :math:`\mathbf{Q}_{n \times n}` that makes :math:`\mathbf{A}` as close as possible to
     :math:`\mathbf{B}`. In other words,
 

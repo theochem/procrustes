@@ -144,7 +144,7 @@ def orthogonal(
             "Check pad, remove_zero_col, and remove_zero_row arguments."
         )
     # calculate SVD of A.T * B
-    u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
+    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver="gesvd")
     # compute optimal orthogonal transformation
     u_opt = np.dot(u, vt)
     # compute one-sided error

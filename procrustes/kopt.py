@@ -35,72 +35,65 @@ __all__ = [
 ]
 
 
-def kopt_heuristic_single(a, b, p=None, k=3):
-    r"""Find a locally-optimal one-sided permutation matrix using the k-opt (greedy) heuristic.
+def kopt_heuristic_single(fun, p0, k=3):
+    r"""Find a locally-optimal permutation matrix using the k-opt (greedy) heuristic.
 
     .. math::
        \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
        \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
-       \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2\\
+       f(\mathbf{P})
 
     All possible 2-, ..., k-fold column-permutations of the initial permutation matrix are tried to
-    identify one which gives a lower error. Starting from this updated permutation matrix, the
-    process is repeated until no further k-fold column-reordering of a given permutation matrix
-    lower the error.
+    identify one which gives a lower value of objective function :math:`f`.
+    Starting from this updated permutation matrix, the process is repeated until no further k-fold
+    column-reordering of a given permutation matrix lower the objective function.
 
     Parameters
     ----------
-    a : ndarray
-        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
-    b : ndarray
-        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
-    p : ndarray, optional
-        The 2D-array :math:`\mathbf{P}` representing the initial permutation matrix. If ``None``,
-        the identity matrix is used.
+    fun : callable
+        The objective function :math:`f` to be minimized.
+    p0 : ndarray
+        The 2D-array :math:`\mathbf{P}` representing the initial permutation matrix.
     k : int, optional
         The order of the permutation. For example, `k=3` swaps all possible 3-permutations.
 
     Returns
     -------
-    perm_p : ndarray
-        The locally-optimal permutation matrix.
-    error : float
-        The locally-optimal error.
+    p : ndarray
+        The locally-optimal permutation matrix (i.e., solution).
+    fun : float
+        The locally-optimal value of the objective function.
 
     """
+    # pylint: disable=too-many-nested-blocks
     if k < 2 or not isinstance(k, int):
         raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
-    if a.shape[0] != a.shape[1]:
-        raise ValueError(f"Argument a should be a square array. Given shape={a.shape}")
-    if a.shape != b.shape:
-        raise ValueError(f"Argument b should have same shape as a. Given {b.shape} != {a.shape}")
+    if p0.shape[0] != p0.shape[1]:
+        raise ValueError(f"Argument p0 should be a square array. Given p0 shape={p0.shape}")
+    if k > p0.shape[0]:
+        raise ValueError("Argument k should be smaller than p0 rows. Given {k} > {p0.shape[0]}")
 
-    # assign p to be an identity array, if not specified
-    n = a.shape[0]
-    if p is None:
-        p = np.identity(n)
-    # compute 2-sided permutation error of the initial p matrix
-    error = compute_error(a, b, p, p.T)
-    # pylint: disable=too-many-nested-blocks
+    # compute initial value of the objective function
+    error = fun(p0)
     # swap rows and columns until the permutation matrix is not improved
     search = True
     while search:
         search = False
-        for perm in it.permutations(np.arange(n), r=k):
+        for perm in it.permutations(np.arange(p0.shape[0]), r=k):
             comb = tuple(sorted(perm))
             if perm != comb:
-                # row-swap P matrix & compute error
-                perm_p = np.copy(p)
+                # row-swap P matrix & compute objective function
+                perm_p = np.copy(p0)
                 perm_p[:, comb] = perm_p[:, perm]
-                perm_error = compute_error(a, b, perm_p, perm_p.T)
+                perm_error = fun(perm_p)
                 if perm_error < error:
                     search = True
-                    p, error = perm_p, perm_error
+                    p0, error = perm_p, perm_error
                     # check whether perfect permutation matrix is found
                     # TODO: smarter threshold based on norm of matrix
                     if error <= 1.0e-8:
-                        return p, error
-    return p, error
+                        return p0, error
+    return p0, error
 
 
 def kopt_heuristic_double(a, b, p1=None, p2=None, k=3):

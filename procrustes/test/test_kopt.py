@@ -50,11 +50,12 @@ def test_kopt_heuristic_single():
                            [0, 0, 1, 0, 0],
                            [0, 0, 0, 0, 1],
                            [1, 0, 0, 0, 0]])
-    perm, kopt_error = kopt_heuristic_single(arr_a, arr_b, perm_guess, 3)
+
+    perm, error = kopt_heuristic_single(lambda p: compute_error(arr_a, arr_b, p, p.T), perm_guess)
     assert_equal(perm, perm_exact)
-    assert kopt_error == 0
+    assert error == 0
     # test the error exceptions
-    assert_raises(ValueError, kopt_heuristic_single, arr_a, arr_b, perm_guess, 1)
+    assert_raises(ValueError, kopt_heuristic_single, compute_error, perm_guess, 1)
 
 
 def test_kopt_heuristic_double():

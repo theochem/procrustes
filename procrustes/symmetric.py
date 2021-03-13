@@ -51,8 +51,9 @@ def symmetric(
                         \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2
 
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
-    have the same shape, which is gauranteed with the default ``pad`` argument for any given
-    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
+    have the same shape with :math:`m \geqslant n`, which is guaranteed with the default ``pad``
+    argument for any given :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices.
+    In preparing the :math:`\mathbf{A}` and
     :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
     rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
     :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
@@ -107,20 +108,19 @@ def symmetric(
     Considering the singular value decomposition of :math:`\mathbf{A}`,
 
     .. math::
-       \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m} \begin{bmatrix}
-                                 \mathbf{\Sigma}_{m \times m} \\
-                                 \mathbf{0}_{m \times (n - m)} \end{bmatrix}
+       \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m}
+                                 \mathbf{\Sigma}_{m \times n}
                                  \mathbf{V}_{n \times n}^\dagger
 
-    where :math:`\mathbf{\Sigma}_{n \times n}` is a square diagonal matrix with nonnegative elements
-    denoted by :math:`\sigma_i` listed in decreasing order, define
+    where :math:`\mathbf{\Sigma}_{m \times n}` is a rectangular diagonal matrix with non-negative
+    singular values :math:`\sigma_i = [\mathbf{\Sigma}]_{ii}` listed in descending order, define
 
     .. math::
        \mathbf{C}_{m \times n} = \mathbf{U}_{m \times m}^\dagger
                                  \mathbf{B}_{m \times n} \mathbf{V}_{n \times n}
 
     with elements denoted by :math:`c_{ij}`.
-    Then we compute the upper triangle of the symmetric matrix :math:`\mathbf{Y}_{n \times n}` with
+    Then we compute the symmetric matrix :math:`\mathbf{Y}_{n \times n}` with
 
     .. math::
        [\mathbf{Y}]_{ij} = \begin{cases}
@@ -169,11 +169,11 @@ def symmetric(
     # if new_b.shape[0] < new_b.shape[1]:
     #     raise ValueError(f"Shape of B {new_b.shape}=(m, n) needs to satisfy m >= n.")
 
-    # compute SVD of A
+    # compute SVD of A & matrix C
     u, s, vt = scipy.linalg.svd(new_a, lapack_driver='gesvd')
-
     c = np.dot(np.dot(u.T, new_b), vt.T)
-    # create the intermediate array Y and the optimum symmetric transformation array X
+
+    # compute intermediate matrix Y
     n = new_a.shape[1]
     y = np.zeros((n, n))
     for i in range(n):
@@ -181,6 +181,7 @@ def symmetric(
             if s[i] ** 2 + s[j] ** 2 != 0:
                 y[i, j] = (s[i] * c[i, j] + s[j] * c[j, i]) / (s[i] ** 2 + s[j] ** 2)
 
+    # compute optimum symmetric transformation matrix X
     x = np.dot(np.dot(vt.T, y), vt)
     error = compute_error(new_a, new_b, x)
 

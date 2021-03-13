@@ -27,6 +27,7 @@ import itertools as it
 import numpy as np
 from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+import scipy
 from scipy.optimize import linear_sum_assignment
 
 __all__ = ["permutation", "permutation_2sided", "permutation_2sided_explicit"]
@@ -607,7 +608,7 @@ def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, add_noise):
     # compute U_umeyama
     array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
     # calculate the approximated umeyama matrix
-    array_ua, _, array_vta = np.linalg.svd(array_u)
+    array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver='gesvd')
     u_approx = np.dot(np.abs(array_ua), np.abs(array_vta))
     # compute closest unitary transformation to U
     # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)

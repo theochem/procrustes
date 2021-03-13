@@ -26,6 +26,7 @@
 
 import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+import scipy
 
 __all__ = [
     "orthogonal",
@@ -143,7 +144,7 @@ def orthogonal(
             "Check pad, remove_zero_col, and remove_zero_row arguments."
         )
     # calculate SVD of A.T * B
-    u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
+    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver="gesvd")
     # compute optimal orthogonal transformation
     u_opt = np.dot(u, vt)
     # compute one-sided error
@@ -345,8 +346,8 @@ def orthogonal_2sided(
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=u_opt.T)
 
     # two-sided orthogonal Procrustes with two-transformations
-    ua, _, vta = np.linalg.svd(new_a)
-    ub, _, vtb = np.linalg.svd(new_b)
+    ua, _, vta = scipy.linalg.svd(new_a, lapack_driver="gesvd")
+    ub, _, vtb = scipy.linalg.svd(new_b, lapack_driver="gesvd")
     u_opt1 = np.dot(ua, ub.T)
     u_opt2 = np.dot(vta.T, vtb)
     error = compute_error(new_a, new_b, u_opt2, u_opt1.T)

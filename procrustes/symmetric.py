@@ -25,6 +25,7 @@
 import numpy as np
 from procrustes.utils import _zero_padding
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+import scipy
 
 
 def symmetric(
@@ -169,7 +170,7 @@ def symmetric(
     #     raise ValueError(f"Shape of B {new_b.shape}=(m, n) needs to satisfy m >= n.")
 
     # compute SVD of A
-    u, s, vt = np.linalg.svd(new_a)
+    u, s, vt = scipy.linalg.svd(new_a, lapack_driver='gesvd')
 
     c = np.dot(np.dot(u.T, new_b), vt.T)
     # create the intermediate array Y and the optimum symmetric transformation array X

@@ -24,6 +24,7 @@
 
 import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+import scipy
 
 
 def rotational(
@@ -158,7 +159,7 @@ def rotational(
             "Check pad, remove_zero_col, and remove_zero_row arguments."
         )
     # compute SVD of A.T * B
-    u, _, vt = np.linalg.svd(np.dot(new_a.T, new_b))
+    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver='gesvd')
     # construct S: an identity matrix with the smallest singular value replaced by sgn(|U*V^t|)
     s = np.eye(new_a.shape[1])
     s[-1, -1] = np.sign(np.linalg.det(np.dot(u, vt)))

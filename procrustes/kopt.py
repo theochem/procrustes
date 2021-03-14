@@ -112,11 +112,12 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
     r"""Find a locally-optimal two-sided permutation matrices using the k-opt (greedy) heuristic.
 
     .. math::
-        \underbrace{\text{arg min}}_{\left\{ {\mathbf{P}_1, \mathbf{P}_2} \left|
-        {[\mathbf{P}_1]_{ij} \in \{0, 1\} \text{and} [\mathbf{P}_2]_{ij} \in \{0, 1\} \atop
-         \sum_{i=1}^m [\mathbf{P}_1]_{ij} = \sum_{j=1}^m [\mathbf{P}_1]_{ij} = 1 \atop
-         \sum_{i=1}^n [\mathbf{P}_2]_{ij} = \sum_{j=1}^n [\mathbf{P}_2]_{ij} = 1} \right. \right\}}
-         f(\mathbf{P}_1, \mathbf{P}_2)
+        \underbrace{\text{arg min}}_{
+        \left\{ {\mathbf{P}_1, \mathbf{P}_2} \left|
+        {{[\mathbf{P}_1]_{ij} \in \{0, 1\} \atop [\mathbf{P}_2]_{ij} \in \{0, 1\}} \atop
+        {\sum_{i=1}^m [\mathbf{P}_1]_{ij} = \sum_{j=1}^m [\mathbf{P}_1]_{ij} = 1 \atop
+        \sum_{i=1}^n [\mathbf{P}_2]_{ij} = \sum_{j=1}^n [\mathbf{P}_2]_{ij} = 1}} \right. \right\}}
+        f(\mathbf{P}_1, \mathbf{P}_2)
 
     All possible 2-, ..., k-fold permutations of the initial permutation matrices are tried to
     identify ones which give a lower value of objective function :math:`f`.

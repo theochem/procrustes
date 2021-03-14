@@ -77,7 +77,7 @@ def kopt_heuristic_single(fun, p0, k=3):
 
     # check k
     if k < 2 or not isinstance(k, (int, np.integer)):
-        raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
+        raise ValueError(f"Argument k must be a integer greater than 1. Given k={k}")
     if k > p0.shape[0]:
         raise ValueError(f"Argument k={k} is not smaller than {p0.shape[0]} (number of p0 rows).")
 
@@ -108,7 +108,7 @@ def kopt_heuristic_single(fun, p0, k=3):
     return best_p, best_f
 
 
-def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
+def kopt_heuristic_double(fun, p1, p2, k=3):
     r"""Find a locally-optimal two-sided permutation matrices using the k-opt (greedy) heuristic.
 
     .. math::
@@ -167,7 +167,7 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
 
     # check k
     if k < 2 or not isinstance(k, (int, np.integer)):
-        raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
+        raise ValueError(f"Argument k must be a integer greater than 1. Given k={k}")
     if k > max(p1.shape[0], p2.shape[0]):
         raise ValueError(f"Argument k={k} is not smaller than {max(p1.shape[0], p2.shape[0])}.")
 

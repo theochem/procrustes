@@ -32,15 +32,15 @@ import pytest
 def test_kopt_heuristic_single_raises():
     r"""Test k-opt heuristic single search algorithm raises."""
     # check raises for k
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(2), 1)
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(3), -2)
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(5), 6)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.eye(2), 1)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.eye(3), -2)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.eye(5), 6)
     # check raises for p0
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.ones(3), 2)
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.ones((2, 3)), 2)
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.ones((4, 4)), 2)
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.zeros((5, 5)), 2)
-    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(6) + 0.1, 2)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.ones(3), 2)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.ones((2, 3)), 2)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.ones((4, 4)), 2)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.zeros((5, 5)), 2)
+    assert_raises(ValueError, kopt_heuristic_single, np.sum, np.eye(6) + 0.1, 2)
 
 
 @pytest.mark.parametrize("m", np.random.randint(5, 15, 2))
@@ -93,22 +93,21 @@ def test_kopt_heuristic_single_all_permutations(m):
 
 def test_kopt_heuristic_double_raises():
     r"""Test k-opt heuristic double search algorithm raises."""
-    fun = lambda p: np.sum(p)
     # check raises for k
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(2), np.eye(2), 1)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(3), np.eye(2), -2.5)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(5), np.eye(2), 6)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(2), np.eye(2), 1)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(3), np.eye(2), -2.5)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(5), np.eye(2), 6)
     # check raises for p0
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.ones(4), np.eye(3), 2)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(3), np.ones(4), 2)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.ones((2, 3)), np.eye(2), 2)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(2), np.ones((2, 3)), 2)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.ones((4, 4)), np.eye(4), 3)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(4), np.ones((4, 4)), 3)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.zeros((5, 5)), np.eye(6), 4)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(6), np.zeros((5, 5)), 4)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(6) + 0.1, np.eye(5), 3)
-    assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(5), np.eye(6) + 0.1, 3)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.ones(4), np.eye(3), 2)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(3), np.ones(4), 2)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.ones((2, 3)), np.eye(2), 2)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(2), np.ones((2, 3)), 2)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.ones((4, 4)), np.eye(4), 3)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(4), np.ones((4, 4)), 3)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.zeros((5, 5)), np.eye(6), 4)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(6), np.zeros((5, 5)), 4)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(6) + 0.1, np.eye(5), 3)
+    assert_raises(ValueError, kopt_heuristic_double, np.sum, np.eye(5), np.eye(6) + 0.1, 3)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(5, 7, (2, 2)))

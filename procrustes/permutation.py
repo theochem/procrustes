@@ -22,11 +22,10 @@
 # --
 """Permutation Procrustes Module."""
 
-import itertools as it
 
 import numpy as np
 from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays, _zero_padding
 import scipy
 from scipy.optimize import linear_sum_assignment
 
@@ -714,54 +713,45 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
     return p_opt
 
 
-def permutation_2sided_explicit(array_a, array_b,
-                                remove_zero_col=True,
-                                remove_zero_row=True,
-                                pad_mode="row-col",
-                                translate=False,
-                                scale=False,
-                                check_finite=True,
-                                weight=None):
+def permutation_2sided_explicit(
+    a,
+    b,
+    pad=True,
+    unpad_col=True,
+    unpad_row=True,
+    translate=False,
+    scale=False,
+    check_finite=True,
+    weight=None,
+):
     r"""
     Two sided permutation Procrustes by explicit method.
 
     Parameters
     ----------
-    array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be
-        transformed.
-    array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    remove_zero_col : bool, optional
-        If True, near zero columns (less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, near zero rows (less than 1e-8) on the bottom will be removed. Default= True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+    a : ndarray
+        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+    b : ndarray
+        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin. Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are column normalized to unity. Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs. Default=True.
-    weight : ndarray
-        The weighting matrix. Default=None.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -779,20 +769,20 @@ def permutation_2sided_explicit(array_a, array_b,
     used as a checker for small dataset.
 
     """
-    print("Warning: This brute-strength method is computational expensive! \n"
-          "But it can be used as a checker for a small dataset.")
+    print(
+        "Warning: This brute-strength method is computational expensive! \n"
+        "But it can be used as a checker for a small dataset."
+    )
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
-    perm1 = np.zeros(np.shape(new_a))
-    perm_error1 = np.inf
-    for comb in it.permutations(np.arange(np.shape(new_a)[0])):
-        # Compute the permutation matrix
-        size = np.shape(new_a)[1]
-        perm2 = np.zeros((size, size))
-        perm2[np.arange(size), comb] = 1
-        perm_error2 = compute_error(new_a, new_b, perm2, perm2.T)
-        if perm_error2 < perm_error1:
-            perm_error1 = perm_error2
-            perm1 = perm2
-    return ProcrustesResult(error=perm_error1, new_a=new_a, new_b=new_b, t=perm1, s=perm1.T)
+    new_a, new_b = setup_input_arrays(
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight
+    )
+    # if number of rows is less than column, the arrays are made square
+    if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
+        new_a, new_b = _zero_padding(new_a, new_b, "square")
+
+    # find permutation matrix using exhaustive k-opt heuristic search
+    objective = lambda p: compute_error(new_a, new_b, p, p.T)
+    perm, error = kopt_heuristic_single(objective, p0=np.eye(len(new_a)), k=len(new_a))
+
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)

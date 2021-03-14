@@ -172,23 +172,28 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
     best_f = fun(p1, p2)
     best_p1, best_p2 = np.copy(p1), np.copy(p2)
 
-    for perm1 in it.permutations(np.arange(p1.shape[0]), r=min(k, p1.shape[0])):
-        comb1 = tuple(sorted(perm1))
-        for perm2 in it.permutations(np.arange(p2.shape[0]), r=min(k, p2.shape[0])):
-            comb2 = tuple(sorted(perm2))
-            if not (perm1 == comb1 and perm2 == comb2):
-                # permute rows of matrix P1
-                perm_p1 = np.copy(p1)
-                perm_p1[comb1, :] = perm_p1[perm1, :]
-                # permute rows of matrix P2
-                perm_p2 = np.copy(p2)
-                perm_p2[comb2, :] = perm_p2[perm2, :]
-                # compute objective function for permuted P matrix & compare
-                perm_f = fun(perm_p1, perm_p2)
-                if perm_f < best_f:
-                    best_p1, best_p2, best_f = perm_p1, perm_p2, perm_f
-                    # check whether perfect permutation matrix is found
-                    # TODO: smarter threshold based on norm of matrix
-                    if best_f <= 1.0e-8:
-                        return best_p1, best_p2, best_f
+    # swap rows and columns until the permutation matrix is not improved
+    search = True
+    while search:
+        search = False
+        for perm1 in it.permutations(np.arange(p1.shape[0]), r=min(k, p1.shape[0])):
+            comb1 = tuple(sorted(perm1))
+            for perm2 in it.permutations(np.arange(p2.shape[0]), r=min(k, p2.shape[0])):
+                comb2 = tuple(sorted(perm2))
+                if not (perm1 == comb1 and perm2 == comb2):
+                    # permute rows of matrix P1
+                    perm_p1 = np.copy(p1)
+                    perm_p1[comb1, :] = perm_p1[perm1, :]
+                    # permute rows of matrix P2
+                    perm_p2 = np.copy(p2)
+                    perm_p2[comb2, :] = perm_p2[perm2, :]
+                    # compute objective function for permuted P matrix & compare
+                    perm_f = fun(perm_p1, perm_p2)
+                    if perm_f < best_f:
+                        search = True
+                        best_p1, best_p2, best_f = perm_p1, perm_p2, perm_f
+                        # check whether perfect permutation matrix is found
+                        # TODO: smarter threshold based on norm of matrix
+                        if best_f <= 1.0e-8:
+                            return best_p1, best_p2, best_f
     return best_p1, best_p2, best_f

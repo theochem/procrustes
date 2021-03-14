@@ -77,7 +77,7 @@ def kopt_heuristic_single(fun, p0, k=3):
 
     # check k
     if k < 2 or not isinstance(k, (int, np.integer)):
-        raise ValueError(f"Argument k must be a integer greater than 1. Given k={k}")
+        raise ValueError(f"Argument k={k} must be a integer greater than 1. Given type {type(k)}")
     if k > p0.shape[0]:
         raise ValueError(f"Argument k={k} is not smaller than {p0.shape[0]} (number of p0 rows).")
 
@@ -90,7 +90,7 @@ def kopt_heuristic_single(fun, p0, k=3):
         search = False
         # make sure p0 guess is the best permutation matrix found thus far
         p0 = np.copy(best_p)
-        for perm in it.permutations(np.arange(p0.shape[0]), r=k):
+        for perm in it.permutations(np.arange(p0.shape[0]), r=int(k)):
             comb = tuple(sorted(perm))
             if perm != comb:
                 # row-swap P matrix & compute objective function
@@ -169,7 +169,7 @@ def kopt_heuristic_double(fun, p1, p2, k=3):
 
     # check k
     if k < 2 or not isinstance(k, (int, np.integer)):
-        raise ValueError(f"Argument k must be a integer greater than 1. Given k={k}")
+        raise ValueError(f"Argument k={k} must be a integer greater than 1. Give type {type(k)}")
     if k > max(p1.shape[0], p2.shape[0]):
         raise ValueError(f"Argument k={k} is not smaller than {max(p1.shape[0], p2.shape[0])}.")
 
@@ -183,9 +183,9 @@ def kopt_heuristic_double(fun, p1, p2, k=3):
         search = False
         # make sure p1 & p2 guesses are the best permutation matrices found thus far
         p1, p2 = np.copy(best_p1), np.copy(best_p2)
-        for perm1 in it.permutations(np.arange(p1.shape[0]), r=min(k, p1.shape[0])):
+        for perm1 in it.permutations(np.arange(p1.shape[0]), r=int(min(k, p1.shape[0]))):
             comb1 = tuple(sorted(perm1))
-            for perm2 in it.permutations(np.arange(p2.shape[0]), r=min(k, p2.shape[0])):
+            for perm2 in it.permutations(np.arange(p2.shape[0]), r=int(min(k, p2.shape[0]))):
                 comb2 = tuple(sorted(perm2))
                 if not (perm1 == comb1 and perm2 == comb2):
                     # permute rows of matrix P1

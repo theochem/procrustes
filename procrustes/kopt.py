@@ -99,8 +99,10 @@ def kopt_heuristic_single(fun, p0, k=3):
                 # compute objective function for permuted P matrix & compare
                 perm_f = fun(perm_p)
                 if perm_f < best_f:
-                    search = True
                     best_p, best_f = perm_p, perm_f
+                    # set search=True to keep permuting the new best_p unless this is already an
+                    # exhaustive search (i.e., k equals number of rows of p matrix)
+                    search = True if k < p0.shape[0] else False
                     # check whether perfect permutation matrix is found
                     # TODO: smarter threshold based on norm of matrix
                     if best_f <= 1.0e-8:
@@ -195,8 +197,10 @@ def kopt_heuristic_double(fun, p1, p2, k=3):
                     # compute objective function for permuted P matrix & compare
                     perm_f = fun(perm_p1, perm_p2)
                     if perm_f < best_f:
-                        search = True
                         best_p1, best_p2, best_f = perm_p1, perm_p2, perm_f
+                        # set search=True to keep permuting the new best_p1 & best_p2 unless this
+                        # is already an exhaustive search
+                        search = True if k < max(p1.shape[0], p2.shape[0]) else False
                         # check whether perfect permutation matrix is found
                         # TODO: smarter threshold based on norm of matrix
                         if best_f <= 1.0e-8:

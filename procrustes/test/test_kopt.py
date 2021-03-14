@@ -91,8 +91,9 @@ def test_kopt_heuristic_double():
                             [0., 0., 1.],
                             [0., 1., 0.]])
     error = compute_error(arr_b, arr_a, perm2_shuff, perm1_shuff.T)
-    perm_left, perm_right, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, p1=perm1_shuff,
-                                                              p2=perm2_shuff, k=4)
-    _, _, kopt_error = kopt_heuristic_double(a=arr_a, b=arr_b, p1=perm_left, p2=perm_right, k=3)
+    fun_error = lambda p1, p2: compute_error(arr_b, arr_a, p2, p1.T)
+    perm_left, perm_right, kopt_error = kopt_heuristic_double(fun_error, p1=perm1_shuff,
+                                                              p2=perm2_shuff, k=3)
+    _, _, kopt_error = kopt_heuristic_double(fun_error, p1=perm_left, p2=perm_right, k=3)
     assert kopt_error <= error
     assert kopt_error == 0

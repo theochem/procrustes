@@ -26,7 +26,6 @@
 import itertools as it
 
 import numpy as np
-from procrustes.utils import compute_error
 
 
 __all__ = [

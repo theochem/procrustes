@@ -88,6 +88,8 @@ def kopt_heuristic_single(fun, p0, k=3):
     search = True
     while search:
         search = False
+        # make sure p0 guess is the best permutation matrix found thus far
+        p0 = np.copy(best_p)
         for perm in it.permutations(np.arange(p0.shape[0]), r=k):
             comb = tuple(sorted(perm))
             if perm != comb:
@@ -176,6 +178,8 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
     search = True
     while search:
         search = False
+        # make sure p1 & p2 guesses are the best permutation matrices found thus far
+        p1, p2 = np.copy(best_p1), np.copy(best_p2)
         for perm1 in it.permutations(np.arange(p1.shape[0]), r=min(k, p1.shape[0])):
             comb1 = tuple(sorted(perm1))
             for perm2 in it.permutations(np.arange(p2.shape[0]), r=min(k, p2.shape[0])):

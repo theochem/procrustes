@@ -28,6 +28,20 @@ from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
 from procrustes.utils import compute_error
 
 
+def test_kopt_heuristic_single_raises():
+    r"""Test k-opt heuristic search algorithm raises."""
+    # check raises for k
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(2), 1)
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(3), -2)
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(5), 6)
+    # check raises for p0
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.ones(3), 2)
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.ones((2, 3)), 2)
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.ones((4, 4)), 2)
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.zeros((5, 5)), 2)
+    assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(6) + 0.1, 2)
+
+
 def test_kopt_heuristic_single():
     r"""Test k-opt heuristic search algorithm."""
     arr_a = np.array([[3, 6, 1, 0, 7],
@@ -54,8 +68,6 @@ def test_kopt_heuristic_single():
     perm, error = kopt_heuristic_single(lambda p: compute_error(arr_a, arr_b, p, p.T), perm_guess)
     assert_equal(perm, perm_exact)
     assert error == 0
-    # test the error exceptions
-    assert_raises(ValueError, kopt_heuristic_single, compute_error, perm_guess, 1)
 
 
 def test_kopt_heuristic_double():

@@ -68,10 +68,16 @@ def kopt_heuristic_single(fun, p0, k=3):
     # pylint: disable=too-many-nested-blocks
     if k < 2 or not isinstance(k, int):
         raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
-    if p0.shape[0] != p0.shape[1]:
+    if p0.ndim != 2 or p0.shape[0] != p0.shape[1]:
         raise ValueError(f"Argument p0 should be a square array. Given p0 shape={p0.shape}")
     if k > p0.shape[0]:
-        raise ValueError("Argument k should be smaller than p0 rows. Given {k} > {p0.shape[0]}")
+        raise ValueError(f"Argument k={k} is not smaller than {p0.shape[0]} (number of p0 rows).")
+
+    # check whether p0 is a valid permutation matrix
+    if not np.all(np.logical_or(p0 == 0, p0 == 1)):
+        raise ValueError("Elements of permutation matrix p0 can only be 0 or 1.")
+    if np.all(np.sum(p0, axis=0) != 1) or np.all(np.sum(p0, axis=1) != 1):
+        raise ValueError("Sum over rows or columns of p0 matrix isn't equal 1.")
 
     # compute initial value of the objective function
     error = fun(p0)

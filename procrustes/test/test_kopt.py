@@ -26,10 +26,11 @@ import numpy as np
 from numpy.testing import assert_equal, assert_raises
 from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
 from procrustes.utils import compute_error
+import pytest
 
 
 def test_kopt_heuristic_single_raises():
-    r"""Test k-opt heuristic search algorithm raises."""
+    r"""Test k-opt heuristic single search algorithm raises."""
     # check raises for k
     assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(2), 1)
     assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(3), -2)
@@ -42,36 +43,56 @@ def test_kopt_heuristic_single_raises():
     assert_raises(ValueError, kopt_heuristic_single, lambda p: np.sum(p), np.eye(6) + 0.1, 2)
 
 
-def test_kopt_heuristic_single():
-    r"""Test k-opt heuristic search algorithm."""
-    arr_a = np.array([[3, 6, 1, 0, 7],
-                      [4, 5, 2, 7, 6],
-                      [8, 6, 6, 1, 7],
-                      [4, 4, 7, 9, 4],
-                      [4, 8, 0, 3, 1]])
-    arr_b = np.array([[1, 8, 0, 4, 3],
-                      [6, 5, 2, 4, 7],
-                      [7, 6, 6, 8, 1],
-                      [7, 6, 1, 3, 0],
-                      [4, 4, 7, 4, 9]])
-    perm_guess = np.array([[0, 0, 1, 0, 0],
-                           [1, 0, 0, 0, 0],
-                           [0, 0, 0, 1, 0],
-                           [0, 0, 0, 0, 1],
-                           [0, 1, 0, 0, 0]])
-    perm_exact = np.array([[0, 0, 0, 1, 0],
-                           [0, 1, 0, 0, 0],
-                           [0, 0, 1, 0, 0],
-                           [0, 0, 0, 0, 1],
-                           [1, 0, 0, 0, 0]])
+@pytest.mark.parametrize("m", np.random.randint(5, 10, 2))
+def test_kopt_heuristic_single_identity(m):
+    r"""Test k-opt heuristic single search algorithm with identity permutation."""
+    # create a random matrix A and random permutation of identity matrix
+    a = np.random.uniform(-2.0, 2.0, (m, m))
+    p0 = np.eye(m)
+    # find and check permutation for when B=A with guess p0=I
+    perm, error = kopt_heuristic_single(lambda x: compute_error(a, a, x, x.T), p0, 2)
+    assert_equal(perm, np.eye(m))
+    assert_equal(error, 0.0)
+    # find and check permutation for when B=A with guess p0 being swapped I
+    p0[[m - 2, -1]] = p0[[-1, m - 2]]
+    perm, error = kopt_heuristic_single(lambda x: compute_error(a, a, x, x.T), p0, 2)
+    assert_equal(perm, np.eye(m))
+    assert_equal(error, 0.0)
 
-    perm, error = kopt_heuristic_single(lambda p: compute_error(arr_a, arr_b, p, p.T), perm_guess)
-    assert_equal(perm, perm_exact)
-    assert error == 0
+
+@pytest.mark.parametrize("m", np.random.randint(5, 15, 2))
+def test_kopt_heuristic_single_k_permutations(m):
+    r"""Test k-opt heuristic single search algorithm going upto k permutations."""
+    # create a random matrix A
+    a = np.random.uniform(-10.0, 10.0, (m, m))
+    # create permutation matrix by swapping rows m-3 & -1 of identity matrix (this makes sures that
+    # heuristic algorithm only finds the solution towards the end of its search)
+    p = np.eye(m)
+    p[[m - 3, -1]] = p[[-1, m - 3]]
+    # compute B = P^T A P
+    b = np.linalg.multi_dot([p.T, a, p])
+    # find and check permutation
+    perm, error = kopt_heuristic_single(lambda x: compute_error(a, b, x, x.T), np.eye(m), k=2)
+    assert_equal(perm, p)
+    assert_equal(error, 0.0)
+
+
+@pytest.mark.parametrize("m", np.random.randint(2, 15, 3))
+def test_kopt_heuristic_single_all_permutations(m):
+    r"""Test k-opt heuristic single search algorithm going through all permutations."""
+    # create a random matrix A and random permutation of identity matrix
+    a = np.random.uniform(-10.0, 10.0, (m, m))
+    p = np.random.permutation(np.eye(m))
+    # compute B = P^T A P
+    b = np.linalg.multi_dot([p.T, a, p])
+    # find and check permutation
+    perm, error = kopt_heuristic_single(lambda x: compute_error(a, b, x, x.T), np.eye(m), m)
+    assert_equal(perm, p)
+    assert_equal(error, 0.0)
 
 
 def test_kopt_heuristic_double_raises():
-    r"""Test k-opt heuristic search algorithm double raises."""
+    r"""Test k-opt heuristic double search algorithm raises."""
     fun = lambda p: np.sum(p)
     # check raises for k
     assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(2), np.eye(2), 1)
@@ -90,30 +111,59 @@ def test_kopt_heuristic_double_raises():
     assert_raises(ValueError, kopt_heuristic_double, fun, np.eye(5), np.eye(6) + 0.1, 3)
 
 
-def test_kopt_heuristic_double():
-    r"""Test double sided k-opt heuristic search algorithm."""
-    np.random.seed(998)
-    arr_b = np.random.randint(low=-10, high=10, size=(4, 3)).astype(np.float)
-    perm1 = np.array([[0., 0., 0., 1.],
-                      [0., 1., 0., 0.],
-                      [1., 0., 0., 0.],
-                      [0., 0., 1., 0.]])
-    perm2 = np.array([[0., 0., 1.],
-                      [1., 0., 0.],
-                      [0., 1., 0.]])
-    arr_a = np.linalg.multi_dot([perm1.T, arr_b, perm2])
-    # shuffle the permutation matrices
-    perm1_shuff = np.array([[0., 0., 0., 1.],
-                            [1., 0., 0., 0.],
-                            [0., 1., 0., 0.],
-                            [0., 0., 1., 0.]])
-    perm2_shuff = np.array([[1., 0., 0.],
-                            [0., 0., 1.],
-                            [0., 1., 0.]])
-    error = compute_error(arr_b, arr_a, perm2_shuff, perm1_shuff.T)
-    fun_error = lambda p1, p2: compute_error(arr_b, arr_a, p2, p1.T)
-    perm_left, perm_right, kopt_error = kopt_heuristic_double(fun_error, p1=perm1_shuff,
-                                                              p2=perm2_shuff, k=3)
-    _, _, kopt_error = kopt_heuristic_double(fun_error, p1=perm_left, p2=perm_right, k=3)
-    assert kopt_error <= error
-    assert kopt_error == 0
+@pytest.mark.parametrize("m, n", np.random.randint(5, 7, (2, 2)))
+def test_kopt_heuristic_double_identity(m, n):
+    r"""Test k-opt heuristic double search algorithm with identity permutation."""
+    # create a random matrix A and random permutation of identity matrix
+    a = np.random.uniform(-6.0, 6.0, (m, n))
+    p1, p2 = np.eye(m), np.eye(n)
+    # find and check permutation for when B=A with guesses p1=I & p2=I
+    perm1, perm2, error = kopt_heuristic_single(lambda x: compute_error(a, a, x, x.T), p1, p2, 2)
+    assert_equal(perm1, p1)
+    assert_equal(perm2, p2)
+    assert_equal(error, 0.0)
+    # find and check permutation for when B=A with guesses p1 being swapped I & p2=I
+    p1[[m - 4, -1]] = p1[[-1, m - 4]]
+    perm, error = kopt_heuristic_single(lambda x: compute_error(a, a, x, x.T), p1, p2, 2)
+    assert_equal(perm1, p1)
+    assert_equal(perm2, p2)
+    assert_equal(error, 0.0)
+
+
+@pytest.mark.parametrize("m, n", np.random.randint(5, 10, (2, 2)))
+def test_kopt_heuristic_double_k_permutations(m, n):
+    r"""Test k-opt heuristic double search algorithm going upto k permutations."""
+    # create a random matrix A
+    a = np.random.uniform(-7.0, 7.0, (m, n))
+    # create permutation matrix by swapping rows m-3 & -1 of identity matrix (this makes sures that
+    # heuristic algorithm only finds the solution towards the end of its search)
+    p1 = np.eye(m)
+    p1[[m - 2, -1]] = p1[[-1, m - 2]]
+    p2 = np.eye(n)
+    p2[[n - 1, -1]] = p2[[-1, n - 1]]
+    # compute B = P^T A P
+    b = np.linalg.multi_dot([p1.T, a, p2])
+    # find and check permutation
+    perm1, perm2, error = kopt_heuristic_double(lambda x: compute_error(a, b, x, x.T),
+                                                np.eye(m), np.eye(n), k=2)
+    assert_equal(perm1, p1)
+    assert_equal(perm2, p2)
+    assert_equal(error, 0.0)
+
+
+@pytest.mark.parametrize("m, n", np.random.randint(2, 7, (3, 2)))
+def test_kopt_heuristic_double_all_permutations(m, n):
+    r"""Test k-opt heuristic double search algorithm going through all permutations."""
+    # create a random matrix A and random permutation of identity matrix
+    print("m, n  = ", m, n)
+    a = np.random.uniform(-5.0, 5.0, (m, n))
+    p1 = np.random.permutation(np.eye(m))
+    p2 = np.random.permutation(np.eye(n))
+    # compute B = P1^T A P2
+    b = np.linalg.multi_dot([p1.T, a, p2])
+    # find and check permutations
+    perm1, perm2, error = kopt_heuristic_double(lambda x, y: compute_error(a, b, y, x.T),
+                                                np.eye(m), np.eye(n), max(n, m))
+    assert_equal(perm1, p1)
+    assert_equal(perm2, p2)
+    assert_equal(error, 0.0)

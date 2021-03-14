@@ -60,27 +60,30 @@ def kopt_heuristic_single(fun, p0, k=3):
     Returns
     -------
     p : ndarray
-        The locally-optimal permutation matrix (i.e., solution).
+        The locally-optimal permutation matrix :math:`\mathbf{P}` (i.e., solution).
     fun : float
         The locally-optimal value of the objective function.
 
     """
     # pylint: disable=too-many-nested-blocks
-    if k < 2 or not isinstance(k, int):
-        raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
-    if p0.ndim != 2 or p0.shape[0] != p0.shape[1]:
-        raise ValueError(f"Argument p0 should be a square array. Given p0 shape={p0.shape}")
-    if k > p0.shape[0]:
-        raise ValueError(f"Argument k={k} is not smaller than {p0.shape[0]} (number of p0 rows).")
 
     # check whether p0 is a valid permutation matrix
+    if p0.ndim != 2 or p0.shape[0] != p0.shape[1]:
+        raise ValueError(f"Argument p0 should be a square array. Given p0 shape={p0.shape}")
     if not np.all(np.logical_or(p0 == 0, p0 == 1)):
         raise ValueError("Elements of permutation matrix p0 can only be 0 or 1.")
     if np.all(np.sum(p0, axis=0) != 1) or np.all(np.sum(p0, axis=1) != 1):
         raise ValueError("Sum over rows or columns of p0 matrix isn't equal 1.")
 
-    # compute initial value of the objective function
-    error = fun(p0)
+    # check k
+    if k < 2 or not isinstance(k, (int, np.integer)):
+        raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
+    if k > p0.shape[0]:
+        raise ValueError(f"Argument k={k} is not smaller than {p0.shape[0]} (number of p0 rows).")
+
+    # compute initial value of the objective function & assign best P matrix
+    best_f = fun(p0)
+    best_p = np.copy(p0)
     # swap rows and columns until the permutation matrix is not improved
     search = True
     while search:
@@ -91,15 +94,16 @@ def kopt_heuristic_single(fun, p0, k=3):
                 # row-swap P matrix & compute objective function
                 perm_p = np.copy(p0)
                 perm_p[:, comb] = perm_p[:, perm]
-                perm_error = fun(perm_p)
-                if perm_error < error:
+                # compute objective function for permuted P matrix & compare
+                perm_f = fun(perm_p)
+                if perm_f < best_f:
                     search = True
-                    p0, error = perm_p, perm_error
+                    best_p, best_f = perm_p, perm_f
                     # check whether perfect permutation matrix is found
                     # TODO: smarter threshold based on norm of matrix
-                    if error <= 1.0e-8:
-                        return p0, error
-    return p0, error
+                    if best_f <= 1.0e-8:
+                        return best_p, best_f
+    return best_p, best_f
 
 
 def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
@@ -132,13 +136,15 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
     Returns
     -------
     perm_p1 : ndarray
-        The locally-optimal left-hand-side permutation matrix.
+        The locally-optimal permutation matrix :math:`\mathbf{P}_1`.
     perm_p2 : ndarray
-        The locally-optimal right-hand-side permutation matrix.
+        The locally-optimal permutation matrix :math:`\mathbf{P}_2`.
     fun : float
         The locally-optimal value of the objective function.
 
     """
+    # pylint: disable=too-many-nested-blocks
+
     # check whether p1 & p2 are square arrays
     if p1.ndim != 2 or p1.shape[0] != p1.shape[1]:
         raise ValueError(f"Argument p1 should be a square array. Given p1 shape={p1.shape}")
@@ -157,18 +163,18 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
         raise ValueError("Sum over rows or columns of p2 matrix isn't equal 1.")
 
     # check k
-    if k < 2 or not isinstance(k, int):
+    if k < 2 or not isinstance(k, (int, np.integer)):
         raise ValueError(f"Argument k must be a integer greater than 2. Given k={k}")
-    if k > min(p1.shape[0], p2.shape[0]):
-        raise ValueError(f"Argument k={k} is not smaller than {min(p1.shape[0], p2.shape[0])}.")
+    if k > max(p1.shape[0], p2.shape[0]):
+        raise ValueError(f"Argument k={k} is not smaller than {max(p1.shape[0], p2.shape[0])}.")
 
-    # compute 2-sided permutation error of the initial P & Q matrices
-    error = fun(p1, p2)
-    # pylint: disable=too-many-nested-blocks
+    # compute initial value of the objective function & assign best P1 & P2 matrices
+    best_f = fun(p1, p2)
+    best_p1, best_p2 = np.copy(p1), np.copy(p2)
 
-    for perm1 in it.permutations(np.arange(p1.shape[0]), r=k):
+    for perm1 in it.permutations(np.arange(p1.shape[0]), r=min(k, p1.shape[0])):
         comb1 = tuple(sorted(perm1))
-        for perm2 in it.permutations(np.arange(p2.shape[0]), r=k):
+        for perm2 in it.permutations(np.arange(p2.shape[0]), r=min(k, p2.shape[0])):
             comb2 = tuple(sorted(perm2))
             if not (perm1 == comb1 and perm2 == comb2):
                 # permute rows of matrix P1
@@ -177,12 +183,12 @@ def kopt_heuristic_double(fun, p1=None, p2=None, k=3):
                 # permute rows of matrix P2
                 perm_p2 = np.copy(p2)
                 perm_p2[comb2, :] = perm_p2[perm2, :]
-                # compute error with new matrices & compare
-                perm_error = fun(perm_p1, perm_p2)
-                if perm_error < error:
-                    p1, p2, error = perm_p1, perm_p2, perm_error
+                # compute objective function for permuted P matrix & compare
+                perm_f = fun(perm_p1, perm_p2)
+                if perm_f < best_f:
+                    best_p1, best_p2, best_f = perm_p1, perm_p2, perm_f
                     # check whether perfect permutation matrix is found
                     # TODO: smarter threshold based on norm of matrix
-                    if error <= 1.0e-8:
-                        break
-    return p1, p2, error
+                    if best_f <= 1.0e-8:
+                        return best_p1, best_p2, best_f
+    return best_p1, best_p2, best_f

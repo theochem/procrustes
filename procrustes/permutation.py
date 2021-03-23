@@ -143,12 +143,24 @@ def permutation(
     return ProcrustesResult(new_a=new_a, new_b=new_b, t=p, error=error)
 
 
-def permutation_2sided(array_a, array_b, transform_mode="single",
-                       remove_zero_col=True, remove_zero_row=True,
-                       pad_mode="row-col", translate=False, scale=False,
-                       mode="normal1", check_finite=True, iteration=500,
-                       add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3,
-                       weight=None):
+def permutation_2sided(
+        array_a,
+        array_b,
+        transform_mode="single",
+        pad=False,
+        remove_zero_col=True,
+        remove_zero_row=True,
+        translate=False,
+        scale=False,
+        mode="normal1",
+        check_finite=True,
+        iteration=500,
+        add_noise=False,
+        tol=1.0e-8,
+        kopt=False,
+        kopt_k=3,
+        weight=None
+):
     r"""Double sided permutation Procrustes.
 
     Parameters
@@ -170,31 +182,17 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993* is used to solve
         the problem.
         Default="single".
-    Otherwise, transform_mode="double", the
-        two-sided permutation Procrustes with two transformations will be performed.
-        Default="single_undirected".
+        Otherwise, transform_mode="double", the
+            two-sided permutation Procrustes with two transformations will be performed.
+            Default="single_undirected".
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     remove_zero_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
         Default= True.
     remove_zero_row : bool, optional
         If True, zero rows (values less than 1e-8) on the bottom will be removed. Default= True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
         will have mean zero.
@@ -379,7 +377,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     """
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
+                                      pad, translate, scale, check_finite, weight)
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == "single":
@@ -396,8 +394,7 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation_undirected(new_a_positive,
-                                                          new_b_positive,
+            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive,
                                                           mode, add_noise)
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive,

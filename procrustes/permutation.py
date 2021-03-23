@@ -379,6 +379,13 @@ def permutation_2sided(
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
+    if transform_mode == "single":
+        if new_a.shape != new_b.shape:
+            raise ValueError(
+                f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
+                "Check pad, remove_zero_col, and remove_zero_row arguments."
+            )
+
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == "single":

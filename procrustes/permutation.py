@@ -148,8 +148,8 @@ def permutation_2sided(
         array_b,
         transform_mode="single",
         pad=False,
-        remove_zero_col=True,
-        remove_zero_row=True,
+        unpad_col=False,
+        unpad_row=False,
         translate=False,
         scale=False,
         mode="normal1",
@@ -188,11 +188,12 @@ def permutation_2sided(
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default= True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default= True.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
         will have mean zero.
@@ -376,7 +377,7 @@ def permutation_2sided(
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+    new_a, new_b = setup_input_arrays(array_a, array_b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()

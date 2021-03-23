@@ -380,16 +380,17 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
     # check inputs
     new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
                                       pad_mode, translate, scale, check_finite, weight)
-    # np.power() can not handle the negatives values
-    # Try to convert the matrices to non-negative
-    # shift the the matrices to avoid negative values
-    # otherwise it will cause an error in the Eq. 28 in the research notes
-    maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
-    new_a_positive = new_a.astype(np.float) + maximum
-    new_b_positive = new_b.astype(np.float) + maximum
     # Do single-transformation computation if requested
     transform_mode = transform_mode.lower()
     if transform_mode == "single":
+        # np.power() can not handle the negatives values
+        # Try to convert the matrices to non-negative
+        # shift the the matrices to avoid negative values
+        # otherwise it will cause an error in the Eq. 28 in the research notes
+        maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
+        new_a_positive = new_a.astype(np.float) + maximum
+        new_b_positive = new_b.astype(np.float) + maximum
+
         # algorithm for undirected graph matching problem
         # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \

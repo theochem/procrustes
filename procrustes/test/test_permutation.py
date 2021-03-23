@@ -314,7 +314,8 @@ def test_permutation_2sided_4by4_umeyama_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
     res = permutation_2sided(array_a, array_b, transform_mode="single",
-                             translate=True, scale=True, mode="umeyama")
+                             translate=True, scale=True, mode="umeyama",
+                             unpad_col=True, unpad_row=True)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -409,7 +410,8 @@ def test_permutation_2sided_4by4_umeyama_approx_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
     res = permutation_2sided(array_a, array_b, translate=True, scale=True,
-                             transform_mode="single", mode="umeyama_approx")
+                             transform_mode="single", mode="umeyama_approx",
+                             unpad_col=True, unpad_row=True)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -523,7 +525,9 @@ def test_permutation_2sided_4by4_normal1_translate_scale_zero_padding():
     # Check
     res = permutation_2sided(
         array_a, array_b, transform_mode="single",
-        translate=True, scale=True, mode="normal1")
+        translate=True, scale=True, mode="normal1",
+        unpad_col=True, unpad_row=True
+    )
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -659,7 +663,9 @@ def test_permutation_2sided_4by4_normal2_translate_scale_zero_padding():
     # Check
     res = permutation_2sided(
         array_a, array_b, transform_mode="single",
-        translate=True, scale=True, mode="normal2")
+        translate=True, scale=True, mode="normal2",
+        unpad_col=True, unpad_row=True
+    )
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -875,7 +881,10 @@ def test_permutation_2sided_4by4_directed_translate_scale_padding():
     result = permutation_2sided(array_a, array_b,
                                 transform_mode="single",
                                 translate=True,
-                                scale=True)
+                                scale=True,
+                                unpad_col=True,
+                                unpad_row=True
+                                )
     assert_almost_equal(result["t"], perm, decimal=6)
     assert_almost_equal(result["error"], 0., decimal=6)
 
@@ -1007,9 +1016,10 @@ def test_permutation_2sided_dominators_zero():
                         [0, 0, 1, 0, 0, 0, 6]])
     res = permutation_2sided(array_a, array_b,
                              transform_mode='single',
-                             remove_zero_col=False,
-                             remove_zero_row=False,
-                             scale=False)
+                             unpad_col=False,
+                             unpad_row=False,
+                             scale=False,
+                             pad=True)
     perm = np.array([[1, 0, 0, 0, 0, 0, 0],
                      [0, 1, 0, 0, 0, 0, 0],
                      [0, 0, 0, 1, 0, 0, 0],

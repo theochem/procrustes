@@ -295,7 +295,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     array_m = permutation(np.eye(array_m.shape[0]), array_m)["t"]
     # k-opt heuristic
     if kopt:
-        array_m, error = kopt_heuristic_single(a=new_a, b=new_b, p=array_m, k=kopt_k)
+        fun_error = lambda p: compute_error(new_a, new_b, p, p.T)
+        array_m, error = kopt_heuristic_single(fun_error, p0=array_m, k=kopt_k)
     else:
         error = compute_error(new_a, new_b, array_m, array_m.T)
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_m, s=None)

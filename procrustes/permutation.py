@@ -118,7 +118,9 @@ def permutation(
        \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
           \text{Tr}\left[\mathbf{P}^\dagger\left(\mathbf{A}^\dagger\mathbf{B}\right) \right]
 
-    This is a matching problem and can be solved by the Hungarian method.
+    This is a matching problem and can be solved by the Hungarian algorithm. The cost matrix is
+    defined as :math:`\mathbf{A}^\dagger\mathbf{B}` and the `scipy.optimize.linear_sum_assignment`
+    is used to solve for the permutation that maximizes the linear sum assignment problem.
 
     """
     # check inputs
@@ -129,15 +131,17 @@ def permutation(
     if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
         new_a, new_b = _zero_padding(new_a, new_b, "square")
 
-    # compute permutation Procrustes matrix
-    array_p = np.dot(new_a.T, new_b)
-    array_c = np.full(array_p.shape, np.max(array_p)) - array_p
-    array_u = np.zeros(array_p.shape)
-    # set elements to 1 according to Hungarian algorithm (linear_sum_assignment)
-    array_u[linear_sum_assignment(array_c)] = 1
-    error = compute_error(new_a, new_b, array_u)
+    # compute cost matrix C = A.T B
+    c = np.dot(new_a.T, new_b)
+    # solve linear sum assignment problem to get the row/column indices of optimal assignment
+    row_ind, col_ind = linear_sum_assignment(c, maximize=True)
+    # make the permutation matric by setting the corresponding elements to 1
+    p = np.zeros(c.shape)
+    p[(row_ind, col_ind)] = 1
+    # compute one-sided permutation error
+    error = compute_error(new_a, new_b, p)
 
-    return ProcrustesResult(new_a=new_a, new_b=new_b, t=array_u, error=error)
+    return ProcrustesResult(new_a=new_a, new_b=new_b, t=p, error=error)
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single",

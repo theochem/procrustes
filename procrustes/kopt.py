@@ -34,7 +34,7 @@ __all__ = [
 ]
 
 
-def kopt_heuristic_single(fun, p0, k=3):
+def kopt_heuristic_single(fun, p0, k=3, tol=1.0e-8):
     r"""Find a locally-optimal permutation matrix using the k-opt (greedy) heuristic.
 
     .. math::
@@ -55,13 +55,15 @@ def kopt_heuristic_single(fun, p0, k=3):
         The 2D-array permutation matrix representing the initial guess for :math:`\mathbf{P}`.
     k : int, optional
         The order of the permutation. For example, `k=3` swaps all possible 3-permutations.
+    tol : float, optional
+        When value of the objective function is less than given tolerance, the algorithm stops.
 
     Returns
     -------
-    p : ndarray
+    p_opt : ndarray
         The locally-optimal permutation matrix :math:`\mathbf{P}` (i.e., solution).
-    fun : float
-        The locally-optimal value of the objective function.
+    f_opt : float
+        The locally-optimal value of objective function given by :math:`\text{fun(p_opt)}`.
 
     """
     # pylint: disable=too-many-nested-blocks
@@ -104,12 +106,12 @@ def kopt_heuristic_single(fun, p0, k=3):
                     search = bool(k < p0.shape[0])
                     # check whether perfect permutation matrix is found
                     # TODO: smarter threshold based on norm of matrix
-                    if best_f <= 1.0e-8:
+                    if best_f <= tol:
                         return best_p, best_f
     return best_p, best_f
 
 
-def kopt_heuristic_double(fun, p1, p2, k=3):
+def kopt_heuristic_double(fun, p1, p2, k=3, tol=1.0e-8):
     r"""Find a locally-optimal two-sided permutation matrices using the k-opt (greedy) heuristic.
 
     .. math::
@@ -136,15 +138,17 @@ def kopt_heuristic_double(fun, p1, p2, k=3):
         The 2D-array permutation matrix representing the initial guess for :math:`\mathbf{P}_2`.
     k : int, optional
         The order of the permutation. For example, ``k=3`` swaps all possible 3-permutations.
+    tol : float, optional
+        When value of the objective function is less than given tolerance, the algorithm stops.
 
     Returns
     -------
-    perm_p1 : ndarray
+    p1_opt : ndarray
         The locally-optimal permutation matrix :math:`\mathbf{P}_1`.
-    perm_p2 : ndarray
+    p2_opt : ndarray
         The locally-optimal permutation matrix :math:`\mathbf{P}_2`.
-    fun : float
-        The locally-optimal value of the objective function.
+    f_opt : float
+        The locally-optimal value of objective function given by :math:`\text{fun(p1_opt, p2_opt)}`.
 
     """
     # pylint: disable=too-many-nested-blocks
@@ -202,6 +206,6 @@ def kopt_heuristic_double(fun, p1, p2, k=3):
                         search = bool(k < max(p1.shape[0], p2.shape[0]))
                         # check whether perfect permutation matrix is found
                         # TODO: smarter threshold based on norm of matrix
-                        if best_f <= 1.0e-8:
+                        if best_f <= tol:
                             return best_p1, best_p2, best_f
     return best_p1, best_p2, best_f

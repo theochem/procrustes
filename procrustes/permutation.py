@@ -38,12 +38,29 @@ def permutation(
     pad=True,
     translate=False,
     scale=False,
-    remove_zero_col=False,
-    remove_zero_row=False,
+    unpad_col=False,
+    unpad_row=False,
     check_finite=True,
     weight=None,
 ):
-    r"""Perform single-sided permutation Procrustes.
+    r"""Perform one-sided permutation Procrustes.
+
+    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
+    n}`, find the permutation transformation matrix :math:`\mathbf{P}_{n \times n}`
+    that makes :math:`\mathbf{AP}` as close as possible to :math:`\mathbf{B}`. In other words,
+
+    .. math::
+       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\} \atop
+       \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+       \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
+
+    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
+    have the same shape, which is guaranteed with the default ``pad=True`` argument for any given
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
+    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
+    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
+    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
+    rows/columns so they have the same shape.
 
     Parameters
     ----------
@@ -60,14 +77,16 @@ def permutation(
         If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
         :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
         :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
-    remove_zero_col : bool, optional
+    unpad_col : bool, optional
         If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
-    remove_zero_row : bool, optional
+    unpad_row : bool, optional
         If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
-    weight : ndarray
-        The weighting matrix.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -76,63 +95,52 @@ def permutation(
 
     Notes
     -----
-    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
-    n}`, find the permutation transformation matrix :math:`\mathbf{P}_{n \times n}`
-    that makes :math:`\mathbf{A}` as close as possible to :math:`\mathbf{B}`. In other words,
+    The optimal :math:`n \times n` permutation matrix is obtained by,
 
     .. math::
-       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
-                            \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
-       &= \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
-          \text{Tr}\left[\left(\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
-                   \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
-       &= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
-          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right]
+        \mathbf{P}^{\text{opt}} =
+        \arg \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+        \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+            \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
+      = \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+        \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+            \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right]
 
-    Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. The solution is to relax the
-    problem into a linear programming problem and note that the solution to a linear programming
-    problem is always at the boundary of the allowed region, which means that the solution can
-    always be written as a permutation matrix,
+    The solution is found by relaxing the problem into a linear programming problem. The solution
+    to a linear programming problem is always at the boundary of the allowed region. So,
 
     .. math::
-       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
-                   \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+       \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
           \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right] =
-       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \geq 0
-                   \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \geq 0
+       \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
           \text{Tr}\left[\mathbf{P}^\dagger\left(\mathbf{A}^\dagger\mathbf{B}\right) \right]
 
-    This is a matching problem and can be solved by the Hungarian method. Note that if
-    :math:`\mathbf{A}` and :math:`\mathbf{B}` have different numbers of items, you choose
-    the larger matrix as :math:`\mathbf{B}` and then pad :math:`\mathbf{A}` with rows/columns
-    of zeros.
+    This is a matching problem and can be solved by the Hungarian algorithm. The cost matrix is
+    defined as :math:`\mathbf{A}^\dagger\mathbf{B}` and the `scipy.optimize.linear_sum_assignment`
+    is used to solve for the permutation that maximizes the linear sum assignment problem.
 
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a,
-        b,
-        remove_zero_col,
-        remove_zero_row,
-        pad,
-        translate,
-        scale,
-        check_finite,
-        weight,
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
-    # compute permutation Procrustes matrix
-    array_p = np.dot(new_a.T, new_b)
-    array_c = np.full(array_p.shape, np.max(array_p))
-    array_c -= array_p
-    array_u = np.zeros(array_p.shape)
-    # set elements to 1 according to Hungarian algorithm (linear_sum_assignment)
-    array_u[linear_sum_assignment(array_c)] = 1
-    error = compute_error(new_a, new_b, array_u)
+    # if number of rows is less than column, the arrays are made square
+    if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
+        new_a, new_b = _zero_padding(new_a, new_b, "square")
 
-    return ProcrustesResult(new_a=new_a, new_b=new_b, t=array_u, error=error)
+    # compute cost matrix C = A.T B
+    c = np.dot(new_a.T, new_b)
+    # solve linear sum assignment problem to get the row/column indices of optimal assignment
+    row_ind, col_ind = linear_sum_assignment(c, maximize=True)
+    # make the permutation matric by setting the corresponding elements to 1
+    p = np.zeros(c.shape)
+    p[(row_ind, col_ind)] = 1
+    # compute one-sided permutation error
+    error = compute_error(new_a, new_b, p)
+
+    return ProcrustesResult(new_a=new_a, new_b=new_b, t=p, error=error)
 
 
 def permutation_2sided(array_a, array_b, transform_mode="single",
@@ -681,8 +689,8 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
         b=p_new,
         translate=False,
         scale=False,
-        remove_zero_col=False,
-        remove_zero_row=False,
+        unpad_col=False,
+        unpad_row=False,
         check_finite=True,
     )["t"]
 

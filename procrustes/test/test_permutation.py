@@ -60,7 +60,7 @@ def test_permutation_columns_pad():
     array_a = np.concatenate((array_a, np.array([[0], [0], [0], [0]])), axis=1)
     array_b = np.concatenate((array_b, np.array([[0, 0, 0, 0]])), axis=0)
     # procrustes with no translate and scale
-    res = permutation(array_a, array_b, remove_zero_col=True, remove_zero_row=True)
+    res = permutation(array_a, array_b, unpad_col=True, unpad_row=True)
     assert_almost_equal(res["new_a"], array_a[:, :-1], decimal=6)
     assert_almost_equal(res["new_b"], array_b[:-1, :], decimal=6)
     assert_almost_equal(res["t"], perm, decimal=6)

@@ -219,7 +219,7 @@ def test_permutation_2sided_4by4_umeyama():
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = permutation_2sided(array_a, array_b, transform_mode="single", mode="umeyama")
+    res = permutation_2sided(array_a, array_b, single=True, mode="umeyama")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -236,7 +236,7 @@ def test_permutation_2sided_4by4_umeyama_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        res = permutation_2sided(array_a, array_b, transform_mode="single", mode="umeyama")
+        res = permutation_2sided(array_a, array_b, single=True, mode="umeyama")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -253,7 +253,7 @@ def test_permutation_2sided_4by4_umeyama_loop_negative():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        res = permutation_2sided(array_a, array_b, transform_mode="single", mode="umeyama")
+        res = permutation_2sided(array_a, array_b, single=True, mode="umeyama")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -270,7 +270,7 @@ def test_permutation_2sided_4by4_umeyama_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
     # Check
-    res = permutation_2sided(array_a, array_b, transform_mode="single",
+    res = permutation_2sided(array_a, array_b, single=True,
                              translate=True, scale=True, mode="umeyama")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -289,7 +289,7 @@ def test_permutation_2sided_4by4_umeyama_translate_scale_loop():
         # Compute the translated, scaled matrix padded with zeros
         array_b = np.dot(perm.T, np.dot(60 * array_a + 15, perm))
         # Check
-        res = permutation_2sided(array_a, array_b, transform_mode="single",
+        res = permutation_2sided(array_a, array_b, single=True,
                                  translate=True, scale=True, mode="umeyama")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
@@ -313,7 +313,7 @@ def test_permutation_2sided_4by4_umeyama_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
-    res = permutation_2sided(array_a, array_b, transform_mode="single",
+    res = permutation_2sided(array_a, array_b, single=True,
                              translate=True, scale=True, mode="umeyama",
                              unpad_col=True, unpad_row=True)
     assert_almost_equal(res["t"], perm, decimal=6)
@@ -331,7 +331,7 @@ def test_permutation_2sided_4by4_umeyama_approx():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = permutation_2sided(array_a, array_b,
-                             transform_mode="single",
+                             single=True,
                              mode="umeyama_approx")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -350,7 +350,7 @@ def test_permutation_2sided_4by4_umeyama_approx_loop():
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
         res = permutation_2sided(array_a, array_b,
-                                 transform_mode="single",
+                                 single=True,
                                  mode="umeyama_approx")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
@@ -369,7 +369,7 @@ def test_permutation_2sided_umeyama_approx_4by4_loop_negative():
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
         res = permutation_2sided(array_a, array_b,
-                                 transform_mode="single",
+                                 single=True,
                                  mode="umeyama_approx")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
@@ -387,7 +387,7 @@ def test_permutation_2sided_4by4_umeyama_approx_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
     # Check
-    res = permutation_2sided(array_a, array_b, transform_mode="single",
+    res = permutation_2sided(array_a, array_b, single=True,
                              translate=True, scale=True, mode="umeyama_approx")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -410,7 +410,7 @@ def test_permutation_2sided_4by4_umeyama_approx_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
     res = permutation_2sided(array_a, array_b, translate=True, scale=True,
-                             transform_mode="single", mode="umeyama_approx",
+                             single=True, mode="umeyama_approx",
                              unpad_col=True, unpad_row=True)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -425,7 +425,7 @@ def test_permutation_2sided_4by4_normal1():
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = permutation_2sided(array_a, array_b, transform_mode="single", mode="normal1")
+    res = permutation_2sided(array_a, array_b, single=True, mode="normal1")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -445,7 +445,7 @@ def test_permutation_2sided_4by4_normal1_loop():
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
             res = permutation_2sided(array_a, array_b,
-                                     transform_mode="single",
+                                     single=True,
                                      mode="normal1",
                                      iteration=700)
             assert_almost_equal(res["t"], perm, decimal=6)
@@ -466,7 +466,7 @@ def test_permutation_2sided_4by4_normal1_loop_negative():
             # Compute the translated, scaled matrix padded with zeros
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
-            res = permutation_2sided(array_a, array_b, transform_mode="single",
+            res = permutation_2sided(array_a, array_b, single=True,
                                      translate=True, scale=True, mode="normal1")
             assert_almost_equal(res["t"], perm, decimal=6)
             assert_almost_equal(res["error"], 0, decimal=6)
@@ -482,7 +482,7 @@ def test_permutation_2sided_4by4_normal1_translate_scale():
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
+        array_a, array_b, single=True,
         translate=True, scale=True, mode="normal1")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -502,7 +502,7 @@ def test_permutation_2sided_4by4_normal1_translate_scale_loop():
         array_b = np.dot(perm.T, np.dot(3 * array_a + 10, perm))
         # Check
         res = permutation_2sided(
-            array_a, array_b, transform_mode="single",
+            array_a, array_b, single=True,
             translate=True, scale=True, mode="normal1")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
@@ -524,7 +524,7 @@ def test_permutation_2sided_4by4_normal1_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
+        array_a, array_b, single=True,
         translate=True, scale=True, mode="normal1",
         unpad_col=True, unpad_row=True
     )
@@ -552,7 +552,7 @@ def test_permutation_2sided_normal1_practical_example():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
+        array_a, array_b, single=True,
         translate=True, scale=True, mode="normal1")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -568,7 +568,7 @@ def test_permutation_2sided_4by4_normal2():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single", mode="normal2")
+        array_a, array_b, single=True, mode="normal2")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -587,7 +587,7 @@ def test_permutation_2sided_4by4_normal2_loop():
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
             res = permutation_2sided(
-                array_a, array_b, transform_mode="single",
+                array_a, array_b, single=True,
                 translate=True, scale=True, mode="normal2")
             assert_almost_equal(res["t"], perm, decimal=6)
             assert_almost_equal(res["error"], 0, decimal=6)
@@ -607,7 +607,7 @@ def test_permutation_2sided_4by4_normal2_loop_negative():
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
             res = permutation_2sided(
-                array_a, array_b, transform_mode="single",
+                array_a, array_b, single=True,
                 translate=True, scale=True, mode="normal2")
             assert_almost_equal(res["t"], perm, decimal=6)
             assert_almost_equal(res["error"], 0, decimal=6)
@@ -622,7 +622,7 @@ def test_permutation_2sided_4by4_normal2_translate_scale():
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
+        array_a, array_b, single=True,
         translate=True, scale=True, mode="normal2")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -641,7 +641,7 @@ def test_permutation_2sided_4by4_normal2_translate_scale_loop():
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
         res = permutation_2sided(
-            array_a, array_b, transform_mode="single",
+            array_a, array_b, single=True,
             translate=True, scale=True, mode="normal2")
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
@@ -662,7 +662,7 @@ def test_permutation_2sided_4by4_normal2_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
+        array_a, array_b, single=True,
         translate=True, scale=True, mode="normal2",
         unpad_col=True, unpad_row=True
     )
@@ -689,7 +689,7 @@ def test_permutation_2sided_normal2_practical_example():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = permutation_2sided(
-        array_a, array_b, transform_mode="single",
+        array_a, array_b, single=True,
         translate=True, scale=True, mode="normal2")
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
@@ -704,7 +704,7 @@ def test_permutation_2sided_invalid_mode_argument():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, permutation_2sided, array_a,
-                  array_b, transform_mode="single", mode="nature")
+                  array_b, single=True, mode="nature")
 
 
 def test_permutation_2sided_regular():
@@ -734,7 +734,7 @@ def test_permutation_2sided_regular():
                         [0, 1, 0, 0, 0],
                         [0, 0, 1, 0, 0],
                         [1, 0, 0, 0, 0]])
-    result = permutation_2sided(array_m, array_n, transform_mode="double")
+    result = permutation_2sided(array_m, array_n, single=False)
     assert_almost_equal(result["s"], array_p, decimal=6)
     assert_almost_equal(result["t"], array_q, decimal=6)
     assert_almost_equal(result["error"], 0, decimal=6)
@@ -753,7 +753,7 @@ def test_permutation_2sided_regular2():
                         [0, 0, 0, 1]])
     array_q = array_p.T
     array_m = np.dot(np.dot(array_p, array_n), array_q)
-    result = permutation_2sided(array_m, array_n, transform_mode="double")
+    result = permutation_2sided(array_m, array_n, single=False)
     assert_almost_equal(result["s"], array_p, decimal=6)
     assert_almost_equal(result["t"], array_q, decimal=6)
     assert_almost_equal(result["error"], 0, decimal=6)
@@ -766,7 +766,7 @@ def test_permutation_2sided_regular_unsquared():
                        [1, 0, 0, 0], [0, 0, 0, 1]])
     perm_q = np.array([[0, 1], [1, 0]])
     array_m = np.linalg.multi_dot([perm_p, array_n, perm_q])
-    result = permutation_2sided(array_m, array_n, transform_mode="double", iteration=500)
+    result = permutation_2sided(array_m, array_n, single=False, iteration=500)
     assert_almost_equal(result["s"], perm_p, decimal=6)
     assert_almost_equal(result["t"], perm_q, decimal=6)
     assert_almost_equal(result["error"], 0, decimal=6)
@@ -781,7 +781,7 @@ def test_permutation_2sided_regular_unsquared_negative():
     perm_p = np.random.permutation(np.eye(6, 6))
     perm_q = np.random.permutation(np.eye(4, 4))
     array_m = np.linalg.multi_dot([perm_p, array_n, perm_q])
-    result = permutation_2sided(array_m, array_n, transform_mode="double", iteration=500)
+    result = permutation_2sided(array_m, array_n, single=False, iteration=500)
     assert_almost_equal(result["s"], perm_p, decimal=6)
     assert_almost_equal(result["t"], perm_q, decimal=6)
     assert_almost_equal(result["error"], 0, decimal=6)
@@ -796,7 +796,7 @@ def test_permutation_2sided_4by4_directed():
     # permuted array_b
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Procrustes with no translate and scale
-    result = permutation_2sided(array_a, array_b, transform_mode="single")
+    result = permutation_2sided(array_a, array_b, single=True)
     assert_almost_equal(result["t"], perm, decimal=6)
     assert_almost_equal(result["error"], 0., decimal=6)
 
@@ -810,7 +810,7 @@ def test_permutation_2sided_4by4_directed_symmetric():
     # permuted array_b
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Procrustes with no translate and scale
-    result = permutation_2sided(array_a, array_b, transform_mode="single")
+    result = permutation_2sided(array_a, array_b, single=True)
     assert_almost_equal(result["t"], perm, decimal=6)
     assert_almost_equal(result["error"], 0., decimal=6)
 
@@ -826,7 +826,7 @@ def test_permutation_2sided_4by4_directed_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # check
-        result = permutation_2sided(array_a, array_b, transform_mode="single")
+        result = permutation_2sided(array_a, array_b, single=True)
         assert_almost_equal(result["t"], perm, decimal=6)
         assert_almost_equal(result["error"], 0, decimal=6)
 
@@ -842,7 +842,7 @@ def test_permutation_2sided_4by4_directed_netative_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # check
-        result = permutation_2sided(array_a, array_b, transform_mode="single")
+        result = permutation_2sided(array_a, array_b, single=True)
         assert_almost_equal(result["t"], perm, decimal=6)
         assert_almost_equal(result["error"], 0, decimal=6)
 
@@ -858,7 +858,7 @@ def test_permutation_2sided_4by4_directed_translate_scale():
     array_b = np.dot(perm.T, np.dot(15.3 * array_a + 5.45, perm))
     # Procrustes with no translate and scale
     result = permutation_2sided(array_a, array_b,
-                                transform_mode="single",
+                                single=True,
                                 translate=True, scale=True)
     assert_almost_equal(result["t"], perm, decimal=6)
     assert_almost_equal(result["error"], 0., decimal=6)
@@ -879,7 +879,7 @@ def test_permutation_2sided_4by4_directed_translate_scale_padding():
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Procrustes with no translate and scale
     result = permutation_2sided(array_a, array_b,
-                                transform_mode="single",
+                                single=True,
                                 translate=True,
                                 scale=True,
                                 unpad_col=True,
@@ -970,7 +970,7 @@ def test_permutation_2sided_invalid_transform_mode():
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # check
-    assert_raises(ValueError, permutation_2sided, array_a, array_b, transform_mode="haha")
+    assert_raises(TypeError, permutation_2sided, array_a, array_b, single="haha")
 
 
 def test_permutation_2sided_add_noise_mode_umeyama():
@@ -1015,7 +1015,7 @@ def test_permutation_2sided_dominators_zero():
                         [0, 0, 1, 0, 0, 6, 0],
                         [0, 0, 1, 0, 0, 0, 6]])
     res = permutation_2sided(array_a, array_b,
-                             transform_mode='single',
+                             single=True,
                              unpad_col=False,
                              unpad_row=False,
                              scale=False,

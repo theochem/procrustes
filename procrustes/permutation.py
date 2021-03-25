@@ -209,7 +209,7 @@ def permutation_2sided(
         Maximum number for iterations. Default=500.
     tol : float, optional
         The tolerance value used for updating the initial guess. Default=1.e-8.
-    kopt : (int, None) optional
+    kopt : (int, None), optional
         Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
         matrix by searching over all k-fold permutations of the rows or columns of each permutation
         matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.

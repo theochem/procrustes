@@ -212,7 +212,7 @@ def permutation_2sided(
         Add small noise if the arrays are non-diagonalizable. Default=False.
     tol : float, optional
         The tolerance value used for updating the initial guess. Default=1.e-8.
-    kopt : int, optional
+    kopt : (int, None) optional
         Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
         matrix by searching over all k-fold permutations of the rows or columns of each permutation
         matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
@@ -377,7 +377,7 @@ def permutation_2sided(
         \end{bmatrix} \\
 
     """
-    if not (isinstance(kopt, int) or kopt is not None):
+    if not (isinstance(kopt, int) or kopt is None):
         raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
 
     # check inputs

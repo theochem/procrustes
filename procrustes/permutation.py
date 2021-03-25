@@ -217,6 +217,10 @@ def permutation_2sided(
         matrix by searching over all k-fold permutations of the rows or columns of each permutation
         matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
         If None, then kopt search is not performed. Default=None.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------

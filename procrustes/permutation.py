@@ -157,8 +157,7 @@ def permutation_2sided(
         iteration=500,
         add_noise=False,
         tol=1.0e-8,
-        kopt=False,
-        kopt_k=3,
+        kopt=None,
         weight=None
 ):
     r"""Double sided permutation Procrustes.
@@ -213,11 +212,11 @@ def permutation_2sided(
         Add small noise if the arrays are non-diagonalizable. Default=False.
     tol : float, optional
         The tolerance value used for updating the initial guess. Default=1.e-8.
-    kopt : bool, optional
-        If True, the k_opt heuristic search will be performed. Default=False.
-    kopt_k : int, optional
-        Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
-        search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
+    kopt : int, optional
+        Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
+        matrix by searching over all k-fold permutations of the rows or columns of each permutation
+        matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
+        If None, then kopt search is not performed. Default=None.
 
     Returns
     -------
@@ -374,6 +373,9 @@ def permutation_2sided(
         \end{bmatrix} \\
 
     """
+    if not (isinstance(kopt, int) or kopt is not None):
+        raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
+
     # check inputs
     new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
@@ -386,8 +388,7 @@ def permutation_2sided(
             )
 
     # Do single-transformation computation if requested
-    transform_mode = transform_mode.lower()
-    if transform_mode == "single":
+    if single:
         # np.power() can not handle the negatives values
         # Try to convert the matrices to non-negative
         # shift the the matrices to avoid negative values
@@ -407,9 +408,9 @@ def permutation_2sided(
             array_u = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
             # k-opt heuristic
-            if kopt:
+            if kopt is not None:
                 fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt_k)
+                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
             else:
                 error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         # algorithm for directed graph matching problem
@@ -420,9 +421,9 @@ def permutation_2sided(
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
             # k-opt heuristic
-            if kopt:
+            if kopt is not None:
                 fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt_k)
+                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
             else:
                 error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
@@ -433,10 +434,10 @@ def permutation_2sided(
         array_n = new_b
         array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
         # perform k-opt heuristic search twice
-        if kopt:
+        if kopt is not None:
             fun_error = lambda p1, p2: compute_error(array_m, array_n, p2, p1.T)
             array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
-                                                            k=kopt_k)
+                                                            k=kopt)
         # return array_m, array_n, array_p, array_q, error
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
 

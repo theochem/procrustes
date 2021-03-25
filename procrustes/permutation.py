@@ -395,8 +395,9 @@ def permutation_2sided(
     if single:
         # The update formula for _compute_transform and _compute_transform_directed takes
         #   the square root of the matrix entries. To avoid taking the square root of negative
-        #   values, the matrices are translated to be positive. This causes no change to the
-        #   objective function, as its a constant value being applied to all entries.
+        #   values and dealing with complex numbers, the matrices are translated to be
+        #   positive. This causes no change to the objective function, as its a constant value
+        #   being applied to all entries.
         maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
         new_a_positive = new_a.astype(np.float) + maximum
         new_b_positive = new_b.astype(np.float) + maximum

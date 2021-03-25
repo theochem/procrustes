@@ -377,7 +377,7 @@ def permutation_2sided(
     if not (isinstance(kopt, int) or kopt is None):
         raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
 
-    if not (isinstance(single, bool)):
+    if not isinstance(single, bool):
         raise TypeError(f"single parameter {single} should be a Boolean.")
 
     # check inputs

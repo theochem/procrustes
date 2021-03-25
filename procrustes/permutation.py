@@ -144,8 +144,8 @@ def permutation(
 
 
 def permutation_2sided(
-        array_a,
-        array_b,
+        a,
+        b,
         transform_mode="single",
         pad=False,
         unpad_col=False,
@@ -165,9 +165,9 @@ def permutation_2sided(
 
     Parameters
     ----------
-    array_a : ndarray
+    a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
+    b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     transform_mode : str, optional
         When transform_mode="single", it is the two-sided permutation Procrustes with one

@@ -204,7 +204,7 @@ def test_2sided_1trans_initial_guess_umeyama():
                           [0.991, 0.524, 0.892, 0.601],
                           [0.520, 0.931, 0.846, 0.618]])
     # U = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
-    array_u = _2sided_1trans_initial_guess_umeyama(array_b, array_a, add_noise=False)
+    array_u = _2sided_1trans_initial_guess_umeyama(array_b, array_a)
     # Check
     assert_almost_equal(u_umeyama, array_u, decimal=3)
 
@@ -973,7 +973,7 @@ def test_permutation_2sided_invalid_transform_mode():
     assert_raises(TypeError, permutation_2sided, array_a, array_b, single="haha")
 
 
-def test_permutation_2sided_add_noise_mode_umeyama():
+def test_permutation_2sided_umeyama():
     r"""Test two sided permutation Procrustes with adding noise mode."""
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
@@ -982,12 +982,12 @@ def test_permutation_2sided_add_noise_mode_umeyama():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # test umeyama method
     result = permutation_2sided(array_a, array_b, translate=False,
-                                scale=False, mode="umeyama", add_noise=True)
+                                scale=False, mode="umeyama")
     assert_almost_equal(result["t"], perm, decimal=6)
     assert_almost_equal(result["error"], 0, decimal=6)
 
 
-def test_permutation_2sided_add_noise_mode_umeyama_approx():
+def test_permutation_2sided_umeyama_approx():
     r"""Test two sided permutation Procrustes with adding noise mode."""
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
@@ -996,7 +996,7 @@ def test_permutation_2sided_add_noise_mode_umeyama_approx():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # test umeyama method
     result = permutation_2sided(array_a, array_b, translate=False, scale=False,
-                                mode="umeyama_approx", add_noise=True)
+                                mode="umeyama_approx")
     assert_almost_equal(result["t"], perm, decimal=6)
     assert_almost_equal(result["error"], 0, decimal=6)
 

@@ -155,7 +155,6 @@ def permutation_2sided(
         mode="normal1",
         check_finite=True,
         iteration=500,
-        add_noise=False,
         tol=1.0e-8,
         kopt=None,
         weight=None
@@ -208,8 +207,6 @@ def permutation_2sided(
         Default=True.
     iteration : int, optional
         Maximum number for iterations. Default=500.
-    add_noise : bool, optional
-        Add small noise if the arrays are non-diagonalizable. Default=False.
     tol : float, optional
         The tolerance value used for updating the initial guess. Default=1.e-8.
     kopt : (int, None) optional
@@ -410,7 +407,7 @@ def permutation_2sided(
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
             guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive,
-                                                          mode, add_noise)
+                                                          mode)
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
@@ -603,15 +600,7 @@ def _2sided_1trans_initial_guess_normal2(array_a):
     return array_new
 
 
-def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
-    # add small random noise matrix when matrices are not diagonalizable
-    if add_noise:
-        array_a = np.float_(array_a)
-        array_a += np.random.random(array_a.shape) * np.trace(np.abs(array_a)) / \
-            array_a.shape[0] * 1.e-8
-        array_b = np.float_(array_b)
-        array_b += np.random.random(array_b.shape) * np.trace(np.abs(array_b)) / \
-            array_b.shape[0] * 1.e-8
+def _2sided_1trans_initial_guess_umeyama(array_a, array_b):
     # calculate the eigenvalue decomposition of A and B
     _, array_ua = np.linalg.eigh(array_a)
     _, array_ub = np.linalg.eigh(array_b)
@@ -623,9 +612,9 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
     return array_u
 
 
-def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, add_noise):
+def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b):
     # compute U_umeyama
-    array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
+    array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
     # calculate the approximated umeyama matrix
     array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver='gesvd')
     u_approx = np.dot(np.abs(array_ua), np.abs(array_vta))
@@ -649,7 +638,7 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     return array_u
 
 
-def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
+def _guess_initial_permutation_undirected(array_a, array_b, mode):
     mode = mode.lower()
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
@@ -660,9 +649,9 @@ def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
         tmp_b = _2sided_1trans_initial_guess_normal2(array_b)
         array_u = permutation(tmp_a, tmp_b)["t"]
     elif mode == "umeyama":
-        array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
+        array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
     elif mode == "umeyama_approx":
-        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, add_noise)
+        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b)
     else:
         raise ValueError(
             """

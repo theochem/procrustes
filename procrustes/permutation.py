@@ -412,12 +412,6 @@ def permutation_2sided(
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive,
                                          guess, tol, iteration)
-            # k-opt heuristic
-            if kopt is not None:
-                fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
-            else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
@@ -425,12 +419,12 @@ def permutation_2sided(
             # Compute the permutation matrix by iterations
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
-            # k-opt heuristic
-            if kopt is not None:
-                fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
-            else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
+        # k-opt heuristic
+        if kopt is not None:
+            fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
+            array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
+        else:
+            error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
 
     # Do regular computation with different permutation matrices.

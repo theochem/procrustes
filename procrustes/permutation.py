@@ -146,7 +146,7 @@ def permutation(
 def permutation_2sided(
         a,
         b,
-        transform_mode="single",
+        single=True,
         pad=False,
         unpad_col=False,
         unpad_row=False,
@@ -169,22 +169,20 @@ def permutation_2sided(
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    transform_mode : str, optional
-        When transform_mode="single", it is the two-sided permutation Procrustes with one
-        transformation.
+    single : bool
+        If true, the two permutation are assumed to be the same, i.e.
+        it is the two-sided permutation Procrustes with one transformation.
         (1). If the input matrices (adjacency matrices) are symmetric within the threshold of 1.e-5,
         undirected graph matching algorithm will be applied.
         (2). If the input matrices (adjacency matrices) are asymmetric, the directed graph
         matching is applied.
-        When transform_mode="double", the problem becomes two-sided permutation Procrustes with
-        two transformations (denoted as regular two-sided permutation Procrustes here). An flip-flop
+        If false, the two permutation matrices can be different, i.e.
+        it is the two-sided permutation Procrustes with two transformations
+        (known as the regular two-sided permutation Procrustes here). An flip-flop
         algorithm taken from  *Parallel solution of SVD-related problems, with applications,
         Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993* is used to solve
         the problem.
-        Default="single".
-        Otherwise, transform_mode="double", the
-            two-sided permutation Procrustes with two transformations will be performed.
-            Default="single_undirected".
+        Default=True.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
@@ -377,13 +375,14 @@ def permutation_2sided(
 
     """
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, unpad_col, unpad_row,
+    new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
-    if transform_mode == "single":
+    if single:
+        # Since permutation matrices are square, and its single transformation.
         if new_a.shape != new_b.shape:
             raise ValueError(
                 f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
-                "Check pad, remove_zero_col, and remove_zero_row arguments."
+                "Check pad, unpad_col, and unpad_row arguments."
             )
 
     # Do single-transformation computation if requested
@@ -428,8 +427,8 @@ def permutation_2sided(
                 error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
 
-    # Do regular computation
-    elif transform_mode == "double":
+    # Do regular computation with different permutation matrices.
+    else:
         array_m = new_a
         array_n = new_b
         array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
@@ -440,8 +439,6 @@ def permutation_2sided(
                                                             k=kopt_k)
         # return array_m, array_n, array_p, array_q, error
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
-    else:
-        raise ValueError("""Invalid transform_mode argument, use "single"or "double".""")
 
 
 def _2sided_regular(array_m, array_n, tol, iteration):

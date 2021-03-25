@@ -393,10 +393,10 @@ def permutation_2sided(
 
     # Do single-transformation computation if requested
     if single:
-        # np.power() can not handle the negatives values
-        # Try to convert the matrices to non-negative
-        # shift the the matrices to avoid negative values
-        # otherwise it will cause an error in the Eq. 28 in the research notes
+        # The update formula for _compute_transform and _compute_transform_directed takes
+        #   the square root of the matrix entries. To avoid taking the square root of negative
+        #   values, the matrices are translated to be positive. This causes no change to the
+        #   objective function, as its a constant value being applied to all entries.
         maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
         new_a_positive = new_a.astype(np.float) + maximum
         new_b_positive = new_b.astype(np.float) + maximum

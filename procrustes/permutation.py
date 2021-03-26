@@ -396,8 +396,8 @@ def permutation_2sided(
         # The update formula for _compute_transform and _compute_transform_directed takes
         #   the square root of the matrix entries. To avoid taking the square root of negative
         #   values and dealing with complex numbers, the matrices are translated to be
-        #   positive. This causes no change to the objective function, as its a constant value
-        #   being applied to all entries.
+        #   positive. This causes no change to the objective function, as it's a constant value
+        #   being added to all entries of a and b.
         maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
         new_a_positive = new_a.astype(np.float) + maximum
         new_b_positive = new_b.astype(np.float) + maximum
@@ -407,11 +407,9 @@ def permutation_2sided(
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive,
-                                                          mode)
+            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive, mode)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform(new_a_positive, new_b_positive,
-                                         guess, tol, iteration)
+            array_u = _compute_transform(new_a_positive, new_b_positive, guess, tol, iteration)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
@@ -429,7 +427,7 @@ def permutation_2sided(
     # Do regular computation with different permutation matrices.
     else:
         array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
-        # perform k-opt heuristic search twice
+        # perform k-opt heuristic search.
         if kopt is not None:
             fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
             array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,

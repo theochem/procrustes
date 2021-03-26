@@ -425,15 +425,14 @@ def permutation_2sided(
             error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
     # Do regular computation with different permutation matrices.
-    else:
-        array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
-        # perform k-opt heuristic search.
-        if kopt is not None:
-            fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
-            array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
-                                                            k=kopt)
-        # return array_m, array_n, array_p, array_q, error
-        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
+    array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
+    # perform k-opt heuristic search.
+    if kopt is not None:
+        fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
+        array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
+                                                        k=kopt)
+    # return array_m, array_n, array_p, array_q, error
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
 
 
 def _2sided_regular(array_m, array_n, tol, iteration):

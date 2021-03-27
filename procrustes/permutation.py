@@ -143,58 +143,53 @@ def permutation(
     return ProcrustesResult(new_a=new_a, new_b=new_b, t=p, error=error)
 
 
-def permutation_2sided(array_a, array_b, transform_mode="single",
-                       remove_zero_col=True, remove_zero_row=True,
-                       pad_mode="row-col", translate=False, scale=False,
-                       mode="normal1", check_finite=True, iteration=500,
-                       add_noise=False, tol=1.0e-8, kopt=False, kopt_k=3,
-                       weight=None):
+def permutation_2sided(
+        a,
+        b,
+        single=True,
+        pad=False,
+        unpad_col=False,
+        unpad_row=False,
+        translate=False,
+        scale=False,
+        mode="normal1",
+        check_finite=True,
+        iteration=500,
+        tol=1.0e-8,
+        kopt=None,
+        weight=None
+):
     r"""Double sided permutation Procrustes.
 
     Parameters
     ----------
-    array_a : ndarray
+    a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
+    b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    transform_mode : str, optional
-        When transform_mode="single", it is the two-sided permutation Procrustes with one
-        transformation.
+    single : bool
+        If true, the two permutation are assumed to be the same, i.e.
+        it is the two-sided permutation Procrustes with one transformation.
         (1). If the input matrices (adjacency matrices) are symmetric within the threshold of 1.e-5,
         undirected graph matching algorithm will be applied.
         (2). If the input matrices (adjacency matrices) are asymmetric, the directed graph
         matching is applied.
-        When transform_mode="double", the problem becomes two-sided permutation Procrustes with
-        two transformations (denoted as regular two-sided permutation Procrustes here). An flip-flop
+        If false, the two permutation matrices can be different, i.e.
+        it is the two-sided permutation Procrustes with two transformations
+        (known as the regular two-sided permutation Procrustes here). An flip-flop
         algorithm taken from  *Parallel solution of SVD-related problems, with applications,
         Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993* is used to solve
         the problem.
-        Default="single".
-    Otherwise, transform_mode="double", the
-        two-sided permutation Procrustes with two transformations will be performed.
-        Default="single_undirected".
-    remove_zero_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default= True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default= True.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
+        Default=True.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
         will have mean zero.
@@ -212,15 +207,17 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         Default=True.
     iteration : int, optional
         Maximum number for iterations. Default=500.
-    add_noise : bool, optional
-        Add small noise if the arrays are non-diagonalizable. Default=False.
     tol : float, optional
         The tolerance value used for updating the initial guess. Default=1.e-8.
-    kopt : bool, optional
-        If True, the k_opt heuristic search will be performed. Default=False.
-    kopt_k : int, optional
-        Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
-        search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
+    kopt : (int, None), optional
+        Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
+        matrix by searching over all k-fold permutations of the rows or columns of each permutation
+        matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
+        If None, then kopt search is not performed. Default=None.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
 
     Returns
     -------
@@ -377,36 +374,42 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
         \end{bmatrix} \\
 
     """
+    if not (isinstance(kopt, int) or kopt is None):
+        raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
+
+    if not isinstance(single, bool):
+        raise TypeError(f"single parameter {single} should be a Boolean.")
+
     # check inputs
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                                      pad_mode, translate, scale, check_finite, weight)
-    # np.power() can not handle the negatives values
-    # Try to convert the matrices to non-negative
-    # shift the the matrices to avoid negative values
-    # otherwise it will cause an error in the Eq. 28 in the research notes
-    maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
-    new_a_positive = new_a.astype(np.float) + maximum
-    new_b_positive = new_b.astype(np.float) + maximum
+    new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
+                                      pad, translate, scale, check_finite, weight)
+    if single:
+        # Since permutation matrices are square, and its single transformation.
+        if new_a.shape != new_b.shape:
+            raise ValueError(
+                f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
+                "Check pad, unpad_col, and unpad_row arguments."
+            )
+
     # Do single-transformation computation if requested
-    transform_mode = transform_mode.lower()
-    if transform_mode == "single":
+    if single:
+        # The update formula for _compute_transform and _compute_transform_directed takes
+        #   the square root of the matrix entries. To avoid taking the square root of negative
+        #   values and dealing with complex numbers, the matrices are translated to be
+        #   positive. This causes no change to the objective function, as it's a constant value
+        #   being added to all entries of a and b.
+        maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
+        new_a_positive = new_a.astype(np.float) + maximum
+        new_b_positive = new_b.astype(np.float) + maximum
+
         # algorithm for undirected graph matching problem
         # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation_undirected(new_a_positive,
-                                                          new_b_positive,
-                                                          mode, add_noise)
+            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive, mode)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform(new_a_positive, new_b_positive,
-                                         guess, tol, iteration)
-            # k-opt heuristic
-            if kopt:
-                fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt_k)
-            else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
+            array_u = _compute_transform(new_a_positive, new_b_positive, guess, tol, iteration)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
@@ -414,28 +417,22 @@ def permutation_2sided(array_a, array_b, transform_mode="single",
             # Compute the permutation matrix by iterations
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
-            # k-opt heuristic
-            if kopt:
-                fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-                array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt_k)
-            else:
-                error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
+        # k-opt heuristic
+        if kopt is not None:
+            fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
+            array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
+        else:
+            error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
-
-    # Do regular computation
-    elif transform_mode == "double":
-        array_m = new_a
-        array_n = new_b
-        array_p, array_q, error = _2sided_regular(array_m, array_n, tol, iteration)
-        # perform k-opt heuristic search twice
-        if kopt:
-            fun_error = lambda p1, p2: compute_error(array_m, array_n, p2, p1.T)
-            array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
-                                                            k=kopt_k)
-        # return array_m, array_n, array_p, array_q, error
-        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
-    else:
-        raise ValueError("""Invalid transform_mode argument, use "single"or "double".""")
+    # Do regular computation with different permutation matrices.
+    array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
+    # perform k-opt heuristic search.
+    if kopt is not None:
+        fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
+        array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
+                                                        k=kopt)
+    # return array_m, array_n, array_p, array_q, error
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
 
 
 def _2sided_regular(array_m, array_n, tol, iteration):
@@ -592,15 +589,7 @@ def _2sided_1trans_initial_guess_normal2(array_a):
     return array_new
 
 
-def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
-    # add small random noise matrix when matrices are not diagonalizable
-    if add_noise:
-        array_a = np.float_(array_a)
-        array_a += np.random.random(array_a.shape) * np.trace(np.abs(array_a)) / \
-            array_a.shape[0] * 1.e-8
-        array_b = np.float_(array_b)
-        array_b += np.random.random(array_b.shape) * np.trace(np.abs(array_b)) / \
-            array_b.shape[0] * 1.e-8
+def _2sided_1trans_initial_guess_umeyama(array_a, array_b):
     # calculate the eigenvalue decomposition of A and B
     _, array_ua = np.linalg.eigh(array_a)
     _, array_ub = np.linalg.eigh(array_b)
@@ -612,9 +601,9 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise):
     return array_u
 
 
-def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, add_noise):
+def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b):
     # compute U_umeyama
-    array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
+    array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
     # calculate the approximated umeyama matrix
     array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver='gesvd')
     u_approx = np.dot(np.abs(array_ua), np.abs(array_vta))
@@ -638,7 +627,7 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     return array_u
 
 
-def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
+def _guess_initial_permutation_undirected(array_a, array_b, mode):
     mode = mode.lower()
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
@@ -649,9 +638,9 @@ def _guess_initial_permutation_undirected(array_a, array_b, mode, add_noise):
         tmp_b = _2sided_1trans_initial_guess_normal2(array_b)
         array_u = permutation(tmp_a, tmp_b)["t"]
     elif mode == "umeyama":
-        array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b, add_noise)
+        array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
     elif mode == "umeyama_approx":
-        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, add_noise)
+        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b)
     else:
         raise ValueError(
             """

@@ -156,7 +156,7 @@ def rotational(
     if new_a.shape != new_b.shape:
         raise ValueError(
             f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
-            "Check pad, remove_zero_col, and remove_zero_row arguments."
+            "Check pad, unpad_col, and unpad_row arguments."
         )
     # compute SVD of A.T * B
     u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver='gesvd')

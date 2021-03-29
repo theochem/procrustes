@@ -525,9 +525,7 @@ def test_permutation_2sided_invalid_mode_argument():
     # define array_b by permuting array_a
     perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
-    # Check
-    assert_raises(ValueError, permutation_2sided, array_a,
-                  array_b, single=True, mode="nature")
+    assert_raises(ValueError, permutation_2sided, array_a, array_b, single=True, mode="nature")
 
 
 def test_permutation_2sided_regular():
@@ -793,35 +791,7 @@ def test_permutation_2sided_invalid_transform_mode():
                      [0., 0., 0., 1.], [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # check
-    assert_raises(TypeError, permutation_2sided, array_a, array_b, single="haha")
-
-
-def test_permutation_2sided_umeyama():
-    r"""Test two sided permutation Procrustes with adding noise mode."""
-    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
-    # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
-                     [0., 0., 0., 1.], [0., 1., 0., 0.]])
-    array_b = np.dot(perm.T, np.dot(array_a, perm))
-    # test umeyama method
-    result = permutation_2sided(array_a, array_b, translate=False,
-                                scale=False, mode="umeyama")
-    assert_almost_equal(result["t"], perm, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
-
-
-def test_permutation_2sided_umeyama_approx():
-    r"""Test two sided permutation Procrustes with adding noise mode."""
-    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
-    # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
-                     [0., 0., 0., 1.], [0., 1., 0., 0.]])
-    array_b = np.dot(perm.T, np.dot(array_a, perm))
-    # test umeyama method
-    result = permutation_2sided(array_a, array_b, translate=False, scale=False,
-                                mode="umeyama_approx")
-    assert_almost_equal(result["t"], perm, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    assert_raises(TypeError, permutation_2sided, array_a, array_b, single="invalid")
 
 
 def test_permutation_2sided_dominators_zero():

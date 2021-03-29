@@ -520,6 +520,8 @@ def _2sided_hungarian(profit_matrix):
 
 
 def _2sided_1trans_initial_guess_normal1(array_a):
+    # This assumes that array_a has all positive entries, this guess does not match that found
+    #    in the notes/paper because it doesn't include the sign function.
     # build the empty target array
     array_c = np.zeros(array_a.shape)
     # Fill the first row of array_c with diagonal entries
@@ -548,6 +550,8 @@ def _2sided_1trans_initial_guess_normal1(array_a):
 
 
 def _2sided_1trans_initial_guess_normal2(array_a):
+    # This assumes that array_a has all positive entries, this guess does not match that found
+    #    in the notes/paper because it doesn't include the sign function.
     array_mask_a = ~np.eye(array_a.shape[0], dtype=bool)
     # array_off_diag0 is the off diagonal elements of A
     array_off_diag = array_a[array_mask_a].reshape((array_a.shape[0], array_a.shape[1] - 1))

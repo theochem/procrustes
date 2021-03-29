@@ -26,59 +26,73 @@
 import itertools
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_raises
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
                                     _2sided_1trans_initial_guess_normal2,
                                     _2sided_1trans_initial_guess_umeyama,
                                     permutation, permutation_2sided,
                                     permutation_2sided_explicit)
+import pytest
 
 
-def test_permutation_columns():
-    r"""Test permutation Procrustes with permuted rows."""
-    # square array
-    array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
-    # permutation
-    perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
+def generate_random_permutation_matrix(n):
+    r"""Generates a random permutation matrix."""
+    arr = np.arange(0, n)
+    np.random.shuffle(arr)
+    perm = np.zeros((n, n))
+    perm[np.arange(0, n), arr] = 1.0
+    return perm
+
+
+@pytest.mark.parametrize("n", np.random.randint(500, 1000, (25)))
+def test_permutation_one_sided_square_matrices_rows_permuted(n):
+    r"""Test one-sided permutation Procrustes with square matrices and permuted rows."""
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    perm = generate_random_permutation_matrix(n)
     # permuted array_b
     array_b = np.dot(array_a, perm)
     # procrustes with no translate and scale
     res = permutation(array_a, array_b)
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_equal(res.s, None)
 
 
-def test_permutation_columns_pad():
-    r"""Test permutation by permuted columns along with padded zeros."""
-    # square array
-    array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
-    # permutation
-    perm = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]])
+@pytest.mark.parametrize("m, n, ncols, nrows", np.random.randint(50, 100, (25, 4)))
+def test_permutation_one_sided_columns_pad(m, n, ncols, nrows):
+    r"""Test one-sided permutation by permuted columns along with padded zeros."""
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    perm = generate_random_permutation_matrix(n)
     # permuted array_b
     array_b = np.dot(array_a, perm)
-    # padded arrays with zero row and columns
-    array_a = np.concatenate((array_a, np.array([[0], [0], [0], [0]])), axis=1)
-    array_b = np.concatenate((array_b, np.array([[0, 0, 0, 0]])), axis=0)
+    # padded array b with zero row and columns
+    array_b = np.concatenate((array_b, np.zeros((m, ncols))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((nrows, n + ncols))), axis=0)
     # procrustes with no translate and scale
     res = permutation(array_a, array_b, unpad_col=True, unpad_row=True)
-    assert_almost_equal(res["new_a"], array_a[:, :-1], decimal=6)
-    assert_almost_equal(res["new_b"], array_b[:-1, :], decimal=6)
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
+    # Test that the unpadded b is the same as the original b.
+    assert_almost_equal(res.new_b, np.dot(array_a, perm), decimal=6)
+    # Test that the permutation and the error are the same/zero.
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_equal(res.s, None)
 
 
-def test_permutation_translate_scale():
-    r"""Test permutation by scaled arrays."""
-    # square array
-    array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
+@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (25, 2)))
+def test_permutation_one_sided_with_translate_scale(m, n):
+    r"""Test permutation one_sided by translated and scaled arrays."""
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
     # array_b is scaled, translated, and permuted array_a
-    perm = np.array([[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
-    array_b = 3.78 * array_a + np.array([6, 1, 5, 3])
+    perm = generate_random_permutation_matrix(n)
+    # obtain random translation/shift array and permute the array.
+    shift = np.random.uniform(-10.0, 10.0, (n,))
+    array_b = 3.78 * array_a + shift
     array_b = np.dot(array_b, perm)
     # permutation procrustes
     res = permutation(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(res["t"], perm, decimal=6)
-    assert_almost_equal(res["error"], 0., decimal=6)
+    assert_almost_equal(res.t, perm, decimal=6)
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_equal(res.s, None)
 
 
 def test_permutation_translate_scale_padd():

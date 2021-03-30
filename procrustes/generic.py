@@ -37,6 +37,7 @@ def generic(
     unpad_row=False,
     check_finite=True,
     weight=None,
+    lapack_driver="gesvd"
 ):
     r"""Perform generic one-sided Procrustes.
 
@@ -82,6 +83,10 @@ def generic(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+    lapack_driver : {"gesvd", "gesdd"}, optional
+        Used for the Morse-Penrose inverse. Only allowed two options, with "gesvd" being
+        less-efficient than "gesdd" but is more robust.
+        Default is "gesvd".
 
     Returns
     -------
@@ -105,7 +110,12 @@ def generic(
         a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
     # compute the generic solution
-    a_inv = pinv(np.dot(new_a.T, new_a))
+    if lapack_driver == "gesvd":
+        a_inv = pinv(np.dot(new_a.T, new_a))
+    elif lapack_driver == "gesdd":
+        a_inv = np.linalg.pinv(np.dot(new_a.T, new_a), hermitian=True)
+    else:
+        raise ValueError(f"The lapack_driver {lapack_driver} is not 'gesvd' or 'gesdd'.")
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     # compute one-sided error
     e_opt = compute_error(new_a, new_b, array_x)

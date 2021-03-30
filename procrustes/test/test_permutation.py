@@ -577,6 +577,19 @@ def test_permutation_2sided_regular2():
     assert_almost_equal(result.error, 0, decimal=6)
 
 
+@pytest.mark.parametrize("n", np.random.randint(3, 6, (3,)))
+def test_permutation_2sided_regular_with_kopt(n):
+    r"""Test regular 2sided permutation with kopt."""
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    perm_p = generate_random_permutation_matrix(n)
+    perm_q = generate_random_permutation_matrix(n)
+    array_b = perm_q.dot(array_a.dot(perm_p))
+    result = permutation_2sided(array_b, array_a, single=False, kopt=n)
+    assert_almost_equal(result.s, perm_q, decimal=6)
+    assert_almost_equal(result.t, perm_p.T, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
+
+
 def test_permutation_2sided_regular_unsquared():
     r"""Test regular 2sided-perm by unsquared 4by2 random arrays."""
     array_n = np.array([[6, 8], [10, 8], [5, 8], [5, 7]])

@@ -34,9 +34,8 @@ from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
 import pytest
 
 
-
 def generate_random_permutation_matrix(n):
-    r"""Generates a random permutation matrix."""
+    r"""Generate a random permutation matrix."""
     arr = np.arange(0, n)
     np.random.shuffle(arr)
     perm = np.zeros((n, n))
@@ -435,8 +434,8 @@ def test_permutation_2sided_single_normal1_translate_scale_zero_pad(n, ncol, nro
     array_b = np.concatenate((array_b, np.zeros((n, ncol2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((nrow2, n + ncol2))), axis=0)
     # Check
-    res = permutation_2sided( array_a, array_b, single=True, translate=True, scale=True,
-                              mode="normal1", unpad_col=True, unpad_row=True)
+    res = permutation_2sided(array_a, array_b, single=True, translate=True, scale=True,
+                             mode="normal1", unpad_col=True, unpad_row=True)
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
     assert_equal(res.s, None)
@@ -621,7 +620,7 @@ def test_permutation_2sided_single_directed(n):
     assert_almost_equal(result.error, 0., decimal=6)
 
 
-@pytest.mark.parametrize("n", [3, 4, 5, 6])
+@pytest.mark.parametrize("n", [3, 4, 5])
 def test_permutation_2sided_single_transform_directed_all_permutations(n):
     r"""Test 2sided-perm with "directed" over all permutations."""
     # define a random matrix

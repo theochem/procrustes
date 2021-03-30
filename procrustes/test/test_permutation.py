@@ -43,7 +43,7 @@ def generate_random_permutation_matrix(n):
     return perm
 
 
-@pytest.mark.parametrize("n", np.random.randint(500, 1000, (25)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25)))
 def test_permutation_one_sided_square_matrices_rows_permuted(n):
     r"""Test one-sided permutation Procrustes with square matrices and permuted rows."""
     array_a = np.random.uniform(-10.0, 10.0, (n, n))
@@ -77,7 +77,7 @@ def test_permutation_one_sided_columns_pad(m, n, ncols, nrows):
     assert_almost_equal(res.error, 0., decimal=6)
 
 
-@pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (25, 2)))
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
 def test_permutation_one_sided_with_translate_scale(m, n):
     r"""Test permutation one_sided by translated and scaled arrays."""
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
@@ -208,6 +208,7 @@ def test_permutation_2sided_single_transform_umeyama_guess(n):
     r"""Test 2sided-permutation with single transform with umeyama guess."""
     # define a random matrix
     array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    array_a = (array_a + array_a.T) / 2.0
     # define array_b by permuting array_a
     perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot(array_a, perm))
@@ -218,7 +219,7 @@ def test_permutation_2sided_single_transform_umeyama_guess(n):
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(3, 6, (10,)))
+@pytest.mark.parametrize("n", np.random.randint(3, 6, (5,)))
 def test_permutation_2sided_single_transform_small_matrices_umeyama_all_permutations(n):
     r"""Test 2sided-perm single transform with Umeyama guess for all permutations."""
     # define a random matrix
@@ -235,7 +236,7 @@ def test_permutation_2sided_single_transform_small_matrices_umeyama_all_permutat
         assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 500, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 500, (10,)))
 def test_permutation_2sided_single_transform_symmetric_umeyama_translate_scale(n):
     r"""Test 2sided-perm with Umeyama guess with symmetric arrays with translation and scale."""
     # define a random, symmetric matrix
@@ -296,7 +297,7 @@ def test_permutation_2sided_single_transform_umeyama_translate_scale_zero_paddin
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
 def test_permutation_2sided_single_transform_umeyama_approx(n):
     r"""Test 2sided-perm, single transform with "umeyama_approx" mode."""
     # define a random, symmetric matrix
@@ -329,7 +330,7 @@ def test_permutation_2sided_4by4_umeyama_approx_loop():
         assert_almost_equal(res.error, 0, decimal=6)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
 def test_permutation_2sided_one_transform_symmetric_umeyama_approx_translate_scale(n):
     r"""Test 2sided-perm with "umeyama_approx" by symmetric with translation and scaling."""
     # define a random, symmetric matrix
@@ -347,7 +348,7 @@ def test_permutation_2sided_one_transform_symmetric_umeyama_approx_translate_sca
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n, ncol, nrow", np.random.randint(50, 100, (25, 3)))
+@pytest.mark.parametrize("n, ncol, nrow", np.random.randint(50, 100, (10, 3)))
 def test_permutation_2sided_single_transform_umeyama_approx_trans_scale_zero_padding(n, ncol, nrow):
     r"""Test 2sided-perm single transf with "umeyama_approx" by arrays with translate, scaling."""
     # define a random, symmetric matrix
@@ -368,7 +369,7 @@ def test_permutation_2sided_single_transform_umeyama_approx_trans_scale_zero_pad
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
 def test_permutation_2sided_single_transform_normal1(n):
     r"""Test 2sided-perm with "normal1"."""
     # define a random, symmetric matrix
@@ -402,7 +403,7 @@ def test_permutation_2sided_single_transform_small_normal1_loop(n):
         assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
 def test_permutation_2sided_single_transform_normal1_translate_scale(n):
     r"""Test 2sided-perm with "normal1" with translation and scaling."""
     # define a random, symmetric matrix
@@ -418,7 +419,7 @@ def test_permutation_2sided_single_transform_normal1_translate_scale(n):
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n, ncol, nrow, ncol2, nrow2", np.random.randint(50, 100, (25, 5)))
+@pytest.mark.parametrize("n, ncol, nrow, ncol2, nrow2", np.random.randint(50, 100, (10, 5)))
 def test_permutation_2sided_single_normal1_translate_scale_zero_pad(n, ncol, nrow, ncol2, nrow2):
     r"""Test "normal1" by arrays by translation and scaling and zero padding."""
     # define a random matrix
@@ -441,7 +442,7 @@ def test_permutation_2sided_single_normal1_translate_scale_zero_pad(n, ncol, nro
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
 def test_permutation_2sided_single_transform_normal2(n):
     r"""Test 2sided-perm with "normal2"."""
     # define a random, symmetric matrix
@@ -477,7 +478,7 @@ def test_permutation_2sided_single_transform_small_normal2_loop(n):
         assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(50, 500, (25,)))
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (10,)))
 def test_permutation_2sided_single_transform_normal2_translate_scale(n):
     r"""Test 2sided-perm single transform with "normal2" with translation and scaling."""
     # generate random symmetric matrix.
@@ -494,7 +495,7 @@ def test_permutation_2sided_single_transform_normal2_translate_scale(n):
     assert_equal(res.s, None)
 
 
-@pytest.mark.parametrize("n, ncol, nrow, ncol2, nrow2", np.random.randint(50, 100, (25, 5)))
+@pytest.mark.parametrize("n, ncol, nrow, ncol2, nrow2", np.random.randint(50, 100, (10, 5)))
 def test_permutation_2sided_single_normal2_translate_scale_zero_pad(n, ncol, nrow, ncol2, nrow2):
     r"""Test 2sided-perm single with "normal2" by with translation, scaling and zero paddings."""
     # define a random, symmetric matrix
@@ -708,7 +709,7 @@ def test_permutation_2sided_single_transform_with_kopt_all_permutations(n):
         assert_equal(result.s, None)
 
 
-@pytest.mark.parametrize("n", np.random.randint(5, 10, (5,)))
+@pytest.mark.parametrize("n", np.random.randint(3, 8, (3,)))
 def test_permutation_2sided_explicit_translate_scale(n):
     r"""Test 2-sided permutation with explicit method by 4by4 method."""
     # define a random matrix

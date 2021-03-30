@@ -168,17 +168,17 @@ def permutation_2sided(
     b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     single : bool
-        If true, the two permutation are assumed to be the same, (i.e. two-sided permutation
-        Procrustes with one transformation.
-        (1) If the input matrices `a` and `b` are symmetric within the threshold of 1.e-5,
-        undirected graph matching algorithm from [1] will be applied.
-        (2) If the input matrices `a` and `b` are not symmetric, the directed graph
-        matching from [1] is applied.
+        If true, the two permutation are assumed to be the same (i.e. two-sided permutation
+        Procrustes with one transformation). Further,
+        (1) if the input matrices `a` and `b` are symmetric within the threshold of 1.e-5,
+        undirected graph matching algorithm from [1] will be applied;
+        (2) if the input matrices `a` and `b` are not symmetric, the directed graph
+        matching algorithm from [1] is applied.
         If false, the two permutation matrices can be different, i.e.
         it is the two-sided permutation Procrustes with two transformations
         (known as the regular two-sided permutation Procrustes here). An flip-flop
         algorithm taken from [2] is used to iteratively solve this problem. Global optima is not
-        guaranteed here and may need to do a k-opt search.
+        guaranteed here and may need to do an additional k-opt search.
         Default=True.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
@@ -205,12 +205,10 @@ def permutation_2sided(
         symmetric. This includes "normal1", "normal2", "umeyama" and "umeyama_approx".
         Default="normal1".
     iteration : int, optional
-        Maximum number of iterations for updatine the initial guess or iterative method for
-        regular.
+        Maximum number of iterations for updating the initial guess or for the flip-flop algorithm.
         Default=500.
     tol : float, optional
-        The tolerance value used for updating the initial guess or iterative method for
-        regular.
+        The tolerance value used for updating the initial guess or for the flip-flop algorithm.
         Default=1.e-8.
     kopt : (int, None), optional
         Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
@@ -385,16 +383,17 @@ def permutation_2sided(
            IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 183-192,
            doi: 10.1109/ICDM.2008.130.
     [2] Parallel solution of SVD-related problems, with applications,
-          Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993
+          Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993.
     [3] S. Umeyama. An eigendecomposition approach toweighted graph matching problems.
           IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
 
     """
     if not (isinstance(kopt, (np.int, np.int32, np.int64)) or kopt is None):
-        raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
+        raise TypeError(f"Type of kopt parameter {type(kopt)} should be an positive integer "
+                        f"or None.")
 
     if not isinstance(single, bool):
-        raise TypeError(f"single parameter {single} should be a Boolean.")
+        raise TypeError(f"Type of single {type(single)} should be a Boolean.")
 
     # check inputs
     new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,

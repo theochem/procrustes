@@ -382,8 +382,8 @@ def permutation_2sided(
           Optimization: Spectral Clustering, Graph Matching, and Clique Finding," 2008 Eighth
            IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 183-192,
            doi: 10.1109/ICDM.2008.130.
-    [2] Parallel solution of SVD-related problems, with applications,
-          Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993.
+    [2] Papadimitriou, Pythagoras. "Parallel solution of SVD-related problems, with applications."
+            PhD diss., University of Manchester, 1993.
     [3] S. Umeyama. An eigendecomposition approach toweighted graph matching problems.
           IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
 

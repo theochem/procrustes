@@ -759,7 +759,6 @@ def test_permutation_2sided_invalid_input_kopt_single_transform():
     assert_raises(ValueError, permutation_2sided, array_a, np.eye(20), single=True, pad=False)
 
 
-
 def test_permutation_2sided_dominators_zero():
     """Test two-sided permutations which has zeros in the dominator in updating step."""
     array_a = np.array([[6, 3, 0, 0],

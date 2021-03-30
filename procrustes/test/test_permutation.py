@@ -554,9 +554,9 @@ def test_permutation_2sided_regular():
                         [0, 0, 1, 0, 0],
                         [1, 0, 0, 0, 0]])
     result = permutation_2sided(array_m, array_n, single=False)
-    assert_almost_equal(result["s"], array_p, decimal=6)
-    assert_almost_equal(result["t"], array_q, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    assert_almost_equal(result.s, array_p, decimal=6)
+    assert_almost_equal(result.t, array_q, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
 
 
 def test_permutation_2sided_regular2():
@@ -573,9 +573,9 @@ def test_permutation_2sided_regular2():
     array_q = array_p.T
     array_m = np.dot(np.dot(array_p, array_n), array_q)
     result = permutation_2sided(array_m, array_n, single=False)
-    assert_almost_equal(result["s"], array_p, decimal=6)
-    assert_almost_equal(result["t"], array_q, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    assert_almost_equal(result.s, array_p, decimal=6)
+    assert_almost_equal(result.t, array_q, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
 
 
 def test_permutation_2sided_regular_unsquared():
@@ -586,9 +586,9 @@ def test_permutation_2sided_regular_unsquared():
     perm_q = np.array([[0, 1], [1, 0]])
     array_m = np.linalg.multi_dot([perm_p, array_n, perm_q])
     result = permutation_2sided(array_m, array_n, single=False, iteration=500)
-    assert_almost_equal(result["s"], perm_p, decimal=6)
-    assert_almost_equal(result["t"], perm_q, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    assert_almost_equal(result.s, perm_p, decimal=6)
+    assert_almost_equal(result.t, perm_q, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
 
 
 def test_permutation_2sided_regular_unsquared_negative():

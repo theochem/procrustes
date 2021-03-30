@@ -202,9 +202,9 @@ def permutation_2sided(
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
     mode : string, optional
-        Option for choosing the initial guess methods, including "normal1",
-        "normal2", "umeyama" and "umeyama_approx". "umeyama_approx" is the
-        approximated umeyama method. Only used when matrices a, b are symmetric.
+        Option for choosing the initial guess methods when single=True and matrices a, b are
+        symmetric. This includes "normal1", "normal2", "umeyama" and "umeyama_approx".
+        Default="normal1".
     iteration : int, optional
         Maximum number for iterations. Default=500.
     tol : float, optional

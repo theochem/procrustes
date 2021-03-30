@@ -29,7 +29,7 @@ from procrustes.utils import _zero_padding, compute_error, ProcrustesResult, set
 import scipy
 from scipy.optimize import linear_sum_assignment
 
-__all__ = ["permutation", "permutation_2sided", "permutation_2sided_explicit"]
+__all__ = ["permutation", "permutation_2sided"]
 
 
 def permutation(
@@ -374,7 +374,7 @@ def permutation_2sided(
         \end{bmatrix} \\
 
     """
-    if not (isinstance(kopt, int) or kopt is None):
+    if not (isinstance(kopt, (np.int, np.int32, np.int64)) or kopt is None):
         raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
 
     if not isinstance(single, bool):

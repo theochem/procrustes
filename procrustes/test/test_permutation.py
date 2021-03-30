@@ -30,9 +30,9 @@ from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.permutation import (_2sided_1trans_initial_guess_normal1,
                                     _2sided_1trans_initial_guess_normal2,
                                     _2sided_1trans_initial_guess_umeyama,
-                                    permutation, permutation_2sided,
-                                    permutation_2sided_explicit)
+                                    permutation, permutation_2sided)
 import pytest
+
 
 
 def generate_random_permutation_matrix(n):
@@ -533,8 +533,6 @@ def test_permutation_2sided_regular():
     # Example taken from page 64 in parallel solution of
     # svd-related problems, with applications
     # vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf
-    # https://books.google.ca/books/about/Parallel_Solution_of_SVD_related_Problem.html?id=_aVWcgAACAAJ&redir_esc=y
-
     array_m = np.array([[32, 14, 3, 63, 50],
                         [24, 22, 1, 56, 4],
                         [94, 16, 28, 75, 81],
@@ -706,80 +704,61 @@ def test_permutation_2sided_4by4_directed_translate_scale_padding():
                                 unpad_col=True,
                                 unpad_row=True
                                 )
-    assert_almost_equal(result["t"], perm, decimal=6)
-    assert_almost_equal(result["error"], 0., decimal=6)
+    assert_almost_equal(result.t, perm, decimal=6)
+    assert_almost_equal(result.error, 0., decimal=6)
 
 
-def test_permutation_2sided_explicit_4by4_loop():
-    r"""Test 2sided-perm with explicit method by 4by4 arrays with all permutations."""
+@pytest.mark.parametrize("n", [3, 4, 5])
+def test_permutation_2sided_single_transform_with_kopt_all_permutations(n):
+    r"""Test 2sided-perm single transform with kopt over all permutations."""
     # define a random matrix
-    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
-                        [3, 3, 2, 2], [3, 5, 2, 5]])
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # check with all possible permutation matrices
-    for comb in itertools.permutations(np.arange(4)):
-        perm = np.zeros((4, 4))
-        perm[np.arange(4), comb] = 1
+    for comb in itertools.permutations(np.arange(n)):
+        perm = np.zeros((n, n))
+        perm[np.arange(n), comb] = 1
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
-        # check
-        result = permutation_2sided_explicit(array_a, array_b)
-        assert_almost_equal(result["t"], perm, decimal=6)
-        assert_almost_equal(result["error"], 0, decimal=6)
+        result = permutation_2sided(array_a, array_b, single=True, kopt=n)
+        assert_almost_equal(result.t, perm, decimal=6)
+        assert_almost_equal(result.error, 0, decimal=6)
+        assert_equal(result.s, None)
 
 
-def test_permutation_2sided_explicit_4by4_loop_negative():
-    r"""Test 2sided-perm with explicit method by 4by4 negative arrays with all permutations."""
-    # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
-    # check with all possible permutation matrices
-    for comb in itertools.permutations(np.arange(4)):
-        perm = np.zeros((4, 4))
-        perm[np.arange(4), comb] = 1
-        # get array_b by permutation
-        array_b = np.dot(perm.T, np.dot(array_a, perm))
-        # check
-        result = permutation_2sided_explicit(array_a, array_b)
-        assert_almost_equal(result["t"], perm, decimal=6)
-        assert_almost_equal(result["error"], 0, decimal=6)
-
-
-def test_permutation_2sided_explicit_4by4_translate_scale():
+@pytest.mark.parametrize("n", np.random.randint(5, 10, (5,)))
+def test_permutation_2sided_explicit_4by4_translate_scale(n):
     r"""Test 2-sided permutation with explicit method by 4by4 method."""
     # define a random matrix
-    array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
-    array_a = np.dot(array_a, array_a.T)
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # define array_b by scale-translate array_a and permuting
-    shift = np.array([[3.14, 3.14, 3.14],
-                      [3.14, 3.14, 3.14],
-                      [3.14, 3.14, 3.14]])
-    perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
+    shift = 2.14
+    perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
     # check
-    result = permutation_2sided_explicit(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(result["t"], perm, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    result = permutation_2sided(array_a, array_b, translate=True, scale=True,
+                                single=True, kopt=n)
+    assert_almost_equal(result.t, perm, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
+    assert_equal(result.s, None)
 
 
-def test_permutation_2sided_explicit_4by4_translate_scale_zero_padding():
-    r"""Test explicit permutation by 4by4 arrays with translation, scaling and zero padding."""
+@pytest.mark.parametrize("n, ncol, nrow", np.random.randint(5, 10, (5, 3)))
+def test_permutation_2sided_single_kopt_translate_scale_zero_padding(n, ncol, nrow):
+    r"""Test 2sided perm, single transform with kopt with translation, scaling and zero padding."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
     # check with all possible permutation matrices
-    perm = np.array([[0, 0, 1, 0],
-                     [1, 0, 0, 0],
-                     [0, 1, 0, 0],
-                     [0, 0, 0, 1]])
+    perm = generate_random_permutation_matrix(n)
     # Compute the translated, scaled matrix padded with zeros
     array_b = np.dot(perm.T, np.dot(20 * array_a + 9, perm))
     # pad the matrices with zeros
-    array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
-    array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
-    # check
-    result = permutation_2sided_explicit(array_a, array_b, translate=True, scale=True)
-    assert_almost_equal(result["t"], perm, decimal=6)
-    assert_almost_equal(result["error"], 0, decimal=6)
+    array_b = np.concatenate((array_b, np.zeros((n, ncol))), axis=1)
+    array_b = np.concatenate((array_b, np.zeros((nrow, n + ncol))), axis=0)
+    result = permutation_2sided(array_a, array_b, unpad_row=True, unpad_col=True,
+                                translate=True, scale=True, kopt=n, single=True)
+    assert_almost_equal(result.t, perm, decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
+    assert_equal(result.s, None)
 
 
 def test_permutation_2sided_invalid_transform_mode():

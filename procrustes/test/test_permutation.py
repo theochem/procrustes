@@ -731,8 +731,8 @@ def test_permutation_2sided_single_kopt_translate_scale_zero_padding(n, ncol, nr
     assert_equal(result.s, None)
 
 
-def test_permutation_2sided_invalid_transform_mode():
-    r"""Test 2-sided permutation with invalid transform_mode."""
+def test_permutation_2sided_invalid_input_kopt_single_transform():
+    r"""Test 2-sided permutation with invalid inputs to kopt and single transform."""
     # define a random matrix and symmetric matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
@@ -741,6 +741,9 @@ def test_permutation_2sided_invalid_transform_mode():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # check
     assert_raises(TypeError, permutation_2sided, array_a, array_b, single="invalid")
+    assert_raises(TypeError, permutation_2sided, array_a, array_b, single=True, kopt=20.1)
+    assert_raises(ValueError, permutation_2sided, array_a, np.eye(20), single=True, pad=False)
+
 
 
 def test_permutation_2sided_dominators_zero():

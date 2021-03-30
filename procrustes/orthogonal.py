@@ -44,6 +44,7 @@ def orthogonal(
     unpad_row=False,
     check_finite=True,
     weight=None,
+    lapack_driver="gesvd"
 ):
     r"""Perform orthogonal Procrustes.
 
@@ -91,6 +92,9 @@ def orthogonal(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+    lapack_driver : {"gesvd", "gesdd"}, optional
+        Used in the singular value decomposition function from SciPy. Only allowed two options,
+        with "gesvd" being less-efficient than "gesdd" but is more robust. Default is "gesvd".
 
     Returns
     -------
@@ -144,7 +148,7 @@ def orthogonal(
             "Check pad, unpad_col, and unpad_row arguments."
         )
     # calculate SVD of A.T * B
-    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver="gesvd")
+    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver=lapack_driver)
     # compute optimal orthogonal transformation
     u_opt = np.dot(u, vt)
     # compute one-sided error
@@ -164,6 +168,7 @@ def orthogonal_2sided(
     unpad_row=False,
     check_finite=True,
     weight=None,
+    lapack_driver="gesvd"
 ):
     r"""Perform two-sided orthogonal Procrustes with one- or two-transformations.
 
@@ -225,6 +230,9 @@ def orthogonal_2sided(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+    lapack_driver : {"gesvd", "gesdd"}, optional
+        Used in the singular value decomposition function from SciPy. Only allowed two options,
+        with "gesvd" being less-efficient than "gesdd" but is more robust. Default is "gesvd".
 
     Returns
     -------
@@ -346,8 +354,8 @@ def orthogonal_2sided(
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=u_opt, s=u_opt.T)
 
     # two-sided orthogonal Procrustes with two-transformations
-    ua, _, vta = scipy.linalg.svd(new_a, lapack_driver="gesvd")
-    ub, _, vtb = scipy.linalg.svd(new_b, lapack_driver="gesvd")
+    ua, _, vta = scipy.linalg.svd(new_a, lapack_driver=lapack_driver)
+    ub, _, vtb = scipy.linalg.svd(new_b, lapack_driver=lapack_driver)
     u_opt1 = np.dot(ua, ub.T)
     u_opt2 = np.dot(vta.T, vtb)
     error = compute_error(new_a, new_b, u_opt2, u_opt1.T)

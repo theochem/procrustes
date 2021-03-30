@@ -159,7 +159,7 @@ def permutation_2sided(
         kopt=None,
         weight=None
 ):
-    r"""Double sided permutation Procrustes.
+    r"""Two-sided permutation Procrustes.
 
     Parameters
     ----------
@@ -168,18 +168,17 @@ def permutation_2sided(
     b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     single : bool
-        If true, the two permutation are assumed to be the same, i.e.
-        it is the two-sided permutation Procrustes with one transformation.
-        (1). If the input matrices (adjacency matrices) are symmetric within the threshold of 1.e-5,
-        undirected graph matching algorithm will be applied.
-        (2). If the input matrices (adjacency matrices) are asymmetric, the directed graph
-        matching is applied.
+        If true, the two permutation are assumed to be the same, (i.e. two-sided permutation
+        Procrustes with one transformation.
+        (1) If the input matrices `a` and `b` are symmetric within the threshold of 1.e-5,
+        undirected graph matching algorithm from [1] will be applied.
+        (2) If the input matrices `a` and `b` are not symmetric, the directed graph
+        matching from [1] is applied.
         If false, the two permutation matrices can be different, i.e.
         it is the two-sided permutation Procrustes with two transformations
         (known as the regular two-sided permutation Procrustes here). An flip-flop
-        algorithm taken from  *Parallel solution of SVD-related problems, with applications,
-        Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993* is used to solve
-        the problem.
+        algorithm taken from [2] is used to iteratively solve this problem. Global optima is not
+        guaranteed here and may need to do a k-opt search.
         Default=True.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
@@ -202,18 +201,24 @@ def permutation_2sided(
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
     mode : string, optional
-        Option for choosing the initial guess methods when single=True and matrices a, b are
+        Option for choosing the initial guess when single=True and matrices a, b are
         symmetric. This includes "normal1", "normal2", "umeyama" and "umeyama_approx".
         Default="normal1".
     iteration : int, optional
-        Maximum number for iterations. Default=500.
+        Maximum number of iterations for updatine the initial guess or iterative method for
+        regular.
+        Default=500.
     tol : float, optional
-        The tolerance value used for updating the initial guess. Default=1.e-8.
+        The tolerance value used for updating the initial guess or iterative method for
+        regular.
+        Default=1.e-8.
     kopt : (int, None), optional
         Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
         matrix by searching over all k-fold permutations of the rows or columns of each permutation
         matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
-        If None, then kopt search is not performed. Default=None.
+        If None, then kopt search is not performed. This search is slow when kopt is large and
+        when kopt is equal to the rows or columns of `a`, then all permutations are searched.
+         Default=None.
     weight : ndarray, optional
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
@@ -372,6 +377,17 @@ def permutation_2sided(
              73 & -116 &  154 &  100 \\
             -62 &  154 &  100 &  127 \\
         \end{bmatrix} \\
+
+    References
+    ----------
+    [1] C. Ding, T. Li and M. I. Jordan, "Nonnegative Matrix Factorization for Combinatorial
+          Optimization: Spectral Clustering, Graph Matching, and Clique Finding," 2008 Eighth
+           IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 183-192,
+           doi: 10.1109/ICDM.2008.130.
+    [2] Parallel solution of SVD-related problems, with applications,
+          Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993
+    [3] S. Umeyama. An eigendecomposition approach toweighted graph matching problems.
+          IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
 
     """
     if not (isinstance(kopt, (np.int, np.int32, np.int64)) or kopt is None):

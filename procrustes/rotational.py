@@ -37,6 +37,7 @@ def rotational(
     unpad_row=False,
     check_finite=True,
     weight=None,
+    lapack_driver="gesvd"
 ):
     r"""Perform rotational Procrustes.
 
@@ -84,6 +85,9 @@ def rotational(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+    lapack_driver : {"gesvd", "gesdd"}, optional
+        Used in the singular value decomposition function from SciPy. Only allowed two options,
+        with "gesvd" being less-efficient than "gesdd" but is more robust. Default is "gesvd".
 
     Returns
     -------
@@ -159,7 +163,7 @@ def rotational(
             "Check pad, unpad_col, and unpad_row arguments."
         )
     # compute SVD of A.T * B
-    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver='gesvd')
+    u, _, vt = scipy.linalg.svd(np.dot(new_a.T, new_b), lapack_driver=lapack_driver)
     # construct S: an identity matrix with the smallest singular value replaced by sgn(|U*V^t|)
     s = np.eye(new_a.shape[1])
     s[-1, -1] = np.sign(np.linalg.det(np.dot(u, vt)))

@@ -152,8 +152,8 @@ def permutation_2sided(
         unpad_row=False,
         translate=False,
         scale=False,
-        mode="normal1",
         check_finite=True,
+        mode="normal1",
         iteration=500,
         tol=1.0e-8,
         kopt=None,
@@ -198,13 +198,13 @@ def permutation_2sided(
         If True, both arrays are normalized to one with respect to the Frobenius norm, ie
         :math:`Tr(A^T A) = 1`.
         Default=False.
+    check_finite : bool, optional
+        If true, convert the input to an array, checking for NaNs or Infs.
+        Default=True.
     mode : string, optional
         Option for choosing the initial guess methods, including "normal1",
         "normal2", "umeyama" and "umeyama_approx". "umeyama_approx" is the
         approximated umeyama method. Only used when matrices a, b are symmetric.
-    check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
-        Default=True.
     iteration : int, optional
         Maximum number for iterations. Default=500.
     tol : float, optional

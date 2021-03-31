@@ -29,7 +29,7 @@ from procrustes.utils import _zero_padding, compute_error, ProcrustesResult, set
 import scipy
 from scipy.optimize import linear_sum_assignment
 
-__all__ = ["permutation", "permutation_2sided", "permutation_2sided_explicit"]
+__all__ = ["permutation", "permutation_2sided"]
 
 
 def permutation(
@@ -152,14 +152,14 @@ def permutation_2sided(
         unpad_row=False,
         translate=False,
         scale=False,
-        mode="normal1",
         check_finite=True,
+        mode="normal1",
         iteration=500,
         tol=1.0e-8,
         kopt=None,
         weight=None
 ):
-    r"""Double sided permutation Procrustes.
+    r"""Two-sided permutation Procrustes.
 
     Parameters
     ----------
@@ -168,18 +168,17 @@ def permutation_2sided(
     b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     single : bool
-        If true, the two permutation are assumed to be the same, i.e.
-        it is the two-sided permutation Procrustes with one transformation.
-        (1). If the input matrices (adjacency matrices) are symmetric within the threshold of 1.e-5,
-        undirected graph matching algorithm will be applied.
-        (2). If the input matrices (adjacency matrices) are asymmetric, the directed graph
-        matching is applied.
+        If true, the two permutation are assumed to be the same (i.e. two-sided permutation
+        Procrustes with one transformation). Further,
+        (1) if the input matrices `a` and `b` are symmetric within the threshold of 1.e-5,
+        undirected graph matching algorithm from [1] will be applied;
+        (2) if the input matrices `a` and `b` are not symmetric, the directed graph
+        matching algorithm from [1] is applied.
         If false, the two permutation matrices can be different, i.e.
         it is the two-sided permutation Procrustes with two transformations
         (known as the regular two-sided permutation Procrustes here). An flip-flop
-        algorithm taken from  *Parallel solution of SVD-related problems, with applications,
-        Pythagoras Papadimitriou, Ph.D. Thesis, University of Manchester, 1993* is used to solve
-        the problem.
+        algorithm taken from [2] is used to iteratively solve this problem. Global optima is not
+        guaranteed here and may need to do an additional k-opt search.
         Default=True.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
@@ -198,22 +197,26 @@ def permutation_2sided(
         If True, both arrays are normalized to one with respect to the Frobenius norm, ie
         :math:`Tr(A^T A) = 1`.
         Default=False.
-    mode : string, optional
-        Option for choosing the initial guess methods, including "normal1",
-        "normal2", "umeyama" and "umeyama_approx". "umeyama_approx" is the
-        approximated umeyama method.
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
+    mode : string, optional
+        Option for choosing the initial guess when single=True and matrices a, b are
+        symmetric. This includes "normal1", "normal2", "umeyama" and "umeyama_approx".
+        Default="normal1".
     iteration : int, optional
-        Maximum number for iterations. Default=500.
+        Maximum number of iterations for updating the initial guess or for the flip-flop algorithm.
+        Default=500.
     tol : float, optional
-        The tolerance value used for updating the initial guess. Default=1.e-8.
+        The tolerance value used for updating the initial guess or for the flip-flop algorithm.
+        Default=1.e-8.
     kopt : (int, None), optional
         Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
         matrix by searching over all k-fold permutations of the rows or columns of each permutation
         matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
-        If None, then kopt search is not performed. Default=None.
+        If None, then kopt search is not performed. This search is slow when kopt is large and
+        when kopt is equal to the rows or columns of `a`, then all permutations are searched.
+         Default=None.
     weight : ndarray, optional
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
@@ -373,12 +376,24 @@ def permutation_2sided(
             -62 &  154 &  100 &  127 \\
         \end{bmatrix} \\
 
+    References
+    ----------
+    [1] C. Ding, T. Li and M. I. Jordan, "Nonnegative Matrix Factorization for Combinatorial
+          Optimization: Spectral Clustering, Graph Matching, and Clique Finding," 2008 Eighth
+           IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 183-192,
+           doi: 10.1109/ICDM.2008.130.
+    [2] Papadimitriou, Pythagoras. "Parallel solution of SVD-related problems, with applications."
+            PhD diss., University of Manchester, 1993.
+    [3] S. Umeyama. An eigendecomposition approach toweighted graph matching problems.
+          IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
+
     """
-    if not (isinstance(kopt, int) or kopt is None):
-        raise TypeError(f"kopt parameter {kopt} should be an positive integer or None.")
+    if not (isinstance(kopt, (np.int, np.int32, np.int64)) or kopt is None):
+        raise TypeError(f"Type of kopt parameter {type(kopt)} should be an positive integer "
+                        f"or None.")
 
     if not isinstance(single, bool):
-        raise TypeError(f"single parameter {single} should be a Boolean.")
+        raise TypeError(f"Type of single {type(single)} should be a Boolean.")
 
     # check inputs
     new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
@@ -520,6 +535,8 @@ def _2sided_hungarian(profit_matrix):
 
 
 def _2sided_1trans_initial_guess_normal1(array_a):
+    # This assumes that array_a has all positive entries, this guess does not match that found
+    #    in the notes/paper because it doesn't include the sign function.
     # build the empty target array
     array_c = np.zeros(array_a.shape)
     # Fill the first row of array_c with diagonal entries
@@ -548,6 +565,8 @@ def _2sided_1trans_initial_guess_normal1(array_a):
 
 
 def _2sided_1trans_initial_guess_normal2(array_a):
+    # This assumes that array_a has all positive entries, this guess does not match that found
+    #    in the notes/paper because it doesn't include the sign function.
     array_mask_a = ~np.eye(array_a.shape[0], dtype=bool)
     # array_off_diag0 is the off diagonal elements of A
     array_off_diag = array_a[array_mask_a].reshape((array_a.shape[0], array_a.shape[1] - 1))
@@ -708,78 +727,3 @@ def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
     p_opt = permutation(np.eye(p_new.shape[0]), p_new)["t"]
 
     return p_opt
-
-
-def permutation_2sided_explicit(
-    a,
-    b,
-    pad=True,
-    unpad_col=True,
-    unpad_row=True,
-    translate=False,
-    scale=False,
-    check_finite=True,
-    weight=None,
-):
-    r"""
-    Two sided permutation Procrustes by explicit method.
-
-    Parameters
-    ----------
-    a : ndarray
-        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
-    b : ndarray
-        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
-    pad : bool, optional
-        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
-    translate : bool, optional
-        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
-    scale : bool, optional
-        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
-        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
-        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
-    unpad_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
-    unpad_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
-    check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
-    weight : ndarray, optional
-        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
-        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
-        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
-
-    Returns
-    -------
-    res : ProcrustesResult
-        The Procrustes result represented as a class:`utils.ProcrustesResult` object.
-
-    Notes
-    -----
-    Given matrix :math:`\mathbf{A}_{n \times n}` and a reference
-    :math:`\mathbf{B}_{n \times n}`, find a permutation of rows/columns of
-    :math:`\mathbf{A}_{n \times n}` that makes it as close as
-    possible to :math:`\mathbf{B}_{n \times n}`. But be careful that we are
-    using a brutal way to loop over all the possible permutation matrices and
-    return the one that gives the minimum error(distance). This method can be
-    used as a checker for small dataset.
-
-    """
-    print(
-        "Warning: This brute-strength method is computational expensive! \n"
-        "But it can be used as a checker for a small dataset."
-    )
-    # check inputs
-    new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight
-    )
-    # if number of rows is less than column, the arrays are made square
-    if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
-        new_a, new_b = _zero_padding(new_a, new_b, "square")
-
-    # find permutation matrix using exhaustive k-opt heuristic search
-    objective = lambda p: compute_error(new_a, new_b, p, p.T)
-    perm, error = kopt_heuristic_single(objective, p0=np.eye(len(new_a)), k=len(new_a))
-
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)

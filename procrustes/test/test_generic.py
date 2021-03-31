@@ -55,7 +55,7 @@ def test_generic_square_lapack_driver_and_assertion_error(m):
     array_x = np.random.uniform(-2.0, 2.0, (m, m))
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    res = generic(array_a, array_b, translate=False, scale=False, lapack_driver="gesdd")
+    res = generic(array_a, array_b, translate=False, scale=False, use_svd=True)
     # check error & arrays
     assert_almost_equal(res.error, 0.0, decimal=6)
     assert_almost_equal(res.t, array_x, decimal=6)
@@ -63,7 +63,7 @@ def test_generic_square_lapack_driver_and_assertion_error(m):
     assert_almost_equal(res.new_b, array_b, decimal=6)
 
     # Check assertion error
-    assert_raises(ValueError, generic, array_a, array_b, lapack_driver="not gessdd or gesvd")
+    assert_raises(TypeError, generic, array_a, array_b, use_svd="not bool")
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(2, 100, (25, 2)))

@@ -24,7 +24,7 @@
 
 import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
-from scipy.linalg import pinv
+from scipy.linalg import pinv, pinv2
 
 
 def generic(
@@ -37,7 +37,7 @@ def generic(
     unpad_row=False,
     check_finite=True,
     weight=None,
-    lapack_driver="gesvd"
+    use_svd=False
 ):
     r"""Perform generic one-sided Procrustes.
 
@@ -83,10 +83,11 @@ def generic(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
-    lapack_driver : {"gesvd", "gesdd"}, optional
-        Used for the Morse-Penrose inverse. Only allowed two options, with "gesvd" being
-        less-efficient than "gesdd" but is more robust.
-        Default is "gesvd".
+    use_svd : bool, optional
+        If true, compute the singular value decomposition (svd) for the Morse-Penrose inverse
+        from SciPy. If false, use the least-squares implementation, which is less-efficient
+        than svd but is more robust.
+        Default is False.
 
     Returns
     -------
@@ -105,17 +106,21 @@ def generic(
     unknowns).
 
     """
+    if not isinstance(use_svd, bool):
+        raise TypeError(f"The use_svd parameter {type(use_svd)} should be type bool.")
+
     # check inputs
     new_a, new_b = setup_input_arrays(
         a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
     )
     # compute the generic solution
-    if lapack_driver == "gesvd":
-        a_inv = pinv(np.dot(new_a.T, new_a))
-    elif lapack_driver == "gesdd":
-        a_inv = np.linalg.pinv(np.dot(new_a.T, new_a), hermitian=True)
+    if use_svd:
+        # Use the singular value decomposition, much faster but less robust.
+        a_inv = pinv2(np.dot(new_a.T, new_a))
     else:
-        raise ValueError(f"The lapack_driver {lapack_driver} is not 'gesvd' or 'gesdd'.")
+        # Uses the least-squared method.
+        a_inv = pinv(np.dot(new_a.T, new_a))
+
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     # compute one-sided error
     e_opt = compute_error(new_a, new_b, array_x)

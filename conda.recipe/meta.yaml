@@ -1,5 +1,6 @@
 package:
   name: qc-procrustes
+  # version: "{{ load_setup_py_data().version }}"
   version: "0.0.1"
 
 python:

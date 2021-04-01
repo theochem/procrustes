@@ -143,7 +143,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     of the flow between the facilities and the geographical distances among various facilities.
 
     The objective function (also named loss function in machine learning) is
-    defined as [1]_
+    defined as
 
     .. math::
         E_{qap}(M, \mu, \nu) =
@@ -160,8 +160,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     constrained optimization and :math:`M_{ai} \log{M_{ai}}` servers as a
     barrier function which ensures positivity of :math:`M_{ai}`. The
     inverse temperature :math:`\beta` is a deterministic annealing
-    control parameter. More detailed information about the algorithm can be
-    referred to Rangarajan's paper and the details about the algorithm can be found at [2]_.
+    control parameter.
 
     Examples
     --------

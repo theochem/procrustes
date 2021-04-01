@@ -34,7 +34,7 @@ def get_readme():
 
 setup(
     name="qc-procrustes",
-    version="0.0.1-alpha",
+    version="0.0.1b1",
     description="Procrustes Package",
     long_description=get_readme(),
     long_description_content_type='text/markdown',

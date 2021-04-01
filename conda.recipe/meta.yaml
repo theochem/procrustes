@@ -1,7 +1,6 @@
 package:
   name: qc-procrustes
-  # version: "{{ load_setup_py_data().version }}"
-  version: "0.0.1"
+  version: "{{ load_setup_py_data().version }}"
 
 python:
   - 3.6
@@ -35,10 +34,10 @@ requirements:
 about:
   summary: "Finding the optimal transformation(s) that makes two matrices as close as possible to each other."
   description: |
-  This package supports general, generic, orthogonal, rotation, permutation, and
-  symmetric Procrustes problems, including both the normal one-sided approach and (for orthogonal
-  and permutation Procrustes) two-sided approaches, where both the rows and columns are transformed.
-  Softassign algorithm is also implemented to solve two-sided permutation Procrustes.
+    This package supports general, generic, orthogonal, rotation, permutation, and
+    symmetric Procrustes problems, including both the normal one-sided approach and (for orthogonal
+    and permutation Procrustes) two-sided approaches, where both the rows and columns are
+    transformed. Softassign algorithm is also implemented to solve two-sided permutation Procrustes.
   home: https://procrustes.readthedocs.io/en/latest/
   doc_url: https://iodata.readthedocs.io/en/latest/
   dev_url: https://github.com/theochem/procrustes/

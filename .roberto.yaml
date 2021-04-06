@@ -7,6 +7,14 @@ project:
       tools:
         - write-py-version
         # - cardboardlint-static
+        - build-py-inplace
+        - pytest
+        # - upload-codecov
+        # - cardboardlint-dynamic
         # - build-sphinx-doc
         # - upload-docs-gh
-        - pytest
+        - build-py-source
+        # - build-conda
+        # - deploy-pypi
+        # - deploy-conda
+        # - deploy-github

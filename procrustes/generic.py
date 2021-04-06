@@ -84,10 +84,11 @@ def generic(
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
     use_svd : bool, optional
-        If true, compute the singular value decomposition (svd) for the Morse-Penrose inverse
-        from SciPy. If false, use the least-squares implementation, which is less-efficient
-        than svd but is more robust.
-        Default is False.
+        If True, the (Moore-Penrose) pseudo-inverse is computed by singular-value decomposition
+        (SVD) including all 'large' singular values (using scipy.linalg.pinv2).
+        If False, the the (Moore-Penrose) pseudo-inverse is computed by least-squares solver
+        (using scipy.linalg.pinv). The least-squares implementation is less efficient, but more robust,
+        than SVD implementation.
 
     Returns
     -------

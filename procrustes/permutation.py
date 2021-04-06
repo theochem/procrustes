@@ -157,7 +157,8 @@ def permutation_2sided(
         iteration=500,
         tol=1.0e-8,
         kopt=None,
-        weight=None
+        weight=None,
+        lapack_driver="gesvd"
 ):
     r"""Two-sided permutation Procrustes.
 
@@ -221,6 +222,10 @@ def permutation_2sided(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+    lapack_driver : {'gesvd', 'gesdd'}, optional
+        Whether to use the more efficient divide-and-conquer approach ('gesdd') or the more robust
+        general rectangular approach ('gesvd') to compute the singular-value decomposition with
+        `scipy.linalg.svd`.
 
     Returns
     -------
@@ -422,7 +427,8 @@ def permutation_2sided(
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive, mode)
+            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive, mode,
+                                                          lapack_driver)
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive, guess, tol, iteration)
         # algorithm for directed graph matching problem
@@ -620,11 +626,11 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b):
     return array_u
 
 
-def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b):
+def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, lapack_driver):
     # compute U_umeyama
     array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
     # calculate the approximated umeyama matrix
-    array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver='gesvd')
+    array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver=lapack_driver)
     u_approx = np.dot(np.abs(array_ua), np.abs(array_vta))
     # compute closest unitary transformation to U
     # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
@@ -646,7 +652,7 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     return array_u
 
 
-def _guess_initial_permutation_undirected(array_a, array_b, mode):
+def _guess_initial_permutation_undirected(array_a, array_b, mode, lapack_driver):
     mode = mode.lower()
     if mode == "normal1":
         tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
@@ -659,7 +665,7 @@ def _guess_initial_permutation_undirected(array_a, array_b, mode):
     elif mode == "umeyama":
         array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
     elif mode == "umeyama_approx":
-        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b)
+        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, lapack_driver)
     else:
         raise ValueError(
             """

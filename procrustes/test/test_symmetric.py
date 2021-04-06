@@ -154,3 +154,17 @@ def test_fat_rectangular_matrices_with_square_padding(nrow):
     # check results (solution is not uniqueness)
     assert_almost_equal(np.abs(res.error - desired_func), 0.0, decimal=5)
     assert_equal(res.s, None)
+
+
+@pytest.mark.parametrize("nrow", np.random.randint(2, 15, (3,)))
+def test_fat_rectangular_matrices_with_square_padding_with_lapack_driver(nrow):
+    r"""Test Symmetric Procrustes with random wide matrices and non-default lapack driver."""
+    # generate random rectangular matrices
+    ncol = np.random.randint(nrow + 1, nrow + 10)
+    array_a, array_b = np.random.random((nrow, ncol)), np.random.random((nrow, ncol))
+    # minimize objective function to find transformation matrix
+    _, desired_func = minimize_one_transformation(array_a, array_b, ncol)
+    res = symmetric(array_a, array_b, pad=True, lapack_driver="gesdd")
+    # check results (solution is not uniqueness)
+    assert_almost_equal(np.abs(res.error - desired_func), 0.0, decimal=5)
+    assert_equal(res.s, None)

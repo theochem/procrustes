@@ -23,7 +23,7 @@
 """Test procrustes.generic module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_raises
 from procrustes.generic import generic
 import pytest
 
@@ -41,10 +41,29 @@ def test_generic_square(m):
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
     # check error & arrays
-    assert_almost_equal(res["error"], 0.0, decimal=6)
-    assert_almost_equal(res["t"], array_x, decimal=6)
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
+    assert_almost_equal(res.t, array_x, decimal=6)
+    assert_almost_equal(res.new_a, array_a, decimal=6)
+    assert_almost_equal(res.new_b, array_b, decimal=6)
+
+
+@pytest.mark.parametrize("m", np.random.randint(2, 100, 25))
+def test_generic_square_lapack_driver_and_assertion_error(m):
+    r"""Test generic Procrustes with random and non-default lapack driver with assertion error."""
+    # random input & transformation arrays (size=mxm)
+    array_a = np.random.uniform(-2.0, 2.0, (m, m))
+    array_x = np.random.uniform(-2.0, 2.0, (m, m))
+    array_b = np.dot(array_a, array_x)
+    # compute procrustes transformation
+    res = generic(array_a, array_b, translate=False, scale=False, use_svd=True)
+    # check error & arrays
+    assert_almost_equal(res.error, 0.0, decimal=6)
+    assert_almost_equal(res.t, array_x, decimal=6)
+    assert_almost_equal(res.new_a, array_a, decimal=6)
+    assert_almost_equal(res.new_b, array_b, decimal=6)
+
+    # Check assertion error
+    assert_raises(TypeError, generic, array_a, array_b, use_svd="not bool")
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(2, 100, (25, 2)))
@@ -57,12 +76,12 @@ def test_generic_rectangular(m, n):
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=False)
     # check error & arrays
-    assert_almost_equal(res["error"], 0.0, decimal=6)
-    assert_almost_equal(res["new_a"], array_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
+    assert_almost_equal(res.new_a, array_a, decimal=6)
+    assert_almost_equal(res.new_b, array_b, decimal=6)
     # check transformation array, only if it is unique
     if m >= n:
-        assert_almost_equal(res["t"], array_x, decimal=6)
+        assert_almost_equal(res.t, array_x, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(100, 300, (5, 2)))
@@ -76,9 +95,9 @@ def test_generic_rectangular_translate(m, n):
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=True, scale=False)
     # check error & arrays
-    assert_almost_equal(res["error"], 0.0, decimal=6)
-    assert_almost_equal(res["new_a"], array_a - np.mean(array_a, axis=0), decimal=6)
-    assert_almost_equal(res["new_b"], array_b - np.mean(array_b, axis=0), decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
+    assert_almost_equal(res.new_a, array_a - np.mean(array_a, axis=0), decimal=6)
+    assert_almost_equal(res.new_b, array_b - np.mean(array_b, axis=0), decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(200, 400, (10, 2)))
@@ -91,14 +110,14 @@ def test_generic_rectangular_scale(m, n):
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=False, scale=True)
     # check error & arrays
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
     norm_a = np.linalg.norm(array_a)
     norm_b = np.linalg.norm(array_b)
-    assert_almost_equal(res["new_a"], array_a / norm_a, decimal=6)
-    assert_almost_equal(res["new_b"], array_b / norm_b, decimal=6)
+    assert_almost_equal(res.new_a, array_a / norm_a, decimal=6)
+    assert_almost_equal(res.new_b, array_b / norm_b, decimal=6)
     # check transformation array, only if it is unique
     if m >= n:
-        assert_almost_equal(res["t"], array_x * norm_a / norm_b, decimal=6)
+        assert_almost_equal(res.t, array_x * norm_a / norm_b, decimal=6)
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))
@@ -111,8 +130,8 @@ def test_generic_rectangular_translate_scale(m, n):
     # compute procrustes transformation
     res = generic(array_a, array_b, translate=True, scale=True)
     # check error & arrays
-    assert_almost_equal(res["error"], 0.0, decimal=6)
+    assert_almost_equal(res.error, 0.0, decimal=6)
     centered_a = array_a - np.mean(array_a, axis=0)
     centered_b = array_b - np.mean(array_b, axis=0)
-    assert_almost_equal(res["new_a"], centered_a / np.linalg.norm(centered_a), decimal=6)
-    assert_almost_equal(res["new_b"], centered_b / np.linalg.norm(centered_b), decimal=6)
+    assert_almost_equal(res.new_a, centered_a / np.linalg.norm(centered_a), decimal=6)
+    assert_almost_equal(res.new_b, centered_b / np.linalg.norm(centered_b), decimal=6)

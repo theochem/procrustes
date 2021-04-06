@@ -38,6 +38,7 @@ def symmetric(
     unpad_row=False,
     check_finite=True,
     weight=None,
+    lapack_driver="gesvd"
 ):
     r"""Perform symmetric Procrustes.
 
@@ -86,6 +87,10 @@ def symmetric(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+    lapack_driver : {'gesvd', 'gesdd'}, optional
+        Whether to use the more efficient divide-and-conquer approach ('gesdd') or the more robust
+        general rectangular approach ('gesvd') to compute the singular-value decomposition with
+        `scipy.linalg.svd`.
 
     Returns
     -------
@@ -170,7 +175,7 @@ def symmetric(
     #     raise ValueError(f"Shape of B {new_b.shape}=(m, n) needs to satisfy m >= n.")
 
     # compute SVD of A & matrix C
-    u, s, vt = scipy.linalg.svd(new_a, lapack_driver='gesvd')
+    u, s, vt = scipy.linalg.svd(new_a, lapack_driver=lapack_driver)
     c = np.dot(np.dot(u.T, new_b), vt.T)
 
     # compute intermediate matrix Y

@@ -68,6 +68,21 @@ def test_procrustes_rotation_square(n):
 
 
 @pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
+def test_procrustes_rotation_square_lapack_driver(n):
+    r"""Test orthogonal Procrustes with squared array with non-default lapack_driver."""
+    # square array
+    array_a = np.random.uniform(-10.0, 10.0, (n, n))
+    # rotation by 90 degree
+    ortho_arr = ortho_group.rvs(n)
+    array_b = array_a.dot(ortho_arr)
+    res = orthogonal(array_a, array_b, lapack_driver="gesdd")
+    assert_almost_equal(res.error, 0., decimal=6)
+    assert_almost_equal(res.t.dot(res.t.T), np.eye(n), decimal=6)
+    assert_almost_equal(res.t, ortho_arr)
+    assert_equal(res.s, None)
+
+
+@pytest.mark.parametrize("n", np.random.randint(50, 100, (25,)))
 def test_procrustes_reflection_square(n):
     r"""Test orthogonal Procrustes with reflected squared array."""
     # square array
@@ -212,6 +227,24 @@ def test_two_sided_orthogonal_rotate_reflect(m, n):
     array_b = np.dot(np.dot(ref, array_a), rot)
     # compute procrustes transformation
     result = orthogonal_2sided(array_a, array_b, single_transform=False)
+    # check transformation array orthogonality
+    assert_almost_equal(np.dot(result.s, result.s.T), np.eye(m), decimal=6)
+    assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=6)
+    assert_almost_equal(result.error, 0, decimal=6)
+
+
+@pytest.mark.parametrize("m, n", np.random.randint(50, 100, (25, 2)))
+def test_two_sided_orthogonal_rotate_reflect_lapack_driver(m, n):
+    r"""Test two sided orthogonal with rotation, reflection and non-default lapack driver."""
+    # define an arbitrary array
+    array_a = np.random.uniform(-10.0, 10.0, (m, n))
+    # define rotation and reflection arrays
+    rot = ortho_group.rvs(n)
+    ref = generate_random_reflection_matrix(m)
+    # define array_b by transforming array_a
+    array_b = np.dot(np.dot(ref, array_a), rot)
+    # compute procrustes transformation
+    result = orthogonal_2sided(array_a, array_b, single_transform=False, lapack_driver="gesvd")
     # check transformation array orthogonality
     assert_almost_equal(np.dot(result.s, result.s.T), np.eye(m), decimal=6)
     assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=6)

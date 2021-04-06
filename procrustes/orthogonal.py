@@ -92,9 +92,10 @@ def orthogonal(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
-    lapack_driver : {"gesvd", "gesdd"}, optional
-        Used in the singular value decomposition function from SciPy. Only allowed two options,
-        with "gesvd" being less-efficient than "gesdd" but is more robust. Default is "gesvd".
+    lapack_driver : {'gesvd', 'gesdd'}, optional
+        Whether to use the more efficient divide-and-conquer approach ('gesdd') or the more robust
+        general rectangular approach ('gesvd') to compute the singular-value decomposition with
+        `scipy.linalg.svd`.
 
     Returns
     -------

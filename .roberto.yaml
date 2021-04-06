@@ -15,6 +15,6 @@ project:
         # - upload-docs-gh
         - build-py-source
         # - build-conda
-        # - deploy-pypi
+        - deploy-pypi
         # - deploy-conda
         # - deploy-github

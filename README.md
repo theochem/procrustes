@@ -45,8 +45,8 @@ first, and then:
 
 ```bash
     # Create and activate myenv conda environment (optional, but recommended)
-    conda create -n myenv
-    source activate myenv
+    conda create -n myenv python=3.6
+    conda activate myenv
 
     # Install the stable release.
     conda install -c theochem procrustes

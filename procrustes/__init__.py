@@ -23,6 +23,12 @@
 """Package for Various Procrustes Algorithms."""
 
 
+try:
+    from ._version import __version__
+except ImportError:
+    __version__ = "0.0.0.post0"
+
+
 from procrustes.utils import *
 from procrustes.kopt import *
 from procrustes.orthogonal import *

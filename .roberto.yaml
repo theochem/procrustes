@@ -1,0 +1,12 @@
+absolute: true  # Force absolute comparison for cardboardlint
+project:
+  name: procrustes
+  # requirements: [[numpydoc, numpydoc], [sphinx-autoapi, sphinx-autoapi], [sphinxcontrib-bibtex, sphinxcontrib-bibtex]]
+  packages:
+    - dist_name: qc-procrustes
+      tools:
+        - write-py-version
+        # - cardboardlint-static
+        # - build-sphinx-doc
+        # - upload-docs-gh
+        - pytest

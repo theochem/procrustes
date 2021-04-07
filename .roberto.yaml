@@ -14,7 +14,7 @@ project:
         # - build-sphinx-doc
         # - upload-docs-gh
         # - build-py-source
-        # - build-conda
+        - build-conda
         # - deploy-pypi
         # - deploy-conda
         # - deploy-github

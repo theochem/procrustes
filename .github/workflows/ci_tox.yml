@@ -1,4 +1,4 @@
-name: Test CI
+name: CI Tox
 on:
     push:
         # branches: [master, tox]

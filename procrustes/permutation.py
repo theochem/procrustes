@@ -412,7 +412,7 @@ def permutation_2sided(
     # -------------------------------------------------------
     if not single:
         # compute permutations using flip-flop algorithm
-        perm1, perm2, error = _2sided_permutation_flipflop(new_a, new_b, tol, iteration)
+        perm1, perm2, error = _compute_permutation_flipflop(new_a, new_b, tol, iteration)
 
         # apply k-opt heuristic search to find better local minimum permutations
         if kopt is not None:
@@ -460,77 +460,63 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=None)
 
 
-def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
-    # Regular two-sided permutation Procrustes
-    # :math:` {\(\vert M-PNQ \vert\)}^2_F`
-    # taken from page 64 in
-    # parallel solution of svd-related problems, with applications
+def _compute_permutation_flipflop(m, n, tol, max_iter):
+    # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
+    # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993
 
-    # Fix P = I first
-    # Initial guess for P
-    array_p1 = np.eye(array_m.shape[0], array_m.shape[0])
-    # Initial guess for Q
-    array_q1 = _compute_permutation_hungarian(np.dot(array_n.T, array_m))
-    error1 = compute_error(array_n, array_m, array_q1, array_p1)
-    step1 = 0
+    # initial guesses: set P1 to identity and compute Q1 using 1-sided permutation procrustes
+    # where A=N (note that P1=I), B=M, & cost = A.T B
+    p1 = np.eye(m.shape[0])
+    q1 = _compute_permutation_hungarian(np.dot(n.T, m))
+    # compute initial error1 = |(P1)N(Q1) - M|
+    error1 = compute_error(n, m, q1, p1)
 
-    # while loop for the original algorithm
-    while error1 > tol and step1 < iteration:
-        step1 += 1
-        # Update P
-        array_p1 = _compute_permutation_hungarian(np.dot(np.dot(array_n, array_q1), array_m.T))
-        array_p1 = np.transpose(array_p1)
-        # Update the error
-        error1 = compute_error(array_n, array_m, array_q1, array_p1)
-        if error1 > tol:
-            # Update Q
-            array_q1 = _compute_permutation_hungarian(
-                np.dot(np.dot(array_n.T, array_p1.T), array_m))
-            # Update the error
-            error1 = compute_error(array_n, array_m, array_q1, array_p1)
-        else:
+    step = 0
+    while error1 > tol and step < max_iter:
+        step += 1
+        # update P1 using 1-sided permutation procrustes where A=(NQ1).T, B=M.T, & cost = A.T B
+        # 1-sided procrustes finds the right-hand-side transformation T, so to solve for P1, one
+        # needs to minimize |Q.T N.T P.T - M.T| which is the same as original objective function.
+        p1 = _compute_permutation_hungarian(np.dot(np.dot(n, q1), m.T)).T
+        # update error1 & exit while loop if converged
+        error1 = compute_error(n, m, q1, p1)
+        if error1 < tol:
             break
+        # update Q1 using 1-sided permutation procrustes where A=(P1N).T, B=M, & cost = A.T B
+        q1 = _compute_permutation_hungarian(np.dot(np.dot(n.T, p1.T), m))
+        error1 = compute_error(n, m, q1, p1)
 
-        if step1 == iteration:
-            print("Maximum iteration reached in the first case! Error={0}".format(error1))
+    if step == max_iter:
+        print(f"Maximum iteration reached in the first case! error={error1} & tolerance={tol}")
 
-    # Fix Q = I first
-    # Initial guess for Q
-    array_q2 = np.eye(array_m.shape[1], array_m.shape[1])
-    # Initial guess for P
-    array_p2 = _compute_permutation_hungarian(np.dot(array_n, array_m.T))
-    array_p2 = np.transpose(array_p2)
-    error2 = compute_error(array_n, array_m, array_q2, array_p2)
-    step2 = 0
+    # initial guesses: set Q2 to identity and compute P2 using 1-sided permutation procrustes
+    # where A=N.T (note that Q2=I), B=M.T, & cost = A.T B
+    q2 = np.eye(m.shape[1])
+    p2 = _compute_permutation_hungarian(np.dot(n, m.T)).T
+    # compute initial error2 = |(P2)N(Q2) - M|
+    error2 = compute_error(n, m, q2, p2)
 
-    # while loop for the original algorithm
-    while error2 > tol and step2 < iteration:
-        # Update Q
-        array_q2 = _compute_permutation_hungarian(np.dot(np.dot(array_n.T, array_p2.T), array_m))
-        # Update the error
-        error2 = compute_error(array_n, array_m, array_q1, array_p2)
-        if error2 > tol:
-            array_p2 = _compute_permutation_hungarian(np.dot(np.dot(array_n, array_q2), array_m.T))
-            array_p2 = np.transpose(array_p2)
-            # Update the error
-            error2 = compute_error(array_n, array_m, array_q2, array_p2)
-            step2 += 1
-        else:
+    step = 0
+    while error2 > tol and step < max_iter:
+        step += 1
+        # update Q2 using 1-sided permutation procrustes where A=(P2N), B=M, & cost = A.T B
+        q2 = _compute_permutation_hungarian(np.dot(np.dot(n.T, p2.T), m))
+        # update the error2 & exit while loop if converged
+        error2 = compute_error(n, m, q1, p2)
+        if error2 < tol:
             break
-        if step2 == iteration:
-            print("Maximum iteration reached in the second case! Error={0}".format(error2))
+        # update P2 using 1-sided permutation procrustes where A=(NQ2).T, B=M.T, & cost = A.T B
+        p2 = _compute_permutation_hungarian(np.dot(np.dot(n, q2), m.T)).T
+        error2 = compute_error(n, m, q2, p2)
 
+    if step == max_iter:
+        print(f"Maximum iteration reached in the second case! error={error2} & tolerance={tol}")
+
+    # return permutations corresponding to the lowest error
     if error1 <= error2:
-        array_p = array_p1
-        array_q = array_q1
-        error = error1
-    else:
-        array_p = array_p2
-        array_q = array_q2
-        error = error2
-
-    return array_p, array_q, error
+        return p1, q1, error1
+    return p2, q2, error2
 
 
 def _compute_permutation_hungarian(cost_matrix):

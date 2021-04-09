@@ -161,7 +161,7 @@ def orthogonal(
 def orthogonal_2sided(
     a,
     b,
-    single_transform=True,
+    single=True,
     pad=True,
     translate=False,
     scale=False,
@@ -208,8 +208,9 @@ def orthogonal_2sided(
         The 2d-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
         The 2d-array :math:`\mathbf{B}` representing the reference matrix.
-    single_transform : bool, optional
-        If True, one transformation is used, otherwise, two transformations are used.
+    single : bool, optional
+        If True, single transformation is used (i.e., :math:`\mathbf{Q}_1=\mathbf{Q}_2=\mathbf{Q}`),
+        otherwise, two transformations are used.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
@@ -311,7 +312,7 @@ def orthogonal_2sided(
     ...               [ -0.58896768, 16.77132475,  0.24289990, 0., 0.],
     ...               [-43.00635291,  0.2428999 , 89.44735687, 0., 0.],
     ...               [  0.        ,  0.        ,  0.        , 0., 0.]])
-    >>> res = orthogonal_2sided(a,b,single_transform=True,pad=True,unpad_col=True)
+    >>> res = orthogonal_2sided(a, b, single=True, pad=True, unpad_col=True)
     >>> res.t
     array([[ 0.25116633,  0.76371527,  0.59468855],
            [-0.95144277,  0.08183302,  0.29674906],
@@ -333,7 +334,7 @@ def orthogonal_2sided(
     )
 
     # check symmetry if single_transform=True
-    if single_transform:
+    if single:
         if not np.allclose(new_a.T, new_a):
             raise ValueError(
                 f"Array A with {new_a.shape} shape is not symmetric. "
@@ -345,8 +346,8 @@ def orthogonal_2sided(
                 "Check pad, remove_zero_col, and remove_zero_row arguments."
             )
 
-    if single_transform:
-        # two-sided orthogonal Procrustes with one-transformations
+    # two-sided orthogonal Procrustes with one-transformations
+    if single:
         _, ua = np.linalg.eigh(new_a)
         _, ub = np.linalg.eigh(new_b)
         u_opt = np.dot(ua, ub.T)

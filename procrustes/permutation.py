@@ -132,11 +132,8 @@ def permutation(
 
     # compute cost matrix C = A.T B
     c = np.dot(new_a.T, new_b)
-    # solve linear sum assignment problem to get the row/column indices of optimal assignment
-    row_ind, col_ind = linear_sum_assignment(c, maximize=True)
-    # make the permutation matric by setting the corresponding elements to 1
-    p = np.zeros(c.shape)
-    p[(row_ind, col_ind)] = 1
+    # compute permutation matrix using Hungarian algorithm
+    p = _compute_permutation_hungarian(c)
     # compute one-sided permutation error
     error = compute_error(new_a, new_b, p)
 

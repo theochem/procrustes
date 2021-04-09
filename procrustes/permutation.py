@@ -411,16 +411,20 @@ def permutation_2sided(
                 "Check pad, unpad_col, and unpad_row arguments."
             )
 
-    # Do single-transformation computation if requested
+    # 2-sided permutation Procrustes with single transformation
     if single:
-        # The update formula for _compute_transform and _compute_transform_directed takes
-        #   the square root of the matrix entries. To avoid taking the square root of negative
-        #   values and dealing with complex numbers, the matrices are translated to be
-        #   positive. This causes no change to the objective function, as it's a constant value
-        #   being added to all entries of a and b.
-        maximum = max(np.amax(np.abs(new_a)), np.amax(np.abs(new_b)))
-        new_a_positive = new_a.astype(np.float) + maximum
-        new_b_positive = new_b.astype(np.float) + maximum
+        # The (un)directed iterative procedure for finding the permutation matrix takes the square
+        # root of the matrix entries, which can result in complex numbers if the entries are
+        # negative. To avoid this, all matrix entries are shifted (by the smallest amount) to be
+        # positive. This causes no change to the objective function, as it's a constant value
+        # being added to all entries of a and b.
+        shift = 1.0e-6
+        if np.min(new_a) < 0 or np.min(new_b) < 0:
+            shift += abs(min(np.min(new_a), np.min(new_b)))
+        # shift is a float, so even if new_a or new_b are ints, the positive matrices are floats
+        # default shift is not zero to avoid division by zero later in the algorithm
+        new_a_positive = new_a + shift
+        new_b_positive = new_b + shift
 
         # algorithm for undirected graph matching problem
         # check if two matrices are symmetric within a relative tolerance and absolute tolerance.

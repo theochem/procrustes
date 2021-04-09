@@ -520,16 +520,16 @@ def _compute_permutation_hungarian(cost_matrix):
     return perm
 
 
-def _guess_permutation_2sided_1trans_normal1(array_a):
+def _guess_permutation_2sided_1trans_normal1(a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     # build the empty target array
-    array_c = np.zeros(array_a.shape)
+    array_c = np.zeros(a.shape)
     # Fill the first row of array_c with diagonal entries
-    array_c[0, :] = array_a.diagonal()
-    array_mask = ~np.eye(array_a.shape[0], dtype=bool)
+    array_c[0, :] = a.diagonal()
+    array_mask = ~np.eye(a.shape[0], dtype=bool)
     # get all the non-diagonal element
-    array_c_non_diag = (array_a[array_mask]).T.reshape(array_a.shape[0], array_a.shape[1] - 1)
+    array_c_non_diag = (a[array_mask]).T.reshape(a.shape[0], a.shape[1] - 1)
     array_c_non_diag = array_c_non_diag[
         np.arange(np.shape(array_c_non_diag)[0])[:, np.newaxis],
         np.argsort(abs(array_c_non_diag))]
@@ -539,10 +539,10 @@ def _guess_permutation_2sided_1trans_normal1(array_a):
     # fill the array_c with array_c_sorted
     array_c[1:, :] = array_c_sorted
     # the weight matrix
-    weight_c = np.zeros(array_a.shape)
+    weight_c = np.zeros(a.shape)
     weight_p = np.power(2, -0.5)
 
-    for weight in range(array_a.shape[0]):
+    for weight in range(a.shape[0]):
         weight_c[weight, :] = np.power(weight_p, weight)
     # build the new matrix array_new
     array_new = np.multiply(array_c, weight_c)
@@ -550,12 +550,12 @@ def _guess_permutation_2sided_1trans_normal1(array_a):
     return array_new
 
 
-def _guess_initial_2sided_1trans_normal2(array_a):
+def _guess_initial_2sided_1trans_normal2(a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
-    array_mask_a = ~np.eye(array_a.shape[0], dtype=bool)
+    array_mask_a = ~np.eye(a.shape[0], dtype=bool)
     # array_off_diag0 is the off diagonal elements of A
-    array_off_diag = array_a[array_mask_a].reshape((array_a.shape[0], array_a.shape[1] - 1))
+    array_off_diag = a[array_mask_a].reshape((a.shape[0], a.shape[1] - 1))
     # array_off_diag1 is sorted off diagonal elements of A
     array_off_diag = array_off_diag[np.arange(np.shape(array_off_diag)[0])[
                                     :, np.newaxis], np.argsort(
@@ -564,25 +564,24 @@ def _guess_initial_2sided_1trans_normal2(array_a):
 
     # array_c is newly built matrix B without weights
     # build array_c with the expected shape
-    col_num_new = array_a.shape[0] * 2 - 1
-    array_c = np.zeros((col_num_new, array_a.shape[1]))
-    array_c[0, :] = array_a.diagonal()
+    col_num_new = a.shape[0] * 2 - 1
+    array_c = np.zeros((col_num_new, a.shape[1]))
+    array_c[0, :] = a.diagonal()
 
     # use inf to represent the diagonal element
-    a_inf = array_a - np.diag(np.diag(array_a)) + np.diag([-np.inf] * array_a.shape[0])
+    a_inf = a - np.diag(np.diag(a)) + np.diag([-np.inf] * a.shape[0])
     index_inf = np.argsort(-np.abs(a_inf), axis=1)
 
     # the weight matrix
     weight_p = np.power(2, -0.5)
-    weight_c = np.zeros((col_num_new, array_a.shape[1]))
+    weight_c = np.zeros((col_num_new, a.shape[1]))
     weight_c[0, :] = np.power(weight_p, 0)
 
-    for index_col in range(1, array_a.shape[0]):
+    for index_col in range(1, a.shape[0]):
         # the index_col*2 row of array_c
         array_c[index_col * 2, :] = array_off_diag[index_col - 1, :]
         # the index_col*2-1 row of array_c
-        array_c[index_col * 2 - 1, :] = array_a[index_inf[:, index_col],
-                                                index_inf[:, index_col]]
+        array_c[index_col * 2 - 1, :] = a[index_inf[:, index_col], index_inf[:, index_col]]
 
         # the index_col*2 row of weight_c
         weight_c[index_col * 2, :] = np.power(weight_p, index_col)
@@ -594,67 +593,60 @@ def _guess_initial_2sided_1trans_normal2(array_a):
     return array_new
 
 
-def _guess_permutation_2sided_1trans_umeyama(array_a, array_b):
-    # calculate the eigenvalue decomposition of A and B
-    _, array_ua = np.linalg.eigh(array_a)
-    _, array_ub = np.linalg.eigh(array_b)
-    # compute U_umeyama
-    array_u = np.dot(np.abs(array_ua), np.abs(array_ub.T))
-    # compute closest permutation matrix to U
-    # In the original paper, it"s not like this
-    # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
-    return array_u
+def _guess_permutation_2sided_1trans_umeyama(a, b):
+    # calculate normalized eigenvectors of A & B
+    _, ua = np.linalg.eigh(a)
+    _, ub = np.linalg.eigh(b)
+    # compute Umeyama
+    perm = np.dot(np.abs(ua), np.abs(ub.T))
+    return perm
 
 
-def _guess_permutation_2sided_1trans_umeyama_approx(array_a, array_b, lapack_driver):
+def _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver):
     # compute U_umeyama
-    array_u = _guess_permutation_2sided_1trans_umeyama(array_a, array_b)
+    perm = _guess_permutation_2sided_1trans_umeyama(a, b)
     # calculate the approximated umeyama matrix
-    array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver=lapack_driver)
-    u_approx = np.dot(np.abs(array_ua), np.abs(array_vta))
-    # compute closest unitary transformation to U
-    # _, _, U, _ = permutation(np.eye(U.shape[0], dtype=U.dtype), U)
-    return u_approx
+    u, _, vt = scipy.linalg.svd(perm, lapack_driver=lapack_driver)
+    perm_approx = np.dot(np.abs(u), np.abs(vt))
+    return perm_approx
 
 
-def _guess_permutation_2sided_1trans_directed(array_a, array_b):
+def _guess_permutation_2sided_1trans_directed(a, b):
     # Build two new hermitian matrices
-    a_0 = (array_a + array_a.T) * 0.5 + (array_a - array_a.T) * 0.5 * 1j
-    b_0 = (array_b + array_b.T) * 0.5 + (array_b - array_b.T) * 0.5 * 1j
+    a_0 = (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
+    b_0 = (b + b.T) * 0.5 + (b - b.T) * 0.5 * 1j
 
     _, ua_0 = np.linalg.eigh(a_0)
     _, ub_0 = np.linalg.eigh(b_0)
     # Compute the magnitudes of each element
-    array_ua = np.sqrt(np.imag(ua_0) ** 2 + np.real(ua_0) ** 2)
-    array_ub = np.sqrt(np.imag(ub_0) ** 2 + np.real(ub_0) ** 2)
+    ua = np.sqrt(np.imag(ua_0) ** 2 + np.real(ua_0) ** 2)
+    ub = np.sqrt(np.imag(ub_0) ** 2 + np.real(ub_0) ** 2)
     # compute the initial guess
-    array_u = np.dot(array_ua, array_ub.T)
-    return array_u
+    perm = np.dot(ua, ub.T)
+    return perm
 
 
-def _guess_permutation_undirected(array_a, array_b, guess, lapack_driver):
-    guess = guess.lower()
-    if guess == "normal1":
-        tmp_a = _guess_permutation_2sided_1trans_normal1(array_a)
-        tmp_b = _guess_permutation_2sided_1trans_normal1(array_b)
-        array_u = permutation(tmp_a, tmp_b)["t"]
-    elif guess == "normal2":
-        tmp_a = _guess_initial_2sided_1trans_normal2(array_a)
-        tmp_b = _guess_initial_2sided_1trans_normal2(array_b)
-        array_u = permutation(tmp_a, tmp_b)["t"]
-    elif guess == "umeyama":
-        array_u = _guess_permutation_2sided_1trans_umeyama(array_a, array_b)
-    elif guess == "umeyama_approx":
-        array_u = _guess_permutation_2sided_1trans_umeyama_approx(array_a, array_b, lapack_driver)
+def _guess_permutation_undirected(a, b, guess, lapack_driver):
+
+    if guess.lower() == "normal1":
+        tmp_a = _guess_permutation_2sided_1trans_normal1(a)
+        tmp_b = _guess_permutation_2sided_1trans_normal1(b)
+        perm = permutation(tmp_a, tmp_b)["t"]
+    elif guess.lower() == "normal2":
+        tmp_a = _guess_initial_2sided_1trans_normal2(a)
+        tmp_b = _guess_initial_2sided_1trans_normal2(b)
+        perm = permutation(tmp_a, tmp_b)["t"]
+    elif guess.lower() == "umeyama":
+        perm = _guess_permutation_2sided_1trans_umeyama(a, b)
+    elif guess.lower() == "umeyama_approx":
+        perm = _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver)
     else:
-        raise ValueError(
-            """
-            Invalid mode argument, use "normal1", "normal2", "umeyama" or "umeyama_approx".
-            """)
-    return array_u
+        raise ValueError(f"Argument guess={guess.lower()} is invalid! "
+                         f"Options: 'normal1', 'normal2', 'umeyama', 'umeyama_approx'")
+    return perm
 
 
-def _compute_permutation_undirected(array_a, array_b, guess, tol, iteration):
+def _compute_permutation_undirected(a, b, guess, tol, iteration):
     """Solve for 2-sided permutation Procrustes with 1-transformation when A & B are symmetric."""
 
     p_old = guess
@@ -663,12 +655,11 @@ def _compute_permutation_undirected(array_a, array_b, guess, tol, iteration):
 
     while change > tol and step < iteration:
         # compute alpha matrix
-        temp = np.dot(array_a, np.dot(p_old, array_b))
+        temp = np.dot(a, np.dot(p_old, b))
         alpha = np.dot(p_old.T, temp)
         alpha = (alpha + alpha.T) / 2
-        # compute new permutation matrix
+        # compute new permutation matrix & change
         p_new = p_old * np.sqrt(temp / np.dot(p_old, alpha))
-        # compute change
         change = np.trace(np.dot((p_new - p_old).T, (p_new - p_old)))
         # update permutation matrix
         p_old = p_new
@@ -703,9 +694,8 @@ def _compute_permutation_directed(a, b, guess, tol, iteration):
         tmp1 = np.dot(a, np.dot(p_old, b.T))
         tmp2 = np.dot(a.T, np.dot(p_old, b))
         alpha = 0.25 * np.dot(p_old.T, tmp1 + tmp2) + np.dot((tmp1 + tmp2).T, p_old)
-        # compute new permutation matrix
+        # compute new permutation matrix & change
         p_new = p_old * np.sqrt((tmp1 + tmp2) / (2 * np.dot(p_old, alpha)))
-        # compute change
         change = np.trace(np.dot((p_new - p_old).T, (p_new - p_old)))
         # update permutation matrix
         p_old = p_new

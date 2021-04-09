@@ -198,7 +198,7 @@ def test_2sided_1trans_initial_guess_umeyama():
                           [0.991, 0.524, 0.892, 0.601],
                           [0.520, 0.931, 0.846, 0.618]])
     # U = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
-    array_u = _guess_permutation_2sided_1trans_umeyama(array_a=array_b, array_b=array_a)
+    array_u = _guess_permutation_2sided_1trans_umeyama(a=array_b, b=array_a)
     # Check
     assert_almost_equal(u_umeyama, array_u, decimal=3)
 

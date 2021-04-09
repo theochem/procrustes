@@ -474,7 +474,7 @@ def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
     # Initial guess for P
     array_p1 = np.eye(array_m.shape[0], array_m.shape[0])
     # Initial guess for Q
-    array_q1 = _2sided_hungarian(np.dot(array_n.T, array_m))
+    array_q1 = _compute_permutation_hungarian(np.dot(array_n.T, array_m))
     error1 = compute_error(array_n, array_m, array_q1, array_p1)
     step1 = 0
 
@@ -482,13 +482,14 @@ def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
     while error1 > tol and step1 < iteration:
         step1 += 1
         # Update P
-        array_p1 = _2sided_hungarian(np.dot(np.dot(array_n, array_q1), array_m.T))
+        array_p1 = _compute_permutation_hungarian(np.dot(np.dot(array_n, array_q1), array_m.T))
         array_p1 = np.transpose(array_p1)
         # Update the error
         error1 = compute_error(array_n, array_m, array_q1, array_p1)
         if error1 > tol:
             # Update Q
-            array_q1 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p1.T), array_m))
+            array_q1 = _compute_permutation_hungarian(
+                np.dot(np.dot(array_n.T, array_p1.T), array_m))
             # Update the error
             error1 = compute_error(array_n, array_m, array_q1, array_p1)
         else:
@@ -501,7 +502,7 @@ def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
     # Initial guess for Q
     array_q2 = np.eye(array_m.shape[1], array_m.shape[1])
     # Initial guess for P
-    array_p2 = _2sided_hungarian(np.dot(array_n, array_m.T))
+    array_p2 = _compute_permutation_hungarian(np.dot(array_n, array_m.T))
     array_p2 = np.transpose(array_p2)
     error2 = compute_error(array_n, array_m, array_q2, array_p2)
     step2 = 0
@@ -509,11 +510,11 @@ def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
     # while loop for the original algorithm
     while error2 > tol and step2 < iteration:
         # Update Q
-        array_q2 = _2sided_hungarian(np.dot(np.dot(array_n.T, array_p2.T), array_m))
+        array_q2 = _compute_permutation_hungarian(np.dot(np.dot(array_n.T, array_p2.T), array_m))
         # Update the error
         error2 = compute_error(array_n, array_m, array_q1, array_p2)
         if error2 > tol:
-            array_p2 = _2sided_hungarian(np.dot(np.dot(array_n, array_q2), array_m.T))
+            array_p2 = _compute_permutation_hungarian(np.dot(np.dot(array_n, array_q2), array_m.T))
             array_p2 = np.transpose(array_p2)
             # Update the error
             error2 = compute_error(array_n, array_m, array_q2, array_p2)
@@ -535,16 +536,13 @@ def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
     return array_p, array_q, error
 
 
-def _2sided_hungarian(profit_matrix):
-    # Define the profit array & applying the hungarian algorithm
-    cost_matrix = np.ones(profit_matrix.shape) * np.max(profit_matrix) - profit_matrix
-
-    # Obtain the optimum permutation transformation and convert to array
-    row_ind, col_ind = linear_sum_assignment(cost_matrix)
-    perm_optimum = np.zeros(profit_matrix.shape)
-    perm_optimum[row_ind, col_ind] = 1
-
-    return perm_optimum
+def _compute_permutation_hungarian(cost_matrix):
+    # solve linear sum assignment problem to get the row/column indices of optimal assignment
+    row_ind, col_ind = linear_sum_assignment(cost_matrix, maximize=True)
+    # make the permutation matrix by setting the corresponding elements to 1
+    perm = np.zeros(cost_matrix.shape)
+    perm[(row_ind, col_ind)] = 1
+    return perm
 
 
 def _guess_permutation_2sided_1trans_normal1(array_a):

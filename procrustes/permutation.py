@@ -427,14 +427,14 @@ def permutation_2sided(
         if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
                 np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
             # the initial guess
-            guess = _guess_initial_permutation_undirected(new_a_positive, new_b_positive, mode,
-                                                          lapack_driver)
+            guess = _guess_permutation_undirected(new_a_positive, new_b_positive, mode,
+                                                  lapack_driver)
             # Compute the permutation matrix by iterations
             array_u = _compute_transform(new_a_positive, new_b_positive, guess, tol, iteration)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
-            guess = _2sided_1trans_initial_guess_directed(new_a_positive, new_b_positive)
+            guess = _guess_permutation_2sided_1trans_directed(new_a_positive, new_b_positive)
             # Compute the permutation matrix by iterations
             array_u = _compute_transform_directed(new_a_positive, new_b_positive,
                                                   guess, tol, iteration)
@@ -540,7 +540,7 @@ def _2sided_hungarian(profit_matrix):
     return perm_optimum
 
 
-def _2sided_1trans_initial_guess_normal1(array_a):
+def _guess_permutation_2sided_1trans_normal1(array_a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     # build the empty target array
@@ -570,7 +570,7 @@ def _2sided_1trans_initial_guess_normal1(array_a):
     return array_new
 
 
-def _2sided_1trans_initial_guess_normal2(array_a):
+def _guess_initial_2sided_1trans_normal2(array_a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     array_mask_a = ~np.eye(array_a.shape[0], dtype=bool)
@@ -614,7 +614,7 @@ def _2sided_1trans_initial_guess_normal2(array_a):
     return array_new
 
 
-def _2sided_1trans_initial_guess_umeyama(array_a, array_b):
+def _guess_permutation_2sided_1trans_umeyama(array_a, array_b):
     # calculate the eigenvalue decomposition of A and B
     _, array_ua = np.linalg.eigh(array_a)
     _, array_ub = np.linalg.eigh(array_b)
@@ -626,9 +626,9 @@ def _2sided_1trans_initial_guess_umeyama(array_a, array_b):
     return array_u
 
 
-def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, lapack_driver):
+def _guess_permutation_2sided_1trans_umeyama_approx(array_a, array_b, lapack_driver):
     # compute U_umeyama
-    array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
+    array_u = _guess_permutation_2sided_1trans_umeyama(array_a, array_b)
     # calculate the approximated umeyama matrix
     array_ua, _, array_vta = scipy.linalg.svd(array_u, lapack_driver=lapack_driver)
     u_approx = np.dot(np.abs(array_ua), np.abs(array_vta))
@@ -637,7 +637,7 @@ def _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, lapack_driver)
     return u_approx
 
 
-def _2sided_1trans_initial_guess_directed(array_a, array_b):
+def _guess_permutation_2sided_1trans_directed(array_a, array_b):
     # Build two new hermitian matrices
     a_0 = (array_a + array_a.T) * 0.5 + (array_a - array_a.T) * 0.5 * 1j
     b_0 = (array_b + array_b.T) * 0.5 + (array_b - array_b.T) * 0.5 * 1j
@@ -652,20 +652,20 @@ def _2sided_1trans_initial_guess_directed(array_a, array_b):
     return array_u
 
 
-def _guess_initial_permutation_undirected(array_a, array_b, mode, lapack_driver):
+def _guess_permutation_undirected(array_a, array_b, mode, lapack_driver):
     mode = mode.lower()
     if mode == "normal1":
-        tmp_a = _2sided_1trans_initial_guess_normal1(array_a)
-        tmp_b = _2sided_1trans_initial_guess_normal1(array_b)
+        tmp_a = _guess_permutation_2sided_1trans_normal1(array_a)
+        tmp_b = _guess_permutation_2sided_1trans_normal1(array_b)
         array_u = permutation(tmp_a, tmp_b)["t"]
     elif mode == "normal2":
-        tmp_a = _2sided_1trans_initial_guess_normal2(array_a)
-        tmp_b = _2sided_1trans_initial_guess_normal2(array_b)
+        tmp_a = _guess_initial_2sided_1trans_normal2(array_a)
+        tmp_b = _guess_initial_2sided_1trans_normal2(array_b)
         array_u = permutation(tmp_a, tmp_b)["t"]
     elif mode == "umeyama":
-        array_u = _2sided_1trans_initial_guess_umeyama(array_a, array_b)
+        array_u = _guess_permutation_2sided_1trans_umeyama(array_a, array_b)
     elif mode == "umeyama_approx":
-        array_u = _2sided_1trans_initial_guess_umeyama_approx(array_a, array_b, lapack_driver)
+        array_u = _guess_permutation_2sided_1trans_umeyama_approx(array_a, array_b, lapack_driver)
     else:
         raise ValueError(
             """

@@ -594,10 +594,13 @@ def _guess_permutation_2sided_1trans_normal2(a):
 
 
 def _guess_permutation_2sided_1trans_umeyama(a, b):
-    # calculate normalized eigenvectors of A & B
+    # compute normalized normalized eigenvector of A & B
+    # in some cases, A and B can be complex matrix (when symmetrizing non-symmetric A & B),
+    # the np.linalg.eigh returns the eigenvalues and eigenvectors of a complex Hermitian
+    # (conjugate symmetric) or a real symmetric matrix.
     _, ua = np.linalg.eigh(a)
     _, ub = np.linalg.eigh(b)
-    # compute Umeyama
+    # for complex input, x + iy, the absolute value is np.sqrt(x**2 + y**2)
     perm = np.dot(np.abs(ua), np.abs(ub.T))
     return perm
 
@@ -615,14 +618,7 @@ def _guess_permutation_2sided_1trans_directed(a, b):
     # Build two new hermitian matrices
     a_0 = (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
     b_0 = (b + b.T) * 0.5 + (b - b.T) * 0.5 * 1j
-
-    _, ua_0 = np.linalg.eigh(a_0)
-    _, ub_0 = np.linalg.eigh(b_0)
-    # Compute the magnitudes of each element
-    ua = np.sqrt(np.imag(ua_0) ** 2 + np.real(ua_0) ** 2)
-    ub = np.sqrt(np.imag(ub_0) ** 2 + np.real(ub_0) ** 2)
-    # compute the initial guess
-    perm = np.dot(ua, ub.T)
+    perm = _guess_permutation_2sided_1trans_umeyama(a_0, b_0)
     return perm
 
 

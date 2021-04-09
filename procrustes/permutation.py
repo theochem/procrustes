@@ -474,19 +474,14 @@ def _compute_permutation_flipflop(m, n, tol, max_iter):
 
     step = 0
     while error1 > tol and step < max_iter:
-        step += 1
         # update P1 using 1-sided permutation procrustes where A=(NQ1).T, B=M.T, & cost = A.T B
         # 1-sided procrustes finds the right-hand-side transformation T, so to solve for P1, one
         # needs to minimize |Q.T N.T P.T - M.T| which is the same as original objective function.
         p1 = _compute_permutation_hungarian(np.dot(np.dot(n, q1), m.T)).T
-        # update error1 & exit while loop if converged
-        error1 = compute_error(n, m, q1, p1)
-        if error1 < tol:
-            break
         # update Q1 using 1-sided permutation procrustes where A=(P1N).T, B=M, & cost = A.T B
         q1 = _compute_permutation_hungarian(np.dot(np.dot(n.T, p1.T), m))
         error1 = compute_error(n, m, q1, p1)
-
+        step += 1
     if step == max_iter:
         print(f"Maximum iteration reached in the first case! error={error1} & tolerance={tol}")
 
@@ -499,17 +494,12 @@ def _compute_permutation_flipflop(m, n, tol, max_iter):
 
     step = 0
     while error2 > tol and step < max_iter:
-        step += 1
         # update Q2 using 1-sided permutation procrustes where A=(P2N), B=M, & cost = A.T B
         q2 = _compute_permutation_hungarian(np.dot(np.dot(n.T, p2.T), m))
-        # update the error2 & exit while loop if converged
-        error2 = compute_error(n, m, q1, p2)
-        if error2 < tol:
-            break
         # update P2 using 1-sided permutation procrustes where A=(NQ2).T, B=M.T, & cost = A.T B
         p2 = _compute_permutation_hungarian(np.dot(np.dot(n, q2), m.T)).T
         error2 = compute_error(n, m, q2, p2)
-
+        step += 1
     if step == max_iter:
         print(f"Maximum iteration reached in the second case! error={error2} & tolerance={tol}")
 

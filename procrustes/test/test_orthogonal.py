@@ -197,21 +197,21 @@ def test_two_sided_orthogonal_raises_error_non_symmetric_matrices():
     # Test simple example with one matrix that is not square
     array_a = np.array([[1., 2., 3.], [1., 2., 3.]])
     array_b = np.array([[1., 2.], [2., 1.]])
-    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True)
-    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True)
+    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single=True)
+    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single=True)
 
     # Test one which is square but not symmetric.
     array_a = np.array([[1., 1.], [2., 2.]])
     array_b = np.array([[1., 2.], [2., 1.]])
-    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True)
-    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True)
+    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single=True)
+    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single=True)
 
     # Test one that works but removal of rows with bad padding gives an error.
     array_a = np.array([[1., 0.], [0., 0.]])
     array_b = np.array([[1., 2.], [2., 1.]])
-    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single_transform=True,
+    assert_raises(ValueError, orthogonal_2sided, array_a, array_b, single=True,
                   unpad_col=True, pad=False)
-    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single_transform=True,
+    assert_raises(ValueError, orthogonal_2sided, array_b, array_a, single=True,
                   unpad_col=True, pad=False)
 
 

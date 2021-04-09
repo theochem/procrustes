@@ -411,53 +411,56 @@ def permutation_2sided(
                 "Check pad, unpad_col, and unpad_row arguments."
             )
 
-    # 2-sided permutation Procrustes with single transformation
-    if single:
-        # The (un)directed iterative procedure for finding the permutation matrix takes the square
-        # root of the matrix entries, which can result in complex numbers if the entries are
-        # negative. To avoid this, all matrix entries are shifted (by the smallest amount) to be
-        # positive. This causes no change to the objective function, as it's a constant value
-        # being added to all entries of a and b.
-        shift = 1.0e-6
-        if np.min(new_a) < 0 or np.min(new_b) < 0:
-            shift += abs(min(np.min(new_a), np.min(new_b)))
-        # shift is a float, so even if new_a or new_b are ints, the positive matrices are floats
-        # default shift is not zero to avoid division by zero later in the algorithm
-        new_a_positive = new_a + shift
-        new_b_positive = new_b + shift
-
-        # algorithm for undirected graph matching problem
-        # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
-        if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
-                np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
-            # the initial guess
-            guess = _guess_permutation_undirected(new_a_positive, new_b_positive, mode,
-                                                  lapack_driver)
-            # Compute the permutation matrix by iterations
-            array_u = _compute_permutation_undirected(new_a_positive, new_b_positive, guess, tol, iteration)
-        # algorithm for directed graph matching problem
-        else:
-            # the initial guess
-            guess = _guess_permutation_2sided_1trans_directed(new_a_positive, new_b_positive)
-            # Compute the permutation matrix by iterations
-            array_u = _compute_permutation_directed(new_a_positive, new_b_positive,
-                                                    guess, tol, iteration)
-        # k-opt heuristic
+    # 2-sided permutation Procrustes with two transformations
+    # -------------------------------------------------------
+    if not single:
+        # Do regular computation with different permutation matrices.
+        array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
+        # perform k-opt heuristic search.
         if kopt is not None:
-            fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
-            array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
-        else:
-            error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
-        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
-    # Do regular computation with different permutation matrices.
-    array_p, array_q, error = _2sided_regular(new_a, new_b, tol, iteration)
-    # perform k-opt heuristic search.
+            fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
+            array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
+                                                            k=kopt)
+        return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
+
+    # 2-sided permutation Procrustes with one transformation
+    # ------------------------------------------------------
+    # The (un)directed iterative procedure for finding the permutation matrix takes the square
+    # root of the matrix entries, which can result in complex numbers if the entries are
+    # negative. To avoid this, all matrix entries are shifted (by the smallest amount) to be
+    # positive. This causes no change to the objective function, as it's a constant value
+    # being added to all entries of a and b.
+    shift = 1.0e-6
+    if np.min(new_a) < 0 or np.min(new_b) < 0:
+        shift += abs(min(np.min(new_a), np.min(new_b)))
+    # shift is a float, so even if new_a or new_b are ints, the positive matrices are floats
+    # default shift is not zero to avoid division by zero later in the algorithm
+    new_a_positive = new_a + shift
+    new_b_positive = new_b + shift
+
+    # algorithm for undirected graph matching problem
+    # check if two matrices are symmetric within a relative tolerance and absolute tolerance.
+    if np.allclose(new_a_positive, new_a_positive.T, rtol=1.e-05, atol=1.e-08) and \
+            np.allclose(new_b_positive, new_b_positive.T, rtol=1.e-05, atol=1.e-08):
+        # the initial guess
+        guess = _guess_permutation_undirected(new_a_positive, new_b_positive, mode,
+                                              lapack_driver)
+        # Compute the permutation matrix by iterations
+        array_u = _compute_permutation_undirected(new_a_positive, new_b_positive, guess, tol, iteration)
+    # algorithm for directed graph matching problem
+    else:
+        # the initial guess
+        guess = _guess_permutation_2sided_1trans_directed(new_a_positive, new_b_positive)
+        # Compute the permutation matrix by iterations
+        array_u = _compute_permutation_directed(new_a_positive, new_b_positive,
+                                                guess, tol, iteration)
+    # k-opt heuristic
     if kopt is not None:
-        fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
-        array_p, array_q, error = kopt_heuristic_double(fun_error, p1=array_p, p2=array_q,
-                                                        k=kopt)
-    # return array_m, array_n, array_p, array_q, error
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_q, s=array_p)
+        fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
+        array_u, error = kopt_heuristic_single(fun_error, p0=array_u, k=kopt)
+    else:
+        error = compute_error(new_a_positive, new_b_positive, array_u, array_u.T)
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_u, s=None)
 
 
 def _2sided_regular(array_m, array_n, tol, iteration):

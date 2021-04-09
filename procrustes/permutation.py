@@ -434,14 +434,14 @@ def permutation_2sided(
             guess = _guess_permutation_undirected(new_a_positive, new_b_positive, mode,
                                                   lapack_driver)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform(new_a_positive, new_b_positive, guess, tol, iteration)
+            array_u = _compute_permutation_undirected(new_a_positive, new_b_positive, guess, tol, iteration)
         # algorithm for directed graph matching problem
         else:
             # the initial guess
             guess = _guess_permutation_2sided_1trans_directed(new_a_positive, new_b_positive)
             # Compute the permutation matrix by iterations
-            array_u = _compute_transform_directed(new_a_positive, new_b_positive,
-                                                  guess, tol, iteration)
+            array_u = _compute_permutation_directed(new_a_positive, new_b_positive,
+                                                    guess, tol, iteration)
         # k-opt heuristic
         if kopt is not None:
             fun_error = lambda p: compute_error(new_a_positive, new_b_positive, p, p.T)
@@ -678,7 +678,9 @@ def _guess_permutation_undirected(array_a, array_b, mode, lapack_driver):
     return array_u
 
 
-def _compute_transform(array_a, array_b, guess, tol, iteration):
+def _compute_permutation_undirected(array_a, array_b, guess, tol, iteration):
+    """Solve for 2-sided permutation Procrustes with 1-transformation when A & B are symmetric."""
+
     # shift the the matrices to avoid negative values
     # otherwise it will cause an error in the Eq. 28
     p_old = guess
@@ -715,7 +717,9 @@ def _compute_transform(array_a, array_b, guess, tol, iteration):
     return p_opt
 
 
-def _compute_transform_directed(array_a, array_b, guess, tol, iteration):
+def _compute_permutation_directed(array_a, array_b, guess, tol, iteration):
+    """Solve for 2-sided permutation Procrustes with 1-transformation."""
+
     p_old = guess
     change = np.inf
     step = 0

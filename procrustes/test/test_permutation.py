@@ -28,7 +28,7 @@ import itertools
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from procrustes.permutation import (_guess_permutation_2sided_1trans_normal1,
-                                    _guess_initial_2sided_1trans_normal2,
+                                    _guess_permutation_2sided_1trans_normal2,
                                     _guess_permutation_2sided_1trans_umeyama,
                                     permutation, permutation_2sided)
 import pytest
@@ -155,7 +155,7 @@ def test_2sided_1trans_initial_guess_normal2_positive():
         weight[2 * col, :] = np.power(weight_p, col)
     array_b = np.multiply(array_b, weight)
     # Check
-    array_new = _guess_initial_2sided_1trans_normal2(array_a)
+    array_new = _guess_permutation_2sided_1trans_normal2(array_a)
     assert_almost_equal(array_b, array_new, decimal=6)
 
 
@@ -182,7 +182,7 @@ def test_2sided_1trans_initial_guess_normal2_negative():
         weight[2 * col, :] = np.power(weight_p, col)
     array_b = np.multiply(array_b, weight)
     # Check
-    array_new = _guess_initial_2sided_1trans_normal2(array_a)
+    array_new = _guess_permutation_2sided_1trans_normal2(array_a)
     assert_almost_equal(array_b, array_new, decimal=6)
 
 

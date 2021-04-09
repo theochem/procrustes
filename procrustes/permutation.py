@@ -550,7 +550,7 @@ def _guess_permutation_2sided_1trans_normal1(a):
     return array_new
 
 
-def _guess_initial_2sided_1trans_normal2(a):
+def _guess_permutation_2sided_1trans_normal2(a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     array_mask_a = ~np.eye(a.shape[0], dtype=bool)
@@ -633,8 +633,8 @@ def _guess_permutation_undirected(a, b, guess, lapack_driver):
         tmp_b = _guess_permutation_2sided_1trans_normal1(b)
         perm = permutation(tmp_a, tmp_b)["t"]
     elif guess.lower() == "normal2":
-        tmp_a = _guess_initial_2sided_1trans_normal2(a)
-        tmp_b = _guess_initial_2sided_1trans_normal2(b)
+        tmp_a = _guess_permutation_2sided_1trans_normal2(a)
+        tmp_b = _guess_permutation_2sided_1trans_normal2(b)
         perm = permutation(tmp_a, tmp_b)["t"]
     elif guess.lower() == "umeyama":
         perm = _guess_permutation_2sided_1trans_umeyama(a, b)

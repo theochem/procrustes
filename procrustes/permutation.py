@@ -400,13 +400,15 @@ def permutation_2sided(
     # check inputs
     new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
-    if single:
-        # Since permutation matrices are square, and its single transformation.
-        if new_a.shape != new_b.shape:
-            raise ValueError(
-                f"Shape of A and B does not match: {new_a.shape} != {new_b.shape} "
-                "Check pad, unpad_col, and unpad_row arguments."
-            )
+
+    # check that A & B are square in case of single transformation
+    if single and new_a.shape[0] != new_a.shape[1]:
+        raise ValueError(f"For single={single}, matrix A should be square but shape={new_a.shape}"
+                         "Check pad, unpad_col, and unpad_row arguments.")
+
+    if single and new_b.shape[0] != new_b.shape[1]:
+        raise ValueError(f"For single={single}, matrix B should be square but shape={new_b.shape}"
+                         "Check pad, unpad_col, and unpad_row arguments.")
 
     # 2-sided permutation Procrustes with two transformations
     # -------------------------------------------------------

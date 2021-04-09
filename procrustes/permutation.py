@@ -460,7 +460,7 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=None)
 
 
-def _compute_permutation_flipflop(m, n, tol, max_iter):
+def _compute_permutation_flipflop(n, m, tol, max_iter):
     # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
     # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993

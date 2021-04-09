@@ -141,21 +141,21 @@ def permutation(
 
 
 def permutation_2sided(
-        a,
-        b,
-        single=True,
-        pad=False,
-        unpad_col=False,
-        unpad_row=False,
-        translate=False,
-        scale=False,
-        check_finite=True,
-        mode="normal1",
-        iteration=500,
-        tol=1.0e-8,
-        kopt=None,
-        weight=None,
-        lapack_driver="gesvd"
+    a,
+    b,
+    single=True,
+    guess="normal1",
+    pad=False,
+    unpad_col=False,
+    unpad_row=False,
+    translate=False,
+    scale=False,
+    check_finite=True,
+    iteration=500,
+    tol=1.0e-8,
+    kopt=None,
+    weight=None,
+    lapack_driver="gesvd",
 ):
     r"""Two-sided permutation Procrustes.
 
@@ -198,7 +198,7 @@ def permutation_2sided(
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
-    mode : string, optional
+    guess : string, optional
         Option for choosing the initial guess when single=True and matrices a, b are
         symmetric. This includes "normal1", "normal2", "umeyama" and "umeyama_approx".
         Default="normal1".
@@ -440,15 +440,15 @@ def permutation_2sided(
     is_pos_a_symmetric = np.allclose(pos_a, pos_a.T, rtol=1.e-05, atol=1.e-08)
     is_pos_b_symmetric = np.allclose(pos_b, pos_b.T, rtol=1.e-05, atol=1.e-08)
 
-    # get initial guess & compute permutation matrix iteratively
+    # compute initial (perm0) optimal permutation matrix iteratively
     if is_pos_a_symmetric and is_pos_b_symmetric:
         # undirected graph matching problem
-        guess = _guess_permutation_undirected(pos_a, pos_b, mode, lapack_driver)
-        perm = _compute_permutation_undirected(pos_a, pos_b, guess, tol, iteration)
+        perm0 = _guess_permutation_undirected(pos_a, pos_b, guess, lapack_driver)
+        perm = _compute_permutation_undirected(pos_a, pos_b, perm0, tol, iteration)
     else:
         # directed graph matching problem
-        guess = _guess_permutation_2sided_1trans_directed(pos_a, pos_b)
-        perm = _compute_permutation_directed(pos_a, pos_b, guess, tol, iteration)
+        perm0 = _guess_permutation_2sided_1trans_directed(pos_a, pos_b)
+        perm = _compute_permutation_directed(pos_a, pos_b, perm0, tol, iteration)
 
     # apply k-opt heuristic search to find a better local minimum permutation
     if kopt is not None:
@@ -630,19 +630,19 @@ def _guess_permutation_2sided_1trans_directed(array_a, array_b):
     return array_u
 
 
-def _guess_permutation_undirected(array_a, array_b, mode, lapack_driver):
-    mode = mode.lower()
-    if mode == "normal1":
+def _guess_permutation_undirected(array_a, array_b, guess, lapack_driver):
+    guess = guess.lower()
+    if guess == "normal1":
         tmp_a = _guess_permutation_2sided_1trans_normal1(array_a)
         tmp_b = _guess_permutation_2sided_1trans_normal1(array_b)
         array_u = permutation(tmp_a, tmp_b)["t"]
-    elif mode == "normal2":
+    elif guess == "normal2":
         tmp_a = _guess_initial_2sided_1trans_normal2(array_a)
         tmp_b = _guess_initial_2sided_1trans_normal2(array_b)
         array_u = permutation(tmp_a, tmp_b)["t"]
-    elif mode == "umeyama":
+    elif guess == "umeyama":
         array_u = _guess_permutation_2sided_1trans_umeyama(array_a, array_b)
-    elif mode == "umeyama_approx":
+    elif guess == "umeyama_approx":
         array_u = _guess_permutation_2sided_1trans_umeyama_approx(array_a, array_b, lapack_driver)
     else:
         raise ValueError(
@@ -655,29 +655,27 @@ def _guess_permutation_undirected(array_a, array_b, mode, lapack_driver):
 def _compute_permutation_undirected(array_a, array_b, guess, tol, iteration):
     """Solve for 2-sided permutation Procrustes with 1-transformation when A & B are symmetric."""
 
-    # shift the the matrices to avoid negative values
-    # otherwise it will cause an error in the Eq. 28
     p_old = guess
     change = np.inf
     step = 0
 
     while change > tol and step < iteration:
-        # Compute p_new
-        tmp1 = np.dot(array_a, np.dot(p_old, array_b))
-        alpha = np.dot(p_old.T, tmp1)
+        # compute alpha matrix
+        temp = np.dot(array_a, np.dot(p_old, array_b))
+        alpha = np.dot(p_old.T, temp)
         alpha = (alpha + alpha.T) / 2
-        tmp2 = np.power(tmp1 / np.dot(p_old, alpha), 0.5)
-        p_new = p_old * tmp2
-
-        # compute the change
+        # compute new permutation matrix
+        p_new = p_old * np.sqrt(temp / np.dot(p_old, alpha))
+        # compute change
         change = np.trace(np.dot((p_new - p_old).T, (p_new - p_old)))
-        step += 1
-        # update p_old
+        # update permutation matrix
         p_old = p_new
+        step += 1
 
-        if step == iteration:
-            print("Maximum iteration reached! Change={0}".format(change))
+    if step == iteration:
+        print(f"Maximum iteration reached! change={change} & tolerance={tol}")
 
+    # find the closest permutation matrix to p_new (which may not a permutation matrix)
     p_opt = permutation(
         a=np.eye(p_new.shape[0]),
         b=p_new,
@@ -691,27 +689,38 @@ def _compute_permutation_undirected(array_a, array_b, guess, tol, iteration):
     return p_opt
 
 
-def _compute_permutation_directed(array_a, array_b, guess, tol, iteration):
+def _compute_permutation_directed(a, b, guess, tol, iteration):
     """Solve for 2-sided permutation Procrustes with 1-transformation."""
 
+    # Algorithm 2 from Appendix of Procrustes paper
     p_old = guess
     change = np.inf
     step = 0
     while change > tol and step < iteration:
-        # Compute p_new
-        tmp1 = np.dot(array_a, np.dot(p_old, array_b.T))
-        tmp2 = np.dot(array_a.T, np.dot(p_old, array_b))
-        alpha = np.dot(p_old.T, tmp1 + tmp2) + np.dot((tmp1 + tmp2).T, p_old)
-        alpha = alpha / 4
-        tmp = (tmp1 + tmp2) / (2 * np.dot(p_old, alpha))
-        p_new = p_old * np.power(tmp, 0.5)
-        # compute the change
+        # compute alpha matrix
+        tmp1 = np.dot(a, np.dot(p_old, b.T))
+        tmp2 = np.dot(a.T, np.dot(p_old, b))
+        alpha = 0.25 * np.dot(p_old.T, tmp1 + tmp2) + np.dot((tmp1 + tmp2).T, p_old)
+        # compute new permutation matrix
+        p_new = p_old * np.sqrt((tmp1 + tmp2) / (2 * np.dot(p_old, alpha)))
+        # compute change
         change = np.trace(np.dot((p_new - p_old).T, (p_new - p_old)))
-        step += 1
-        # update p_old
+        # update permutation matrix
         p_old = p_new
-        if step == iteration:
-            print("Maximum iteration reached! Change={0}".format(change))
-    p_opt = permutation(np.eye(p_new.shape[0]), p_new)["t"]
+        step += 1
+
+    if step == iteration:
+        print(f"Maximum iteration reached! change={change} & tolerance={tol}")
+
+    # find the closest permutation matrix to p_new (which may not a permutation matrix)
+    p_opt = permutation(
+        np.eye(p_new.shape[0]),
+        p_new,
+        translate=False,
+        scale=False,
+        unpad_col=False,
+        unpad_row=False,
+        check_finite=True,
+    )["t"]
 
     return p_opt

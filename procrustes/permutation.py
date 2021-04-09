@@ -414,8 +414,8 @@ def permutation_2sided(
     # 2-sided permutation Procrustes with two transformations
     # -------------------------------------------------------
     if not single:
-        # Do regular computation with different permutation matrices.
-        perm1, perm2, error = _2sided_regular(new_a, new_b, tol, iteration)
+        # compute permutations using flip-flop algorithm
+        perm1, perm2, error = _2sided_permutation_flipflop(new_a, new_b, tol, iteration)
 
         # apply k-opt heuristic search to find better local minimum permutations
         if kopt is not None:
@@ -463,7 +463,7 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=None)
 
 
-def _2sided_regular(array_m, array_n, tol, iteration):
+def _2sided_permutation_flipflop(array_m, array_n, tol, iteration):
     # Regular two-sided permutation Procrustes
     # :math:` {\(\vert M-PNQ \vert\)}^2_F`
     # taken from page 64 in

@@ -422,8 +422,7 @@ def permutation_2sided(
         if method == "flip-flop":
             # compute permutations using flip-flop algorithm
             perm1, perm2, error = _permutation_2sided_flipflop(
-                new_a, new_b, options["tol"], options["maxiter"]
-            )
+                new_a, new_b, options["tol"], options["maxiter"], guess_p1, guess_p2)
         elif method == "k-opt":
             # compute permutations using k-opt heuristic search
             fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
@@ -511,15 +510,17 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)
 
 
-def _permutation_2sided_flipflop(n, m, tol, max_iter):
+def _permutation_2sided_flipflop(n, m, tol, max_iter, p0=None, q0=None):
     # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
     # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993
 
-    # initial guesses: set P1 to identity and compute Q1 using 1-sided permutation procrustes
-    # where A=N (note that P1=I), B=M, & cost = A.T B
-    p1 = np.eye(m.shape[0])
-    q1 = _compute_permutation_hungarian(np.dot(n.T, m))
+    # initial guesses: set P1 to identity if guess P0 is not given, and compute Q1 using 1-sided
+    # permutation procrustes where A=(P1N), B=M, & cost = A.T B
+    p1 = p0
+    if p1 is None:
+        p1 = np.eye(m.shape[0])
+    q1 = _compute_permutation_hungarian(np.dot(np.dot(n.T, p1.T), m))
     # compute initial error1 = |(P1)N(Q1) - M|
     error1 = compute_error(n, m, q1, p1)
 
@@ -536,10 +537,12 @@ def _permutation_2sided_flipflop(n, m, tol, max_iter):
     if step == max_iter:
         print(f"Maximum iterations reached in 1st case of flip-flop! error={error1} & tol={tol}")
 
-    # initial guesses: set Q2 to identity and compute P2 using 1-sided permutation procrustes
-    # where A=N.T (note that Q2=I), B=M.T, & cost = A.T B
-    q2 = np.eye(m.shape[1])
-    p2 = _compute_permutation_hungarian(np.dot(n, m.T)).T
+    # initial guesses: set Q2 to identity if guess Q0 is not given, and compute P2 using 1-sided
+    # permutation procrustes where A=(NQ2).T, B=M.T, & cost = A.T B
+    q2 = q0
+    if q2 is None:
+        q2 = np.eye(m.shape[1])
+    p2 = _compute_permutation_hungarian(np.dot(np.dot(n, q2), m.T)).T
     # compute initial error2 = |(P2)N(Q2) - M|
     error2 = compute_error(n, m, q2, p2)
 

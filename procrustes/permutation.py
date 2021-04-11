@@ -144,16 +144,16 @@ def permutation_2sided(
     a,
     b,
     single=True,
-    guess="normal1",
+    method="kopt",
+    guess_p1=None,
+    guess_p2=None,
     pad=False,
     unpad_col=False,
     unpad_row=False,
     translate=False,
     scale=False,
     check_finite=True,
-    iteration=500,
-    tol=1.0e-8,
-    kopt=None,
+    options=None,
     weight=None,
     lapack_driver="gesvd",
 ):
@@ -178,6 +178,13 @@ def permutation_2sided(
         algorithm taken from [2] is used to iteratively solve this problem. Global optima is not
         guaranteed here and may need to do an additional k-opt search.
         Default=True.
+    method : str, optional
+        Default='kopt'
+    guess_p1 : np.ndarray, optional
+        Guess for :math:`\mathbf{P}_1` matrix given as a 2D-array. This is only required for the
+        two-transformations case specified by setting `single=False`.
+    guess_p2 : np.ndarray, optional
+        Guess for :math:`\mathbf{P}_2` matrix given as a 2D-array.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
@@ -198,23 +205,8 @@ def permutation_2sided(
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs.
         Default=True.
-    guess : string, optional
-        Option for choosing the initial guess when single=True and matrices a, b are
-        symmetric. This includes "normal1", "normal2", "umeyama" and "umeyama_approx".
-        Default="normal1".
-    iteration : int, optional
-        Maximum number of iterations for updating the initial guess or for the flip-flop algorithm.
-        Default=500.
-    tol : float, optional
-        The tolerance value used for updating the initial guess or for the flip-flop algorithm.
-        Default=1.e-8.
-    kopt : (int, None), optional
-        Perform a k-opt heuristic search afterwards to further optimize/refine the permutation
-        matrix by searching over all k-fold permutations of the rows or columns of each permutation
-        matrix. For example, kopt_k=3 searches over all permutations of 3 rows or columns.
-        If None, then kopt search is not performed. This search is slow when kopt is large and
-        when kopt is equal to the rows or columns of `a`, then all permutations are searched.
-         Default=None.
+    options : dict, optional
+       Option dictionary
     weight : ndarray, optional
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
@@ -390,36 +382,56 @@ def permutation_2sided(
           IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
 
     """
-    if not (isinstance(kopt, (np.int, np.int32, np.int64)) or kopt is None):
-        raise TypeError(f"Type of kopt parameter {type(kopt)} should be an positive integer "
-                        f"or None.")
+    # if not (isinstance(options, (np.int, np.int32, np.int64)) or options is None):
+    #     raise TypeError(
+    #         f"Type of kopt parameter {type(options)} should be an positive integer "
+    #         f"or None."
+    #     )
 
     if not isinstance(single, bool):
-        raise TypeError(f"Type of single {type(single)} should be a Boolean.")
+        raise TypeError(f"Argument single is not a boolean! Given type={type(single)}")
 
     # check inputs
-    new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
-                                      pad, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight
+    )
 
     # check that A & B are square in case of single transformation
     if single and new_a.shape[0] != new_a.shape[1]:
         raise ValueError(f"For single={single}, matrix A should be square but shape={new_a.shape}"
                          "Check pad, unpad_col, and unpad_row arguments.")
 
-    if single and new_b.shape[0] != new_b.shape[1]:
-        raise ValueError(f"For single={single}, matrix B should be square but shape={new_b.shape}"
-                         "Check pad, unpad_col, and unpad_row arguments.")
+    # assgin guess
+    if guess_p1 is None:
+        guess_p1 = np.eye(new_a.shape[0])
+    if guess_p2 is None:
+        guess_p2 = np.eye(new_a.shape[1])
+
+    # if single and new_b.shape[0] != new_b.shape[1]:
+    #     raise ValueError(
+    #         f"For single={single}, matrix B should be square but shape={new_b.shape}"
+    #         "Check pad, unpad_col, and unpad_row arguments."
+    #     )
+
+    if options is None:
+        options = {"tol": 1.0e-8, "maxiter": 500, "k": 3}
 
     # 2-sided permutation Procrustes with two transformations
     # -------------------------------------------------------
     if not single:
-        # compute permutations using flip-flop algorithm
-        perm1, perm2, error = _compute_permutation_flipflop(new_a, new_b, tol, iteration)
-
-        # apply k-opt heuristic search to find better local minimum permutations
-        if kopt is not None:
+        if method == "flip-flop":
+            # compute permutations using flip-flop algorithm
+            perm1, perm2, error = _permutation_2sided_flipflop(
+                new_a, new_b, options["tol"], options["maxiter"]
+            )
+        elif method == "k-opt":
+            # compute permutations using k-opt heuristic search
             fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
-            perm1, perm2, error = kopt_heuristic_double(fun_error, p1=perm1, p2=perm2, k=kopt)
+            perm1, perm2, error = kopt_heuristic_double(
+                fun_error, p1=guess_p1, p2=guess_p2, k=options["k"]
+            )
+        else:
+            raise ValueError(f"Method={method} not supported for single={single} transformation!")
 
         return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm2, s=perm1)
 
@@ -438,31 +450,68 @@ def permutation_2sided(
     pos_a = new_a + shift
     pos_b = new_b + shift
 
-    # check whether A & B are symmetric (within a relative & absolute tolerance)
-    is_pos_a_symmetric = np.allclose(pos_a, pos_a.T, rtol=1.e-05, atol=1.e-08)
-    is_pos_b_symmetric = np.allclose(pos_b, pos_b.T, rtol=1.e-05, atol=1.e-08)
+    if method == "approx_normal1":
+        tmp_a = _guess_permutation_2sided_1trans_normal1(a)
+        tmp_b = _guess_permutation_2sided_1trans_normal1(b)
+        perm = permutation(tmp_a, tmp_b).t
 
-    # compute initial (perm0) optimal permutation matrix iteratively
-    if is_pos_a_symmetric and is_pos_b_symmetric:
-        # undirected graph matching problem
-        perm0 = _guess_permutation_undirected(pos_a, pos_b, guess, lapack_driver)
-        perm = _compute_permutation_undirected(pos_a, pos_b, perm0, tol, iteration)
-    else:
-        # directed graph matching problem
-        perm0 = _guess_permutation_2sided_1trans_directed(pos_a, pos_b)
-        perm = _compute_permutation_directed(pos_a, pos_b, perm0, tol, iteration)
+    elif method == "approx_normal2":
+        tmp_a = _guess_permutation_2sided_1trans_normal2(a)
+        tmp_b = _guess_permutation_2sided_1trans_normal2(b)
+        perm = permutation(tmp_a, tmp_b).t
 
-    # apply k-opt heuristic search to find a better local minimum permutation
-    if kopt is not None:
+    elif method == "approx_umeyama":
+        perm = _guess_permutation_2sided_1trans_umeyama(pos_a, pos_b)
+
+    elif method == "approx_umeyama_svd":
+        perm = _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver)
+
+    elif method == "k-opt":
         fun_error = lambda p: compute_error(pos_a, pos_b, p, p.T)
-        perm, error = kopt_heuristic_single(fun_error, p0=perm, k=kopt)
+        perm, error = kopt_heuristic_single(fun_error, p0=guess_p2, k=options["k"])
+
+    elif method == "soft-assign":
+        raise NotImplementedError
+
+    elif method == "nmf":
+        # check whether A & B are symmetric (within a relative & absolute tolerance)
+        is_pos_a_symmetric = np.allclose(pos_a, pos_a.T, rtol=1.0e-05, atol=1.0e-08)
+        is_pos_b_symmetric = np.allclose(pos_b, pos_b.T, rtol=1.0e-05, atol=1.0e-08)
+
+        if is_pos_a_symmetric and is_pos_b_symmetric:
+            # undirected graph matching problem (iterative procedure)
+            perm = _compute_permutation_undirected(
+                pos_a, pos_b, guess_p2, options['tol'], options['maxiter']
+            )
+        else:
+            # directed graph matching problem (iterative procedure)
+            perm = _compute_permutation_directed(
+                pos_a, pos_b, guess_p2, options['tol'], options['maxiter']
+            )
     else:
-        error = compute_error(pos_a, pos_b, perm, perm.T)
+        raise ValueError(f"Method={method} not supported for single={single} transformation!")
 
-    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=None)
+    # some of the methods for 2-sided-1-transformation permutation procrustes does not produce a
+    # permutation matrix. So, their output is treated like a guess, and the closest permutation
+    # matrix is found using 1-sided permutation procrustes (where A=I & B=perm)
+    # Even though this step is not needed for ALL methods (e.g. k-opt, normal1, & normal2), to
+    # make the code simple, this step is performed for all methods as its cost is negligible.
+    perm = permutation(
+        np.eye(perm.shape[0]),
+        perm,
+        translate=False,
+        scale=False,
+        unpad_col=False,
+        unpad_row=False,
+        check_finite=True,
+    ).t
+    # compute error
+    error = compute_error(new_a, new_b, t=perm, s=perm.T)
+
+    return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)
 
 
-def _compute_permutation_flipflop(n, m, tol, max_iter):
+def _permutation_2sided_flipflop(n, m, tol, max_iter):
     # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
     # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993
@@ -485,7 +534,7 @@ def _compute_permutation_flipflop(n, m, tol, max_iter):
         error1 = compute_error(n, m, q1, p1)
         step += 1
     if step == max_iter:
-        print(f"Maximum iteration reached in the first case! error={error1} & tolerance={tol}")
+        print(f"Maximum iterations reached in 1st case of flip-flop! error={error1} & tol={tol}")
 
     # initial guesses: set Q2 to identity and compute P2 using 1-sided permutation procrustes
     # where A=N.T (note that Q2=I), B=M.T, & cost = A.T B
@@ -503,7 +552,7 @@ def _compute_permutation_flipflop(n, m, tol, max_iter):
         error2 = compute_error(n, m, q2, p2)
         step += 1
     if step == max_iter:
-        print(f"Maximum iteration reached in the second case! error={error2} & tolerance={tol}")
+        print(f"Maximum iterations reached in 2nd case of flip-flop! error={error1} & tol={tol}")
 
     # return permutations corresponding to the lowest error
     if error1 <= error2:
@@ -557,9 +606,8 @@ def _guess_permutation_2sided_1trans_normal2(a):
     # array_off_diag0 is the off diagonal elements of A
     array_off_diag = a[array_mask_a].reshape((a.shape[0], a.shape[1] - 1))
     # array_off_diag1 is sorted off diagonal elements of A
-    array_off_diag = array_off_diag[np.arange(np.shape(array_off_diag)[0])[
-                                    :, np.newaxis], np.argsort(
-        abs(array_off_diag))]
+    array_off_diag = array_off_diag[np.arange(np.shape(array_off_diag)[0])[:, np.newaxis],
+                                    np.argsort(abs(array_off_diag))]
     array_off_diag = np.fliplr(array_off_diag).T
 
     # array_c is newly built matrix B without weights
@@ -594,6 +642,14 @@ def _guess_permutation_2sided_1trans_normal2(a):
 
 
 def _guess_permutation_2sided_1trans_umeyama(a, b):
+    # check whether A & B are symmetric (within a relative & absolute tolerance)
+    is_a_symmetric = np.allclose(a, a.T, rtol=1.0e-05, atol=1.0e-08)
+    is_b_symmetric = np.allclose(b, b.T, rtol=1.0e-05, atol=1.0e-08)
+    # symmetrize A & B if not symmetric
+    if not (is_a_symmetric and is_b_symmetric):
+        a = _symmetrize_matrix(a)
+        b = _symmetrize_matrix(b)
+
     # compute normalized normalized eigenvector of A & B
     # in some cases, A and B can be complex matrix (when symmetrizing non-symmetric A & B),
     # the np.linalg.eigh returns the eigenvalues and eigenvectors of a complex Hermitian
@@ -601,45 +657,22 @@ def _guess_permutation_2sided_1trans_umeyama(a, b):
     _, ua = np.linalg.eigh(a)
     _, ub = np.linalg.eigh(b)
     # for complex input, x + iy, the absolute value is np.sqrt(x**2 + y**2)
-    perm = np.dot(np.abs(ua), np.abs(ub.T))
-    return perm
+    u_umeyama = np.dot(np.abs(ua), np.abs(ub.T))
+    return u_umeyama
 
 
 def _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver):
-    # compute U_umeyama
+    # compute u_umeyama
     perm = _guess_permutation_2sided_1trans_umeyama(a, b)
-    # calculate the approximated umeyama matrix
+    # compute approximated umeyama matrix
     u, _, vt = scipy.linalg.svd(perm, lapack_driver=lapack_driver)
-    perm_approx = np.dot(np.abs(u), np.abs(vt))
-    return perm_approx
+    u_umeyama_approx = np.dot(np.abs(u), np.abs(vt))
+    return u_umeyama_approx
 
 
-def _guess_permutation_2sided_1trans_directed(a, b):
-    # Build two new hermitian matrices
-    a_0 = (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
-    b_0 = (b + b.T) * 0.5 + (b - b.T) * 0.5 * 1j
-    perm = _guess_permutation_2sided_1trans_umeyama(a_0, b_0)
-    return perm
-
-
-def _guess_permutation_undirected(a, b, guess, lapack_driver):
-
-    if guess.lower() == "normal1":
-        tmp_a = _guess_permutation_2sided_1trans_normal1(a)
-        tmp_b = _guess_permutation_2sided_1trans_normal1(b)
-        perm = permutation(tmp_a, tmp_b)["t"]
-    elif guess.lower() == "normal2":
-        tmp_a = _guess_permutation_2sided_1trans_normal2(a)
-        tmp_b = _guess_permutation_2sided_1trans_normal2(b)
-        perm = permutation(tmp_a, tmp_b)["t"]
-    elif guess.lower() == "umeyama":
-        perm = _guess_permutation_2sided_1trans_umeyama(a, b)
-    elif guess.lower() == "umeyama_approx":
-        perm = _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver)
-    else:
-        raise ValueError(f"Argument guess={guess.lower()} is invalid! "
-                         f"Options: 'normal1', 'normal2', 'umeyama', 'umeyama_approx'")
-    return perm
+def _symmetrize_matrix(a):
+    # symmetrized matrix A would be complex
+    return (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
 
 
 def _compute_permutation_undirected(a, b, guess, tol, iteration):
@@ -664,18 +697,7 @@ def _compute_permutation_undirected(a, b, guess, tol, iteration):
     if step == iteration:
         print(f"Maximum iteration reached! change={change} & tolerance={tol}")
 
-    # find the closest permutation matrix to p_new (which may not a permutation matrix)
-    p_opt = permutation(
-        a=np.eye(p_new.shape[0]),
-        b=p_new,
-        translate=False,
-        scale=False,
-        unpad_col=False,
-        unpad_row=False,
-        check_finite=True,
-    )["t"]
-
-    return p_opt
+    return p_new
 
 
 def _compute_permutation_directed(a, b, guess, tol, iteration):
@@ -700,15 +722,4 @@ def _compute_permutation_directed(a, b, guess, tol, iteration):
     if step == iteration:
         print(f"Maximum iteration reached! change={change} & tolerance={tol}")
 
-    # find the closest permutation matrix to p_new (which may not a permutation matrix)
-    p_opt = permutation(
-        np.eye(p_new.shape[0]),
-        p_new,
-        translate=False,
-        scale=False,
-        unpad_col=False,
-        unpad_row=False,
-        check_finite=True,
-    )["t"]
-
-    return p_opt
+    return p_new

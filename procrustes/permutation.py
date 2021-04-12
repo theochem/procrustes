@@ -425,7 +425,7 @@ def permutation_2sided(
     if not single:
         if method == "flip-flop":
             # compute permutations using flip-flop algorithm
-            perm1, perm2, error = _permutation_2sided_flipflop(
+            perm1, perm2, error = _permutation_2sided_2trans_flipflop(
                 new_a, new_b, options["tol"], options["maxiter"], guess_p1, guess_p2)
         elif method == "k-opt":
             # compute permutations using k-opt heuristic search
@@ -454,20 +454,20 @@ def permutation_2sided(
     pos_b = new_b + shift
 
     if method == "approx-normal1":
-        tmp_a = _guess_permutation_2sided_1trans_normal1(a)
-        tmp_b = _guess_permutation_2sided_1trans_normal1(b)
+        tmp_a = _approx_permutation_2sided_1trans_normal1(a)
+        tmp_b = _approx_permutation_2sided_1trans_normal1(b)
         perm = permutation(tmp_a, tmp_b).t
 
     elif method == "approx-normal2":
-        tmp_a = _guess_permutation_2sided_1trans_normal2(a)
-        tmp_b = _guess_permutation_2sided_1trans_normal2(b)
+        tmp_a = _approx_permutation_2sided_1trans_normal2(a)
+        tmp_b = _approx_permutation_2sided_1trans_normal2(b)
         perm = permutation(tmp_a, tmp_b).t
 
     elif method == "approx-umeyama":
-        perm = _guess_permutation_2sided_1trans_umeyama(pos_a, pos_b)
+        perm = _approx_permutation_2sided_1trans_umeyama(pos_a, pos_b)
 
     elif method == "approx-umeyama-svd":
-        perm = _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver)
+        perm = _approx_permutation_2sided_1trans_umeyama_svd(a, b, lapack_driver)
 
     elif method == "k-opt":
         fun_error = lambda p: compute_error(pos_a, pos_b, p, p.T)
@@ -483,12 +483,12 @@ def permutation_2sided(
 
         if is_pos_a_symmetric and is_pos_b_symmetric:
             # undirected graph matching problem (iterative procedure)
-            perm = _compute_permutation_undirected(
+            perm = _permutation_2sided_1trans_undirected(
                 pos_a, pos_b, guess_p2, options['tol'], options['maxiter']
             )
         else:
             # directed graph matching problem (iterative procedure)
-            perm = _compute_permutation_directed(
+            perm = _permutation_2sided_1trans_directed(
                 pos_a, pos_b, guess_p2, options['tol'], options['maxiter']
             )
     else:
@@ -514,7 +514,7 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)
 
 
-def _permutation_2sided_flipflop(n, m, tol, max_iter, p0=None, q0=None):
+def _permutation_2sided_2trans_flipflop(n, m, tol, max_iter, p0=None, q0=None):
     # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
     # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993
@@ -576,7 +576,7 @@ def _compute_permutation_hungarian(cost_matrix):
     return perm
 
 
-def _guess_permutation_2sided_1trans_normal1(a):
+def _approx_permutation_2sided_1trans_normal1(a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     # build the empty target array
@@ -606,7 +606,7 @@ def _guess_permutation_2sided_1trans_normal1(a):
     return array_new
 
 
-def _guess_permutation_2sided_1trans_normal2(a):
+def _approx_permutation_2sided_1trans_normal2(a):
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     array_mask_a = ~np.eye(a.shape[0], dtype=bool)
@@ -648,7 +648,7 @@ def _guess_permutation_2sided_1trans_normal2(a):
     return array_new
 
 
-def _guess_permutation_2sided_1trans_umeyama(a, b):
+def _approx_permutation_2sided_1trans_umeyama(a, b):
     # check whether A & B are symmetric (within a relative & absolute tolerance)
     is_a_symmetric = np.allclose(a, a.T, rtol=1.0e-05, atol=1.0e-08)
     is_b_symmetric = np.allclose(b, b.T, rtol=1.0e-05, atol=1.0e-08)
@@ -668,9 +668,9 @@ def _guess_permutation_2sided_1trans_umeyama(a, b):
     return u_umeyama
 
 
-def _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver):
+def _approx_permutation_2sided_1trans_umeyama_svd(a, b, lapack_driver):
     # compute u_umeyama
-    perm = _guess_permutation_2sided_1trans_umeyama(a, b)
+    perm = _approx_permutation_2sided_1trans_umeyama(a, b)
     # compute approximated umeyama matrix
     u, _, vt = scipy.linalg.svd(perm, lapack_driver=lapack_driver)
     u_umeyama_approx = np.dot(np.abs(u), np.abs(vt))
@@ -682,7 +682,7 @@ def _symmetrize_matrix(a):
     return (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
 
 
-def _compute_permutation_undirected(a, b, guess, tol, iteration):
+def _permutation_2sided_1trans_undirected(a, b, guess, tol, iteration):
     """Solve for 2-sided permutation Procrustes with 1-transformation when A & B are symmetric."""
 
     p_old = guess
@@ -707,7 +707,7 @@ def _compute_permutation_undirected(a, b, guess, tol, iteration):
     return p_new
 
 
-def _compute_permutation_directed(a, b, guess, tol, iteration):
+def _permutation_2sided_1trans_directed(a, b, guess, tol, iteration):
     """Solve for 2-sided permutation Procrustes with 1-transformation."""
 
     # Algorithm 2 from Appendix of Procrustes paper

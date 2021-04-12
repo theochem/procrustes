@@ -28,9 +28,9 @@ import itertools
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises
-from procrustes.permutation import (_guess_permutation_2sided_1trans_normal1,
-                                    _guess_permutation_2sided_1trans_normal2,
-                                    _guess_permutation_2sided_1trans_umeyama,
+from procrustes.permutation import (_approx_permutation_2sided_1trans_normal1,
+                                    _approx_permutation_2sided_1trans_normal2,
+                                    _approx_permutation_2sided_1trans_umeyama,
                                     permutation, permutation_2sided)
 import pytest
 
@@ -106,7 +106,7 @@ def test_2sided_1trans_initial_guess_normal1_positive():
         weight[row, :] = np.power(weight_p, row)
     array_b = np.multiply(array_b, weight)
     # Check
-    array_new = _guess_permutation_2sided_1trans_normal1(a)
+    array_new = _approx_permutation_2sided_1trans_normal1(a)
     assert_almost_equal(array_b, array_new, decimal=6)
 
 
@@ -124,7 +124,7 @@ def test_2sided_1trans_initial_guess_normal1_negative():
         weight[row, :] = np.power(weight_p, row)
     array_b = np.multiply(array_b, weight)
     # Check
-    array_new = _guess_permutation_2sided_1trans_normal1(array_a)
+    array_new = _approx_permutation_2sided_1trans_normal1(array_a)
     assert_almost_equal(array_b, array_new, decimal=6)
 
 
@@ -154,7 +154,7 @@ def test_2sided_1trans_initial_guess_normal2_positive():
         weight[2 * col, :] = np.power(weight_p, col)
     array_b = np.multiply(array_b, weight)
     # Check
-    array_new = _guess_permutation_2sided_1trans_normal2(array_a)
+    array_new = _approx_permutation_2sided_1trans_normal2(array_a)
     assert_almost_equal(array_b, array_new, decimal=6)
 
 
@@ -181,7 +181,7 @@ def test_2sided_1trans_initial_guess_normal2_negative():
         weight[2 * col, :] = np.power(weight_p, col)
     array_b = np.multiply(array_b, weight)
     # Check
-    array_new = _guess_permutation_2sided_1trans_normal2(array_a)
+    array_new = _approx_permutation_2sided_1trans_normal2(array_a)
     assert_almost_equal(array_b, array_new, decimal=6)
 
 
@@ -195,7 +195,7 @@ def test_2sided_1trans_initial_guess_umeyama():
                           [0.585, 0.653, 0.612, 0.950],
                           [0.991, 0.524, 0.892, 0.601],
                           [0.520, 0.931, 0.846, 0.618]])
-    array_u = _guess_permutation_2sided_1trans_umeyama(a=b, b=a)
+    array_u = _approx_permutation_2sided_1trans_umeyama(a=b, b=a)
     assert_almost_equal(u_umeyama, array_u, decimal=3)
 
 

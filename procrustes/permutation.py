@@ -398,20 +398,30 @@ def permutation_2sided(
 
     # check that A & B are square in case of single transformation
     if single and new_a.shape[0] != new_a.shape[1]:
-        raise ValueError(f"For single={single}, matrix A should be square but shape={new_a.shape}"
+        raise ValueError(f"For single={single}, matrix A should be square but A.shape={new_a.shape}"
                          "Check pad, unpad_col, and unpad_row arguments.")
 
-    # assgin guess
-    if guess_p1 is None:
-        guess_p1 = np.eye(new_a.shape[0])
-    if guess_p2 is None:
-        guess_p2 = np.eye(new_a.shape[1])
+    if single and new_b.shape[0] != new_b.shape[1]:
+        raise ValueError(f"For single={single}, matrix B should be square but B.shape={new_b.shape}"
+                         "Check pad, unpad_col, and unpad_row arguments.")
 
-    # if single and new_b.shape[0] != new_b.shape[1]:
-    #     raise ValueError(
-    #         f"For single={single}, matrix B should be square but shape={new_b.shape}"
-    #         "Check pad, unpad_col, and unpad_row arguments."
-    #     )
+    # get the number of rows & columns of matrix A
+    m, n = new_a.shape
+
+    # assign & check initial guess for P1
+    if single and guess_p1 is not None:
+        raise ValueError(f"For single={single}, P1 is transpose of P2, so guess_p1 should be None.")
+    if not single:
+        if guess_p1 is None:
+            guess_p1 = np.eye(m)
+        if guess_p1.shape != (m, m):
+            raise ValueError(f"Argument guess_p1 should be either None or a ({m}, {m}) array.")
+
+    # assign & check initial guess for P2
+    if guess_p2 is None:
+        guess_p2 = np.eye(n)
+    if guess_p2.shape != (n, n):
+        raise ValueError(f"Argument guess_p2 should be either None or a ({n}, {n}) array.")
 
     if options is None:
         options = {"tol": 1.0e-8, "maxiter": 500, "k": 3}

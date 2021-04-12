@@ -370,12 +370,7 @@ def permutation_2sided(
           IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
 
     """
-    # if not (isinstance(options, (np.int, np.int32, np.int64)) or options is None):
-    #     raise TypeError(
-    #         f"Type of kopt parameter {type(options)} should be an positive integer "
-    #         f"or None."
-    #     )
-
+    # check single argument
     if not isinstance(single, bool):
         raise TypeError(f"Argument single is not a boolean! Given type={type(single)}")
 
@@ -393,7 +388,7 @@ def permutation_2sided(
         raise ValueError(f"For single={single}, matrix B should be square but B.shape={new_b.shape}"
                          "Check pad, unpad_col, and unpad_row arguments.")
 
-    # print a statment if user-specified guess is not used
+    # print a statement if user-specified guess is not used
     if method.startswith("approx") and guess_p1 is not None:
         print(f"Method={method} does not use an initial guess, so guess_p1 is ignored!")
     if method.startswith("approx") and guess_p2 is not None:
@@ -417,8 +412,16 @@ def permutation_2sided(
     if guess_p2.shape != (n, n):
         raise ValueError(f"Argument guess_p2 should be either None or a ({n}, {n}) array.")
 
-    if options is None:
-        options = {"tol": 1.0e-8, "maxiter": 500, "k": 3}
+    # check options dictionary & assign default keys
+    defaults = {"tol": 1.0e-8, "maxiter": 500, "k": 3}
+    if options is not None and not isinstance(options, dict):
+        raise ValueError(f"Argument options should be a dictionary. Given type={type(options)}")
+    if options is not None:
+        if not all([k in defaults.keys() for k in options.keys()]):
+            raise ValueError(f"Argument options should only have {defaults.keys()} keys. "
+                             f"Given options contains {options.keys()} keys!")
+        # update defaults dictionary to use the specified options
+        defaults.update(options)
 
     # 2-sided permutation Procrustes with two transformations
     # -------------------------------------------------------
@@ -426,12 +429,12 @@ def permutation_2sided(
         if method == "flip-flop":
             # compute permutations using flip-flop algorithm
             perm1, perm2, error = _permutation_2sided_2trans_flipflop(
-                new_a, new_b, options["tol"], options["maxiter"], guess_p1, guess_p2)
+                new_a, new_b, defaults["tol"], defaults["maxiter"], guess_p1, guess_p2)
         elif method == "k-opt":
             # compute permutations using k-opt heuristic search
             fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
             perm1, perm2, error = kopt_heuristic_double(
-                fun_error, p1=guess_p1, p2=guess_p2, k=options["k"]
+                fun_error, p1=guess_p1, p2=guess_p2, k=defaults["k"]
             )
         else:
             raise ValueError(f"Method={method} not supported for single={single} transformation!")
@@ -471,7 +474,7 @@ def permutation_2sided(
 
     elif method == "k-opt":
         fun_error = lambda p: compute_error(pos_a, pos_b, p, p.T)
-        perm, error = kopt_heuristic_single(fun_error, p0=guess_p2, k=options["k"])
+        perm, error = kopt_heuristic_single(fun_error, p0=guess_p2, k=defaults["k"])
 
     elif method == "soft-assign":
         raise NotImplementedError
@@ -484,12 +487,12 @@ def permutation_2sided(
         if is_pos_a_symmetric and is_pos_b_symmetric:
             # undirected graph matching problem (iterative procedure)
             perm = _permutation_2sided_1trans_undirected(
-                pos_a, pos_b, guess_p2, options['tol'], options['maxiter']
+                pos_a, pos_b, guess_p2, defaults['tol'], defaults['maxiter']
             )
         else:
             # directed graph matching problem (iterative procedure)
             perm = _permutation_2sided_1trans_directed(
-                pos_a, pos_b, guess_p2, options['tol'], options['maxiter']
+                pos_a, pos_b, guess_p2, defaults['tol'], defaults['maxiter']
             )
     else:
         raise ValueError(f"Method={method} not supported for single={single} transformation!")

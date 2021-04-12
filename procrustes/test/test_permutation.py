@@ -706,8 +706,8 @@ def test_permutation_2sided_invalid_input_kopt_single_transform():
 #                   [0, 0, 0, 2, 6, 0, 0],
 #                   [0, 0, 1, 0, 0, 6, 0],
 #                   [0, 0, 1, 0, 0, 0, 6]])
-#     res = permutation_2sided(a, b, single=True, method="approx-normal1", pad=True, unpad_col=False,
-#                              unpad_row=False, scale=False)
+#     res = permutation_2sided(a, b, single=True, method="approx-normal1", pad=True,
+#                              unpad_col=False, unpad_row=False, scale=False)
 #     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t,
 #                              unpad_col=False, unpad_row=False, scale=False)
 #     perm = np.array([[1, 0, 0, 0, 0, 0, 0],

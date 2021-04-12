@@ -474,27 +474,6 @@ def test_permutation_2sided_1trans_umeyama_nmf_translate_scale(n):
     assert_almost_equal(res.error, 0, decimal=6)
 
 
-@pytest.mark.parametrize("n, ncol, nrow, ncol2, nrow2", np.random.randint(50, 100, (10, 5)))
-def test_permutation_2sided_1trans_umeyama_nmf_translate_scale_pad(n, ncol, nrow, ncol2, nrow2):
-    r"""Test 2sided-perm single with "normal2" by with translation, scaling and zero paddings."""
-    # define a random symmetric matrix
-    a = np.random.uniform(-10.0, 10.0, (n, n))
-    a = (a + a.T) / 2.0
-    p = generate_random_permutation_matrix(n)
-    b = np.dot(p.T, np.dot(a, p))
-    # pad the matrices with zeros
-    a = np.concatenate((a, np.zeros((n, ncol))), axis=1)
-    a = np.concatenate((a, np.zeros((nrow, n + ncol))), axis=0)
-    b = np.concatenate((b, np.zeros((n, ncol2))), axis=1)
-    b = np.concatenate((b, np.zeros((nrow2, n + ncol2))), axis=0)
-    res = permutation_2sided(a, b, single=True, method="approx-umeyama",
-                             unpad_col=True, unpad_row=True, translate=True, scale=True)
-    res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
-    assert_almost_equal(res.t, p, decimal=6)
-    assert_almost_equal(res.s, p.T, decimal=6)
-    assert_almost_equal(res.error, 0.0, decimal=6)
-
-
 def test_permutation_2sided_invalid_method():
     r"""Test 2sided-perm with invalid mode argument."""
     # define a random matrix

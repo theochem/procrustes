@@ -209,7 +209,7 @@ def test_permutation_2sided_1trans_umeyama(n):
     perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = permutation_2sided(array_a, array_b, single=True, method="approx_umeyama")
+    res = permutation_2sided(array_a, array_b, single=True, method="approx-umeyama")
     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
@@ -226,7 +226,7 @@ def test_permutation_2sided_1trans_small_matrices_umeyama_all_permutations(n):
         p[np.arange(n), comb] = 1
         # get array_b by permutation
         b = np.dot(p.T, np.dot(a, p))
-        res = permutation_2sided(a, b, single=True, method="approx_umeyama")
+        res = permutation_2sided(a, b, single=True, method="approx-umeyama")
         res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
         assert_almost_equal(res.t, p, decimal=6)
         assert_almost_equal(res.error, 0, decimal=6)
@@ -242,7 +242,7 @@ def test_permutation_2sided_1trans_symmetric_umeyama_translate_scale(n):
     shift = np.random.uniform(-10.0, 10.0, n)
     perm = generate_random_permutation_matrix(n)
     b = np.dot(perm.T, np.dot((14.7 * a + shift), perm))
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama", translate=True, scale=True)
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama", translate=True, scale=True)
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.s, perm.T, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
@@ -262,7 +262,7 @@ def test_permutation_2sided_single_transform_umeyama_translate_scale_all_permuta
         shift = np.random.uniform(-10.0, 10.0, n)
         array_b = np.dot(perm.T, np.dot(60 * array_a + shift, perm))
 
-        res = permutation_2sided(array_a, array_b, single=True, method="approx_umeyama",
+        res = permutation_2sided(array_a, array_b, single=True, method="approx-umeyama",
                                  translate=True, scale=True)
         assert_almost_equal(res.t, perm, decimal=6)
         assert_almost_equal(res.s, perm.T, decimal=6)
@@ -280,7 +280,7 @@ def test_permutation_2sided_single_transform_umeyama_translate_scale_zero_paddin
     a = np.concatenate((a, np.zeros((nrow, n + ncol))), axis=0)
     b = np.concatenate((b, np.zeros((n, ncol))), axis=1)
     b = np.concatenate((b, np.zeros((nrow, n + ncol))), axis=0)
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama",
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama",
                              unpad_col=True, unpad_row=True, translate=True, scale=True)
     assert_almost_equal(res.t, p, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
@@ -295,7 +295,7 @@ def test_permutation_2sided_1trans_umeyama_approx(n):
     # define array_b by permuting array_a
     perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot(array_a, perm))
-    res = permutation_2sided(array_a, array_b, single=True, method="approx_umeyama_svd")
+    res = permutation_2sided(array_a, array_b, single=True, method="approx-umeyama-svd")
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
 
@@ -313,7 +313,7 @@ def test_permutation_2sided_4by4_umeyama_approx_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        res = permutation_2sided(array_a, array_b, single=True, method="approx_umeyama")
+        res = permutation_2sided(array_a, array_b, single=True, method="approx-umeyama")
         assert_almost_equal(res.t, perm, decimal=6)
         assert_almost_equal(res.error, 0, decimal=6)
 
@@ -329,7 +329,7 @@ def test_permutation_2sided_one_transform_symmetric_umeyama_approx_translate_sca
     perm = generate_random_permutation_matrix(n)
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + shift), perm))
     # Check
-    res = permutation_2sided(array_a, array_b, single=True, method="approx_umeyama",
+    res = permutation_2sided(array_a, array_b, single=True, method="approx-umeyama",
                              translate=True, scale=True)
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
@@ -349,7 +349,7 @@ def test_permutation_2sided_single_transform_umeyama_approx_trans_scale_zero_pad
     array_b = np.concatenate((array_b, np.zeros((n, ncol))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((nrow, n + ncol))), axis=0)
     # Check
-    res = permutation_2sided(array_a, array_b, single=True, method="approx_umeyama",
+    res = permutation_2sided(array_a, array_b, single=True, method="approx-umeyama",
                              unpad_col=True, unpad_row=True, translate=True, scale=True)
     assert_almost_equal(res.t, perm, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
@@ -364,7 +364,7 @@ def test_permutation_2sided_1trans_normal1(n):
     # define array_b by permuting array_a
     p = generate_random_permutation_matrix(n)
     b = np.dot(p.T, np.dot(a, p))
-    res = permutation_2sided(a, b, single=True, method="approx_normal1")
+    res = permutation_2sided(a, b, single=True, method="approx-normal1")
     assert_almost_equal(res.t, p, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
 
@@ -380,7 +380,7 @@ def test_permutation_2sided_1trans_normal1_loop(n):
         p = np.zeros((n, n))
         p[np.arange(n), comb] = 1
         b = np.dot(p.T, np.dot(a, p))
-        res = permutation_2sided(a, b, single=True, method="approx_normal1")
+        res = permutation_2sided(a, b, single=True, method="approx-normal1")
         assert_almost_equal(res.t, p, decimal=6)
         assert_almost_equal(res.s, p.T, decimal=6)
         assert_almost_equal(res.error, 0.0, decimal=6)
@@ -394,7 +394,7 @@ def test_permutation_2sided_1trans_normal1_translate_scale(n):
     a = np.dot(a, a.T)
     p = generate_random_permutation_matrix(n)
     b = np.dot(p.T, np.dot((14.7 * a + 3.14), p))
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama", translate=True, scale=True)
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama", translate=True, scale=True)
     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t,
                              translate=True, scale=True)
     assert_almost_equal(res.t, p, decimal=6)
@@ -415,7 +415,7 @@ def test_permutation_2sided_1trans_umeyama_nmf_translate_scale_pad(n, ncol, nrow
     a = np.concatenate((a, np.zeros((nrow, n + ncol))), axis=0)
     b = np.concatenate((b, np.zeros((n, ncol2))), axis=1)
     b = np.concatenate((b, np.zeros((nrow2, n + ncol2))), axis=0)
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama",
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama",
                              unpad_col=True, unpad_row=True, translate=True, scale=True)
     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t,
                              unpad_col=True, unpad_row=True, translate=True, scale=True)
@@ -433,7 +433,7 @@ def test_permutation_2sided_single_transform_normal2(n):
     # define b by permuting a
     p = generate_random_permutation_matrix(n)
     b = np.dot(p.T, np.dot(a, p))
-    res = permutation_2sided(a, b, single=True, method="approx_normal2")
+    res = permutation_2sided(a, b, single=True, method="approx-normal2")
     assert_almost_equal(res.t, p, decimal=6)
     assert_almost_equal(res.error, 0, decimal=6)
 
@@ -450,7 +450,7 @@ def test_permutation_2sided_1trans_small_normal2_loop(n):
         p = np.zeros((n, n))
         p[np.arange(n), comb] = 1
         b = np.dot(p.T, np.dot(a, p))
-        res = permutation_2sided(a, b, single=True, method="approx_normal2",
+        res = permutation_2sided(a, b, single=True, method="approx-normal2",
                                  translate=True, scale=True)
         assert_almost_equal(res.t, p, decimal=6)
         assert_almost_equal(res.s, p.T, decimal=6)
@@ -467,7 +467,7 @@ def test_permutation_2sided_1trans_umeyama_nmf_translate_scale(n):
     p = generate_random_permutation_matrix(n)
     shift = np.random.uniform(-10.0, 10.0, n)
     b = np.dot(p.T, np.dot((14.7 * a + shift), p))
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama", translate=True, scale=True)
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama", translate=True, scale=True)
     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
     assert_almost_equal(res.t, p, decimal=6)
     assert_almost_equal(res.s, p.T, decimal=6)
@@ -487,7 +487,7 @@ def test_permutation_2sided_1trans_umeyama_nmf_translate_scale_pad(n, ncol, nrow
     a = np.concatenate((a, np.zeros((nrow, n + ncol))), axis=0)
     b = np.concatenate((b, np.zeros((n, ncol2))), axis=1)
     b = np.concatenate((b, np.zeros((nrow2, n + ncol2))), axis=0)
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama",
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama",
                              unpad_col=True, unpad_row=True, translate=True, scale=True)
     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
     assert_almost_equal(res.t, p, decimal=6)
@@ -599,7 +599,7 @@ def test_permutation_2sided_1trans_directed(n):
     p = generate_random_permutation_matrix(n)
     b = np.dot(p.T, np.dot(a, p))
     # Procrustes with no translate and scale
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama")
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama")
     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
     assert_almost_equal(res.t, p, decimal=6)
     assert_almost_equal(res.s, p.T, decimal=6)
@@ -616,7 +616,7 @@ def test_permutation_2sided_1trans_directed_all_permutations(n):
         perm = np.zeros((n, n))
         perm[np.arange(n), comb] = 1
         b = np.dot(perm.T, np.dot(a, perm))
-        res = permutation_2sided(a, b, single=True, method="approx_umeyama")
+        res = permutation_2sided(a, b, single=True, method="approx-umeyama")
         res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t)
         assert_almost_equal(res.t, perm, decimal=6)
         assert_almost_equal(res.s, perm.T, decimal=6)
@@ -629,7 +629,7 @@ def test_permutation_2sided_1trans_directed_translate_scale(n):
     a = np.random.uniform(-10.0, 10.0, (n, n))
     p = generate_random_permutation_matrix(n)
     b = np.dot(p.T, np.dot(15.3 * a + 5.45, p))
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama", translate=True, scale=True)
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama", translate=True, scale=True)
     # res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t,
     #                          translate=True, scale=True)
     assert_almost_equal(res.t, p, decimal=6)
@@ -648,7 +648,7 @@ def test_permutation_2sided_1trans_directed_translate_scale_padding(n):
     a = np.concatenate((a, np.zeros((10, n + 3))), axis=0)
     b = np.concatenate((b, np.zeros((n, 2))), axis=1)
     b = np.concatenate((b, np.zeros((6, n + 2))), axis=0)
-    res = permutation_2sided(a, b, single=True, method="approx_umeyama", unpad_col=True,
+    res = permutation_2sided(a, b, single=True, method="approx-umeyama", unpad_col=True,
                              unpad_row=True, translate=True, scale=True)
     assert_almost_equal(res.t, p, decimal=6)
     assert_almost_equal(res.s, p.T, decimal=6)
@@ -727,7 +727,7 @@ def test_permutation_2sided_invalid_input_kopt_single_transform():
 #                   [0, 0, 0, 2, 6, 0, 0],
 #                   [0, 0, 1, 0, 0, 6, 0],
 #                   [0, 0, 1, 0, 0, 0, 6]])
-#     res = permutation_2sided(a, b, single=True, method="approx_normal1", pad=True, unpad_col=False,
+#     res = permutation_2sided(a, b, single=True, method="approx-normal1", pad=True, unpad_col=False,
 #                              unpad_row=False, scale=False)
 #     res = permutation_2sided(res.new_a, res.new_b, single=True, method="nmf", guess_p2=res.t,
 #                              unpad_col=False, unpad_row=False, scale=False)

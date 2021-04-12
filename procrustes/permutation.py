@@ -157,29 +157,22 @@ def permutation_2sided(
     weight=None,
     lapack_driver="gesvd",
 ):
-    r"""Two-sided permutation Procrustes.
+    r"""Perform two-sided permutation Procrustes.
 
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
     single : bool
-        If true, the two permutation are assumed to be the same (i.e. two-sided permutation
-        Procrustes with one transformation). Further,
-        (1) if the input matrices `a` and `b` are symmetric within the threshold of 1.e-5,
-        undirected graph matching algorithm from [1] will be applied;
-        (2) if the input matrices `a` and `b` are not symmetric, the directed graph
-        matching algorithm from [1] is applied.
-        If false, the two permutation matrices can be different, i.e.
-        it is the two-sided permutation Procrustes with two transformations
-        (known as the regular two-sided permutation Procrustes here). An flip-flop
-        algorithm taken from [2] is used to iteratively solve this problem. Global optima is not
-        guaranteed here and may need to do an additional k-opt search.
-        Default=True.
+        If `True`, the single-transformation Procrustes is performed to obtain :math:`\mathbf{P}`.
+        If `False`, the two-transformations Procrustes is performed to obtain :math:`\mathbf{P}_1`
+        and :math:`\mathbf{P}_2`.
     method : str, optional
-        Default='kopt'
+        The method to solve for permutation matrices. For `single=False`, these include "flip-flop"
+        and "k-opt" methods. For `single=True`, these include "approx-normal1", "approx-normal2",
+        "approx-umeyama", "approx-umeyama-svd", "k-opt", "soft-assign", and "nmf".
     guess_p1 : np.ndarray, optional
         Guess for :math:`\mathbf{P}_1` matrix given as a 2D-array. This is only required for the
         two-transformations case specified by setting `single=False`.
@@ -189,24 +182,19 @@ def permutation_2sided(
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     unpad_col : bool, optional
-        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.
     unpad_row : bool, optional
-        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
-        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.
     translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
     scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs.
-        Default=True.
+        If True, convert the input to an array, checking for NaNs or Infs.
     options : dict, optional
-       Option dictionary
+       A dictionary of method options.
     weight : ndarray, optional
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
@@ -459,20 +447,20 @@ def permutation_2sided(
     pos_a = new_a + shift
     pos_b = new_b + shift
 
-    if method == "approx_normal1":
+    if method == "approx-normal1":
         tmp_a = _guess_permutation_2sided_1trans_normal1(a)
         tmp_b = _guess_permutation_2sided_1trans_normal1(b)
         perm = permutation(tmp_a, tmp_b).t
 
-    elif method == "approx_normal2":
+    elif method == "approx-normal2":
         tmp_a = _guess_permutation_2sided_1trans_normal2(a)
         tmp_b = _guess_permutation_2sided_1trans_normal2(b)
         perm = permutation(tmp_a, tmp_b).t
 
-    elif method == "approx_umeyama":
+    elif method == "approx-umeyama":
         perm = _guess_permutation_2sided_1trans_umeyama(pos_a, pos_b)
 
-    elif method == "approx_umeyama_svd":
+    elif method == "approx-umeyama-svd":
         perm = _guess_permutation_2sided_1trans_umeyama_approx(a, b, lapack_driver)
 
     elif method == "k-opt":

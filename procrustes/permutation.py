@@ -165,7 +165,7 @@ def permutation_2sided(
         The 2d-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
         The 2d-array :math:`\mathbf{B}` representing the reference matrix.
-    single : bool
+    single : bool, optional
         If `True`, the single-transformation Procrustes is performed to obtain :math:`\mathbf{P}`.
         If `False`, the two-transformations Procrustes is performed to obtain :math:`\mathbf{P}_1`
         and :math:`\mathbf{P}_2`.
@@ -414,9 +414,9 @@ def permutation_2sided(
 
     # check options dictionary & assign default keys
     defaults = {"tol": 1.0e-8, "maxiter": 500, "k": 3}
-    if options is not None and not isinstance(options, dict):
-        raise ValueError(f"Argument options should be a dictionary. Given type={type(options)}")
     if options is not None:
+        if not isinstance(options, dict):
+            raise ValueError(f"Argument options should be a dictionary. Given type={type(options)}")
         if not all([k in defaults.keys() for k in options.keys()]):
             raise ValueError(f"Argument options should only have {defaults.keys()} keys. "
                              f"Given options contains {options.keys()} keys!")

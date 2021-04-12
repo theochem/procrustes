@@ -393,6 +393,12 @@ def permutation_2sided(
         raise ValueError(f"For single={single}, matrix B should be square but B.shape={new_b.shape}"
                          "Check pad, unpad_col, and unpad_row arguments.")
 
+    # print a statment if user-specified guess is not used
+    if method.startswith("approx") and guess_p1 is not None:
+        print(f"Method={method} does not use an initial guess, so guess_p1 is ignored!")
+    if method.startswith("approx") and guess_p2 is not None:
+        print(f"Method={method} does not use an initial guess, so guess_p2 is ignored!")
+
     # get the number of rows & columns of matrix A
     m, n = new_a.shape
 

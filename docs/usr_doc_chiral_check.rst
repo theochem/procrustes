@@ -25,79 +25,95 @@
 Chirality Check
 ===============
 
-Chirality is a symmetry property with great significance in chemistry, biology and pharmaceutical
-science. Here we show how to determine if two compounds are enantiomers by using rotational
-procrustes method. Suppose we have two compounds with the same formula: CHFClBr and there is one
-chiral carbon atom in each of them. The absolute configuration of the compounds have been labeled in
-the figure.
+In chemistry, a molecule is chiral if it cannot be superimposed onto its mirror image by any
+combination of translation and rotation. These non-supposable mirror images are called
+enantiomers which share identical chemical and physical properties, but have distinct chemical
+reactivity and optical rotation properties.
 
-.. _label2:
-.. figure:: examples/chirality_check/compounds.jpg
-    :align: center
-    :figclass: align-center
+.. figure:: notebooks/notebook_data/chirality_checking/chirality_checking.png
+   :align: center
+   :figwidth: 100%
+   :figclass: align-center
 
-    Ball-stick model of enantiomers
+   Enantiomers prediction of CHFClBr with rotational-orthogonal Procrustes by comparing atomic coordinates.
 
-The idea behind our example is that we compare the error difference for alignment with only rotation
-and alignment of rotation after reflection. If the difference is big, we can conclude that there is
-a chiral carbon in each molecule.
-
-We have extracted the 3D coordinates of the molecule into two different files, namely "R.dat" and
-"S.dat". We compute the reflection of the first molecule after importing the coordinates, followed
-by a rotation. Moreover, we perform another rotational alignment without reflection. Now, we are at
-position to conclusion based the error difference.
-
+This example shows how easily the `Procrustes` library can be used to check whether two geometries
+of the CHFClBr molecule are enantiomers using
+`IOData <https://github.com/theochem/iodata>`_ library to obtain their
+three-dimensional coordinates from XYZ files (**Fig. (i)**). This is done by testing whether their
+coordinates can be matched through translation and rotation (i.e., rotational Procrustes);
+the obtained Procrustes error of 26.09 Å reveals that these two structures are not identical.
+However, it is confirmed that the two coordinates are enantiomers because they can be matched
+through translation, rotation, and reflection (i.e., orthogonal Procrustes) gives a Procrustes
+error of :math:`4.43 \times 10^{-8} Å`; thus, reflection is essential to match the structures.
 
 .. code-block:: python
-  :linenos:
+    :linenos:
 
-  # import libraries
-  import numpy as np
-  from procrustes import *
+    # load the libraries
+    import numpy as np
 
-  def chiral_check(A_coords, B_coords):
-      r"""Check if a organic compound is chiral.
+    from iodata import load_one
+    from procrustes import orthogonal, rotational
 
-      Parameters
-      ----------
-      A_coords : string
-          Atomic coordinates of the first organic compound A.
-      B_coords : string
-          Atomic coordinates of the first organic compound B.
-      Returns
-      -------
-      A : ndarray
-          3D coordinates of the first organic compound A.
-      B : ndarray
-          3D coordinates of the first organic compound B.
-      """
+    # load CHClFBr enantiomers' coordinates from XYZ files
+    a = load_one("notebook_data/chirality_checking/enantiomer1.xyz").atcoords
+    b = load_one("notebook_data/chirality_checking/enantiomer2.xyz").atcoords
 
-      reflection = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
-      # create the reflection of compound A over the yz plane
-      A_ref = np.dot(A_coords, reflection)
-      # Compute the rotational procrustes
-      res = rotational(A_coords, B_coords,
-                       translate=True,
-                       scale=False,
-                       remove_zero_col=False,
-                       remove_zero_row=False)
-      # Compute the error: reflection + rotation
-      res_ref = rotational(A_ref, B_coords,
-                           translate=True,
-                           scale=False,
-                           remove_zero_col=False,
-                           remove_zero_row=False)
+    # rotational Procrustes on a & b coordinates
+    result_rot = rotational(a, b, translate=True, scale=False)
+    print("Error =", result_rot.error)
 
-      if res["e_opt"] / res_ref["e_opt"] > 10:
-          print("These two compounds are enantiomers "
-                "and there is at least one chiral center in each of them.")
-      else:
-          print("These two compounds are not enantiomers "
-                "and there is no chiral center in any of them.")
+    # rotational Procrustes on a & b coordinates
+    result_rot = rotational(a, b, translate=True, scale=False)
+    print("Error =", result_rot.error)
 
-  if __name__ == "__main__":
-      chiral_check(A_data, B_data)
+Now we define a function to plot the coordinates and then plot the coordinates only with rotation,
 
-The error for only ration operation is 7.30 while it becomes 1.24e-08 after a reflection operation.
-Therefore, this example showed how we can use rotational procrustes to check chirality in organic
-compounds.
+.. code-block:: python
+    :linenos:
+
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
+    The error for only ration operation is 7.30 while it becomes 1.24e-08 after a reflection operation.
+    def plot_atom_coordinates(coords1, coords2,Therefore, this example showed how we can use rotational procrustes to check chirality in organic
+                              figsize=(12, 10),compounds.
+                              fontsize_label=14,
+
+    # rotated coordinates
+    a_rot = np.dot(a, result_rot.t)
+
+    # plot coordinates with only rotation
+    plot_atom_coordinates(a_rot, b,
+                          figsize=(10, 8),
+                          fontsize_label=14,
+                          fontsize_title=16,
+                          fontsize_legend=16,
+                          label1="enantiomer1 with rotation",
+                          label2="enantiomer2",
+                          title="Error={:0.2f}".format(result_rot.error),
+                          figfile=None)
+
+Then we check the case with both rotation and reflection,
+
+.. code-block:: python
+    :linenos:
+
+    # orthogonal Procrustes on a & b coordinates
+    result_ortho = orthogonal(a, b, translate=True, scale=False)
+    print("Error =", result_ortho.error)
+
+    # rotated and refelction coordinates
+    a_ortho = np.dot(a, result_ortho.t)
+
+    # plot coordinates with only rotation
+    plot_atom_coordinates(a_ortho, b,
+                          figsize=(10, 8),
+                          fontsize_label=14,
+                          fontsize_title=16,
+                          fontsize_legend=16,
+                          label1="enantiomer1 with orthoation and reflection",
+                          label2="enantiomer2",
+                          title="Error={:0.2f}".format(result_ortho.error),
+                          figfile=None)

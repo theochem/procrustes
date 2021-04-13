@@ -22,16 +22,13 @@
     : --
 
 
-Ranking by Reordering Method
-============================
+Ranking by Reordering
+=====================
 
-In most football matches, the double round-robin method is often used, where
-each team will play against all other teams at home and then play against them
-in other team place. In this part, we will use :class:`procrustes.permutation_2sided` to compute the
-rank by reordering method.
-
-Here is an example. The data is taken from :cite:`langville2012s` and the following table
-shows the pair-wise relationship for 5 football teams.
+The problem of ranking a set of objects is ubiquitous not only in everyday life, but also for
+many scientific problems such as information retrieval, recommender systems, natural language
+processing, and drug discovery. In this tutorial, we will rank footable teams based on the game
+scores.
 
 .. table:: Team by Team Game Score Data
    :align: center
@@ -46,50 +43,53 @@ shows the pair-wise relationship for 5 football teams.
    VT        45       0       27     38        0
    ======= ======= ======= ======= ======= =======
 
-We introduce the concept of ranking vector, which can be cast as a permutation of the integer 1 to n
-that ranks all the teams. For example, the
-:math:`{rank\_vec}^{\top} = [1,3,4,5,2]` for team_A, team_B, team_C, team_D, team_E respectively.
-the :math:`rank\_vec` assigns team_A with rank position 1, team_E with rank position 2 and so on.
-The ranking vector with length :math:`n` can result in a :math:`n \times n` *rank-differential
-matrix* which is a symmetric reordering of the *fundamental rank-differential matrix*
-:math:`\hat{R}_{n \times n}`.
+The code block below shows how easily the *Procrustes* library can be used to rank five
+American collegiate football teams, where each team plays one game against every other team,
+using their score-differentials as summarized in Table 1 (The data taken from A. N. Langville, C.
+D. Meyer, *Ranking by Reordering Methods*, Princeton University Press, 2012, Ch. 8, pp. 97–112.
+:cite:`langville2012s`).
+
+Here, each team is given a zero score for a game they lost (e.g., Duke lost to every other team)
+and the score difference is calculated for games won (e.g., Miami beat Duke by 45 points and UNC
+by 18 points). These results are also summarized in the square score-differential matrix
+:math:`\mathbf{A}` in **Fig. (i)**. Two-sided permutation Procrustes can be used to rank these
+teams, but one needs to define a proper target matrix. Traditionally, the rank-differential matrix
+has been used for this purpose and is defined for :math:`n` teams as,
 
 .. math::
-    \begin{bmatrix}
-      0 & 1 & 2 & \cdots & n-1 \\
-        & 0 & 1 & \cdots & n-2 \\
-        &   &\ddots &\ddots & \vdots \\
-        &   &   & \ddots & 1 \\
-        &   &   &        & 0
-    \end{bmatrix}
+   \begin{equation}
+       \mathbf{R}_{n \times n} =
+       \begin{bmatrix}
+           0 & 1 & 2 & \cdots & n-1 \\
+             & 0 & 1 & \cdots & n-2 \\
+             &   &\ddots &\ddots & \vdots \\
+             &   &   & \ddots & 1 \\
+             &   &   &        & 0
+       \end{bmatrix}
+   \end{equation}
 
-:math:`\hat{R}` is built from the *fundamental ranking vector* :math:`\hat{r}` where the :math:`n`
-items appear in a ascending pattern.
-
-.. math::
-    \begin{bmatrix}
-      1 \\
-      2 \\
-      3 \\
-      \vdots \\
-      n
-    \end{bmatrix}
-
-We can formulate for 5 football team gaming score into a matrix :math:`D`,
+The rank-differential matrix :math:`\mathbf{R} \in \mathbb{R}^{n \times n}` is an upper-triangular
+matrix and its :math:`ij`-th element specifies the difference in ranking between team :math:`i` and
+team :math:`j`. This a sensible target for the score-differential matrix. Now,
+the two-sided permutation Procrustes method can be used to find the permutation matrix that
+maximizes the similarity between the score-differential matrix, :math:`\mathbf{A}`, and the
+rank-differential matrix based on the definition of rank-differential matrix,
+:math:`\mathbf{B}` (**Fig. (ii)**)
 
 .. math::
-    D =
-    \begin{bmatrix}
-        0    &   0    &   0   &    0    &    0 \\
-       45    &   0    &  18   &    8    &   20 \\
-        3    &   0    &   0   &    2    &    0 \\
-       31    &   0    &   0   &    0    &    0 \\
-       45    &   0    &   27  &   38    &    0 \\
-    \end{bmatrix}&
+   \begin{equation}
+      \min_{\mathbf{P}} {\left\lVert \mathbf{P}^{\top} \mathbf{A} \mathbf{P} - \mathbf{B}
+         \right\rVert}_{F}^2
+   \end{equation}
 
-Now the problem becomes finding a optimal permutation matrix :math:`Q` that minimizes
-:math:`\left\lVert Q^{\top} D Q - \hat{R} \right\rVert` and more detailed information can be found
-in reference.
+This results to :math:`[5,2,4,3,1]` as the final rankings of the teams (**Fig. (iii)**).
+
+.. figure:: notebooks/notebook_data/ranking_reordering/ranking.png
+   :align: center
+   :figwidth: 100%
+   :figclass: align-center
+
+   Ranking by reordering with two-sided permutation with one-transformation
 
 In order to compute the *ranking vector*, we need the *fundamental rank-differential matrix*
 :math:`\hat{R}_{n \times n}`. So we build a function
@@ -97,58 +97,31 @@ In order to compute the *ranking vector*, we need the *fundamental rank-differen
 .. code-block:: python
    :linenos:
 
-   # import required libraries
    import numpy as np
+
    from procrustes import permutation_2sided
 
-   def rank_differential(D):
-       r""" Compute the rank differential based on the shape of input data."""
+   # input score-differential matrix
+   A = np.array([[ 0, 0, 0 ,  0,  0 ],    # Duke
+                 [45, 0, 18,  8,  20],    # Miami
+                 [ 3, 0, 0 ,  2,  0 ],    # UNC
+                 [31, 0, 0 ,  0,  0 ],    # UVA
+                 [45, 0, 27, 38,  0 ]])   # VT
 
-       N = np.shape(D)[0]
-       R_hat = np.zeros((N, N))
-       # Compute the upper triangle part of R_hat
-       a = []
-       for each in range(N):
-           # print(each)
-           a.extend(range(0, N-each))
-       # Get the R_hat
-       R_hat[np.triu_indices_from(R_hat, 0)] = a
-       return R_hat
+   # make rank-differential matrix
+   n = A.shape[0]
+   B = np.zeros((n, n))
+   for index in range(n):
+       B[index, index:] = range(0, n - index)
 
-Now we can use the function to compute the *fundamental rank-differential matrix*
-:math:`\hat{R}_{n \times n}` by using :math:`D` followed by two sided permutation Procrustes
-computation.
+   # rank teams using two-sided Procrustes
+   result = permutation_2sided(A, B, single=True,
+                               mode='normal1', tol=10.e-6)
 
-.. code-block:: python
-   :linenos:
+   # compute teams' ranks
+   _, ranks = np.where(result.t == 1)
+   ranks += 1
+   print("Ranks = ", ranks)     # displays [5, 2, 4, 3, 1]
 
-   def ranking(D, perm_mode='normal1'):
-       r""" Compute the ranking vector."""
-       _check_input(D)
-
-       R_hat = rank_differential(D)
-       res = permutation_2sided(D, R_hat,
-                                remove_zero_col=False,
-                                remove_zero_row=False,
-                                mode=perm_mode)
-       # Compute the rank
-       _, rank = np.where(res["array_u"] == 1)
-       rank += 1
-
-       return rank
-
-Here the result *rank* should added by 1 because python's index starts from zero, which means the
-rank we first computed was :math:`rank^{\top} = [4, 1, 3, 2, 0]`. Of note, sometimes, one needs to
-check the input data :math:`D` is squared or not. Here we provide a simple function.
-
-.. code-block:: python
-   :linenos:
-
-   def _check_input(D):
-       r"""Check if the input is squared."""
-       m, n = np.shape(D)
-       if not m == n:
-           raise ValueError("Input matrix should be squared one.")
-
-All the codes have been wrapped in a single python executable file which locates in the
-**Example/ranking** folder.
+Why we need to add all the rank values by 1? Because Python's list index starts with 0, but we
+often index starting from 1 for physical objects.

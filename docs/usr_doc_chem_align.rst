@@ -22,217 +22,169 @@
     : --
 
 
-Protein Structure Alignment
-===========================
+Chemical Structure Alignment
+============================
 
+Molecular alignment is a fundamental problem in cheminformatics and can be used for structure
+determination, similarity based searching, and ligand-based drug design et al. This problem can be
+solved by orthogonal Procrustes when given two matrices representing three-dimensional
+coordinates. The code block below shows the ease-of-use of the Procrustes library for protein
+structure alignment, one of the most fundamental problems in structural biophysics.
 
-Protein structure alignment is one of the fundamental problems in structural biology and structured
-based drug design. A well-known structure alignment method is Kabsch algorithm
-:cite:`kabsch1976solution,kabsch1978discussion`, which involves three steps, centroid of
-the coordinates,  computation of the covariance matrix and finding the optimal rotation matrix. When
-translation is a mandatory operation, the problems evolves into a rotational Procrustes problem.
+Here, we are going to use procrustes.rotational for protein structure alignment as an example,
+which is one of the fundamental problems in structural biology and structured-based drug design.
+A well-known structure alignment method is the Kabsch
+algorithm :cite:`kabsch1976solution,kabsch1978discussion`, which involves three steps:
 
-We will use the human deocyhemoglobin X-ray crystal structure as an example (PDB ID: 2HHB) which was
-inspired by the example in https://biomolecularstructures.readthedocs.io/en/latest/kabsch/.
-The structure is of cyclic - C2 global symmetry, where chain A (magenta) and chain C (green) are
-hemoglobin (deoxy) alpha chains, and chain B and D are hemoglobin (deoxy) beta chains.
+1. translation of the structures to have a common centroid;
+2. computation of the coordinate covariance matrix;
+3. finding the optimal rotation matrix.
 
-.. _label1:
-.. figure:: examples/protein_alignment/protein_symmetry2.png
+This is simply a rotational Procrustes problem.
+
+Here, we used *IOData* library to load the Protein Data Bank (PDB)
+file format containing the X-ray crystal structure of the human deoxyhemoglobin (PDB ID: 2HHB).
+This selection of this protein was inspired by the `BiomolecularStructures library
+<https://biomolecularstructures.readthedocs.io/en/latest/kabsch/>`_ which contains the well-known
+Kabsch algorithm for structure alignment. This algorithm is the same as rotational Procrustes,
+which allows one to compare the accuracy and efficiency of our implementation to those of
+existing libraries.
+
+The structure of 2HHB has
+cyclic-:math:`C_2`  global symmetry, where chain A and chain C (chain B and chain D) are hemoglobin
+deoxy-alpha (beta) chains as denoted in **Fig. (i)**. Thus the rotational Procrustes can
+be used to align the :math:`C_{\alpha}` atoms in chain A and C of the protein to show that they
+are homologous. The root-mean-square deviation (RMSD) is traditionally used to assess the
+discrepancy between structures before and after the translation-rotation transformation with 39.5
+Å (**Fig. (ii)**) and 0.23 Å (**Fig. (iii)**) respectively.
+
+.. figure:: notebooks/notebook_data/chemical_strcuture_alignment/protein_alignment.png
     :align: center
+    :figwidth: 100%
     :figclass: align-center
 
-    X-ray crystal structure of human deocyhemoglobin (PDB ID: 2HHB)
-
-Before we align the coordinates let's take a look at the 3-dimensional coordinates of the
-:math:`C_{\alpha}` in the backbones. This function will extract the coordinates by using the
-Biopython (http://biopython.org/). The installation guide of Biopython can be found
-http://biopython.org/DIST/docs/install/Installation.html.
+    Protein structure alignment with rotational Procrustes
 
 .. code-block:: python
-  :linenos:
+    :linenos:
 
-  def get_coordinates(file_name, pdb_id, chain_id):
-      r"""
-      Build alpha carbon coordinates matrix from PDB file.
+    import numpy as np
 
-      Parameters
-      ----------
-      file_name : string
-          PDB file name.
-      pdb_id : string
-          PDB ID.
-      chain_id : string
-          Chain ID. Possible inputs can be any of 'A', 'B', 'C', et al., if it exists in the
-          protein.
+    from iodata import load_one
+    from iodata.utils import angstrom
+    from procrustes import rotational
 
-      Returns
-      -------
-      matrix : float
-          3D coordinates of the assigned PDB structure.
+    # load PDB
+    pdb = load_one("notebook_data/chemical_strcuture_alignment/2hhb.pdb")
 
-      """
+    # get coordinates of C_alpha atoms in chains A & C (in angstrom)
+    chainid = pdb.extra['chainids']
+    attypes = pdb.atffparams['attypes']
+    # alpha carbon atom coordinates in chain A
+    ca_a = pdb.atcoords[(chainid == 'A') & (attypes == 'CA')] / angstrom
+    # alpha carbon atom coordinates in chain A
+    ca_c = pdb.atcoords[(chainid == 'C') & (attypes == 'CA')] / angstrom
 
-      # permissive parser
-      p = PDBParser(PERMISSIVE=1)
-      structure = p.get_structure(pdb_id, file_name)
-      # get X-ray crystal structure
-      matrix = []
-      chain = structure[0][chain_id]
-
-      for residue in chain:
-          for atom in residue:
-              # Using residue['CA'] results in error
-              if atom.get_id() == 'CA':
-                  matrix += list(atom.get_vector())
-      matrix = np.asarray(matrix).reshape(-1, 3)
-
-      return matrix
-
-
-The PDBConstructionWarning warnings will not have side effects on extracting the coordinates. This
-function serve as a script to extract the coordinate information by given file name, PDB ID and
-chain ID. Notice that all the inputs are strings. Moreover, a `compute_rmsd` function is defined to
-calculate the root mean squared derivation (RMSD) values.
+Root-mean-square deviation (RMSD) is a used to assess the discrepancy between structures, and was
+calculated before and after superposition translation and rotation operations were performed by
+rotational orthogonal Procrustes. The RMSD values before alignment is calculated as 39.47 Å,
+reaffirming that chain A and chain C are far away from each other.
 
 .. code-block:: python
-   :linenos:
+    :linenos:
 
-   def compute_rmsd(A, B):
-       r"""
-       Calculate root mean square deviation (RMSD).
+    rmsd_before = np.sqrt(np.mean(np.sum((ca_a - ca_c)**2, axis=1)))
+    print("RMSD of initial coordinates:", rmsd_before)
 
-       Parameters
-       ----------
-       A : ndarray
-       B : ndarray
+    # define a function to plot the coordinates
 
-       Returns
-       -------
-       rmsd : float
-           RMSD value of A and B.
-       """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 
-       # Check if A and B are with the same dimension
-       if A.shape != B.shape:
-           raise ValueError("INput matrices must be with the same shape\
-                            for rmsd calculations.")
-       D = len(A[0, :])
-       N = len(A[:, 0])
+    def plot_atom_coordinates(coords1, coords2,
+                              figsize=(12, 10),
+                              fontsize_label=14,
+                              fontsize_title=16,
+                              fontsize_legend=16,
+                              label1=None,
+                              label2=None,
+                              title=None,
+                              figfile=None):
+        """Plot Cartesian coordinates of given atoms.
 
-       # Compute rmsd
-       rmsd = 0.0
-       for a, b in zip(A, B):
-           rmsd += sum([(a[i] - b[i])**2.0 for i in range(D)])
-       return np.sqrt(rmsd/N)
+        Parameters
+        ----------
+        coords1: np.ndarray
+            Cartesian coordinates of given atom set 1.
+        coords2: np.ndarray
+            Cartesian coordinates of given atom set 2.
+        figsize : (float, float), optional
+            Figure size with width and height in inchies.
+        fontsize_label: int, optional
+            The font size for labels. Default=14.
+        fontsize_label: int, optional
+            The font size for title. Default=16.
+        label1 : str, optional
+            Label for coords1. Default=None.
+        label2 : str, optional
+            Label for coords2. Default=None.
+        title : str, optional
+            Figure title. Default=None.
+        figfile : str, optional
+            Figure file name to save it. Default=None.
 
-Now we can plot the coordinates before alignment which is with rmsd value.
+        """
+        fig = plt.figure(figsize=figsize)
+        ax = Axes3D(fig)
 
-.. code-block:: python
-   :linenos:
+        ax.scatter(xs=coords1[:, 0], ys=coords1[:, 1], zs=coords1[:, 2],
+                   marker="o", color="blue", s=40, label=label1)
+        ax.scatter(xs=coords2[:, 0], ys=coords2[:, 1], zs=coords2[:, 2],
+                   marker="o", color="red", s=40, label=label2)
 
-   # import required libraries
-   from Bio.PDB.PDBParser import PDBParser
-   from mpl_toolkits.mplot3d import Axes3D
-   import matplotlib.pyplot as plt
-   from procrustes import rotational
+        ax.set_xlabel("X", fontsize=fontsize_label)
+        ax.set_ylabel("Y", fontsize=fontsize_label)
+        ax.set_zlabel("Z", fontsize=fontsize_label)
+        ax.legend(fontsize=fontsize_legend, loc="best")
 
-   # before align
-   A = get_coordinates('2hhb.pdb', '2hhb', 'A')
-   C = get_coordinates('2hhb.pdb', '2hhb', 'C')
+        plt.title(title,
+                  fontsize=fontsize_title)
+        # save figure to a file
+        if figfile:
+            plt.savefig(figfile)
 
-   fig = plt.figure()
-   ax = fig.add_subplot(111, projection='3d')
+        plt.show()
 
-   ax.scatter(A[:,0], A[:,1], A[:,2], zdir='z', s=55, c='blue', label='chain_A')
-   ax.scatter(C[:,0], C[:,1], C[:,2], zdir='z', s=55, c='red', label='chain_C')
+    # plot the coordinates before alignment which reproduces Fig. (ii)
+    title = "Chain A and chain C before alignment with rmsd={:0.2f} $\AA$.".format(rmsd_before)
+    plot_atom_coordinates(coords1=ca_a,
+                          coords2=ca_c,
+                          label1="Chain_A",
+                          label2="Chain_C",
+                          title=title)
 
-   ax.set_xlabel('X', fontsize=20)
-   ax.set_ylabel('Y', fontsize=20)
-   ax.set_zlabel('Z', fontsize=20)
-
-   rmsd = compute_rmsd(A, C)
-
-   #ax.set_title(rmsd, fontsize=24)
-   ax.set_title('RMSD=39.468519767018776', fontsize=24)
-   ax.legend(fontsize=20)
-
-   plt.show()
-   # if you want to save the figure
-   # run plt.savefig('before_align')
-
-We can tell from the figure that the coordinates of chain A and chain C are quite far away from each
-other with an RMSD value of 39.5.
-
-.. figure:: examples/protein_alignment/before_align.png
-    :align: center
-    :figclass: align-center
-
-    Coordinates and RMSD value before alignment (PDB ID: 2HHB)
-
-
-
-In order to perform the alignment of :math:`C_{\alpha}` of the protein scaffold, we define the
-`align` function using the rotational Procrustes.
+Now, we use rotational Procrustes to perform the structure alignment and plot the coordinates.
 
 .. code-block:: python
-   :linenos:
+    :linenos:
 
-   def align(file_name_A, pdb_id_A, chain_id_A,
-             file_name_B, pdb_id_B, chain_id_B):
+    result = rotational(ca_a, ca_c, translate=True)
 
-       # Get inputs coordinate matrices
-       A = get_coordinates(file_name_A, pdb_id_A, chain_id_A)
-       B = get_coordinates(file_name_B, pdb_id_B, chain_id_B)
-       # Kabsch algorithm/ Procrustes rotation to
-       # align protein structure
-       # new_A is just the translated coordinate
-       res = rotational(A, B,
-                        remove_zero_col=False,
-                        remove_zero_row=False,
-                        translate=True)
-       # now new_A is the array after rotation
-       new_A = np.dot(res["new_a"], res["array_u"])
-       # Compute the rmsd values
-       rmsd = compute_rmsd(new_A, res["new_b"])
+    # compute transformed (translated & rotated) coordinates of chain A
+    ca_at = np.dot(result.new_a, result.t)
 
-       return new_A, res["new_b"], res["array_u"], rmsd
+    # now new_A is the array after rotation
+    rmsd_after = np.sqrt(np.mean(np.sum((ca_at - result.new_b)**2, axis=1)))
+    print("RMSD of transformed coordinates:", rmsd_after)
 
-We can perform the alignment by the defined function `align` and plot the coordinates as well.
+    # plot the coordinates before alignment which reproduces Fig. (iii)
+    title = "Chain A and chain C before alignment with rmsd={:0.2f} $\AA$.".format(rmsd_after)
+    plot_atom_coordinates(coords1=ca_at,
+                          coords2=result["new_b"],
+                          label1="Chain_A",
+                          label2="Chain_C",
+                          title=title)
 
-.. code-block:: python
-   :linenos:
-
-   # perform the alignment
-   new_A, new_C, rot_array, rmsd = align(file_name_A='2hhb.pdb', pdb_id_A='2hhb', chain_id_A='A',
-                                         file_name_B='2hhb.pdb', pdb_id_B='2hhb', chain_id_B='C')
-
-   fig = plt.figure()
-   ax = fig.add_subplot(111, projection='3d')
-
-   ax.scatter(new_A[:,0], new_A[:,1], new_A[:,2],
-              zdir='z', s=55,c='blue', label='chain_A_new')
-   ax.scatter(new_C[:,0], new_C[:,1], new_C[:,2],
-              zdir='z', s=55, c='red', label='chain_C_new')
-
-   ax.set_xlabel('X', fontsize=16)
-   ax.set_ylabel('Y', fontsize=16)
-   ax.set_zlabel('Z', fontsize=16)
-
-   #ax.set_title(rmsd, fontsize=24)
-   ax.set_title('RMSD=0.23003871056618516', fontsize=16)
-   ax.legend(fontsize=15)
-
-   plt.show()
-   # if you want to save the figure
-   # run plt.savefig('after_align')
-
-We can tell the function `align` efficiently aligned chain A and
-chain C, leading to a small RMSD value (0.23). We have wrapped the code into `protein_align.py` and
-people are free to use.
-
-.. figure:: examples/protein_alignment/after_align.png
-    :align: center
-    :figclass: align-center
-
-    Coordinates and RMSD value after alignment (PDB ID: 2HHB)
+All the Cα atoms become close to each other after to translation and rotation (the above figure)
+with rmsd value 0.23 :math:`\unicode{x212B}`. This affirms that the utility of rotational
+Procrustes in protein alignment.

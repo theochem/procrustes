@@ -36,12 +36,6 @@ In addition, the other optional arguments (not appearing in the code-block below
 the zero columns (on the right-hand side) and rows (at the bottom) should be removed prior to
 transformation.
 
-As a python library, Procrustes can be imported and used in python codes. People may get a better
-understanding of how to use the package by the implemented examples.
-
-Procrustes can be used as an computation library, either ending up with a script or a python
-package. Here is a snippet for script.
-
 .. code-block:: python
    :linenos:
 

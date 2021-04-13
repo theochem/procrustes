@@ -97,7 +97,7 @@ The computed result is shown in the **Fig. (iii)**, generating ideal matching of
 triple carbon-carbon bonds. The new matrix representation of :math:`\mathbf{A}` suggests that atom
 3 is empty since the third row and third column of :math:`\mathbf{A}` are zero (matrix elements
 in blue). That is, a virtual atom 3 was added to molecule :math:`\mathbf{A}` to align with atom 3
-in molecule :math:`\mathbf{B}`. Similarly, atoms 6 and 7 in molecule `\mathbf{B}` (matrix
+in molecule :math:`\mathbf{B}`. Similarly, atoms 6 and 7 in molecule :math:`\mathbf{B}` (matrix
 elements in blue) do not have meaningful matches in :math:`\mathbf{A}`, and are mapped to two
 virtual atoms, atom 6 and 7 in molecule :math:`\mathbf{A}`. This example is inspired by
 :cite:`zadeh2013molecular`.

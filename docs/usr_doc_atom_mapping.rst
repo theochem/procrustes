@@ -25,79 +25,79 @@
 Atom-Atom Mapping
 =================
 
-Atom-atom mapping can help chemists and biologist to get a better understanding of the reaction
-mechanisms and provide clues for lead compound optimization for medicinal chemists. In this example,
-we are going to use two sided permutation Procrustes, which has been implemented
-:class:`procrustes.permutation_2sided`.
+Given two molecular structures, it is important to be able to identify atoms that are chemically
+similar. This a commonly used in 3D QSAR pharmacore analysis, substructure searching, metabolic
+pathway identification, and chemical machine learning.
 
-The example we are going to use is shown below, which is the atom-atom mapping between
-*3,3‐dimethylpent‐1‐en‐4‐yne* and *but‐1‐en‐3‐yne*. For clarity, we denote
-*but‐1‐en‐3‐yne* molecule **A** and *3,3‐dimethylpent‐1‐en‐4‐yne* molecule **B**. What would be
-most reasonable mapping? If it is not mapping the double bounds and triple bonds respectively, it is
-not a good matching based on our chemical knowledge.
+The code block below shows how easily the Procrustes library can be used to map atoms of
+*but-1-en-3-yne* (A) and *3,3-dimethylpent-1-en-4-yne* (B) as depicted in **Fig. (i)**.
+Based on our chemical intuition, we can tell that the triple and double bonds of both molecules
+"match" one another; however, simple (geometric) molecular alignment based on three-dimensional
+coordinates does not identify that. The pivotal step is defining a representation that contains
+bonding information, and then using permutation Procrustes to match atoms between the two chemical
+structures.
 
-.. figure:: examples/atom_mapping/before_mapping.png
-    :align: center
-    :width: 450 px
-    :figclass: align-center
+Inspired by graph theory, we represented each molecule with an "adjacency" matrix where the
+diagonal elements are the atomic numbers and the off-diagonal elements are the bond orders
+(matrix :math:`\mathbf{A} \in \mathbb{R}^{4 \times 4}` and
+:math:`\mathbf{B} \in \mathbb{R}^{7 \times 7}`
+in **Fig. (ii)** ). The two-sided permutation Procrustes (:class:`procrustes.permutation_2sided`)
+with one-transformation can be used to find the optimal matching of the two matrices.
 
-    Two organic compounds for atom-atom mapping.
+.. figure:: notebooks/notebook_data/atom_atom_mapping/atom_atom_mapping.png
+   :align: center
+   :figwidth: 100%
+   :figclass: align-center
 
-In order to figure the mapping relationship, one needs to represent the molecules in a matrix
-format. We will save the nuclear charge as the diagonal elements and the bond orders for
-off-diagonal ones, which has been depicted below. In this way, the matrix
-:math:`A \in \mathcal{R}^{7 \times 7}` and the matrix :math:`B \in \mathcal{R}^{4 \times 4}` are
-built, both of which are symmetric. The atoms are also labeled for later discussion.
+   Atom-atom Mapping with Two-sided Permutation Procrustes
 
-.. figure:: examples/atom_mapping/data.png
-    :align: center
-    :width: 450 px
-    :figclass: align-center
+It is important to note that the permutation Procrustes requires the two matrices to be of the
+same size, so the smaller matrix :math:`\mathbf{A}` is padded with zero rows and columns to have
+same shape as matrix :math:`\mathbf{B}`. After obtaining the optimal permutation matrix
+:math:`\mathbf{P}`, the transformed matrix :math:`\mathbf{P^{\top}AP}` should be compared to
+matrix :math:`\mathbf{B}` for identifying the matching atoms; the zero rows/columns correspond to
+atoms in :math:`\mathbf{B}` for which there are no corresponding atoms in :math:`\mathbf{A}`. The
+mapping between atoms can be also directly deduced from matrix :math:`\mathbf{P}`,
 
-    Graphical representation for two molecules.
-
-Now we can compute the atom-atom mapping based on the matrices.
-
-.. code-block:: python
-   :linenos:
-
-   # import libraries
-   import numpy as np
-   from procrustes import permutation_2sided
-
-   def mol_align(A, B):
-       r"""Align two molecules using two sided permutation Procrustes with one
-       transformation.
-       """
-       # Compute the permutation matrix
-       res = permutation_2sided(A, B,
-                                transform_mode='single_undirected',
-                                remove_zero_col=False, remove_zero_row=False)
-       # Compute the transformed coordinates of molecule A
-       A = utils.setup_input_arrays(A)
-       new_A = np.dot(res["array_u"].T, np.dot(A, res["array_u"]))
-       # coordinates of molecule B
-       new_B = B
-
-       return new_A, new_B, res["array_u"], res["e_opt"]
-
-The calculations for our example is very simple,
+.. math::
+    \min_{\mathbf{P}} {\left\lVert \mathbf{P}^{\top} \mathbf{A} \mathbf{P} - \mathbf{B}
+        \right\rVert}_{F}^2
 
 .. code-block:: python
+    :linenos:
 
-    new_A_transformed, new_B, U, e_opt = mol_align(A, B)
+    import numpy as np
 
-.. figure:: examples/atom_mapping/atom_mapping1.png
-    :align: center
-    :width: 600 px
-    :figclass: align-center
+    from procrustes import permutation_2sided
 
-    Atom-atom mapping between two organic molecules
+    # Define molecule A representing "but-1-en-3-yne"
+    A = np.array([[6, 3, 0, 0],
+                  [3, 6, 1, 0],
+                  [0, 1, 6, 2],
+                  [0, 0, 2, 6]])
 
+    # Define molecule B representing "3,3‐dimethylpent‐1‐en‐4‐yne"
+    B = np.array([[6, 3, 0, 0, 0, 0, 0],
+                  [3, 6, 1, 0, 0, 0, 0],
+                  [0, 1, 6, 1, 0, 1, 1],
+                  [0, 0, 1, 6, 2, 0, 0],
+                  [0, 0, 0, 2, 6, 0, 0],
+                  [0, 0, 1, 0, 0, 6, 0],
+                  [0, 0, 1, 0, 0, 0, 6]])
 
-We can tell from the figure that the number of atoms in molecule **A** has been extended to 7 by
-adding 3 virtual atoms, namely atom 3, 6 and 7. In this mapping, we can tell that the triple bonds
-and double bounds are aligned pair-wise and atom 3 in **B** corresponds to the newly generated atom
-3 in molecule **A**. The atoms, 6 and 7, in molecule **B** do not have a physical matching with any
-meanings. All the codes have been wrapped into a single script file. This example as inspired by
+    # two-sided permutation Procrustes
+    result = permutation_2sided(A, B, single=True, pad=True)
+
+    # Compute the transformed molecule A
+    P = result.t
+    new_A = np.dot(P.T, np.dot(result.new_a, P)).astype(int)
+    print("Transformed A: \n", new_A)    # compare to B
+
+The computed result is shown in the **Fig. (iii)**, generating ideal matching of the double and
+triple carbon-carbon bonds. The new matrix representation of :math:`\mathbf{A}` suggests that atom
+3 is empty since the third row and third column of :math:`\mathbf{A}` are zero (matrix elements
+in blue). That is, a virtual atom 3 was added to molecule :math:`\mathbf{A}` to align with atom 3
+in molecule :math:`\mathbf{B}`. Similarly, atoms 6 and 7 in molecule `\mathbf{B}` (matrix
+elements in blue) do not have meaningful matches in :math:`\mathbf{A}`, and are mapped to two
+virtual atoms, atom 6 and 7 in molecule :math:`\mathbf{A}`. This example is inspired by
 :cite:`zadeh2013molecular`.

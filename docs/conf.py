@@ -80,6 +80,27 @@ nbsphinx_execute_arguments = [
 ]
 # nbsphinx_input_prompt = 'In [%s]:'
 # nbsphinx_output_prompt = 'Out[%s]:'
+# explicitly dis-/enabling notebook execution
+nbsphinx_execute = 'never'
+
+# Don't add .txt suffix to source files:
+html_sourcelink_suffix = ''
+
+# This is processed by Jinja2 and inserted before each notebook
+
+# nbsphinx_prolog = r"""
+nbsphinx_epilog = r"""
+{% set docname = env.docname.split("/")[-1] %}
+
+.. raw:: html
+
+.. role:: raw-html(raw)
+ :format: html
+.. nbinfo::
+ The corresponding file can be obtained from:
+
+ - Jupyter Notebook: :download:`{{docname+".ipynb"}}`
+ - Interactive Jupyter Notebook: :raw-html:`<a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=docs%2Fnotebooks%2F/{{ docname }}.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a>`    """
 
 autoapi_type = 'python'
 autoapi_dirs = ['../procrustes']

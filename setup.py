@@ -22,8 +22,19 @@
 # --
 """Setup and Install Script."""
 
+import os
 
 from setuptools import setup
+
+
+def get_version_info():
+    """Read __version__ from version.py, using exec, not import."""
+    fn_version = os.path.join("procrustes", "version.py")
+    myglobals = {}
+    with open(fn_version, "r") as f:
+        # pylint: disable=exec-used
+        exec(f.read(), myglobals)
+    return myglobals["__version__"]
 
 
 def get_readme():
@@ -32,9 +43,12 @@ def get_readme():
         return fhandle.read()
 
 
+VERSION = get_version_info()
+
+
 setup(
     name="qc-procrustes",
-    version="0.0.1b1",
+    version=VERSION,
     description="Procrustes Package",
     long_description=get_readme(),
     long_description_content_type='text/markdown',

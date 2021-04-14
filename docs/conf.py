@@ -222,7 +222,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Procrustes.tex', 'Procrustes Documentation',
-     'Ayers Lab', 'manual'),
+     'The QC-Devs Community', 'manual'),
 ]
 
 # -- Options for manual page output ---------------------------------------

@@ -5,3 +5,4 @@ sphinxcontrib-bibtex<2.0.0
 sphinx-autoapi>=1.5.1
 sphinx-copybutton>=0.3.1
 nbsphinx>=0.8.3
+ipython>=7.22.0

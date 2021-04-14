@@ -65,7 +65,9 @@ extensions = [
     # 'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.inheritance_diagram',
-    # 'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_console_highlighting',
+    # for adding “copy to clipboard” buttons to all text/code boxes
+    'sphinx_copybutton',
     # 'IPython.sphinxext.ipython_directive',
     'autoapi.extension',
     'nbsphinx',

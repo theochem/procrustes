@@ -25,6 +25,8 @@
 
 from setuptools import setup
 
+from procrustes import __version__
+
 
 def get_readme():
     """Load README.rst for display on PyPI."""
@@ -34,7 +36,7 @@ def get_readme():
 
 setup(
     name="qc-procrustes",
-    version="0.0.1b1",
+    version=__version__,
     description="Procrustes Package",
     long_description=get_readme(),
     long_description_content_type='text/markdown',

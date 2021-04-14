@@ -22,13 +22,17 @@
 # --
 """Package for Various Procrustes Algorithms."""
 
-
-from procrustes.utils import *
+from procrustes.generalized import *
+from procrustes.generic import *
 from procrustes.kopt import *
 from procrustes.orthogonal import *
 from procrustes.permutation import *
 from procrustes.rotational import *
 from procrustes.softassign import *
 from procrustes.symmetric import *
-from procrustes.generic import *
-from procrustes.generalized import *
+from procrustes.utils import *
+
+VERSION = (0, 0, 1, "beta")
+
+__version__ = ".".join(map(str, VERSION[:-1]))
+__release__ = ".".join(map(str, VERSION))

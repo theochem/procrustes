@@ -3,10 +3,6 @@
 # Required
 version: 2
 
-# Build documentation in the docs/ directory with Sphinx
-sphinx:
-  configuration: docs/conf.py
-
 # Build documentation with MkDocs
 #mkdocs:
 #  configuration: mkdocs.yml
@@ -27,6 +23,7 @@ python:
       path: .
   system_packages: true
 
+# Build documentation in the docs/ directory with Sphinx
 sphinx:
   builder: html
   configuration: docs/conf.py

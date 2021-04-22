@@ -65,10 +65,42 @@ extensions = [
     # 'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.inheritance_diagram',
-    # 'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_console_highlighting',
+    # for adding “copy to clipboard” buttons to all text/code boxes
+    'sphinx_copybutton',
     # 'IPython.sphinxext.ipython_directive',
     'autoapi.extension',
+    'nbsphinx',
     'sphinxcontrib.bibtex']
+
+# List of arguments to be passed to the kernel that executes the notebooks:
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+    "--InlineBackend.rc=figure.dpi=200",
+]
+# nbsphinx_input_prompt = 'In [%s]:'
+# nbsphinx_output_prompt = 'Out[%s]:'
+# explicitly dis-/enabling notebook execution
+nbsphinx_execute = 'never'
+
+# Don't add .txt suffix to source files:
+html_sourcelink_suffix = ''
+
+# This is processed by Jinja2 and inserted before each notebook
+
+# nbsphinx_prolog = r"""
+nbsphinx_epilog = r"""
+{% set docname = env.docname.split("/")[-1] %}
+
+.. raw:: html
+
+.. role:: raw-html(raw)
+ :format: html
+.. nbinfo::
+ The corresponding file can be obtained from:
+
+ - Jupyter Notebook: :download:`{{docname+".ipynb"}}`
+ - Interactive Jupyter Notebook: :raw-html:`<a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=docs%2Fnotebooks%2F/{{ docname }}.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a>`    """
 
 autoapi_type = 'python'
 autoapi_dirs = ['../procrustes']
@@ -79,11 +111,16 @@ templates_path = ['_templates']
 
 mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
+# mathjax configuration
+mathjax_config = {
+    'TeX': {'equationNumbers': {'autoNumber': 'AMS', 'useLabelIds': True}},
+}
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.ipynb']
 
 # The master toctree document.
 master_doc = 'index'
@@ -185,7 +222,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Procrustes.tex', 'Procrustes Documentation',
-     'Ayers Lab', 'manual'),
+     'The QC-Devs Community', 'manual'),
 ]
 
 # -- Options for manual page output ---------------------------------------

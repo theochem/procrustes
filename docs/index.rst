@@ -128,7 +128,7 @@ centers/scaling/sizes can be considered.
    :caption: User Documentation
 
    usr_doc_installization
-   usr_doc_quick_start
+   notebooks/Quick_Start.ipynb
    usr_doc_tutorials
    usr_doc_zref
 

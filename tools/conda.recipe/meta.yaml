@@ -1,0 +1,52 @@
+package:
+  version: "{{ PROJECT_VERSION }}"
+  name: 'procrustes'
+
+source:
+  path: ../../
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps"
+
+requirements:
+  host:
+    - python >=3.6
+    - numpy >=1.18.5
+    - scipy >=1.5.0
+    - pytest >=5.4.3
+    - setuptools
+  run:
+    - python >=3.6
+    - numpy >=1.18.5
+    - scipy >=1.5.0
+    - pytest >=5.4.3
+    - sphinx >=2.3.0
+
+test:
+  requires:
+    - python
+    - pytest
+    - pytest-xdist
+  imports:
+    - procrustes
+  commands:
+    - pytest --pyargs procrustes -v -n auto
+
+about:
+  summary: "Finding the optimal transformation(s) that makes two matrices as close as possible to each other."
+  description: |
+    This package supports general, generic, orthogonal, rotation, permutation, and
+    symmetric Procrustes problems, including both the normal one-sided approach and (for orthogonal
+    and permutation Procrustes) two-sided approaches, where both the rows and columns are
+    transformed. Softassign algorithm is also implemented to solve two-sided permutation Procrustes.
+  home: https://procrustes.readthedocs.io/en/latest/
+  doc_url: https://iodata.readthedocs.io/en/latest/
+  dev_url: https://github.com/theochem/procrustes/
+  license: GNU Version 3
+  license_family: GPL
+  license_file: LICENSE
+
+extra:
+  maintainers: QC-Dev community  <qcdevs@gmail.com>

@@ -23,7 +23,20 @@
 """Setup and Install Script."""
 
 
+import os
+
 from setuptools import setup
+
+
+def get_version_info():
+    """Read __version__ and DEV_CLASSIFIER from version.py, using exec, not import."""
+    fn_version = os.path.join("procrustes", "_version.py")
+    if os.path.isfile(fn_version):
+        myglobals = {}
+        with open(fn_version, "r") as f:
+            exec(f.read(), myglobals)  # pylint: disable=exec-used
+        return myglobals["__version__"], myglobals["DEV_CLASSIFIER"]
+    return "0.0.0.post0", "Development Status :: 2 - Pre-Alpha"
 
 
 def get_readme():
@@ -32,9 +45,11 @@ def get_readme():
         return fhandle.read()
 
 
+VERSION, DEV_CLASSIFIER = get_version_info()
+
 setup(
     name="qc-procrustes",
-    version="0.0.1b1",
+    version=VERSION,
     description="Procrustes Package",
     long_description=get_readme(),
     long_description_content_type='text/markdown',
@@ -44,5 +59,16 @@ setup(
     author_email="qcdevs@gmail.com",
     package_dir={"procrustes": "procrustes"},
     packages=["procrustes", "procrustes.test"],
+    include_package_data=True,
+    classifiers=[
+        DEV_CLASSIFIER,
+        'Environment :: Console',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3',
+        'Topic :: Scientific/Engineering :: Physics',
+        'Topic :: Scientific/Engineering :: Chemistry',
+        'Intended Audience :: Science/Research',
+    ],
     install_requires=["numpy>=1.18.5", "scipy>=1.5.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
 )

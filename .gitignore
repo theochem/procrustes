@@ -71,11 +71,10 @@ coverage.xml
 .pytest_cache/
 
 # Documentation
-docs/html/
-docs/latex/
-docs/man/
-docs/xml/
-docs/_build/
+doc/html/
+doc/latex/
+doc/man/
+doc/xml/
 doc/_build/
 doc/source
 doc/modules

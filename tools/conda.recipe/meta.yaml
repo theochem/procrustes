@@ -1,6 +1,6 @@
 package:
   version: "{{ PROJECT_VERSION }}"
-  name: 'procrustes'
+  name: 'qc-procrustes'
 
 source:
   path: ../../

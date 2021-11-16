@@ -230,8 +230,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         if m_guess.shape[0] == row_num and m_guess.shape[1] == row_num:
             array_m = m_guess
         else:
-            warnings.warn("The shape of m_guess does not match ({0}, {0})."
-                          "Use random initial guess instead.".format(row_num))
+            warnings.warn(f"The shape of m_guess does not match ({row_num}, {row_num})."
+                          "Use random initial guess instead.")
             array_m = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(row_num, row_num)))
     else:
         # m_relax_old = 1 / N + np.random.rand(N, N)

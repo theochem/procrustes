@@ -417,6 +417,7 @@ def permutation_2sided(
     if options is not None:
         if not isinstance(options, dict):
             raise ValueError(f"Argument options should be a dictionary. Given type={type(options)}")
+        # pylint: disable=C0201
         if not all(k in defaults.keys() for k in options.keys()):
             raise ValueError(f"Argument options should only have {defaults.keys()} keys. "
                              f"Given options contains {options.keys()} keys!")

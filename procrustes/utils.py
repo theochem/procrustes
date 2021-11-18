@@ -38,9 +38,9 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{n_a \times m_a}`.
+        The 2D-array :math:`\mathbf{A}_{n_a \times m_a}`.
     array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
+        The 2D-array :math:`\mathbf{B}_{n_b \times m_b}`.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
         - "row"
@@ -119,9 +119,9 @@ def _translate_array(array_a, array_b=None, weight=None):
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array to translate.
+        The 2D-array to translate.
     array_b : ndarray, default=None
-        The 2d-array to translate array_a based on.
+        The 2D-array to translate array_a based on.
     weight : ndarray
         The weight vector. Default=None.
 
@@ -157,9 +157,9 @@ def _scale_array(array_a, array_b=None):
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array to scale
+        The 2D-array to scale
     array_b : ndarray, default=None
-        The 2d-array to scale array_a based on.
+        The 2D-array to scale array_a based on.
 
     Returns
     -------

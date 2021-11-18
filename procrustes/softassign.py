@@ -48,9 +48,9 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+        The 2D-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+        The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
     iteration_sink ： int, optional

@@ -65,9 +65,9 @@ def permutation(
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
@@ -162,9 +162,9 @@ def permutation_2sided(
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
     single : bool, optional
         If `True`, the single-transformation Procrustes is performed to obtain :math:`\mathbf{P}`.
         If `False`, the two-transformations Procrustes is performed to obtain :math:`\mathbf{P}_1`

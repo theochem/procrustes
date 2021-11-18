@@ -38,6 +38,13 @@ __all__ = [
 def softassign(
     a,
     b,
+    pad=False,
+    translate=False,
+    scale=False,
+    unpad_col=False,
+    unpad_row=False,
+    check_finite=True,
+    weight=None,
     iteration_soft=50,
     iteration_sink=200,
     beta_r=1.10,
@@ -48,19 +55,12 @@ def softassign(
     k=0.15,
     gamma_scaler=1.01,
     n_stop=3,
-    pad_mode='row-col',
-    unpad_col=False,
-    unpad_row=False,
-    translate=False,
-    scale=False,
-    check_finite=True,
     adapted=True,
     beta_0=None,
     m_guess=None,
     iteration_anneal=None,
     kopt=False,
-    kopt_k=3,
-    weight=None
+    kopt_k=3
 ):
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
@@ -68,15 +68,34 @@ def softassign(
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
+        The 2d-array :math:`\mathbf{A}_{n \times n}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
+        The 2d-array :math:`\mathbf{B}_{n \times n}` representing the reference.
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+    translate : bool, optional
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
+    scale : bool, optional
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+    check_finite : bool, optional
+        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
     iteration_sink ： int, optional
         Number of iterations for Sinkhorn loop. Default=50.
-    linear_cost_func :  ndarray
-        Linear cost function. Default=0.
     beta_r : float, optional
         Annealing rate which should greater than 1. Default=1.10.
     beta_f : float, optional
@@ -98,39 +117,6 @@ def softassign(
     n_stop : int, optional
         Number of running steps after the calculation converges in the relaxation procedure.
         Default=10.
-    pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
-
-            - "row"
-                The array with fewer rows is padded with zero rows so that both have the same
-                number of rows.
-            - "col"
-                The array with fewer columns is padded with zero columns so that both have the
-                same number of columns.
-            - "row-col"
-                The array with fewer rows is padded with zero rows, and the array with fewer
-                columns is padded with zero columns, so that both have the same dimensions.
-                This does not necessarily result in square arrays.
-            - "square"
-                The arrays are padded with zero rows and zero columns so that they are both
-                squared arrays. The dimension of square array is specified based on the highest
-                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
-    unpad_col : bool, optional
-        If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=False.
-    unpad_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default=False.
-    translate : bool, optional
-        If True, both arrays are translated to be centered at origin, ie columns of the arrays
-        will have mean zero.
-        Default=False.
-    scale : bool, optional
-        If True, both arrays are normalized to one with respect to the Frobenius norm, ie
-        :math:`Tr(A^T A) = 1`.
-        Default=False.
-    check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
     adapted : bool, optional
         If adapted, this function will use the tighter covergence threshold for the interior loops.
         Default=True.
@@ -147,8 +133,6 @@ def softassign(
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    weight : ndarray
-        The weighting matrix. Default=None.
 
     Returns
     -------
@@ -192,9 +176,7 @@ def softassign(
     ...                  [0., 0., 0., 1.], [0., 1., 0., 0.]])
         # define b by permuting array_a
     >>> b = np.dot(perm.T, np.dot(a, perm))
-    >>> new_a, new_b, M_ai, error = softassign(a, b,
-    ...                                        unpad_col=False,
-    ...                                        unpad_row=False)
+    >>> new_a, new_b, M_ai, error = softassign(a,b,unpad_col=False,unpad_row=False)
     >>> M_ai # the permutation matrix
     array([[0., 0., 1., 0.],
            [1., 0., 0., 0.],
@@ -210,9 +192,20 @@ def softassign(
     # Check beta_r
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
-
     new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
-                                      pad_mode, translate, scale, check_finite, weight)
+                                      pad, translate, scale, check_finite, weight)
+
+    # check that A & B are square and that they match each other.
+    if new_a.shape[0] != new_a.shape[1]:
+        raise ValueError(f"Matrix A should be square but A.shape={new_a.shape}"
+                         "Check pad, unpad_col, and unpad_row arguments.")
+    if new_b.shape[0] != new_b.shape[1]:
+        raise ValueError(f"Matrix B should be square but B.shape={new_b.shape}"
+                         "Check pad, unpad_col, and unpad_row arguments.")
+    if new_a.shape != new_b.shape:
+        raise ValueError(f"New matrix A {new_a.shape} should match the new"
+                         f" matrix B shape {new_b.shape}.")
+
     # Initialization
     # Compute the benefit matrix
     array_c = np.kron(new_a, new_b)

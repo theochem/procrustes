@@ -26,7 +26,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Procrustes's documentation!
+Welcome to Procrustes's Documentation!
 ======================================
 
 `Procrustes <https://github.com/theochem/procrustes>`_ is a free, open-source, and cross-platform
@@ -100,8 +100,8 @@ assignment problem
 developed theoretically
 :cite:`gold1996softassign,rangarajan1997convergence` and extended to many other applications
 :cite:`wang2018application,gold1996softassign,gold1996softmax,tian2012convergence,sheikhbahaee2017photometric`.
-Because the two-sided permutation Procrustes problem is a special
-quadratic assignment problem it can be used here. The objective function is to minimize
+Because the two-sided permutation Procrustes problem is a special case of the
+quadratic assignment problem, it can be used here. The objective function is to minimize
 :math:`E_{qap} (\mathbf{M}, \mu, \nu)`, :cite:`gold1996softassign,yuille1994statistical`,
 which is defined as follows,
 
@@ -119,8 +119,8 @@ which is defined as follows,
 
 Procrustes problems arise when aligning molecules and other objects, when evaluating optimal basis
 transformations, when determining optimal mappings between sets, and in many other contexts. This
-package includes options to translate, scale, and zero-pad matrices, so that matrices with different
-centers/scaling/sizes can be considered.
+package includes the options to translate, scale, and zero-pad matrices, so that matrices with
+different centers/scaling/sizes can be considered.
 
 
 .. toctree::

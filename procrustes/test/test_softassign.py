@@ -40,8 +40,8 @@ def test_softassign_4by4():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = softassign(array_a, array_b,
-                     remove_zero_col=False,
-                     remove_zero_row=False)
+                     unpad_col=False,
+                     unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -59,8 +59,8 @@ def test_softassign_4by4_loop():
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
         res = softassign(array_a, array_b,
-                         remove_zero_col=False,
-                         remove_zero_row=False)
+                         unpad_col=False,
+                         unpad_row=False)
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -80,8 +80,8 @@ def test_softassign_4by4_loop_negative():
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
             res = softassign(array_a, array_b,
-                             remove_zero_row=False,
-                             remove_zero_col=False)
+                             unpad_row=False,
+                             unpad_col=False)
             assert_almost_equal(res["t"], perm, decimal=6)
             assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -97,8 +97,8 @@ def test_softassign_4by4_translate_scale():
     # Check
     res = softassign(array_a, array_b,
                      translate=True, scale=True,
-                     remove_zero_row=False,
-                     remove_zero_col=False)
+                     unpad_row=False,
+                     unpad_col=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -141,8 +141,8 @@ def test_softassign_4by4_translate_scale_zero_padding():
     res = softassign(array_a, array_b,
                      translate=False,
                      scale=False,
-                     remove_zero_row=True,
-                     remove_zero_col=True)
+                     unpad_row=True,
+                     unpad_col=True)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -169,8 +169,8 @@ def test_softassign_practical_example():
     res = softassign(array_a, array_b,
                      translate=False,
                      scale=False,
-                     remove_zero_row=False,
-                     remove_zero_col=False)
+                     unpad_row=False,
+                     unpad_col=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -197,8 +197,8 @@ def test_softassign_random_noise():
     res = softassign(array_a, array_b,
                      translate=False,
                      scale=False,
-                     remove_zero_row=False,
-                     remove_zero_col=False)
+                     unpad_row=False,
+                     unpad_col=False)
     assert_almost_equal(res["t"], perm, decimal=6)
 
 
@@ -321,8 +321,8 @@ def test_softassign_kopt():
     res_no_kopt = softassign(array_a, array_b,
                              translate=False,
                              scale=False,
-                             remove_zero_row=False,
-                             remove_zero_col=False,
+                             unpad_row=False,
+                             unpad_col=False,
                              kopt=False,
                              iteration_soft=1,
                              iteration_sink=1,
@@ -338,8 +338,8 @@ def test_softassign_kopt():
     res_with_kopt = softassign(array_a, array_b,
                                translate=False,
                                scale=False,
-                               remove_zero_row=False,
-                               remove_zero_col=False,
+                               unpad_row=False,
+                               unpad_col=False,
                                kopt=True,
                                iteration_soft=1,
                                iteration_sink=1,

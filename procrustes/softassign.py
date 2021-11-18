@@ -35,13 +35,33 @@ __all__ = [
 ]
 
 
-def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
-               beta_r=1.10, beta_f=1.e5, epsilon=0.05, epsilon_soft=1.e-3,
-               epsilon_sink=1.e-3, k=0.15, gamma_scaler=1.01, n_stop=3,
-               pad_mode='row-col', remove_zero_col=True, remove_zero_row=True,
-               translate=False, scale=False, check_finite=True, adapted=True,
-               beta_0=None, m_guess=None, iteration_anneal=None, kopt=False,
-               kopt_k=3, weight=None):
+def softassign(
+    a,
+    b,
+    iteration_soft=50,
+    iteration_sink=200,
+    beta_r=1.10,
+    beta_f=1.e5,
+    epsilon=0.05,
+    epsilon_soft=1.e-3,
+    epsilon_sink=1.e-3,
+    k=0.15,
+    gamma_scaler=1.01,
+    n_stop=3,
+    pad_mode='row-col',
+    unpad_col=False,
+    unpad_row=False,
+    translate=False,
+    scale=False,
+    check_finite=True,
+    adapted=True,
+    beta_0=None,
+    m_guess=None,
+    iteration_anneal=None,
+    kopt=False,
+    kopt_k=3,
+    weight=None
+):
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
@@ -95,12 +115,12 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                 The arrays are padded with zero rows and zero columns so that they are both
                 squared arrays. The dimension of square array is specified based on the highest
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
-    remove_zero_col : bool, optional
+    unpad_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
+        Default=False.
+    unpad_row : bool, optional
         If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default=True.
+        Default=False.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
         will have mean zero.
@@ -173,8 +193,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         # define array_b by permuting array_a
     >>> array_b = np.dot(perm.T, np.dot(array_a, perm))
     >>> new_a, new_b, M_ai, error = softassign(array_a, array_b,
-    ...                                        remove_zero_col=False,
-    ...                                        remove_zero_row=False)
+    ...                                        unpad_col=False,
+    ...                                        unpad_row=False)
     >>> M_ai # the permutation matrix
     array([[0., 0., 1., 0.],
            [1., 0., 0., 0.],
@@ -191,7 +211,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    new_a, new_b = setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
+    new_a, new_b = setup_input_arrays(array_a, array_b, unpad_col, unpad_row,
                                       pad_mode, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix

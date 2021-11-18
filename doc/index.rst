@@ -86,7 +86,7 @@ are also implemented in our package. The GPA algorithm seeks the optimal transfo
 
 .. math::
     \begin{equation}
-      \min \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i - \mathbf{A}_j \mathbf{T}_j \right\|}^2
+      \min \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i - \mathbf{A}_j \mathbf{T}_j \right\|_F}^2
     \end{equation}
 
 where :math:`\mathbf{A}_i` and :math:`\mathbf{A}_j` are the configurations and :math:`\mathbf{T}_i`

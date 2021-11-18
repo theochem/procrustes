@@ -55,7 +55,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         Number of iterations for softassign loop. Default=50.
     iteration_sink : int, optional
         Number of iterations for Sinkhorn loop. Default=50.
-    linear_cost_func :  ndarray
+    linear_cost_func :  ndarray, optional
         Linear cost function. Default=0.
     beta_r : float, optional
         Annealing rate which should greater than 1. Default=1.10.
@@ -71,8 +71,8 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     k : float, optional
         This parameter controls how much tighter the coverage threshold for the interior loop should
         be than the coverage threshold for the loops outside. It has be be within the integral
-        :math:`\(0,1\)`. Default=0.15.
-    gamma_scaler : float
+        :math:`(0,1)`. Default=0.15.
+    gamma_scaler : float, optional
         This parameter ensures the quadratic cost function including  self-amplification positive
         define. Default=1.01.
     n_stop : int, optional
@@ -127,7 +127,7 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
         search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
-    weight : ndarray
+    weight : ndarray, optional
         The weighting matrix. Default=None.
 
     Returns

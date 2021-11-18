@@ -338,12 +338,12 @@ def orthogonal_2sided(
         if not np.allclose(new_a.T, new_a):
             raise ValueError(
                 f"Array A with {new_a.shape} shape is not symmetric. "
-                "Check pad, remove_zero_col, and remove_zero_row arguments."
+                "Check pad, unpad_col, and unpad_row arguments."
             )
         if not np.allclose(new_b.T, new_b):
             raise ValueError(
                 f"Array B with {new_b.shape} shape is not symmetric. "
-                "Check pad, remove_zero_col, and remove_zero_row arguments."
+                "Check pad, unpad_col, and unpad_row arguments."
             )
 
     # two-sided orthogonal Procrustes with one-transformations

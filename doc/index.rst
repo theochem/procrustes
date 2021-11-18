@@ -41,8 +41,8 @@ Please use the following citation in any publication using Procrustes library:
 The Procrustes source code is hosted on `GitHub <https://github.com/theochem/procrustes>`_ and is
 released under the
 `GNU General Public License v3.0 <https://github.com/theochem/procrustes/blob/master/LICENSE>`_.
-We welcome any contributions to the Procrustes library in accord with our Code of Conduct;
-please see our `Contributing Guidelines <link to QCDevs>`_.
+We welcome any contributions to the Procrustes library in accordance with our Code of Conduct;
+please see our `Contributing Guidelines <https://qcdevs.org/guidelines/QCDevsCodeOfConduct/>`_.
 Please report any issues you encounter while using Procrustes library on
 `GitHub Issues <https://github.com/theochem/procrustes/issues>`_.
 For further information and inquiries please contact us at `qcdevs@gmail.com <qcdevs@gmail.com>`_.

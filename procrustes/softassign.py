@@ -38,7 +38,7 @@ __all__ = [
 def softassign(
     a,
     b,
-    pad=False,
+    pad=True,
     translate=False,
     scale=False,
     unpad_col=False,
@@ -195,7 +195,7 @@ def softassign(
     new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
                                       pad, translate, scale, check_finite, weight)
 
-    # check that A & B are square and that they match each other.
+    # Check that A & B are square and that they match each other.
     if new_a.shape[0] != new_a.shape[1]:
         raise ValueError(f"Matrix A should be square but A.shape={new_a.shape}"
                          "Check pad, unpad_col, and unpad_row arguments.")

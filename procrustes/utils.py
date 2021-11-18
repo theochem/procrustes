@@ -281,12 +281,11 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         The 2D array :math:`A` being transformed.
     array_b : npdarray
         The 2D reference array :math:`B`.
-    remove_zero_col : bool, optional
+    remove_zero_col : bool
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
-    pad : bool, optional
+    remove_zero_row : bool
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
+    pad : bool
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool
@@ -300,7 +299,6 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     weight : A list of ndarray or ndarray
         A list of the weight arrays or one numpy array. When only on numpy array provided,
         it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.
-        Default=None.
 
     Returns
     -------
@@ -328,11 +326,10 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
         A list of 2D arrays that being transformed.
     array_ref : ndarray
         The 2D reference array :math:`B`.
-    remove_zero_col : bool, optional
+    remove_zero_col : bool
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
+    remove_zero_row : bool
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
             - "row"
@@ -419,9 +416,9 @@ class ProcrustesResult(dict):
         The translated/scaled numpy ndarray :math:`\mathbf{B}`.
     t : ndarray
         The 2D-array :math:`\mathbf{T}` representing the right-hand-side transformation matrix.
-    s : ndarray, optional
+    s : ndarray
         The 2D-array :math:`\mathbf{S}` representing the left-hand-side transformation
-        matrix. If set to `None`, the one-sided Procrustes is performed.
+        matrix. If set to `None`, the one-sided Procrustes was performed.
 
     """
 

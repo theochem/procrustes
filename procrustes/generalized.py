@@ -62,6 +62,11 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
 
     This function implements the Equation (20) and the corresponding algorithm in  Gower's paper.
 
+    References
+    ----------
+    [1] J. C. Gower. Generalized Procrusted Analysis. Psychometrika, 40(1): 33-51, 1975.
+           doi: 10.1007/BF02291478.
+
     """
     # check input arrays
     _check_arraytypes(*array_list)

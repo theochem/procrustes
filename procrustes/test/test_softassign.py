@@ -89,7 +89,8 @@ def test_softassign_4by4_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
-    res = softassign(array_a, array_b, translate=True, scale=True, unpad_col=False, unpad_row=False)
+    res = softassign(array_a, array_b, translate=True, scale=True,
+                     unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -219,11 +220,10 @@ def test_softassign_4by4_beta_0():
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = softassign(array_a,
-                     array_b,
-                     beta_0=1.e-6,
-                     translate=False,
-                     scale=False)
+    res = softassign(array_a, array_b,
+                     translate=False, scale=False,
+                     beta_0=1.e-6, adapted=False,
+                     epsilon_soft=1e-8)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 

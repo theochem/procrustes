@@ -67,9 +67,9 @@ def softassign(
 
     Parameters
     ----------
-    array_a : ndarray
+    a : ndarray
         The 2d-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
-    array_b : ndarray
+    b : ndarray
         The 2d-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     iteration_soft ： int, optional
         Number of iterations for softassign loop. Default=50.
@@ -190,9 +190,9 @@ def softassign(
         # define a random matrix
     >>> perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],
     ...                  [0., 0., 0., 1.], [0., 1., 0., 0.]])
-        # define array_b by permuting array_a
-    >>> array_b = np.dot(perm.T, np.dot(array_a, perm))
-    >>> new_a, new_b, M_ai, error = softassign(array_a, array_b,
+        # define b by permuting array_a
+    >>> b = np.dot(perm.T, np.dot(a, perm))
+    >>> new_a, new_b, M_ai, error = softassign(a, b,
     ...                                        unpad_col=False,
     ...                                        unpad_row=False)
     >>> M_ai # the permutation matrix
@@ -211,7 +211,7 @@ def softassign(
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
 
-    new_a, new_b = setup_input_arrays(array_a, array_b, unpad_col, unpad_row,
+    new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
                                       pad_mode, translate, scale, check_finite, weight)
     # Initialization
     # Compute the benefit matrix

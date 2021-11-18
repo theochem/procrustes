@@ -89,10 +89,7 @@ def test_softassign_4by4_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
-    res = softassign(array_a, array_b,
-                     translate=True, scale=True,
-                     unpad_row=False,
-                     unpad_col=False)
+    res = softassign(array_a, array_b, translate=True, scale=True, unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -194,6 +191,22 @@ def test_softassign_invalid_beta_r():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, softassign, array_a, array_b, beta_r=0.5)
+
+
+def test_softassign_wrong_shapes():
+    r"""Test softassign with wrong shapes for the a, b input matrices."""
+    array_a = np.ones((10, 5))
+    array_b = np.ones((10, 10))
+    # Test A and B are not square matrices.
+    assert_raises(ValueError, softassign, array_a, array_b, pad=False)
+    # Test B is not square matrices.
+    array_a = np.ones((10, 10))
+    array_b = np.ones((10, 5))
+    assert_raises(ValueError, softassign, array_a, array_b, pad=False)
+    # Test A, B are square but with different shape.
+    array_a = np.ones((10, 10))
+    array_b = np.ones((20, 20))
+    assert_raises(ValueError, softassign, array_a, array_b, pad=False)
 
 
 def test_softassign_4by4_beta_0():

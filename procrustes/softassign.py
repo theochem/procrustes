@@ -51,9 +51,9 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
         The 2D-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     array_b : ndarray
         The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference.
-    iteration_soft ： int, optional
+    iteration_soft : int, optional
         Number of iterations for softassign loop. Default=50.
-    iteration_sink ： int, optional
+    iteration_sink : int, optional
         Number of iterations for Sinkhorn loop. Default=50.
     linear_cost_func :  ndarray
         Linear cost function. Default=0.

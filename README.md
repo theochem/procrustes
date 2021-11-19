@@ -111,6 +111,11 @@ print("Procrustes distance is: %s", result.error)
 assert np.allclose(result.t, t)
 ```
 
+Tutorials
+------------
+
+Tutorials are available online, and can be found at:
+https://procrustes.readthedocs.io/en/latest/usr_doc_tutorials.html.
 
 Tests
 ------------

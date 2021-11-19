@@ -21,28 +21,29 @@
 #
 # --
 """Permutation Procrustes Module."""
-
+from typing import Optional
 
 import numpy as np
-from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
-from procrustes.utils import _zero_padding, compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import linear_sum_assignment
+
+from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
+from procrustes.utils import _zero_padding, compute_error, ProcrustesResult, setup_input_arrays
 
 __all__ = ["permutation", "permutation_2sided"]
 
 
 def permutation(
-    a,
-    b,
-    pad=True,
-    translate=False,
-    scale=False,
-    unpad_col=False,
-    unpad_row=False,
-    check_finite=True,
-    weight=None,
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+) -> ProcrustesResult:
     r"""Perform one-sided permutation Procrustes.
 
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times
@@ -141,22 +142,22 @@ def permutation(
 
 
 def permutation_2sided(
-    a,
-    b,
-    single=True,
-    method="kopt",
-    guess_p1=None,
-    guess_p2=None,
-    pad=False,
-    unpad_col=False,
-    unpad_row=False,
-    translate=False,
-    scale=False,
-    check_finite=True,
-    options=None,
-    weight=None,
-    lapack_driver="gesvd",
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    single: bool = True,
+    method: str = "kopt",
+    guess_p1: Optional[np.ndarray] = None,
+    guess_p2: Optional[np.ndarray] = None,
+    pad: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    translate: bool = False,
+    scale: bool = False,
+    check_finite: bool = True,
+    options: Optional[dict] = None,
+    weight: Optional[np.ndarray] = None,
+    lapack_driver: str = "gesvd",
+) -> ProcrustesResult:
     r"""Perform two-sided permutation Procrustes.
 
     Parameters
@@ -518,7 +519,8 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)
 
 
-def _permutation_2sided_2trans_flipflop(n, m, tol, max_iter, p0=None, q0=None):
+def _permutation_2sided_2trans_flipflop(n: np.ndarray, m: np.ndarray, tol: float, max_iter: int,
+                                        p0: Optional[np.ndarray] = None, q0: Optional[np.ndarray] = None):
     # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
     # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993
@@ -571,7 +573,7 @@ def _permutation_2sided_2trans_flipflop(n, m, tol, max_iter, p0=None, q0=None):
     return p2, q2, error2
 
 
-def _compute_permutation_hungarian(cost_matrix):
+def _compute_permutation_hungarian(cost_matrix: np.ndarray) -> np.ndarray:
     # solve linear sum assignment problem to get the row/column indices of optimal assignment
     row_ind, col_ind = linear_sum_assignment(cost_matrix, maximize=True)
     # make the permutation matrix by setting the corresponding elements to 1
@@ -580,7 +582,7 @@ def _compute_permutation_hungarian(cost_matrix):
     return perm
 
 
-def _approx_permutation_2sided_1trans_normal1(a):
+def _approx_permutation_2sided_1trans_normal1(a: np.ndarray) -> np.ndarray:
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     # build the empty target array
@@ -610,7 +612,7 @@ def _approx_permutation_2sided_1trans_normal1(a):
     return array_new
 
 
-def _approx_permutation_2sided_1trans_normal2(a):
+def _approx_permutation_2sided_1trans_normal2(a: np.ndarray) -> np.ndarray:
     # This assumes that array_a has all positive entries, this guess does not match that found
     #    in the notes/paper because it doesn't include the sign function.
     array_mask_a = ~np.eye(a.shape[0], dtype=bool)
@@ -652,7 +654,7 @@ def _approx_permutation_2sided_1trans_normal2(a):
     return array_new
 
 
-def _approx_permutation_2sided_1trans_umeyama(a, b):
+def _approx_permutation_2sided_1trans_umeyama(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     # check whether A & B are symmetric (within a relative & absolute tolerance)
     is_a_symmetric = np.allclose(a, a.T, rtol=1.0e-05, atol=1.0e-08)
     is_b_symmetric = np.allclose(b, b.T, rtol=1.0e-05, atol=1.0e-08)
@@ -672,7 +674,7 @@ def _approx_permutation_2sided_1trans_umeyama(a, b):
     return u_umeyama
 
 
-def _approx_permutation_2sided_1trans_umeyama_svd(a, b, lapack_driver):
+def _approx_permutation_2sided_1trans_umeyama_svd(a: np.ndarray, b: np.ndarray, lapack_driver: str) -> np.ndarray:
     # compute u_umeyama
     perm = _approx_permutation_2sided_1trans_umeyama(a, b)
     # compute approximated umeyama matrix
@@ -681,12 +683,13 @@ def _approx_permutation_2sided_1trans_umeyama_svd(a, b, lapack_driver):
     return u_umeyama_approx
 
 
-def _symmetrize_matrix(a):
+def _symmetrize_matrix(a: np.ndarray) -> np.ndarray:
     # symmetrized matrix A would be complex
     return (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
 
 
-def _permutation_2sided_1trans_undirected(a, b, guess, tol, iteration):
+def _permutation_2sided_1trans_undirected(a: np.ndarray, b: np.ndarray, guess: np.ndarray,
+                                          tol: float, iteration: int) -> np.ndarray:
     """Solve for 2-sided permutation Procrustes with 1-transformation when A & B are symmetric."""
 
     p_old = guess
@@ -711,7 +714,8 @@ def _permutation_2sided_1trans_undirected(a, b, guess, tol, iteration):
     return p_new
 
 
-def _permutation_2sided_1trans_directed(a, b, guess, tol, iteration):
+def _permutation_2sided_1trans_directed(a: np.ndarray, b: np.ndarray, guess: np.ndarray,
+                                        tol: float, iteration: int) -> np.ndarray:
     """Solve for 2-sided permutation Procrustes with 1-transformation."""
 
     # Algorithm 2 from Appendix of Procrustes paper

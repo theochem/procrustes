@@ -22,12 +22,16 @@
 # --
 """Generalized Procrustes Module."""
 
+from typing import List, Optional, Tuple
+
 import numpy as np
+
 from procrustes import orthogonal
 from procrustes.utils import _check_arraytypes
 
 
-def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
+def generalized(array_list: List[np.ndarray], ref: Optional[np.ndarray] = None,
+                tol: float = 1.e-7, n_iter: int = 200, check_finite: bool = True) -> Tuple[List[np.ndarray], float]:
     r"""Generalized Procrustes Analysis.
 
     Parameters
@@ -96,7 +100,7 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
     return array_aligned, new_distance_gpa
 
 
-def _orthogonal(arr_a, arr_b):
+def _orthogonal(arr_a: np.ndarray, arr_b: np.ndarray) -> np.ndarray:
     """Orthogonal Procrustes transformation and returns the transformed array."""
     res = orthogonal(arr_a, arr_b, translate=False, scale=False, unpad_col=False, unpad_row=False)
     return np.dot(res["new_a"], res["t"])

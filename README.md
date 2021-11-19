@@ -64,7 +64,6 @@ To install Procrustes with pip, you may want to create a
     pip install qc-procrustes
 ```
 
-For more information, please see https://procrustes.readthedocs.io/en/latest/usr_doc_installization.html.
 
 #### Source
 To install Procrustes from source, use:
@@ -82,6 +81,7 @@ To install Procrustes from source, use:
     pip install -e .
 ```
 
+For more information, please see https://procrustes.readthedocs.io/en/latest/usr_doc_installization.html.
 
 Quick Start
 ------------

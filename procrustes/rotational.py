@@ -22,23 +22,26 @@
 # --
 """Rotational-Orthogonal Procrustes Module."""
 
-import numpy as np
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+from typing import Optional
+
 import scipy
+import numpy as np
+
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
 def rotational(
-    a,
-    b,
-    pad=True,
-    translate=False,
-    scale=False,
-    unpad_col=False,
-    unpad_row=False,
-    check_finite=True,
-    weight=None,
-    lapack_driver="gesvd"
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+    lapack_driver: str = "gesvd"
+) -> ProcrustesResult:
     r"""Perform rotational Procrustes.
 
     Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m

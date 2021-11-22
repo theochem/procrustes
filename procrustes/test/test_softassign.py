@@ -39,9 +39,7 @@ def test_softassign_4by4():
                      [0., 1., 0., 0.]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = softassign(array_a, array_b,
-                     remove_zero_col=False,
-                     remove_zero_row=False)
+    res = softassign(array_a, array_b, unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -58,9 +56,7 @@ def test_softassign_4by4_loop():
         # get array_b by permutation
         array_b = np.dot(perm.T, np.dot(array_a, perm))
         # Check
-        res = softassign(array_a, array_b,
-                         remove_zero_col=False,
-                         remove_zero_row=False)
+        res = softassign(array_a, array_b, unpad_col=False, unpad_row=False)
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -79,9 +75,7 @@ def test_softassign_4by4_loop_negative():
             # Compute the translated, scaled matrix padded with zeros
             array_b = np.dot(perm.T, np.dot(array_a, perm))
             # Check
-            res = softassign(array_a, array_b,
-                             remove_zero_row=False,
-                             remove_zero_col=False)
+            res = softassign(array_a, array_b, unpad_col=False, unpad_row=False)
             assert_almost_equal(res["t"], perm, decimal=6)
             assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -95,10 +89,8 @@ def test_softassign_4by4_translate_scale():
     perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
-    res = softassign(array_a, array_b,
-                     translate=True, scale=True,
-                     remove_zero_row=False,
-                     remove_zero_col=False)
+    res = softassign(array_a, array_b, translate=True, scale=True,
+                     unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -116,10 +108,7 @@ def test_softassign_4by4_translate_scale_loop():
         # Compute the translated, scaled matrix padded with zeros
         array_b = np.dot(perm.T, np.dot(3 * array_a + 10, perm))
         # Check
-        res = softassign(array_a,
-                         array_b,
-                         translate=True,
-                         scale=True)
+        res = softassign(array_a, array_b, translate=True, scale=True)
         assert_almost_equal(res["t"], perm, decimal=6)
         assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -138,11 +127,7 @@ def test_softassign_4by4_translate_scale_zero_padding():
     array_b = np.concatenate((array_b, np.zeros((4, 2))), axis=1)
     array_b = np.concatenate((array_b, np.zeros((6, 6))), axis=0)
     # Check
-    res = softassign(array_a, array_b,
-                     translate=False,
-                     scale=False,
-                     remove_zero_row=True,
-                     remove_zero_col=True)
+    res = softassign(array_a, array_b, translate=False, scale=False, unpad_col=True, unpad_row=True)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -167,10 +152,8 @@ def test_softassign_practical_example():
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = softassign(array_a, array_b,
-                     translate=False,
-                     scale=False,
-                     remove_zero_row=False,
-                     remove_zero_col=False)
+                     translate=False, scale=False,
+                     unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -195,10 +178,8 @@ def test_softassign_random_noise():
     array_b = np.dot(perm.T, np.dot(array_a, perm)) + np.random.randn(5, 5)
     # Check
     res = softassign(array_a, array_b,
-                     translate=False,
-                     scale=False,
-                     remove_zero_row=False,
-                     remove_zero_col=False)
+                     translate=False, scale=False,
+                     unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
 
 
@@ -213,6 +194,22 @@ def test_softassign_invalid_beta_r():
     assert_raises(ValueError, softassign, array_a, array_b, beta_r=0.5)
 
 
+def test_softassign_wrong_shapes():
+    r"""Test softassign with wrong shapes for the a, b input matrices."""
+    array_a = np.ones((10, 5))
+    array_b = np.ones((10, 10))
+    # Test A and B are not square matrices.
+    assert_raises(ValueError, softassign, array_a, array_b, pad=False)
+    # Test B is not square matrices.
+    array_a = np.ones((10, 10))
+    array_b = np.ones((10, 5))
+    assert_raises(ValueError, softassign, array_a, array_b, pad=False)
+    # Test A, B are square but with different shape.
+    array_a = np.ones((10, 10))
+    array_b = np.ones((20, 20))
+    assert_raises(ValueError, softassign, array_a, array_b, pad=False)
+
+
 def test_softassign_4by4_beta_0():
     r"""Test softassign by 4by4 matrix specified beta_0.."""
     # define a random matrix
@@ -223,11 +220,10 @@ def test_softassign_4by4_beta_0():
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = softassign(array_a,
-                     array_b,
-                     beta_0=1.e-6,
-                     translate=False,
-                     scale=False)
+    res = softassign(array_a, array_b,
+                     translate=False, scale=False,
+                     beta_0=1.e-6, adapted=False,
+                     epsilon_soft=1e-8)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -242,11 +238,7 @@ def test_softassign_4by4_anneal_steps():
                      [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = softassign(array_a,
-                     array_b,
-                     iteration_anneal=165,
-                     translate=False,
-                     scale=False)
+    res = softassign(array_a, array_b, translate=False, scale=False, iteration_anneal=165)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -280,20 +272,12 @@ def test_softassign_m_guess():
     # check assert raises
     assert_raises(ValueError, softassign, array_a, array_b, m_guess=m_guess1)
     # check if initial guess works
-    res = softassign(array_a,
-                     array_b,
-                     m_guess=m_guess2,
-                     translate=False,
-                     scale=False)
+    res = softassign(array_a, array_b, translate=False, scale=False, m_guess=m_guess2)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
     # check if initial guess given shape not matching
     with warnings.catch_warnings(record=True) as warn_info:
-        res = softassign(array_a,
-                         array_b,
-                         m_guess=m_guess3,
-                         translate=False,
-                         scale=False)
+        res = softassign(array_a, array_b, translate=False, scale=False, m_guess=m_guess3)
         # catch the error information
         assert len(warn_info) == 1
         assert not str(warn_info[0].message).startswith("We must specify")
@@ -321,9 +305,8 @@ def test_softassign_kopt():
     res_no_kopt = softassign(array_a, array_b,
                              translate=False,
                              scale=False,
-                             remove_zero_row=False,
-                             remove_zero_col=False,
-                             kopt=False,
+                             unpad_col=False,
+                             unpad_row=False,
                              iteration_soft=1,
                              iteration_sink=1,
                              beta_r=1.05,
@@ -333,14 +316,14 @@ def test_softassign_kopt():
                              epsilon_sink=1.e-3,
                              k=0.15,
                              gamma_scaler=1.5,
-                             n_stop=2)
+                             n_stop=2,
+                             kopt=False)
     # softassign with kopt
     res_with_kopt = softassign(array_a, array_b,
                                translate=False,
                                scale=False,
-                               remove_zero_row=False,
-                               remove_zero_col=False,
-                               kopt=True,
+                               unpad_col=False,
+                               unpad_row=False,
                                iteration_soft=1,
                                iteration_sink=1,
                                beta_r=1.05,
@@ -350,5 +333,6 @@ def test_softassign_kopt():
                                epsilon_sink=1.e-3,
                                k=0.15,
                                gamma_scaler=1.5,
-                               n_stop=2)
+                               n_stop=2,
+                               kopt=True)
     assert res_no_kopt["error"] >= res_with_kopt["error"]

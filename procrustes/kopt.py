@@ -34,7 +34,9 @@ __all__ = [
 ]
 
 
-def kopt_heuristic_single(fun: Callable, p0: np.ndarray, k: int = 3, tol: float = 1.0e-8) -> Tuple[np.ndarray, float]:
+def kopt_heuristic_single(
+    fun: Callable, p0: np.ndarray, k: int = 3, tol: float = 1.0e-8
+) -> Tuple[np.ndarray, float]:
     r"""Find a locally-optimal permutation matrix using the k-opt (greedy) heuristic.
 
     .. math::
@@ -111,8 +113,9 @@ def kopt_heuristic_single(fun: Callable, p0: np.ndarray, k: int = 3, tol: float 
     return p_opt, f_opt
 
 
-def kopt_heuristic_double(fun: Callable, p1: np.ndarray, p2: np.ndarray, k: int = 3,
-                          tol: float = 1.0e-8) -> Tuple[np.ndarray, np.ndarray, float]:
+def kopt_heuristic_double(
+    fun: Callable, p1: np.ndarray, p2: np.ndarray, k: int = 3, tol: float = 1.0e-8
+) -> Tuple[np.ndarray, np.ndarray, float]:
     r"""Find locally-optimal permutation matrices using the k-opt (greedy) heuristic.
 
     .. math::

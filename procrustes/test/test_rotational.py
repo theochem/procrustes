@@ -82,9 +82,9 @@ def test_rotational_orthogonal_rotation_translate_scale(m, n):
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
     # Translate the rows, generate random rotation array
     # define array_b by scale and translation of array_a followed by rotation
-    shift = np.array([np.random.uniform(-10., 10., (n,))] * m)
+    shift = np.array([np.random.uniform(-10.0, 10.0, (n,))] * m)
     rot_array = special_ortho_group.rvs(n)
-    array_b = np.dot(2. * array_a, rot_array) + shift
+    array_b = np.dot(2.0 * array_a, rot_array) + shift
     # compute procrustes transformation
     res = rotational(array_a, array_b, translate=True, scale=True)
     # check transformation array and error
@@ -112,11 +112,11 @@ def test_rotational_orthogonal_almost_zero_array(m, n):
 
 def test_rotational_raises_error_shape_mismatch():
     r"""Test rotation Procrustes with inputs are not correct."""
-    array_a = np.random.uniform(-10., 10., (100, 100))
+    array_a = np.random.uniform(-10.0, 10.0, (100, 100))
     array_b = array_a.copy()
     # Set couple of the columns of b and rows of b (at the ends of the matrix) to zero.
-    array_b[:, -3:] = 0.
-    array_b[-4:, :] = 0.
+    array_b[:, -3:] = 0.0
+    array_b[-4:, :] = 0.0
     with pytest.raises(ValueError):
         rotational(array_a, array_b, pad=False, unpad_col=True)
     with pytest.raises(ValueError):

@@ -35,8 +35,9 @@ def test_softassign_4by4():
     # define a random matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.],
-                     [0., 1., 0., 0.]])
+    perm = np.array(
+        [[0.0, 0.0, 1.0, 0.0], [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], [0.0, 1.0, 0.0, 0.0]]
+    )
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = softassign(array_a, array_b, unpad_col=False, unpad_row=False)
@@ -47,8 +48,7 @@ def test_softassign_4by4():
 def test_softassign_4by4_loop():
     r"""Test softassign by a 4by4 matrix with all possible permutation matrices."""
     # define a random symmetric matrix
-    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],
-                        [3, 3, 2, 2], [3, 5, 2, 5]])
+    array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # check with all possible permutation matrices
     for comb in itertools.permutations(np.arange(4)):
         perm = np.zeros((4, 4))
@@ -64,8 +64,7 @@ def test_softassign_4by4_loop():
 def test_softassign_4by4_loop_negative():
     r"""Test softassign by a 4by4 negative matrix with all possible permutation matrices."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     for comb in itertools.permutations(np.arange(4)):
         # Compute the permutation matrix
@@ -83,14 +82,13 @@ def test_softassign_4by4_loop_negative():
 def test_softassign_4by4_translate_scale():
     r"""Test softassign by 4by4 matrix with translation and scaling."""
     # define a random matrix
-    array_a = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
+    array_a = np.array([[5.0, 2.0, 1.0], [4.0, 6.0, 1.0], [1.0, 6.0, 3.0]])
     array_a = np.dot(array_a, array_a.T)
     # define array_b by scale-translate array_a and permuting
-    perm = np.array([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
+    perm = np.array([[1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
     array_b = np.dot(perm.T, np.dot((14.7 * array_a + 3.14), perm))
     # Check
-    res = softassign(array_a, array_b, translate=True, scale=True,
-                     unpad_col=False, unpad_row=False)
+    res = softassign(array_a, array_b, translate=True, scale=True, unpad_col=False, unpad_row=False)
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -98,8 +96,7 @@ def test_softassign_4by4_translate_scale():
 def test_softassign_4by4_translate_scale_loop():
     r"""Test softassign by 4by4 matrix with all permutations with translation and scaling."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # check with all possible permutation matrices
     for comb in itertools.permutations(np.arange(4)):
         # Compute the permutation matrix
@@ -139,21 +136,23 @@ def test_softassign_practical_example():
     # vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf
     # https://books.google.ca/books/about/Parallel_Solution_of_
     # SVD_related_Problem.html?id=_aVWcgAACAAJ&redir_esc=y
-    array_a = np.array([[32, 14, 3, 63, 50],
-                        [24, 22, 1, 56, 4],
-                        [94, 16, 28, 75, 81],
-                        [19, 72, 42, 90, 54],
-                        [71, 85, 10, 96, 58]])
-    perm = np.array([[0, 0, 0, 0, 1],
-                     [0, 0, 1, 0, 0],
-                     [0, 1, 0, 0, 0],
-                     [0, 0, 0, 1, 0],
-                     [1, 0, 0, 0, 0]])
+    array_a = np.array(
+        [
+            [32, 14, 3, 63, 50],
+            [24, 22, 1, 56, 4],
+            [94, 16, 28, 75, 81],
+            [19, 72, 42, 90, 54],
+            [71, 85, 10, 96, 58],
+        ]
+    )
+    perm = np.array(
+        [[0, 0, 0, 0, 1], [0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [0, 0, 0, 1, 0], [1, 0, 0, 0, 0]]
+    )
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = softassign(array_a, array_b,
-                     translate=False, scale=False,
-                     unpad_col=False, unpad_row=False)
+    res = softassign(
+        array_a, array_b, translate=False, scale=False, unpad_col=False, unpad_row=False
+    )
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -165,21 +164,23 @@ def test_softassign_random_noise():
     # vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf
     # https://books.google.ca/books/about/Parallel_Solution_of_SVD_related_
     # Problem.html?id=_aVWcgAACAAJ&redir_esc=y
-    array_a = np.array([[32, 14, 3, 63, 50],
-                        [24, 22, 1, 56, 4],
-                        [94, 16, 28, 75, 81],
-                        [19, 72, 42, 90, 54],
-                        [71, 85, 10, 96, 58]])
-    perm = np.array([[0, 0, 0, 0, 1],
-                     [0, 0, 1, 0, 0],
-                     [0, 1, 0, 0, 0],
-                     [0, 0, 0, 1, 0],
-                     [1, 0, 0, 0, 0]])
+    array_a = np.array(
+        [
+            [32, 14, 3, 63, 50],
+            [24, 22, 1, 56, 4],
+            [94, 16, 28, 75, 81],
+            [19, 72, 42, 90, 54],
+            [71, 85, 10, 96, 58],
+        ]
+    )
+    perm = np.array(
+        [[0, 0, 0, 0, 1], [0, 0, 1, 0, 0], [0, 1, 0, 0, 0], [0, 0, 0, 1, 0], [1, 0, 0, 0, 0]]
+    )
     array_b = np.dot(perm.T, np.dot(array_a, perm)) + np.random.randn(5, 5)
     # Check
-    res = softassign(array_a, array_b,
-                     translate=False, scale=False,
-                     unpad_col=False, unpad_row=False)
+    res = softassign(
+        array_a, array_b, translate=False, scale=False, unpad_col=False, unpad_row=False
+    )
     assert_almost_equal(res["t"], perm, decimal=6)
 
 
@@ -188,7 +189,9 @@ def test_softassign_invalid_beta_r():
     # define a random matrix and symmetric matrix
     array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5], [3, 3, 2, 2], [3, 5, 2, 5]])
     # define array_b by permuting array_a
-    perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.], [0., 0., 0., 1.], [0., 1., 0., 0.]])
+    perm = np.array(
+        [[0.0, 0.0, 1.0, 0.0], [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], [0.0, 1.0, 0.0, 0.0]]
+    )
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     assert_raises(ValueError, softassign, array_a, array_b, beta_r=0.5)
@@ -213,17 +216,20 @@ def test_softassign_wrong_shapes():
 def test_softassign_4by4_beta_0():
     r"""Test softassign by 4by4 matrix specified beta_0.."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # random permutation matrix_rank
-    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
-                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
-    res = softassign(array_a, array_b,
-                     translate=False, scale=False,
-                     beta_0=1.e-6, adapted=False,
-                     epsilon_soft=1e-8)
+    res = softassign(
+        array_a,
+        array_b,
+        translate=False,
+        scale=False,
+        beta_0=1.0e-6,
+        adapted=False,
+        epsilon_soft=1e-8,
+    )
     assert_almost_equal(res["t"], perm, decimal=6)
     assert_almost_equal(res["error"], 0, decimal=6)
 
@@ -231,11 +237,9 @@ def test_softassign_4by4_beta_0():
 def test_softassign_4by4_anneal_steps():
     r"""Test softassign by 4by4 matrix specified annealing steps."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # random permutation matrix_rank
-    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
-                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     # Check
     res = softassign(array_a, array_b, translate=False, scale=False, iteration_anneal=165)
@@ -246,11 +250,9 @@ def test_softassign_4by4_anneal_steps():
 def test_softassign_missing_iteration_anneal_beta_f():
     r"""Test softassign by missing iteration_anneal and beta_f."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # random permutation matrix_rank
-    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
-                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
     assert_raises(ValueError, softassign, array_a, array_b, iteration_anneal=None, beta_f=None)
 
@@ -258,16 +260,12 @@ def test_softassign_missing_iteration_anneal_beta_f():
 def test_softassign_m_guess():
     r"""Test softassign by given initial permutation guess."""
     # define a random matrix
-    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5],
-                        [-3, 3, 2, 2], [3, -5, 2, 5]])
+    array_a = np.array([[4, 5, -3, 3], [5, 7, 3, -5], [-3, 3, 2, 2], [3, -5, 2, 5]])
     # random permutation matrix_rank
-    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0],
-                     [0, 0, 1, 0], [0, 0, 0, 1]])
+    perm = np.array([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
     array_b = np.dot(perm.T, np.dot(array_a, perm))
-    m_guess1 = np.array([[0, -0.98, 0, 0], [0.8, 0, 0, 0],
-                         [0, 0, 1.01, 0], [0, 0, 0, 1]])
-    m_guess2 = np.array([[0, 0.98, 0, 0], [0.8, 0, 0, 0],
-                         [0, 0, 1.01, 0], [0, 0, 0, 1]])
+    m_guess1 = np.array([[0, -0.98, 0, 0], [0.8, 0, 0, 0], [0, 0, 1.01, 0], [0, 0, 0, 1]])
+    m_guess2 = np.array([[0, 0.98, 0, 0], [0.8, 0, 0, 0], [0, 0, 1.01, 0], [0, 0, 0, 1]])
     m_guess3 = np.array([[0, 0.98, 0, 0], [0, 0, 1.01, 0], [0, 0, 0, 1]])
     # check assert raises
     assert_raises(ValueError, softassign, array_a, array_b, m_guess=m_guess1)
@@ -302,37 +300,43 @@ def test_softassign_kopt():
     # softassign without kopt
     # default parameters will lead to error=0
     # changes the parameters to force it fail
-    res_no_kopt = softassign(array_a, array_b,
-                             translate=False,
-                             scale=False,
-                             unpad_col=False,
-                             unpad_row=False,
-                             iteration_soft=1,
-                             iteration_sink=1,
-                             beta_r=1.05,
-                             beta_f=1.e3,
-                             epsilon=0.05,
-                             epsilon_soft=1.e-3,
-                             epsilon_sink=1.e-3,
-                             k=0.15,
-                             gamma_scaler=1.5,
-                             n_stop=2,
-                             kopt=False)
+    res_no_kopt = softassign(
+        array_a,
+        array_b,
+        translate=False,
+        scale=False,
+        unpad_col=False,
+        unpad_row=False,
+        iteration_soft=1,
+        iteration_sink=1,
+        beta_r=1.05,
+        beta_f=1.0e3,
+        epsilon=0.05,
+        epsilon_soft=1.0e-3,
+        epsilon_sink=1.0e-3,
+        k=0.15,
+        gamma_scaler=1.5,
+        n_stop=2,
+        kopt=False,
+    )
     # softassign with kopt
-    res_with_kopt = softassign(array_a, array_b,
-                               translate=False,
-                               scale=False,
-                               unpad_col=False,
-                               unpad_row=False,
-                               iteration_soft=1,
-                               iteration_sink=1,
-                               beta_r=1.05,
-                               beta_f=1.e3,
-                               epsilon=0.05,
-                               epsilon_soft=1.e-3,
-                               epsilon_sink=1.e-3,
-                               k=0.15,
-                               gamma_scaler=1.5,
-                               n_stop=2,
-                               kopt=True)
+    res_with_kopt = softassign(
+        array_a,
+        array_b,
+        translate=False,
+        scale=False,
+        unpad_col=False,
+        unpad_row=False,
+        iteration_soft=1,
+        iteration_sink=1,
+        beta_r=1.05,
+        beta_f=1.0e3,
+        epsilon=0.05,
+        epsilon_soft=1.0e-3,
+        epsilon_sink=1.0e-3,
+        k=0.15,
+        gamma_scaler=1.5,
+        n_stop=2,
+        kopt=True,
+    )
     assert res_no_kopt["error"] >= res_with_kopt["error"]

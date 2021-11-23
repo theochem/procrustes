@@ -35,7 +35,7 @@ def test_symmetric_with_unpadding(m, n, add_cols, add_rows):
     r"""Test symmetric without translation and scaling."""
     # define arbitrary array and generate random symmetric transformation with rank 1.
     array_a = np.random.uniform(-10.0, 10.0, (m, n))
-    rand_array = np.random.uniform(-10., 10., (n,))
+    rand_array = np.random.uniform(-10.0, 10.0, (n,))
     sym_array = np.outer(rand_array.T, rand_array)
     # define array_b by transforming array_a and padding with zero
     array_b = np.dot(array_a, sym_array)
@@ -58,7 +58,7 @@ def test_symmetric_scaled_shifted_transformed(m, n):
     # Define shift to the rows of the matrices. This repeats a random matrix of size n, m times.
     shift = np.tile(np.random.uniform(-10.0, 10.0, (n,)), (m, 1))
     # Generate random array with rank with which ever is the smallest.
-    rand_array = np.random.uniform(-10., 10., (m, n))
+    rand_array = np.random.uniform(-10.0, 10.0, (m, n))
     sym_array = np.dot(rand_array.T, rand_array)
     # define array_b by scaling, translating and transforming array_a
     array_b = 614.5 * array_a + shift
@@ -113,11 +113,11 @@ def test_having_zero_eigenvalues_case(m):
     # define a singular matrix (i.e. some eigenvalues are hard zeros)
     numb_nonzero_eigs = int(np.random.randint(1, m - 1))
     sing_mat = list(np.random.uniform(-10.0, 10.0, (numb_nonzero_eigs,)))
-    sing_mat += [0.] * (m - numb_nonzero_eigs)
+    sing_mat += [0.0] * (m - numb_nonzero_eigs)
     sing_mat = np.diag(sing_mat)
     array_a = ortho_group.rvs(m).dot(sing_mat).dot(ortho_group.rvs(m))
     # generate random symmetric matrix & define matrix b
-    rand_array = np.random.uniform(-1., 1., (m, m))
+    rand_array = np.random.uniform(-1.0, 1.0, (m, m))
     sym_array = (rand_array + rand_array.T) / 2.0
     array_b = np.dot(array_a, sym_array)
     # compute procrustes transformation & check results

@@ -36,17 +36,13 @@ def test_generalized_with_reference():
     # arr_list = [arr_a, arr_b, arr_c, arr_d]
     # arr_list = [arr_b, arr_c, arr_d, arr_e]
     arr_list = [arr_c, arr_d, arr_e]
-    arr_aligned, error = generalized(arr_list, ref=arr_b, tol=1.e-7, n_iter=200)
+    arr_aligned, error = generalized(arr_list, ref=arr_b, tol=1.0e-7, n_iter=200)
     # one right alignment
-    aligned = [np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]]),
-               np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]]),
-               np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]])]
+    aligned = [
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+    ]
     assert_almost_equal(arr_aligned[0], aligned[0], decimal=7)
     assert_almost_equal(arr_aligned[1], aligned[1], decimal=7)
     assert_almost_equal(arr_aligned[2], aligned[2], decimal=7)
@@ -61,20 +57,14 @@ def test_generalized_without_reference():
     arr_e = np.dot(arr_b, _rotation(90))
     arr_list = [arr_b, arr_c, arr_d, arr_e]
     # arr_list = [arr_c, arr_d, arr_e]
-    arr_aligned, error = generalized(arr_list, ref=None, tol=1.e-7, n_iter=200)
+    arr_aligned, error = generalized(arr_list, ref=None, tol=1.0e-7, n_iter=200)
     # one right alignment
-    aligned = [np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]]),
-               np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]]),
-               np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]]),
-               np.array([[5., 0.],
-                         [8., 0.],
-                         [5., 5.]])]
+    aligned = [
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+        np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]]),
+    ]
     assert_almost_equal(arr_aligned[0], aligned[0], decimal=7)
     assert_almost_equal(arr_aligned[1], aligned[1], decimal=7)
     assert_almost_equal(arr_aligned[2], aligned[2], decimal=7)
@@ -89,12 +79,11 @@ def test_generalized_invalid():
     arr_d = np.dot(arr_b, _rotation(45))
     arr_e = np.dot(arr_b, _rotation(90))
     arr_list = [arr_b, arr_c, arr_d, arr_e]
-    assert_raises(ValueError, generalized, arr_list, None, 1.e-7, n_iter=-5)
+    assert_raises(ValueError, generalized, arr_list, None, 1.0e-7, n_iter=-5)
 
 
 def _rotation(degree):
     """Generate the rotation matrix."""
     theta = np.radians(degree)
-    rot = np.array(((np.cos(theta), -np.sin(theta)),
-                    (np.sin(theta), np.cos(theta))))
+    rot = np.array(((np.cos(theta), -np.sin(theta)), (np.sin(theta), np.cos(theta))))
     return rot

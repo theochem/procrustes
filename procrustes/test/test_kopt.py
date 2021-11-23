@@ -144,8 +144,9 @@ def test_kopt_heuristic_double_k_permutations(m, n):
     # compute B = P^T A P
     b = np.linalg.multi_dot([p1.T, a, p2])
     # find and check permutation
-    perm1, perm2, error = kopt_heuristic_double(lambda x, y: compute_error(a, b, y, x.T),
-                                                np.eye(m), np.eye(n), k=2)
+    perm1, perm2, error = kopt_heuristic_double(
+        lambda x, y: compute_error(a, b, y, x.T), np.eye(m), np.eye(n), k=2
+    )
     assert_equal(perm1, p1)
     assert_equal(perm2, p2)
     assert_equal(error, 0.0)
@@ -161,8 +162,9 @@ def test_kopt_heuristic_double_all_permutations(m, n):
     # compute B = P1^T A P2
     b = np.linalg.multi_dot([p1.T, a, p2])
     # find and check permutations
-    perm1, perm2, error = kopt_heuristic_double(lambda x, y: compute_error(a, b, y, x.T),
-                                                np.eye(m), np.eye(n), max(n, m))
+    perm1, perm2, error = kopt_heuristic_double(
+        lambda x, y: compute_error(a, b, y, x.T), np.eye(m), np.eye(n), max(n, m)
+    )
     assert_equal(perm1, p1)
     assert_equal(perm2, p2)
     assert_equal(error, 0.0)

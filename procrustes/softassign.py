@@ -50,10 +50,10 @@ def softassign(
     iteration_soft: int = 50,
     iteration_sink: int = 200,
     beta_r: float = 1.10,
-    beta_f: float = 1.e5,
+    beta_f: float = 1.0e5,
     epsilon: float = 0.05,
-    epsilon_soft: float = 1.e-3,
-    epsilon_sink: float = 1.e-3,
+    epsilon_soft: float = 1.0e-3,
+    epsilon_sink: float = 1.0e-3,
     k: float = 0.15,
     gamma_scaler: float = 1.01,
     n_stop: int = 3,
@@ -63,7 +63,7 @@ def softassign(
     iteration_anneal: Optional[int] = None,
     kopt: bool = False,
     kopt_k: int = 3,
-)-> ProcrustesResult:
+) -> ProcrustesResult:
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
@@ -194,19 +194,25 @@ def softassign(
     # Check beta_r
     if beta_r <= 1:
         raise ValueError("Argument beta_r cannot be less than 1.")
-    new_a, new_b = setup_input_arrays(a, b, unpad_col, unpad_row,
-                                      pad, translate, scale, check_finite, weight)
+    new_a, new_b = setup_input_arrays(
+        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight
+    )
 
     # Check that A & B are square and that they match each other.
     if new_a.shape[0] != new_a.shape[1]:
-        raise ValueError(f"Matrix A should be square but A.shape={new_a.shape}"
-                         "Check pad, unpad_col, and unpad_row arguments.")
+        raise ValueError(
+            f"Matrix A should be square but A.shape={new_a.shape}"
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
     if new_b.shape[0] != new_b.shape[1]:
-        raise ValueError(f"Matrix B should be square but B.shape={new_b.shape}"
-                         "Check pad, unpad_col, and unpad_row arguments.")
+        raise ValueError(
+            f"Matrix B should be square but B.shape={new_b.shape}"
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
     if new_a.shape != new_b.shape:
-        raise ValueError(f"New matrix A {new_a.shape} should match the new"
-                         f" matrix B shape {new_b.shape}.")
+        raise ValueError(
+            f"New matrix A {new_a.shape} should match the new" f" matrix B shape {new_b.shape}."
+        )
 
     # Initialization
     # Compute the benefit matrix
@@ -219,7 +225,7 @@ def softassign(
     if beta_0 is None:
         c_gamma = array_c + gamma * (np.identity(row_num * row_num))
         eival_gamma = np.amax(np.abs(np.linalg.eigvalsh(c_gamma)))
-        beta_0 = gamma_scaler * max(1.e-10, eival_gamma / row_num)
+        beta_0 = gamma_scaler * max(1.0e-10, eival_gamma / row_num)
         beta_0 = 1 / beta_0
     else:
         beta_0 *= row_num
@@ -234,19 +240,24 @@ def softassign(
         beta_f *= row_num
     # Both iteration_anneal and beta_f are None
     else:
-        raise ValueError("We must specify at least one of iteration_anneal and beta_f and "
-                         "specify only one is recommended.")
+        raise ValueError(
+            "We must specify at least one of iteration_anneal and beta_f and "
+            "specify only one is recommended."
+        )
     # Initialization of m_ai
     # check shape of m_guess
     if m_guess is not None:
         if np.any(m_guess < 0):
             raise ValueError(
-                "The initial guess of permutation matrix cannot contain any negative values.")
+                "The initial guess of permutation matrix cannot contain any negative values."
+            )
         if m_guess.shape[0] == row_num and m_guess.shape[1] == row_num:
             array_m = m_guess
         else:
-            warnings.warn(f"The shape of m_guess does not match ({row_num}, {row_num})."
-                          "Use random initial guess instead.")
+            warnings.warn(
+                f"The shape of m_guess does not match ({row_num}, {row_num})."
+                "Use random initial guess instead."
+            )
             array_m = np.abs(np.random.normal(loc=1.0, scale=0.1, size=(row_num, row_num)))
     else:
         # m_relax_old = 1 / N + np.random.rand(N, N)
@@ -267,7 +278,7 @@ def softassign(
             # C_gamma_tensor = C_gamma.reshape(N, N, N, N)
             # Z = -np.einsum('ijkl,jl->ik', C_gamma_tensor, M)
             # Z -= linear_cost_func
-            array_z = np.einsum('aibj,bj->ai', c_tensor, array_m)
+            array_z = np.einsum("aibj,bj->ai", c_tensor, array_m)
             array_z += gamma * array_m
             # soft_assign
             array_m = np.exp(beta * array_z)

@@ -125,7 +125,15 @@ def permutation(
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
     )
     # if number of rows is less than column, the arrays are made square
     if (new_a.shape[0] < new_a.shape[1]) or (new_b.shape[0] < new_b.shape[1]):
@@ -371,12 +379,16 @@ def permutation_2sided(
 
     # check that A & B are square in case of single transformation
     if single and new_a.shape[0] != new_a.shape[1]:
-        raise ValueError(f"For single={single}, matrix A should be square but A.shape={new_a.shape}"
-                         "Check pad, unpad_col, and unpad_row arguments.")
+        raise ValueError(
+            f"For single={single}, matrix A should be square but A.shape={new_a.shape}"
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
 
     if single and new_b.shape[0] != new_b.shape[1]:
-        raise ValueError(f"For single={single}, matrix B should be square but B.shape={new_b.shape}"
-                         "Check pad, unpad_col, and unpad_row arguments.")
+        raise ValueError(
+            f"For single={single}, matrix B should be square but B.shape={new_b.shape}"
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
 
     # print a statement if user-specified guess is not used
     if method.startswith("approx") and guess_p1 is not None:
@@ -409,8 +421,10 @@ def permutation_2sided(
             raise ValueError(f"Argument options should be a dictionary. Given type={type(options)}")
         # pylint: disable=C0201
         if not all(k in defaults.keys() for k in options.keys()):
-            raise ValueError(f"Argument options should only have {defaults.keys()} keys. "
-                             f"Given options contains {options.keys()} keys!")
+            raise ValueError(
+                f"Argument options should only have {defaults.keys()} keys. "
+                f"Given options contains {options.keys()} keys!"
+            )
         # update defaults dictionary to use the specified options
         defaults.update(options)
 
@@ -420,7 +434,8 @@ def permutation_2sided(
         if method == "flip-flop":
             # compute permutations using flip-flop algorithm
             perm1, perm2, error = _permutation_2sided_2trans_flipflop(
-                new_a, new_b, defaults["tol"], defaults["maxiter"], guess_p1, guess_p2)
+                new_a, new_b, defaults["tol"], defaults["maxiter"], guess_p1, guess_p2
+            )
         elif method == "k-opt":
             # compute permutations using k-opt heuristic search
             fun_error = lambda p1, p2: compute_error(new_a, new_b, p2, p1.T)
@@ -478,12 +493,12 @@ def permutation_2sided(
         if is_pos_a_symmetric and is_pos_b_symmetric:
             # undirected graph matching problem (iterative procedure)
             perm = _permutation_2sided_1trans_undirected(
-                pos_a, pos_b, guess_p2, defaults['tol'], defaults['maxiter']
+                pos_a, pos_b, guess_p2, defaults["tol"], defaults["maxiter"]
             )
         else:
             # directed graph matching problem (iterative procedure)
             perm = _permutation_2sided_1trans_directed(
-                pos_a, pos_b, guess_p2, defaults['tol'], defaults['maxiter']
+                pos_a, pos_b, guess_p2, defaults["tol"], defaults["maxiter"]
             )
     else:
         raise ValueError(f"Method={method} not supported for single={single} transformation!")
@@ -508,8 +523,14 @@ def permutation_2sided(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=perm, s=perm.T)
 
 
-def _permutation_2sided_2trans_flipflop(n: np.ndarray, m: np.ndarray, tol: float, max_iter: int,
-                                        p0: Optional[np.ndarray] = None, q0: Optional[np.ndarray] = None):
+def _permutation_2sided_2trans_flipflop(
+    n: np.ndarray,
+    m: np.ndarray,
+    tol: float,
+    max_iter: int,
+    p0: Optional[np.ndarray] = None,
+    q0: Optional[np.ndarray] = None,
+):
     # two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`
     # taken from page 64 in parallel solution of svd-related problems, with applications
     # Pythagoras Papadimitriou, University of Manchester, 1993
@@ -582,8 +603,8 @@ def _approx_permutation_2sided_1trans_normal1(a: np.ndarray) -> np.ndarray:
     # get all the non-diagonal element
     array_c_non_diag = (a[array_mask]).T.reshape(a.shape[0], a.shape[1] - 1)
     array_c_non_diag = array_c_non_diag[
-        np.arange(np.shape(array_c_non_diag)[0])[:, np.newaxis],
-        np.argsort(abs(array_c_non_diag))]
+        np.arange(np.shape(array_c_non_diag)[0])[:, np.newaxis], np.argsort(abs(array_c_non_diag))
+    ]
 
     # form the right format in order to combine with matrix A
     array_c_sorted = np.fliplr(array_c_non_diag).T
@@ -608,8 +629,9 @@ def _approx_permutation_2sided_1trans_normal2(a: np.ndarray) -> np.ndarray:
     # array_off_diag0 is the off diagonal elements of A
     array_off_diag = a[array_mask_a].reshape((a.shape[0], a.shape[1] - 1))
     # array_off_diag1 is sorted off diagonal elements of A
-    array_off_diag = array_off_diag[np.arange(np.shape(array_off_diag)[0])[:, np.newaxis],
-                                    np.argsort(abs(array_off_diag))]
+    array_off_diag = array_off_diag[
+        np.arange(np.shape(array_off_diag)[0])[:, np.newaxis], np.argsort(abs(array_off_diag))
+    ]
     array_off_diag = np.fliplr(array_off_diag).T
 
     # array_c is newly built matrix B without weights
@@ -663,7 +685,9 @@ def _approx_permutation_2sided_1trans_umeyama(a: np.ndarray, b: np.ndarray) -> n
     return u_umeyama
 
 
-def _approx_permutation_2sided_1trans_umeyama_svd(a: np.ndarray, b: np.ndarray, lapack_driver: str) -> np.ndarray:
+def _approx_permutation_2sided_1trans_umeyama_svd(
+    a: np.ndarray, b: np.ndarray, lapack_driver: str
+) -> np.ndarray:
     # compute u_umeyama
     perm = _approx_permutation_2sided_1trans_umeyama(a, b)
     # compute approximated umeyama matrix
@@ -677,8 +701,9 @@ def _symmetrize_matrix(a: np.ndarray) -> np.ndarray:
     return (a + a.T) * 0.5 + (a - a.T) * 0.5 * 1j
 
 
-def _permutation_2sided_1trans_undirected(a: np.ndarray, b: np.ndarray, guess: np.ndarray,
-                                          tol: float, iteration: int) -> np.ndarray:
+def _permutation_2sided_1trans_undirected(
+    a: np.ndarray, b: np.ndarray, guess: np.ndarray, tol: float, iteration: int
+) -> np.ndarray:
     """Solve for 2-sided permutation Procrustes with 1-transformation when A & B are symmetric."""
 
     p_old = guess
@@ -703,8 +728,9 @@ def _permutation_2sided_1trans_undirected(a: np.ndarray, b: np.ndarray, guess: n
     return p_new
 
 
-def _permutation_2sided_1trans_directed(a: np.ndarray, b: np.ndarray, guess: np.ndarray,
-                                        tol: float, iteration: int) -> np.ndarray:
+def _permutation_2sided_1trans_directed(
+    a: np.ndarray, b: np.ndarray, guess: np.ndarray, tol: float, iteration: int
+) -> np.ndarray:
     """Solve for 2-sided permutation Procrustes with 1-transformation."""
 
     # Algorithm 2 from Appendix of Procrustes paper

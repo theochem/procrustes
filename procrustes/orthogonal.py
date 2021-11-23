@@ -49,7 +49,7 @@ def orthogonal(
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
     lapack_driver: str = "gesvd"
-):
+) -> ProcrustesResult:
     r"""Perform orthogonal Procrustes.
 
     Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
@@ -163,18 +163,18 @@ def orthogonal(
 
 
 def orthogonal_2sided(
-    a,
-    b,
-    single=True,
+    a: np.ndarray,
+    b: np.ndarray,
+    single: bool =True,
     pad: bool = True,
     translate: bool = False,
     scale: bool = False,
-    unpad_col=False,
+    unpad_col: bool = False,
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
     lapack_driver: str = "gesvd"
-):
+) -> ProcrustesResult:
     r"""Perform two-sided orthogonal Procrustes with one- or two-transformations.
 
     **Two Transformations:** Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix

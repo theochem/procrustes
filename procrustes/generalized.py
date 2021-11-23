@@ -30,8 +30,13 @@ from procrustes import orthogonal
 from procrustes.utils import _check_arraytypes
 
 
-def generalized(array_list: List[np.ndarray], ref: Optional[np.ndarray] = None,
-                tol: float = 1.e-7, n_iter: int = 200, check_finite: bool = True) -> Tuple[List[np.ndarray], float]:
+def generalized(
+    array_list: List[np.ndarray],
+    ref: Optional[np.ndarray] = None,
+    tol: float = 1.0e-7,
+    n_iter: int = 200,
+    check_finite: bool = True,
+) -> Tuple[List[np.ndarray], float]:
     r"""Generalized Procrustes Analysis.
 
     Parameters
@@ -78,8 +83,9 @@ def generalized(array_list: List[np.ndarray], ref: Optional[np.ndarray] = None,
         raise ValueError("Number of iterations should be a positive number.")
     if ref is None:
         # the first array will be used to build the initial ref
-        array_aligned = [array_list[0]] + [_orthogonal(arr, array_list[0]) for arr in
-                                           array_list[1:]]
+        array_aligned = [array_list[0]] + [
+            _orthogonal(arr, array_list[0]) for arr in array_list[1:]
+        ]
         ref = np.mean(array_aligned, axis=0)
     else:
         array_aligned = [None] * len(array_list)

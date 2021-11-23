@@ -41,7 +41,7 @@ def symmetric(
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
-    lapack_driver: str = "gesvd"
+    lapack_driver: str = "gesvd",
 ) -> ProcrustesResult:
     r"""Perform symmetric Procrustes.
 
@@ -164,7 +164,15 @@ def symmetric(
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
     )
 
     # if number of rows is less than column, the arrays are made square

@@ -20,7 +20,9 @@ Citation
 
 Please use the following citation in any publication using Procrustes library:
 
-> **"Procrustes: ", F. Meng, et al.**
+> **"Procrustes: A Python Library to Find Transformationsthat Maximize the Similarity Between
+> Matrices."**, F. Meng, M. Richer, A. Tehrani, J. La, T. D. Kim, P. W. Ayers, F. Heidar-Zadeh,
+> [JOURNAL XXX]().
 
 
 Dependencies
@@ -33,7 +35,6 @@ The following dependencies are required to run Procrustes properly,
 * SciPy >= 1.5.0: http://www.scipy.org/
 * PyTest >= 5.3.4: https://docs.pytest.org/
 * PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/
-* PIP >= 19.0: https://pip.pypa.io/
 
 
 Installation

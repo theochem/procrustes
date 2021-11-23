@@ -39,8 +39,6 @@ The following dependencies are required to run Procrustes properly,
 Installation
 ------------
 
-
-#### Anaconda
 To install Procrustes using the conda package management system, install
 [miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
 first, and then:
@@ -54,7 +52,6 @@ first, and then:
     conda install -c theochem/label/dev qc-procrustes
 ```
 
-#### Pip
 To install Procrustes with pip, you may want to create a
 [virtual environment](https://docs.python.org/3/tutorial/venv.html), and then:
 
@@ -64,64 +61,4 @@ To install Procrustes with pip, you may want to create a
     pip install qc-procrustes
 ```
 
-
-#### Source
-To install Procrustes from source, use:
-
-```bash
-    # Clone the repository
-    git clone git@github.com:theochem/procrustes.git
-    cd procrustes
-    
-    # Create a conda environment
-    conda create -n procrustes python=3.6
-    conda activate procruestes
-    
-    # Install with pip
-    pip install -e .
-```
-
-For more information, please see https://procrustes.readthedocs.io/en/latest/usr_doc_installization.html.
-
-Quick Start
-------------
-
-As an example, consider the problem of finding the Procrustes distance between an array A, and 
-that same array (orthogonally) transformed and shifted.
-
-```python
-import numpy as np
-from scipy.stats import ortho_group
-from procrustes import orthogonal
-
-# random input 10x7 matrix A
-a = np.random.rand(10, 7)
-
-# random orthogonal 7x7 tranformation matrix T
-t = ortho_group.rvs(7)
-
-# target matrix B (which is a shifted AxT)
-b = np.dot(a, t) + np.random.rand(1, 7)
-
-# orthogonal Procrustes analysis with translation
-result = orthogonal(a, b, scale=True, translate=True)
-
-# display Procrustes results
-print("Procrustes distance is: %s", result.error)
-assert np.allclose(result.t, t)
-```
-
-Tutorials
-------------
-
-Tutorials are available online, and can be found at:
-https://procrustes.readthedocs.io/en/latest/usr_doc_tutorials.html.
-
-Tests
-------------
-
-To execute the tests, run:
-
-```bash
-pytest -v .
-```
+See https://procrustes.readthedocs.io/en/latest/usr_doc_installization.html for full details.

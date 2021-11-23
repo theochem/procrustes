@@ -47,7 +47,7 @@ The following dependencies will be necessary for Procrustes to build properly,
 * SciPy >= 1.5.0: `https://www.scipy.org/ <http://www.scipy.org/>`_
 * NumPy >= 1.18.5: `https://www.numpy.org/ <http://www.numpy.org/>`_
 * Pip >= 19.0: `https://pip.pypa.io/ <https://pip.pypa.io/>`_
-* PyTest >= 5.3.4: `https://docs.pytest.org/ <https://docs.pytest.org/>`_
+* PyTest >= 5.4.3: `https://docs.pytest.org/ <https://docs.pytest.org/>`_
 * PyTest-Cov >= 2.8.0: `https://pypi.org/project/pytest-cov/ <https://pypi.org/project/pytest-cov/>`_
 * Sphinx >= 2.3.0, if one wishes to build the documentation locally:
   `https://www.sphinx-doc.org/ <https://www.sphinx-doc.org/>`_

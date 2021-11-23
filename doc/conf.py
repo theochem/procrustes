@@ -120,7 +120,7 @@ mathjax_config = {
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ['.rst', '.ipynb']
+# source_suffix = ['.rst', '.ipynb']
 
 # The master toctree document.
 master_doc = 'index'

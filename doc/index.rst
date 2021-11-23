@@ -26,7 +26,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Procrustes's documentation!
+Welcome to Procrustes's Documentation!
 ======================================
 
 `Procrustes <https://github.com/theochem/procrustes>`_ is a free, open-source, and cross-platform
@@ -41,8 +41,8 @@ Please use the following citation in any publication using Procrustes library:
 The Procrustes source code is hosted on `GitHub <https://github.com/theochem/procrustes>`_ and is
 released under the
 `GNU General Public License v3.0 <https://github.com/theochem/procrustes/blob/master/LICENSE>`_.
-We welcome any contributions to the Procrustes library in accord with our Code of Conduct;
-please see our `Contributing Guidelines <link to QCDevs>`_.
+We welcome any contributions to the Procrustes library in accordance with our Code of Conduct;
+please see our `Contributing Guidelines <https://qcdevs.org/guidelines/QCDevsCodeOfConduct/>`_.
 Please report any issues you encounter while using Procrustes library on
 `GitHub Issues <https://github.com/theochem/procrustes/issues>`_.
 For further information and inquiries please contact us at `qcdevs@gmail.com <qcdevs@gmail.com>`_.
@@ -86,7 +86,7 @@ are also implemented in our package. The GPA algorithm seeks the optimal transfo
 
 .. math::
     \begin{equation}
-      \min \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i - \mathbf{A}_j \mathbf{T}_j \right\|}^2
+      \min \sum_{i<j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i - \mathbf{A}_j \mathbf{T}_j \right\|_F}^2
     \end{equation}
 
 where :math:`\mathbf{A}_i` and :math:`\mathbf{A}_j` are the configurations and :math:`\mathbf{T}_i`
@@ -100,8 +100,8 @@ assignment problem
 developed theoretically
 :cite:`gold1996softassign,rangarajan1997convergence` and extended to many other applications
 :cite:`wang2018application,gold1996softassign,gold1996softmax,tian2012convergence,sheikhbahaee2017photometric`.
-Because the two-sided permutation Procrustes problem is a special
-quadratic assignment problem it can be used here. The objective function is to minimize
+Because the two-sided permutation Procrustes problem is a special case of the
+quadratic assignment problem, it can be used here. The objective function is to minimize
 :math:`E_{qap} (\mathbf{M}, \mu, \nu)`, :cite:`gold1996softassign,yuille1994statistical`,
 which is defined as follows,
 
@@ -119,8 +119,8 @@ which is defined as follows,
 
 Procrustes problems arise when aligning molecules and other objects, when evaluating optimal basis
 transformations, when determining optimal mappings between sets, and in many other contexts. This
-package includes options to translate, scale, and zero-pad matrices, so that matrices with different
-centers/scaling/sizes can be considered.
+package includes the options to translate, scale, and zero-pad matrices, so that matrices with
+different centers/scaling/sizes can be considered.
 
 
 .. toctree::
@@ -128,7 +128,7 @@ centers/scaling/sizes can be considered.
    :caption: User Documentation
 
    usr_doc_installization
-   notebooks/Quick_Start.ipynb
+   notebooks/Quick_Start
    usr_doc_tutorials
    usr_doc_zref
 

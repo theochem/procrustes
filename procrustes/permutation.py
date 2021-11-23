@@ -65,9 +65,9 @@ def permutation(
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
@@ -162,9 +162,9 @@ def permutation_2sided(
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}` which is going to be transformed.
+        The 2D-array :math:`\mathbf{A}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}` representing the reference matrix.
+        The 2D-array :math:`\mathbf{B}` representing the reference matrix.
     single : bool, optional
         If `True`, the single-transformation Procrustes is performed to obtain :math:`\mathbf{P}`.
         If `False`, the two-transformations Procrustes is performed to obtain :math:`\mathbf{P}_1`
@@ -357,17 +357,6 @@ def permutation_2sided(
              73 & -116 &  154 &  100 \\
             -62 &  154 &  100 &  127 \\
         \end{bmatrix} \\
-
-    References
-    ----------
-    [1] C. Ding, T. Li and M. I. Jordan, "Nonnegative Matrix Factorization for Combinatorial
-          Optimization: Spectral Clustering, Graph Matching, and Clique Finding," 2008 Eighth
-           IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 183-192,
-           doi: 10.1109/ICDM.2008.130.
-    [2] Papadimitriou, Pythagoras. "Parallel solution of SVD-related problems, with applications."
-            PhD diss., University of Manchester, 1993.
-    [3] S. Umeyama. An eigendecomposition approach toweighted graph matching problems.
-          IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695 –703, 1988.
 
     """
     # check single argument

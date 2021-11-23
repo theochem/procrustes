@@ -38,9 +38,9 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array :math:`\mathbf{A}_{n_a \times m_a}`.
+        The 2D-array :math:`\mathbf{A}_{n_a \times m_a}`.
     array_b : ndarray
-        The 2d-array :math:`\mathbf{B}_{n_b \times m_b}`.
+        The 2D-array :math:`\mathbf{B}_{n_b \times m_b}`.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
         - "row"
@@ -119,11 +119,11 @@ def _translate_array(array_a, array_b=None, weight=None):
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array to translate.
-    array_b : ndarray, default=None
-        The 2d-array to translate array_a based on.
-    weight : ndarray
-        The weight vector. Default=None.
+        The 2D-array to translate.
+    array_b : ndarray, optional
+        The 2D-array to translate array_a based on.
+    weight : ndarray, optional
+        The weight vector.
 
     Returns
     -------
@@ -157,9 +157,9 @@ def _scale_array(array_a, array_b=None):
     Parameters
     ----------
     array_a : ndarray
-        The 2d-array to scale
+        The 2D-array to scale
     array_b : ndarray, default=None
-        The 2d-array to scale array_a based on.
+        The 2D-array to scale array_a based on.
 
     Returns
     -------
@@ -189,11 +189,9 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
         The initial array.
     remove_zero_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
     remove_zero_row : bool, optional
         If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default=True.
-    tol : float
+    tol : float, optional
         Tolerance value.
 
     Returns
@@ -281,12 +279,11 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
         The 2D array :math:`A` being transformed.
     array_b : npdarray
         The 2D reference array :math:`B`.
-    remove_zero_col : bool, optional
+    remove_zero_col : bool
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
-    pad : bool, optional
+    remove_zero_row : bool
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
+    pad : bool
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
     translate : bool
@@ -300,7 +297,6 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     weight : A list of ndarray or ndarray
         A list of the weight arrays or one numpy array. When only on numpy array provided,
         it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.
-        Default=None.
 
     Returns
     -------
@@ -328,11 +324,10 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
         A list of 2D arrays that being transformed.
     array_ref : ndarray
         The 2D reference array :math:`B`.
-    remove_zero_col : bool, optional
+    remove_zero_col : bool
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
-    remove_zero_row : bool, optional
-        If True, zero rows (values less than 1e-8) on the bottom will be removed. Default=True.
+    remove_zero_row : bool
+        If True, zero rows (values less than 1e-8) on the bottom will be removed.
     pad_mode : str
         Specifying how to pad the arrays. Should be one of
             - "row"
@@ -357,10 +352,9 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
         :math:`Tr(A^T A) = 1`.
     check_finite : bool
         If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.
-    weight : A list of ndarray or ndarray
+    weight : A list of ndarray or ndarray, optional
         A list of the weight arrays or one numpy array. When only on numpy array provided,
         it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.
-        Default=None.
 
     Returns
     -------
@@ -419,9 +413,9 @@ class ProcrustesResult(dict):
         The translated/scaled numpy ndarray :math:`\mathbf{B}`.
     t : ndarray
         The 2D-array :math:`\mathbf{T}` representing the right-hand-side transformation matrix.
-    s : ndarray, optional
+    s : ndarray
         The 2D-array :math:`\mathbf{S}` representing the left-hand-side transformation
-        matrix. If set to `None`, the one-sided Procrustes is performed.
+        matrix. If set to `None`, the one-sided Procrustes was performed.
 
     """
 

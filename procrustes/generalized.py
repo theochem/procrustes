@@ -33,16 +33,16 @@ def generalized(array_list, ref=None, tol=1.e-7, n_iter=200, check_finite=True):
     Parameters
     ----------
     array_list : List
-        The list of 2d-array which is going to be transformed.
+        The list of 2D-array which is going to be transformed.
     ref : ndarray, optional
         The reference array to initialize the first iteration. If None, the first array in
-        `array_list` will be used. Default=None.
+        `array_list` will be used.
     tol: float, optional
-        Tolerance value to stop the iterations. Default=1e-7.
+        Tolerance value to stop the iterations.
     n_iter: int, optional
-        Number of total iterations. Default=200.
+        Number of total iterations.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+        If true, convert the input to an array, checking for NaNs or Infs.
 
     Returns
     -------

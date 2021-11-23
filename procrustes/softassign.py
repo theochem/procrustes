@@ -68,9 +68,9 @@ def softassign(
     Parameters
     ----------
     a : ndarray
-        The 2d-array :math:`\mathbf{A}_{n \times n}` which is going to be transformed.
+        The 2D-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.
     b : ndarray
-        The 2d-array :math:`\mathbf{B}_{n \times n}` representing the reference.
+        The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
         :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
@@ -92,47 +92,47 @@ def softassign(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
-    iteration_soft ： int, optional
-        Number of iterations for softassign loop. Default=50.
-    iteration_sink ： int, optional
-        Number of iterations for Sinkhorn loop. Default=50.
+    iteration_soft : int, optional
+        Number of iterations for softassign loop.
+    iteration_sink : int, optional
+        Number of iterations for Sinkhorn loop.
     beta_r : float, optional
-        Annealing rate which should greater than 1. Default=1.10.
+        Annealing rate which should greater than 1.
     beta_f : float, optional
-        The final inverse temperature. Default=1.e5.
+        The final inverse temperature.
     epsilon : float, optional
-        The tolerance value for annealing loop. Default=0.05.
+        The tolerance value for annealing loop.
     epsilon_soft : float, optional
-        The tolerance value used for softassign. Default=1.e-3.
+        The tolerance value used for softassign.
     epsilon_sink : float, optional
         The tolerance value used for Sinkhorn loop. If adapted version is used, it will use the
-        adapted tolerance value for Sinkhorn instead. Default=1.e-3.
+        adapted tolerance value for Sinkhorn instead.
     k : float, optional
         This parameter controls how much tighter the coverage threshold for the interior loop should
         be than the coverage threshold for the loops outside. It has be be within the integral
-        :math:`\(0,1\)`. Default=0.15.
-    gamma_scaler : float
+        :math:`(0,1)`.
+    gamma_scaler : float, optional
         This parameter ensures the quadratic cost function including  self-amplification positive
-        define. Default=1.01.
+        define.
     n_stop : int, optional
         Number of running steps after the calculation converges in the relaxation procedure.
-        Default=10.
     adapted : bool, optional
         If adapted, this function will use the tighter covergence threshold for the interior loops.
-        Default=True.
     beta_0 : float, optional
-        Initial inverse temperature. Default=None.
+        Initial inverse temperature.
     beta_f : float, optional
-        Final inverse temperature. Default=None.
+        Final inverse temperature.
     m_guess : ndarray, optional
-        The initial guess of the doubly-stochastic matrix. Default=None.
+        The initial guess of the doubly-stochastic matrix.
     iteration_anneal : int, optional
-        Number of iterations for annealing loop. Default=None.
+        Number of iterations for annealing loop.
     kopt : bool, optional
-        If True, the k_opt heuristic search will be performed. Default=False.
+        If True, the k_opt heuristic search will be performed.
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
-        search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
+        search of 3 items and kopt_k=2 only searches for two items locally.
+    weight : ndarray, optional
+        The weighting matrix.
 
     Returns
     -------

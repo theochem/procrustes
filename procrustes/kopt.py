@@ -112,7 +112,7 @@ def kopt_heuristic_single(fun, p0, k=3, tol=1.0e-8):
 
 
 def kopt_heuristic_double(fun, p1, p2, k=3, tol=1.0e-8):
-    r"""Find a locally-optimal two-sided permutation matrices using the k-opt (greedy) heuristic.
+    r"""Find locally-optimal permutation matrices using the k-opt (greedy) heuristic.
 
     .. math::
         \underbrace{\text{arg min}}_{

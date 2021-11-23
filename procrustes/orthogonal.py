@@ -48,7 +48,7 @@ def orthogonal(
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
-    lapack_driver: str = "gesvd"
+    lapack_driver: str = "gesvd",
 ) -> ProcrustesResult:
     r"""Perform orthogonal Procrustes.
 
@@ -145,7 +145,15 @@ def orthogonal(
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
     )
     if new_a.shape != new_b.shape:
         raise ValueError(
@@ -165,7 +173,7 @@ def orthogonal(
 def orthogonal_2sided(
     a: np.ndarray,
     b: np.ndarray,
-    single: bool =True,
+    single: bool = True,
     pad: bool = True,
     translate: bool = False,
     scale: bool = False,
@@ -173,7 +181,7 @@ def orthogonal_2sided(
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
-    lapack_driver: str = "gesvd"
+    lapack_driver: str = "gesvd",
 ) -> ProcrustesResult:
     r"""Perform two-sided orthogonal Procrustes with one- or two-transformations.
 
@@ -334,7 +342,15 @@ def orthogonal_2sided(
 
     # Check inputs
     new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
     )
 
     # check symmetry if single_transform=True

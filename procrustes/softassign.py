@@ -52,34 +52,33 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
     array_b : ndarray
         The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference.
     iteration_soft : int, optional
-        Number of iterations for softassign loop. Default=50.
+        Number of iterations for softassign loop.
     iteration_sink : int, optional
-        Number of iterations for Sinkhorn loop. Default=50.
+        Number of iterations for Sinkhorn loop.
     linear_cost_func :  ndarray, optional
-        Linear cost function. Default=0.
+        Linear cost function.
     beta_r : float, optional
-        Annealing rate which should greater than 1. Default=1.10.
+        Annealing rate which should greater than 1.
     beta_f : float, optional
-        The final inverse temperature. Default=1.e5.
+        The final inverse temperature.
     epsilon : float, optional
-        The tolerance value for annealing loop. Default=0.05.
+        The tolerance value for annealing loop.
     epsilon_soft : float, optional
-        The tolerance value used for softassign. Default=1.e-3.
+        The tolerance value used for softassign.
     epsilon_sink : float, optional
         The tolerance value used for Sinkhorn loop. If adapted version is used, it will use the
-        adapted tolerance value for Sinkhorn instead. Default=1.e-3.
+        adapted tolerance value for Sinkhorn instead.
     k : float, optional
         This parameter controls how much tighter the coverage threshold for the interior loop should
         be than the coverage threshold for the loops outside. It has be be within the integral
-        :math:`(0,1)`. Default=0.15.
+        :math:`(0,1)`.
     gamma_scaler : float, optional
         This parameter ensures the quadratic cost function including  self-amplification positive
-        define. Default=1.01.
+        define.
     n_stop : int, optional
         Number of running steps after the calculation converges in the relaxation procedure.
-        Default=10.
     pad_mode : str, optional
-        Specifying how to pad the arrays, listed below. Default="row-col".
+        Specifying how to pad the arrays, listed below.
 
             - "row"
                 The array with fewer rows is padded with zero rows so that both have the same
@@ -97,38 +96,33 @@ def softassign(array_a, array_b, iteration_soft=50, iteration_sink=200,
                 dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.
     remove_zero_col : bool, optional
         If True, zero columns (values less than 1e-8) on the right side will be removed.
-        Default=True.
     remove_zero_row : bool, optional
         If True, zero rows (values less than 1e-8) on the bottom will be removed.
-        Default=True.
     translate : bool, optional
         If True, both arrays are translated to be centered at origin, ie columns of the arrays
         will have mean zero.
-        Default=False.
     scale : bool, optional
         If True, both arrays are normalized to one with respect to the Frobenius norm, ie
         :math:`Tr(A^T A) = 1`.
-        Default=False.
     check_finite : bool, optional
-        If true, convert the input to an array, checking for NaNs or Infs. Default=True.
+        If true, convert the input to an array, checking for NaNs or Infs.
     adapted : bool, optional
         If adapted, this function will use the tighter covergence threshold for the interior loops.
-        Default=True.
     beta_0 : float, optional
-        Initial inverse temperature. Default=None.
+        Initial inverse temperature.
     beta_f : float, optional
-        Final inverse temperature. Default=None.
+        Final inverse temperature.
     m_guess : ndarray, optional
-        The initial guess of the doubly-stochastic matrix. Default=None.
+        The initial guess of the doubly-stochastic matrix.
     iteration_anneal : int, optional
-        Number of iterations for annealing loop. Default=None.
+        Number of iterations for annealing loop.
     kopt : bool, optional
-        If True, the k_opt heuristic search will be performed. Default=False.
+        If True, the k_opt heuristic search will be performed.
     kopt_k : int, optional
         Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
-        search of 3 items and kopt_k=2 only searches for two items locally. Default=3.
+        search of 3 items and kopt_k=2 only searches for two items locally.
     weight : ndarray, optional
-        The weighting matrix. Default=None.
+        The weighting matrix.
 
     Returns
     -------

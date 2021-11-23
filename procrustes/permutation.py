@@ -358,17 +358,6 @@ def permutation_2sided(
             -62 &  154 &  100 &  127 \\
         \end{bmatrix} \\
 
-    References
-    ----------
-    [1] C. Ding, T. Li and M. I. Jordan, "Nonnegative Matrix Factorization for Combinatorial
-          Optimization: Spectral Clustering, Graph Matching, and Clique Finding," 2008 Eighth
-           IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 183-192,
-           doi: 10.1109/ICDM.2008.130.
-    [2] Papadimitriou, Pythagoras. "Parallel solution of SVD-related problems, with applications."
-            PhD diss., University of Manchester, 1993.
-    [3] S. Umeyama. An eigendecomposition approach toweighted graph matching problems.
-          IEEE Trans. on Pattern Analysis and Machine Intelligence, 10:695-703, 1988.
-
     """
     # check single argument
     if not isinstance(single, bool):

@@ -40,7 +40,7 @@ def generic(
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
-    use_svd: bool = False
+    use_svd: bool = False,
 ) -> ProcrustesResult:
     r"""Perform generic one-sided Procrustes.
 
@@ -115,7 +115,15 @@ def generic(
 
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
     )
     # compute the generic solution
     if use_svd:

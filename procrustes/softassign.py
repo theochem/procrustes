@@ -22,10 +22,12 @@
 # --
 """The Softassign Procrustes Module."""
 
-from copy import deepcopy
 import warnings
+from typing import Optional
+from copy import deepcopy
 
 import numpy as np
+
 from procrustes.kopt import kopt_heuristic_single
 from procrustes.permutation import permutation
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
@@ -36,32 +38,32 @@ __all__ = [
 
 
 def softassign(
-    a,
-    b,
-    pad=True,
-    translate=False,
-    scale=False,
-    unpad_col=False,
-    unpad_row=False,
-    check_finite=True,
-    weight=None,
-    iteration_soft=50,
-    iteration_sink=200,
-    beta_r=1.10,
-    beta_f=1.e5,
-    epsilon=0.05,
-    epsilon_soft=1.e-3,
-    epsilon_sink=1.e-3,
-    k=0.15,
-    gamma_scaler=1.01,
-    n_stop=3,
-    adapted=True,
-    beta_0=None,
-    m_guess=None,
-    iteration_anneal=None,
-    kopt=False,
-    kopt_k=3
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+    iteration_soft: int = 50,
+    iteration_sink: int = 200,
+    beta_r: float = 1.10,
+    beta_f: float = 1.e5,
+    epsilon: float = 0.05,
+    epsilon_soft: float = 1.e-3,
+    epsilon_sink: float = 1.e-3,
+    k: float = 0.15,
+    gamma_scaler: float = 1.01,
+    n_stop: int = 3,
+    adapted: bool = True,
+    beta_0: Optional[float] = None,
+    m_guess: Optional[float] = None,
+    iteration_anneal: Optional[int] = None,
+    kopt: bool = False,
+    kopt_k: int = 3,
+)-> ProcrustesResult:
     r"""
     Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.
 
@@ -314,7 +316,7 @@ def softassign(
     return ProcrustesResult(error=error, new_a=new_a, new_b=new_b, t=array_m, s=None)
 
 
-def _compute_gamma(array_c, row_num, gamma_scaler):
+def _compute_gamma(array_c: np.ndarray, row_num: int, gamma_scaler: float) -> float:
     r"""Compute gamma for relaxation."""
     array_r = np.eye(row_num) - np.ones(row_num) / row_num
     big_r = np.kron(array_r, array_r)

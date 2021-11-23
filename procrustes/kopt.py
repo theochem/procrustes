@@ -22,7 +22,7 @@
 # --
 """K-opt (Greedy) Heuristic Module."""
 
-
+from typing import Callable, Tuple
 import itertools as it
 
 import numpy as np
@@ -34,7 +34,7 @@ __all__ = [
 ]
 
 
-def kopt_heuristic_single(fun, p0, k=3, tol=1.0e-8):
+def kopt_heuristic_single(fun: Callable, p0: np.ndarray, k: int = 3, tol: float = 1.0e-8) -> Tuple[np.ndarray, float]:
     r"""Find a locally-optimal permutation matrix using the k-opt (greedy) heuristic.
 
     .. math::
@@ -83,14 +83,14 @@ def kopt_heuristic_single(fun, p0, k=3, tol=1.0e-8):
         raise ValueError(f"Argument k={k} is not smaller than {p0.shape[0]} (number of p0 rows).")
 
     # compute initial value of the objective function & assign best P matrix
-    best_f = fun(p0)
-    best_p = np.copy(p0)
+    f_opt = fun(p0)
+    p_opt = np.copy(p0)
     # swap rows and columns until the permutation matrix is not improved
     search = True
     while search:
         search = False
         # make sure p0 guess is the best permutation matrix found thus far
-        p0 = np.copy(best_p)
+        p0 = np.copy(p_opt)
         for perm in it.permutations(np.arange(p0.shape[0]), r=int(k)):
             comb = tuple(sorted(perm))
             if perm != comb:
@@ -99,19 +99,20 @@ def kopt_heuristic_single(fun, p0, k=3, tol=1.0e-8):
                 perm_p[:, comb] = perm_p[:, perm]
                 # compute objective function for permuted P matrix & compare
                 perm_f = fun(perm_p)
-                if perm_f < best_f:
-                    best_p, best_f = perm_p, perm_f
-                    # set search=True to keep permuting the new best_p unless this is already an
+                if perm_f < f_opt:
+                    p_opt, f_opt = perm_p, perm_f
+                    # set search=True to keep permuting the new p_opt unless this is already an
                     # exhaustive search (i.e., k equals number of rows of p matrix)
                     search = bool(k < p0.shape[0])
                     # check whether perfect permutation matrix is found
                     # TODO: smarter threshold based on norm of matrix
-                    if best_f <= tol:
-                        return best_p, best_f
-    return best_p, best_f
+                    if f_opt <= tol:
+                        return p_opt, f_opt
+    return p_opt, f_opt
 
 
-def kopt_heuristic_double(fun, p1, p2, k=3, tol=1.0e-8):
+def kopt_heuristic_double(fun: Callable, p1: np.ndarray, p2: np.ndarray, k: int = 3,
+                          tol: float = 1.0e-8) -> Tuple[np.ndarray, np.ndarray, float]:
     r"""Find locally-optimal permutation matrices using the k-opt (greedy) heuristic.
 
     .. math::
@@ -177,15 +178,15 @@ def kopt_heuristic_double(fun, p1, p2, k=3, tol=1.0e-8):
         raise ValueError(f"Argument k={k} is not smaller than {max(p1.shape[0], p2.shape[0])}.")
 
     # compute initial value of the objective function & assign best P1 & P2 matrices
-    best_f = fun(p1, p2)
-    best_p1, best_p2 = np.copy(p1), np.copy(p2)
+    f_opt = fun(p1, p2)
+    p1_opt, p2_opt = np.copy(p1), np.copy(p2)
 
     # swap rows and columns until the permutation matrix is not improved
     search = True
     while search:
         search = False
         # make sure p1 & p2 guesses are the best permutation matrices found thus far
-        p1, p2 = np.copy(best_p1), np.copy(best_p2)
+        p1, p2 = np.copy(p1_opt), np.copy(p2_opt)
         for perm1 in it.permutations(np.arange(p1.shape[0]), r=int(min(k, p1.shape[0]))):
             comb1 = tuple(sorted(perm1))
             for perm2 in it.permutations(np.arange(p2.shape[0]), r=int(min(k, p2.shape[0]))):
@@ -199,13 +200,13 @@ def kopt_heuristic_double(fun, p1, p2, k=3, tol=1.0e-8):
                     perm_p2[comb2, :] = perm_p2[perm2, :]
                     # compute objective function for permuted P matrix & compare
                     perm_f = fun(perm_p1, perm_p2)
-                    if perm_f < best_f:
-                        best_p1, best_p2, best_f = perm_p1, perm_p2, perm_f
-                        # set search=True to keep permuting the new best_p1 & best_p2 unless this
+                    if perm_f < f_opt:
+                        p1_opt, p2_opt, f_opt = perm_p1, perm_p2, perm_f
+                        # set search=True to keep permuting the new p1_opt & p2_opt unless this
                         # is already an exhaustive search
                         search = bool(k < max(p1.shape[0], p2.shape[0]))
                         # check whether perfect permutation matrix is found
                         # TODO: smarter threshold based on norm of matrix
-                        if best_f <= tol:
-                            return best_p1, best_p2, best_f
-    return best_p1, best_p2, best_f
+                        if f_opt <= tol:
+                            return p1_opt, p2_opt, f_opt
+    return p1_opt, p2_opt, f_opt

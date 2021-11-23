@@ -22,23 +22,26 @@
 # --
 """Generic Procrustes Module."""
 
+from typing import Optional
+
 import numpy as np
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 from scipy.linalg import pinv, pinv2
+
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 
 
 def generic(
-    a,
-    b,
-    pad=True,
-    translate=False,
-    scale=False,
-    unpad_col=False,
-    unpad_row=False,
-    check_finite=True,
-    weight=None,
-    use_svd=False
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+    use_svd: bool = False
+) -> ProcrustesResult:
     r"""Perform generic one-sided Procrustes.
 
     Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times

@@ -24,9 +24,13 @@
 
 # import warnings
 
+from typing import Optional
+
 import numpy as np
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
+
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+
 
 __all__ = [
     "orthogonal",
@@ -35,17 +39,17 @@ __all__ = [
 
 
 def orthogonal(
-    a,
-    b,
-    pad=True,
-    translate=False,
-    scale=False,
-    unpad_col=False,
-    unpad_row=False,
-    check_finite=True,
-    weight=None,
-    lapack_driver="gesvd"
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+    lapack_driver: str = "gesvd"
+) -> ProcrustesResult:
     r"""Perform orthogonal Procrustes.
 
     Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m
@@ -159,18 +163,18 @@ def orthogonal(
 
 
 def orthogonal_2sided(
-    a,
-    b,
-    single=True,
-    pad=True,
-    translate=False,
-    scale=False,
-    unpad_col=False,
-    unpad_row=False,
-    check_finite=True,
-    weight=None,
-    lapack_driver="gesvd"
-):
+    a: np.ndarray,
+    b: np.ndarray,
+    single: bool =True,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+    lapack_driver: str = "gesvd"
+) -> ProcrustesResult:
     r"""Perform two-sided orthogonal Procrustes with one- or two-transformations.
 
     **Two Transformations:** Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix

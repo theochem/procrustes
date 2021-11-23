@@ -24,7 +24,7 @@
 
 
 import os
-
+from typing import List
 from setuptools import setup
 
 
@@ -43,6 +43,16 @@ def get_readme():
     """Load README.rst for display on PyPI."""
     with open('README.md') as fhandle:
         return fhandle.read()
+
+
+def load_requirements(dir_path: str = '.', comment_char="#") -> List[str]:
+    requirements = []
+    with open(os.path.join(dir_path, 'requirements.txt'), 'r') as f:
+        for req in f.readlines():
+            if comment_char in req:
+                req = req[:req.index(comment_char)]
+                requirements.append(req)
+    return requirements
 
 
 VERSION, DEV_CLASSIFIER = get_version_info()
@@ -70,5 +80,5 @@ setup(
         'Topic :: Scientific/Engineering :: Chemistry',
         'Intended Audience :: Science/Research',
     ],
-    install_requires=["numpy>=1.18.5", "scipy>=1.5.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
+    install_requires=load_requirements(),
 )

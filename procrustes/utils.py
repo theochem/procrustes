@@ -21,6 +21,7 @@
 #
 # --
 """Utility Module."""
+from typing import Optional, Tuple, List
 
 import numpy as np
 
@@ -31,7 +32,7 @@ __all__ = [
 ]
 
 
-def _zero_padding(array_a, array_b, pad_mode="row-col"):
+def _zero_padding(array_a: np.ndarray, array_b: np.ndarray, pad_mode: str="row-col") -> Tuple[np.ndarray, np.ndarray]:
     r"""
     Return arrays padded with rows and/or columns of zero.
 
@@ -110,7 +111,7 @@ def _zero_padding(array_a, array_b, pad_mode="row-col"):
     return array_a, array_b
 
 
-def _translate_array(array_a, array_b=None, weight=None):
+def _translate_array(array_a: np.ndarray, array_b: Optional[np.ndarray] = None, weight: Optional[np.ndarray] = None) -> Tuple[np.ndarray, float]:
     """
     Return translated array_a and translation vector.
 
@@ -150,7 +151,7 @@ def _translate_array(array_a, array_b=None, weight=None):
     return array_a - centroid_a, -1 * centroid_a
 
 
-def _scale_array(array_a, array_b=None):
+def _scale_array(array_a, array_b=None) -> Tuple[np.ndarray, float]:
     """
     Return scaled/normalized array_a and scaling vector.
 
@@ -179,7 +180,7 @@ def _scale_array(array_a, array_b=None):
     return array_a * scale, scale
 
 
-def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=1.0e-8):
+def _hide_zero_padding(array_a: np.ndarray, remove_zero_col: bool = True, remove_zero_row: bool = True, tol: float = 1.0e-8) -> np.ndarray:
     r"""
     Return array with zero-padded rows (bottom) and columns (right) removed.
 
@@ -226,7 +227,7 @@ def _hide_zero_padding(array_a, remove_zero_col=True, remove_zero_row=True, tol=
     return array_a
 
 
-def compute_error(a, b, t, s=None):
+def compute_error(a: np.ndarray, b: np.ndarray, t: np.ndarray, s: Optional[np.ndarray] = None) -> float:
     r"""Return the one- or two-sided Procrustes (squared Frobenius norm) error.
 
     The double-sided Procrustes error is defined as
@@ -266,8 +267,9 @@ def compute_error(a, b, t, s=None):
     return np.linalg.norm(a_trans - b, ord=None) ** 2
 
 
-def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
-                       pad, translate, scale, check_finite, weight):
+def setup_input_arrays(array_a: np.ndarray, array_b: np.ndarray, remove_zero_col: bool, remove_zero_row: bool,
+                       pad: bool, translate: bool, scale: bool, check_finite: bool, weight: Optional[np.ndarray] = None)\
+        -> Tuple[np.ndarray, np.ndarray]:
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -313,8 +315,9 @@ def setup_input_arrays(array_a, array_b, remove_zero_col, remove_zero_row,
     return array_a, array_b
 
 
-def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero_row,
-                             pad_mode, translate, scale, check_finite, weight):
+def setup_input_arrays_multi(array_list: List[np.ndarray], array_ref: np.ndarray, remove_zero_col: bool,
+                             remove_zero_row: bool, pad_mode: str, translate: bool, scale: bool, check_finite: bool,
+                             weight: Optional[np.ndarray] = None) -> List[np.ndarray]:
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -372,8 +375,9 @@ def setup_input_arrays_multi(array_list, array_ref, remove_zero_col, remove_zero
     return array_list_new
 
 
-def _setup_input_array_lower(array_a, array_ref, remove_zero_col, remove_zero_row, translate, scale,
-                             check_finite, weight):
+def _setup_input_array_lower(array_a: np.ndarray, array_ref: np.ndarray, remove_zero_col: np.ndarray,
+                             remove_zero_row: np.ndarray, translate: bool, scale: bool,
+                             check_finite: bool, weight: Optional[np.ndarray] = None) -> np.ndarray:
     """Pre-processing the matrices with translation, scaling."""
     _check_arraytypes(array_a)
     if check_finite:
@@ -392,7 +396,7 @@ def _setup_input_array_lower(array_a, array_ref, remove_zero_col, remove_zero_ro
     return array_a
 
 
-def _check_arraytypes(*args):
+def _check_arraytypes(*args) -> None:
     r"""Check array input types to Procrustes transformation routines."""
     if any(not isinstance(arr_x, np.ndarray) for arr_x in args):
         raise TypeError("Matrix inputs must be NumPy arrays")
@@ -420,7 +424,7 @@ class ProcrustesResult(dict):
     """
 
     # modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         """Deal with attributes which it doesn't explicitly manage."""
         try:
             return self[name]

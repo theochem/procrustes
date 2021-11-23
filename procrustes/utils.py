@@ -32,7 +32,9 @@ __all__ = [
 ]
 
 
-def _zero_padding(array_a: np.ndarray, array_b: np.ndarray, pad_mode: str="row-col") -> Tuple[np.ndarray, np.ndarray]:
+def _zero_padding(
+    array_a: np.ndarray, array_b: np.ndarray, pad_mode: str = "row-col"
+) -> Tuple[np.ndarray, np.ndarray]:
     r"""
     Return arrays padded with rows and/or columns of zero.
 
@@ -111,7 +113,9 @@ def _zero_padding(array_a: np.ndarray, array_b: np.ndarray, pad_mode: str="row-c
     return array_a, array_b
 
 
-def _translate_array(array_a: np.ndarray, array_b: Optional[np.ndarray] = None, weight: Optional[np.ndarray] = None) -> Tuple[np.ndarray, float]:
+def _translate_array(
+    array_a: np.ndarray, array_b: Optional[np.ndarray] = None, weight: Optional[np.ndarray] = None
+) -> Tuple[np.ndarray, float]:
     """
     Return translated array_a and translation vector.
 
@@ -173,14 +177,19 @@ def _scale_array(array_a, array_b=None) -> Tuple[np.ndarray, float]:
 
     """
     # scaling factor to match unit sphere
-    scale = 1. / np.linalg.norm(array_a)
+    scale = 1.0 / np.linalg.norm(array_a)
     if array_b is not None:
         # scaling factor to match array_b norm
         scale *= np.linalg.norm(array_b)
     return array_a * scale, scale
 
 
-def _hide_zero_padding(array_a: np.ndarray, remove_zero_col: bool = True, remove_zero_row: bool = True, tol: float = 1.0e-8) -> np.ndarray:
+def _hide_zero_padding(
+    array_a: np.ndarray,
+    remove_zero_col: bool = True,
+    remove_zero_row: bool = True,
+    tol: float = 1.0e-8,
+) -> np.ndarray:
     r"""
     Return array with zero-padded rows (bottom) and columns (right) removed.
 
@@ -227,7 +236,9 @@ def _hide_zero_padding(array_a: np.ndarray, remove_zero_col: bool = True, remove
     return array_a
 
 
-def compute_error(a: np.ndarray, b: np.ndarray, t: np.ndarray, s: Optional[np.ndarray] = None) -> float:
+def compute_error(
+    a: np.ndarray, b: np.ndarray, t: np.ndarray, s: Optional[np.ndarray] = None
+) -> float:
     r"""Return the one- or two-sided Procrustes (squared Frobenius norm) error.
 
     The double-sided Procrustes error is defined as
@@ -267,9 +278,17 @@ def compute_error(a: np.ndarray, b: np.ndarray, t: np.ndarray, s: Optional[np.nd
     return np.linalg.norm(a_trans - b, ord=None) ** 2
 
 
-def setup_input_arrays(array_a: np.ndarray, array_b: np.ndarray, remove_zero_col: bool, remove_zero_row: bool,
-                       pad: bool, translate: bool, scale: bool, check_finite: bool, weight: Optional[np.ndarray] = None)\
-        -> Tuple[np.ndarray, np.ndarray]:
+def setup_input_arrays(
+    array_a: np.ndarray,
+    array_b: np.ndarray,
+    remove_zero_col: bool,
+    remove_zero_row: bool,
+    pad: bool,
+    translate: bool,
+    scale: bool,
+    check_finite: bool,
+    weight: Optional[np.ndarray] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -306,18 +325,28 @@ def setup_input_arrays(array_a: np.ndarray, array_b: np.ndarray, remove_zero_col
         Returns the padded arrays, in that they have the same matrix dimensions.
 
     """
-    array_a = _setup_input_array_lower(array_a, None, remove_zero_col, remove_zero_row, translate,
-                                       scale, check_finite, weight)
-    array_b = _setup_input_array_lower(array_b, None, remove_zero_col, remove_zero_row, translate,
-                                       scale, check_finite, weight)
+    array_a = _setup_input_array_lower(
+        array_a, None, remove_zero_col, remove_zero_row, translate, scale, check_finite, weight
+    )
+    array_b = _setup_input_array_lower(
+        array_b, None, remove_zero_col, remove_zero_row, translate, scale, check_finite, weight
+    )
     if pad:
         array_a, array_b = _zero_padding(array_a, array_b, pad_mode="row-col")
     return array_a, array_b
 
 
-def setup_input_arrays_multi(array_list: List[np.ndarray], array_ref: np.ndarray, remove_zero_col: bool,
-                             remove_zero_row: bool, pad_mode: str, translate: bool, scale: bool, check_finite: bool,
-                             weight: Optional[np.ndarray] = None) -> List[np.ndarray]:
+def setup_input_arrays_multi(
+    array_list: List[np.ndarray],
+    array_ref: np.ndarray,
+    remove_zero_col: bool,
+    remove_zero_row: bool,
+    pad_mode: str,
+    translate: bool,
+    scale: bool,
+    check_finite: bool,
+    weight: Optional[np.ndarray] = None,
+) -> List[np.ndarray]:
     r"""
     Check and process array inputs for the Procrustes transformation routines.
 
@@ -365,19 +394,34 @@ def setup_input_arrays_multi(array_list: List[np.ndarray], array_ref: np.ndarray
         Returns the padded arrays, in that they have the same matrix dimensions.
     """
     array_list_new = [
-        _setup_input_array_lower(array_a=arr, array_ref=array_ref, remove_zero_col=remove_zero_col,
-                                 remove_zero_row=remove_zero_row, translate=translate, scale=scale,
-                                 check_finite=check_finite, weight=weight)
-        for arr in array_list]
+        _setup_input_array_lower(
+            array_a=arr,
+            array_ref=array_ref,
+            remove_zero_col=remove_zero_col,
+            remove_zero_row=remove_zero_row,
+            translate=translate,
+            scale=scale,
+            check_finite=check_finite,
+            weight=weight,
+        )
+        for arr in array_list
+    ]
     arr_shape = np.array([arr.shape for arr in array_list_new])
     array_b = np.ones(np.max(arr_shape, axis=0), dtype=int)
     array_list_new = [_zero_padding(arr, array_b, pad_mode=pad_mode) for arr in array_list_new]
     return array_list_new
 
 
-def _setup_input_array_lower(array_a: np.ndarray, array_ref: np.ndarray, remove_zero_col: np.ndarray,
-                             remove_zero_row: np.ndarray, translate: bool, scale: bool,
-                             check_finite: bool, weight: Optional[np.ndarray] = None) -> np.ndarray:
+def _setup_input_array_lower(
+    array_a: np.ndarray,
+    array_ref: np.ndarray,
+    remove_zero_col: np.ndarray,
+    remove_zero_row: np.ndarray,
+    translate: bool,
+    scale: bool,
+    check_finite: bool,
+    weight: Optional[np.ndarray] = None,
+) -> np.ndarray:
     """Pre-processing the matrices with translation, scaling."""
     _check_arraytypes(array_a)
     if check_finite:
@@ -442,8 +486,7 @@ class ProcrustesResult(dict):
         """Return a human friendly representation."""
         if self.keys():
             max_len = max(map(len, list(self.keys()))) + 1
-            return '\n'.join([k.rjust(max_len) + ': ' + repr(v)
-                              for k, v in sorted(self.items())])
+            return "\n".join([k.rjust(max_len) + ": " + repr(v) for k, v in sorted(self.items())])
         else:
             return self.__class__.__name__ + "()"
 

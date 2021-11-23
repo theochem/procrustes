@@ -40,7 +40,7 @@ def rotational(
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
-    lapack_driver: str = "gesvd"
+    lapack_driver: str = "gesvd",
 ) -> ProcrustesResult:
     r"""Perform rotational Procrustes.
 
@@ -159,7 +159,15 @@ def rotational(
     """
     # check inputs
     new_a, new_b = setup_input_arrays(
-        a, b, unpad_col, unpad_row, pad, translate, scale, check_finite, weight,
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
     )
     if new_a.shape != new_b.shape:
         raise ValueError(

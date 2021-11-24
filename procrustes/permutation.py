@@ -24,11 +24,10 @@
 from typing import Optional
 
 import numpy as np
-import scipy
-from scipy.optimize import linear_sum_assignment
-
 from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
 from procrustes.utils import _zero_padding, compute_error, ProcrustesResult, setup_input_arrays
+import scipy
+from scipy.optimize import linear_sum_assignment
 
 __all__ = ["permutation", "permutation_2sided"]
 

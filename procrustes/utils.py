@@ -21,7 +21,7 @@
 #
 # --
 """Utility Module."""
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import numpy as np
 

@@ -22,12 +22,11 @@
 # --
 """The Softassign Procrustes Module."""
 
-import warnings
-from typing import Optional
 from copy import deepcopy
+from typing import Optional
+import warnings
 
 import numpy as np
-
 from procrustes.kopt import kopt_heuristic_single
 from procrustes.permutation import permutation
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays

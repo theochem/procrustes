@@ -100,7 +100,7 @@ nbsphinx_epilog = r"""
  The corresponding file can be obtained from:
 
  - Jupyter Notebook: :download:`{{docname+".ipynb"}}`
- - Interactive Jupyter Notebook: :raw-html:`<a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=docs%2Fnotebooks%2F/{{ docname }}.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a>`    """
+ - Interactive Jupyter Notebook: :raw-html:`<a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=doc%2Fnotebooks%2F/{{ docname }}.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a>`    """
 
 autoapi_type = 'python'
 autoapi_dirs = ['../procrustes']

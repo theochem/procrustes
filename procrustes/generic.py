@@ -25,9 +25,8 @@
 from typing import Optional
 
 import numpy as np
-from scipy.linalg import pinv, pinv2
-
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
+from scipy.linalg import pinv, pinv2
 
 
 def generic(

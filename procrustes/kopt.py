@@ -22,8 +22,8 @@
 # --
 """K-opt (Greedy) Heuristic Module."""
 
-from typing import Callable, Tuple
 import itertools as it
+from typing import Callable, Tuple
 
 import numpy as np
 

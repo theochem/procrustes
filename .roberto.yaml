@@ -8,7 +8,7 @@ project:
         - write-py-version
         # - cardboardlint-static
         - build-py-inplace
-        # - pytest
+        - pytest
         # - upload-codecov
         # - cardboardlint-dynamic
         # - build-sphinx-doc

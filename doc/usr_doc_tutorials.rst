@@ -28,7 +28,7 @@ Tutorials
 In order to show how to use Procrustes, we have implemented some practical examples.
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
     :caption: Practical Examples
 
     notebooks/Chemical_Structure_Alignment.ipynb

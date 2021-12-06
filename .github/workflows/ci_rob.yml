@@ -102,9 +102,11 @@ jobs:
             !~/miniconda3/envs/*/pkgs
             !~/miniconda3/envs/*/var
           key: ${{ runner.os }}-conda-3
+          update-conda: true
       - name: Install Roberto
         run: |
           python -m pip install roberto>=2.0.0
       - name: Test and deploy with Roberto
         run: |
+          conda info
           python -m roberto robot

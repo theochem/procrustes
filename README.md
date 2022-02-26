@@ -50,7 +50,7 @@ first, and then:
     conda activate myenv
 
     # Install the stable release.
-    conda install -c theochem/label/dev qc-procrustes
+    conda install -c theochem qc-procrustes
 ```
 
 To install Procrustes with pip, you may want to create a

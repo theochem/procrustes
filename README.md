@@ -12,7 +12,7 @@ Procrustes
 
 The Procrustes library provides a set of functions for transforming a matrix to make it
 as similar as possible to a target matrix. For more information, visit
-[**Procrustes Documentation**](https://procrustes.readthedocs.io/en/latest/).
+[**Procrustes Documentation**](https://procrustes.qcdevs.org/).
 
 
 Citation

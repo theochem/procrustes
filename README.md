@@ -12,7 +12,7 @@ Procrustes
 
 The Procrustes library provides a set of functions for transforming a matrix to make it
 as similar as possible to a target matrix. For more information, visit
-[**Procrustes Documentation**](https://procrustes.readthedocs.io/en/latest/).
+[**Procrustes Documentation**](https://procrustes.qcdevs.org/).
 
 
 Citation
@@ -20,7 +20,7 @@ Citation
 
 Please use the following citation in any publication using Procrustes library:
 
-> **"Procrustes: A Python Library to Find Transformationsthat Maximize the Similarity Between
+> **"Procrustes: A Python Library to Find Transformations that Maximizes the Similarity Between
 > Matrices."**, F. Meng, M. Richer, A. Tehrani, J. La, T. D. Kim, P. W. Ayers, F. Heidar-Zadeh,
 > [JOURNAL XXX]().
 
@@ -62,4 +62,4 @@ To install Procrustes with pip, you may want to create a
     pip install qc-procrustes
 ```
 
-See https://procrustes.readthedocs.io/en/latest/usr_doc_installization.html for full details.
+See https://procrustes.qcdevs.org/usr_doc_installization.html for full details.

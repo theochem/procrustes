@@ -20,7 +20,7 @@ Citation
 
 Please use the following citation in any publication using Procrustes library:
 
-> **"Procrustes: A Python Library to Find Transformations that Maximizes the Similarity Between
+> **"Procrustes: A Python Library to Find Transformations that Maximize the Similarity Between
 > Matrices."**, F. Meng, M. Richer, A. Tehrani, J. La, T. D. Kim, P. W. Ayers, F. Heidar-Zadeh,
 > [JOURNAL XXX]().
 

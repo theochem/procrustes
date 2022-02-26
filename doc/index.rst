@@ -133,6 +133,7 @@ different centers/scaling/sizes can be considered.
    usr_doc_zref
 
 .. toctree::
+   :glob:
    :maxdepth: 1
    :caption: API Documentation
 

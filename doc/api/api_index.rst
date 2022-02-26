@@ -21,6 +21,8 @@
     :
     : --
 
+Procrustes API
+##############
 
 .. toctree::
 

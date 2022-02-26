@@ -2,7 +2,7 @@
     : The Procrustes library provides a set of functions for transforming
     : a matrix to make it as similar as possible to a target matrix.
     :
-    : Copyright (C) 2017-2021 The QC-Devs Community
+    : Copyright (C) 2017-2022 The QC-Devs Community
     :
     : This file is part of Procrustes.
     :
@@ -133,6 +133,7 @@ different centers/scaling/sizes can be considered.
    usr_doc_zref
 
 .. toctree::
+   :glob:
    :maxdepth: 1
    :caption: API Documentation
 

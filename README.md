@@ -31,7 +31,7 @@ Dependencies
 The following dependencies are required to run Procrustes properly,
 
 * Python >= 3.6: http://www.python.org/
-* NumPy >= 1.18.5: http://www.numpy.org/
+* NumPy >= 1.21.5: http://www.numpy.org/
 * SciPy >= 1.5.0: http://www.scipy.org/
 * PyTest >= 5.3.4: https://docs.pytest.org/
 * PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/

@@ -130,7 +130,7 @@ numfig = True
 
 # General information about the project.
 project = 'Procrustes'
-copyright = '2017-2021, The QC-Devs Community'
+copyright = '2017-2022, The QC-Devs Community'
 author = 'The QC-Devs Community'
 
 # The version info for the project you're documenting, acts as replacement for

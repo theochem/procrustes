@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.generalized &mdash; Procrustes 1.0.0a5 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="procrustes.orthogonal" href="orthogonal.html" />
+    <link rel="prev" title="procrustes.generic" href="generic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Procrustes
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#procrustes.generalized.generalized">generalized</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_index.html">&lt;no title&gt;</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/generalized.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-procrustes.generalized">
+<span id="procrustes-generalized"></span><span id="generalized"></span><h1><a class="reference internal" href="#module-procrustes.generalized" title="procrustes.generalized"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a><a class="headerlink" href="#module-procrustes.generalized" title="Permalink to this headline"></a></h1>
+<p>Generalized Procrustes Module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.generalized.generalized">
+<span class="sig-prename descclassname"><span class="pre">procrustes.generalized.</span></span><span class="sig-name descname"><span class="pre">generalized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/procrustes/generalized.html#generalized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.generalized.generalized" title="Permalink to this definition"></a></dt>
+<dd><p>Generalized Procrustes Analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array_list</strong> (<em>List</em>) -- The list of 2D-array which is going to be transformed.</p></li>
+<li><p><strong>ref</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The reference array to initialize the first iteration. If None, the first array in
+<cite>array_list</cite> will be used.</p></li>
+<li><p><strong>tol</strong> (<em>float</em><em>, </em><em>optional</em>) -- Tolerance value to stop the iterations.</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of total iterations.</p></li>
+<li><p><strong>check_finite</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If true, convert the input to an array, checking for NaNs or Infs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>array_aligned</strong> (<em>List</em>) -- A list of transformed arrays with generalized Procrustes analysis.</p></li>
+<li><p><strong>new_distance_gpa</strong> (<em>float</em>) -- The distance for matching all the transformed arrays with generalized Procrustes analysis.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Given a set of matrices, <span class="math notranslate nohighlight">\(\mathbf{A}_1, \mathbf{A}_2, \cdots, \mathbf{A}_k\)</span> with
+<span class="math notranslate nohighlight">\(k &gt; 2\)</span>,  the objective is to minimize in order to superimpose pairs of matrices.</p>
+<div class="math notranslate nohighlight">
+\[\min \quad = \sum_{i&lt;j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i  -
+ \mathbf{A}_j \mathbf{T}_j \right\| }^2\]</div>
+<p>This function implements the Equation (20) and the corresponding algorithm in  Gower's paper.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generic.html" class="btn btn-neutral float-left" title="procrustes.generic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="orthogonal.html" class="btn btn-neutral float-right" title="procrustes.orthogonal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2022, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.symmetric &mdash; Procrustes 1.0.0a5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Procrustes
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>procrustes.symmetric</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for procrustes.symmetric</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># The Procrustes library provides a set of functions for transforming</span>
+<span class="c1"># a matrix to make it as similar as possible to a target matrix.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2022 The QC-Devs Community</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of Procrustes.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Symmetric Procrustes Module.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_zero_padding</span><span class="p">,</span> <span class="n">compute_error</span><span class="p">,</span> <span class="n">ProcrustesResult</span><span class="p">,</span> <span class="n">setup_input_arrays</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+
+
+<div class="viewcode-block" id="symmetric"><a class="viewcode-back" href="../../api/symmetric.html#procrustes.symmetric.symmetric">[docs]</a><span class="k">def</span> <span class="nf">symmetric</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lapack_driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gesvd&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcrustesResult</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform symmetric Procrustes.</span>
+
+<span class="sd">    Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m</span>
+<span class="sd">    \times n}` with :math:`m \geqslant n`, find the symmetrix transformation matrix</span>
+<span class="sd">    :math:`\mathbf{X}_{n \times n}` that makes :math:`\mathbf{AX}` as close as possible to</span>
+<span class="sd">    :math:`\mathbf{B}`. In other words,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger</span>
+<span class="sd">                        \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2</span>
+
+<span class="sd">    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to</span>
+<span class="sd">    have the same shape with :math:`m \geqslant n`, which is guaranteed with the default ``pad``</span>
+<span class="sd">    argument for any given :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices.</span>
+<span class="sd">    In preparing the :math:`\mathbf{A}` and</span>
+<span class="sd">    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero</span>
+<span class="sd">    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of</span>
+<span class="sd">    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero</span>
+<span class="sd">    rows/columns so they have the same shape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}` representing the reference matrix.</span>
+<span class="sd">    pad : bool, optional</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    translate : bool, optional</span>
+<span class="sd">        If True, both arrays are centered at origin (columns of the arrays will have mean zero).</span>
+<span class="sd">    scale : bool, optional</span>
+<span class="sd">        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.</span>
+<span class="sd">    unpad_col : bool, optional</span>
+<span class="sd">        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    unpad_row : bool, optional</span>
+<span class="sd">        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If True, convert the input to an array, checking for NaNs or Infs.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the</span>
+<span class="sd">        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`</span>
+<span class="sd">        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.</span>
+<span class="sd">    lapack_driver : {&#39;gesvd&#39;, &#39;gesdd&#39;}, optional</span>
+<span class="sd">        Whether to use the more efficient divide-and-conquer approach (&#39;gesdd&#39;) or the more robust</span>
+<span class="sd">        general rectangular approach (&#39;gesvd&#39;) to compute the singular-value decomposition with</span>
+<span class="sd">        `scipy.linalg.svd`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : ProcrustesResult</span>
+<span class="sd">        The Procrustes result represented as a class:`utils.ProcrustesResult` object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The optimal symmetrix matrix is obtained by,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{X}_{\text{opt}} = \arg</span>
+<span class="sd">       \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger</span>
+<span class="sd">                        \right. \right\}} \|\mathbf{A} \mathbf{X} - \mathbf{B}\|_{F}^2 =</span>
+<span class="sd">       \underbrace{\text{min}}_{\left\{\mathbf{X} \left| \mathbf{X} = \mathbf{X}^\dagger</span>
+<span class="sd">                        \right. \right\}}</span>
+<span class="sd">                \text{Tr}\left[\left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)^\dagger</span>
+<span class="sd">                         \left(\mathbf{A}\mathbf{X} - \mathbf{B} \right)\right]</span>
+
+<span class="sd">    Considering the singular value decomposition of :math:`\mathbf{A}`,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{A}_{m \times n} = \mathbf{U}_{m \times m}</span>
+<span class="sd">                                 \mathbf{\Sigma}_{m \times n}</span>
+<span class="sd">                                 \mathbf{V}_{n \times n}^\dagger</span>
+
+<span class="sd">    where :math:`\mathbf{\Sigma}_{m \times n}` is a rectangular diagonal matrix with non-negative</span>
+<span class="sd">    singular values :math:`\sigma_i = [\mathbf{\Sigma}]_{ii}` listed in descending order, define</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{C}_{m \times n} = \mathbf{U}_{m \times m}^\dagger</span>
+<span class="sd">                                 \mathbf{B}_{m \times n} \mathbf{V}_{n \times n}</span>
+
+<span class="sd">    with elements denoted by :math:`c_{ij}`.</span>
+<span class="sd">    Then we compute the symmetric matrix :math:`\mathbf{Y}_{n \times n}` with</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       [\mathbf{Y}]_{ij} = \begin{cases}</span>
+<span class="sd">              0 &amp;&amp; i \text{ and } j &gt; \text{rank} \left(\mathbf{A}\right) \\</span>
+<span class="sd">              \frac{\sigma_i c_{ij} + \sigma_j c_{ji}}{\sigma_i^2 +</span>
+<span class="sd">              \sigma_j^2} &amp;&amp; \text{otherwise} \end{cases}</span>
+
+<span class="sd">    It is worth noting that the first part of this definition only applies in the unusual case where</span>
+<span class="sd">    :math:`\mathbf{A}` has rank less than :math:`n`. The :math:`\mathbf{X}_\text{opt}` is given by</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{X}_\text{opt} = \mathbf{V Y V}^{\dagger}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[5., 2., 8.],</span>
+<span class="sd">    ...               [2., 2., 3.],</span>
+<span class="sd">    ...               [1., 5., 6.],</span>
+<span class="sd">    ...               [7., 3., 2.]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[ 52284.5, 209138. , 470560.5],</span>
+<span class="sd">    ...               [ 22788.5,  91154. , 205096.5],</span>
+<span class="sd">    ...               [ 46139.5, 184558. , 415255.5],</span>
+<span class="sd">    ...               [ 22788.5,  91154. , 205096.5]])</span>
+<span class="sd">    &gt;&gt;&gt; res = symmetric(a, b, pad=True, translate=True, scale=True)</span>
+<span class="sd">    &gt;&gt;&gt; res.t   # symmetric transformation array</span>
+<span class="sd">    array([[0.0166352 , 0.06654081, 0.14971682],</span>
+<span class="sd">          [0.06654081, 0.26616324, 0.59886729],</span>
+<span class="sd">          [0.14971682, 0.59886729, 1.34745141]])</span>
+<span class="sd">    &gt;&gt;&gt; res.error   # error</span>
+<span class="sd">    4.483083428047388e-31</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check inputs</span>
+    <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">setup_input_arrays</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">unpad_col</span><span class="p">,</span>
+        <span class="n">unpad_row</span><span class="p">,</span>
+        <span class="n">pad</span><span class="p">,</span>
+        <span class="n">translate</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">,</span>
+        <span class="n">check_finite</span><span class="p">,</span>
+        <span class="n">weight</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># if number of rows is less than column, the arrays are made square</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">_zero_padding</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="s2">&quot;square&quot;</span><span class="p">)</span>
+
+    <span class="c1"># if new_a.shape[0] &lt; new_a.shape[1]:</span>
+    <span class="c1">#     raise ValueError(f&quot;Shape of A {new_a.shape}=(m, n) needs to satisfy m &gt;= n.&quot;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># if new_b.shape[0] &lt; new_b.shape[1]:</span>
+    <span class="c1">#     raise ValueError(f&quot;Shape of B {new_b.shape}=(m, n) needs to satisfy m &gt;= n.&quot;)</span>
+
+    <span class="c1"># compute SVD of A &amp; matrix C</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="o">=</span><span class="n">lapack_driver</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_b</span><span class="p">),</span> <span class="n">vt</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="c1"># compute intermediate matrix Y</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># compute optimum symmetric transformation matrix X</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vt</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">vt</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2022, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.permutation &mdash; Procrustes 1.0.0a5 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="procrustes.softassign" href="softassign.html" />
+    <link rel="prev" title="procrustes.orthogonal" href="orthogonal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Procrustes
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#procrustes.permutation.permutation">permutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#procrustes.permutation.permutation_2sided">permutation_2sided</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_index.html">&lt;no title&gt;</a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/permutation.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-procrustes.permutation">
+<span id="procrustes-permutation"></span><span id="permutation"></span><h1><a class="reference internal" href="#module-procrustes.permutation" title="procrustes.permutation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a><a class="headerlink" href="#module-procrustes.permutation" title="Permalink to this headline"></a></h1>
+<p>Permutation Procrustes Module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.permutation.permutation">
+<span class="sig-prename descclassname"><span class="pre">procrustes.permutation.</span></span><span class="sig-name descname"><span class="pre">permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult"><span class="pre">procrustes.utils.ProcrustesResult</span></a></span></span><a class="reference internal" href="../_modules/procrustes/permutation.html#permutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.permutation.permutation" title="Permalink to this definition"></a></dt>
+<dd><p>Perform one-sided permutation Procrustes.</p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> and a reference matrix <span class="math notranslate nohighlight">\(\mathbf{B}_{m \times
+n}\)</span>, find the permutation transformation matrix <span class="math notranslate nohighlight">\(\mathbf{P}_{n \times n}\)</span>
+that makes <span class="math notranslate nohighlight">\(\mathbf{AP}\)</span> as close as possible to <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>. In other words,</p>
+<div class="math notranslate nohighlight">
+\[\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\} \atop
+\sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+\|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2\]</div>
+<p>This Procrustes method requires the <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices to
+have the same shape, which is guaranteed with the default <code class="docutils literal notranslate"><span class="pre">pad=True</span></code> argument for any given
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices. In preparing the <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices, the (optional) order of operations is: <strong>1)</strong> unpad zero
+rows/columns, <strong>2)</strong> translate the matrices to the origin, <strong>3)</strong> weight entries of
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span>, <strong>4)</strong> scale the matrices to have unit norm, <strong>5)</strong> pad matrices with zero
+rows/columns so they have the same shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> which is going to be transformed.</p></li>
+<li><p><strong>b</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> representing the reference matrix.</p></li>
+<li><p><strong>pad</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> so that they have the same shape.</p></li>
+<li><p><strong>translate</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are centered at origin (columns of the arrays will have mean zero).</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1\)</span> and
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1\)</span>.</p></li>
+<li><p><strong>unpad_col</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.</p></li>
+<li><p><strong>unpad_row</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero rows (with values less than 1.0e-8) at the bottom are removed.</p></li>
+<li><p><strong>check_finite</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, convert the input to an array, checking for NaNs or Infs.</p></li>
+<li><p><strong>weight</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The 1D-array representing the weights of each row of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>. This defines the
+elements of the diagonal matrix <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> that is multiplied by <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>
+matrix, i.e., <span class="math notranslate nohighlight">\(\mathbf{A} \rightarrow \mathbf{WA}\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>res</strong> -- The Procrustes result represented as a class:<cite>utils.ProcrustesResult</cite> object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult">ProcrustesResult</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The optimal <span class="math notranslate nohighlight">\(n \times n\)</span> permutation matrix is obtained by,</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{P}^{\text{opt}} =
+  \arg \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+  \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+      \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2
+= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+  \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+      \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right]\]</div>
+<p>The solution is found by relaxing the problem into a linear programming problem. The solution
+to a linear programming problem is always at the boundary of the allowed region. So,</p>
+<div class="math notranslate nohighlight">
+\[\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}
+\atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+   \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right] =
+\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \geq 0
+\atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}
+   \text{Tr}\left[\mathbf{P}^\dagger\left(\mathbf{A}^\dagger\mathbf{B}\right) \right]\]</div>
+<p>This is a matching problem and can be solved by the Hungarian algorithm. The cost matrix is
+defined as <span class="math notranslate nohighlight">\(\mathbf{A}^\dagger\mathbf{B}\)</span> and the <cite>scipy.optimize.linear_sum_assignment</cite>
+is used to solve for the permutation that maximizes the linear sum assignment problem.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.permutation.permutation_2sided">
+<span class="sig-prename descclassname"><span class="pre">procrustes.permutation.</span></span><span class="sig-name descname"><span class="pre">permutation_2sided</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'kopt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess_p1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess_p2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lapack_driver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gesvd'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult"><span class="pre">procrustes.utils.ProcrustesResult</span></a></span></span><a class="reference internal" href="../_modules/procrustes/permutation.html#permutation_2sided"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.permutation.permutation_2sided" title="Permalink to this definition"></a></dt>
+<dd><p>Perform two-sided permutation Procrustes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> which is going to be transformed.</p></li>
+<li><p><strong>b</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> representing the reference matrix.</p></li>
+<li><p><strong>single</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If <cite>True</cite>, the single-transformation Procrustes is performed to obtain <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>.
+If <cite>False</cite>, the two-transformations Procrustes is performed to obtain <span class="math notranslate nohighlight">\(\mathbf{P}_1\)</span>
+and <span class="math notranslate nohighlight">\(\mathbf{P}_2\)</span>.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) -- The method to solve for permutation matrices. For <cite>single=False</cite>, these include &quot;flip-flop&quot;
+and &quot;k-opt&quot; methods. For <cite>single=True</cite>, these include &quot;approx-normal1&quot;, &quot;approx-normal2&quot;,
+&quot;approx-umeyama&quot;, &quot;approx-umeyama-svd&quot;, &quot;k-opt&quot;, &quot;soft-assign&quot;, and &quot;nmf&quot;.</p></li>
+<li><p><strong>guess_p1</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) -- Guess for <span class="math notranslate nohighlight">\(\mathbf{P}_1\)</span> matrix given as a 2D-array. This is only required for the
+two-transformations case specified by setting <cite>single=False</cite>.</p></li>
+<li><p><strong>guess_p2</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) -- Guess for <span class="math notranslate nohighlight">\(\mathbf{P}_2\)</span> matrix given as a 2D-array.</p></li>
+<li><p><strong>pad</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> so that they have the same shape.</p></li>
+<li><p><strong>unpad_col</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.</p></li>
+<li><p><strong>unpad_row</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero rows (with values less than 1.0e-8) at the bottom are removed.</p></li>
+<li><p><strong>translate</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are centered at origin (columns of the arrays will have mean zero).</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1\)</span> and
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1\)</span>.</p></li>
+<li><p><strong>check_finite</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, convert the input to an array, checking for NaNs or Infs.</p></li>
+<li><p><strong>options</strong> (<em>dict</em><em>, </em><em>optional</em>) -- A dictionary of method options.</p></li>
+<li><p><strong>weight</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The 1D-array representing the weights of each row of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>. This defines the
+elements of the diagonal matrix <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> that is multiplied by <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>
+matrix, i.e., <span class="math notranslate nohighlight">\(\mathbf{A} \rightarrow \mathbf{WA}\)</span>.</p></li>
+<li><p><strong>lapack_driver</strong> (<em>{'gesvd'</em><em>, </em><em>'gesdd'}</em><em>, </em><em>optional</em>) -- Whether to use the more efficient divide-and-conquer approach ('gesdd') or the more robust
+general rectangular approach ('gesvd') to compute the singular-value decomposition with
+<cite>scipy.linalg.svd</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>res</strong> -- The Procrustes result represented as a class:<cite>utils.ProcrustesResult</cite> object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult">ProcrustesResult</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{n \times n}\)</span> and a reference <span class="math notranslate nohighlight">\(\mathbf{B}_{n \times n}\)</span>,
+find a permutation of rows/columns of <span class="math notranslate nohighlight">\(\mathbf{A}_{n \times n}\)</span> that makes it as close as
+possible to <span class="math notranslate nohighlight">\(\mathbf{B}_{n \times n}\)</span>. I.e.,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}&amp;\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+    \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+    \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2\\
+= &amp;\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+    \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+    \text{Tr}\left[\left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger
+    \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\
+= &amp;\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+    \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+    \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{P}\mathbf{B} \right]\\\end{split}\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbf{P}_{n \times n}\)</span> is the permutation matrix. Given an intial guess, the
+best local minimum can be obtained by the iterative procedure,</p>
+<div class="math notranslate nohighlight">
+\[p_{ij}^{(n + 1)} = p_{ij}^{(n)} \sqrt{ \frac{2\left[\mathbf{T}^{(n)}\right]_{ij}}{\left[
+                   \mathbf{P}^{(n)} \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} +
+                   \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} \right)^T  \right)
+                   \right]_{ij}} }\]</div>
+<p>where,</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{T}^{(n)} = \mathbf{A} \mathbf{P}^{(n)} \mathbf{B}\]</div>
+<p>Using an initial guess, the iteration can stops when the change in <span class="math notranslate nohighlight">\(d\)</span> is below the
+specified threshold,</p>
+<div class="math notranslate nohighlight">
+\[d = \text{Tr} \left[\left(\mathbf{P}^{(n+1)} -\mathbf{P}^{(n)} \right)^T
+                    \left(\mathbf{P}^{(n+1)} -\mathbf{P}^{(n)} \right)\right]\]</div>
+<p>The outcome of the iterative procedure <span class="math notranslate nohighlight">\(\mathbf{P}^{(\infty)}\)</span> is not a permutation
+matrix. So, the closest permutation can be found by setting <code class="docutils literal notranslate"><span class="pre">refinement=True</span></code>. This uses
+<code class="xref py py-class docutils literal notranslate"><span class="pre">procrustes.permutation.PermutationProcrustes</span></code> to find the closest permutation; that is,</p>
+<div class="math notranslate nohighlight">
+\[\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                     \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+                     \|\mathbf{P} - \mathbf{P}^{(\infty)}\|_{F}^2
+= \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                     \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+  \text{Tr}\left[\mathbf{P}^\dagger\mathbf{P}^{(\infty)} \right]\]</div>
+<p>The answer to this problem is a heuristic solution for the matrix-matching problem that seems
+to be relatively accurate.</p>
+<p><strong>Initial Guess:</strong></p>
+<p>Two possible initial guesses are inferred from the Umeyama procedure. One can find either the
+closest permutation matrix to <span class="math notranslate nohighlight">\(\mathbf{U}_\text{Umeyama}\)</span> or to
+<span class="math notranslate nohighlight">\(\mathbf{U}_\text{Umeyama}^\text{approx.}\)</span>.</p>
+<p>Considering the <code class="xref py py-class docutils literal notranslate"><span class="pre">procrustes.permutation.PermutationProcrustes</span></code>, the resulting permutation
+matrix can be specified as initial guess through <code class="docutils literal notranslate"><span class="pre">guess=umeyama</span></code> and <code class="docutils literal notranslate"><span class="pre">guess=umeyama_approx</span></code>,
+which solves:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                 \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+  \text{Tr}\left[\mathbf{P}^\dagger\mathbf{U}_\text{Umeyama} \right] \\
+\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                 \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+  \text{Tr}\left[\mathbf{P}^\dagger\mathbf{U}_\text{Umeyama}^\text{approx.} \right]\end{split}\]</div>
+<p>Another choice is to start by solving a normal permutation Procrustes problem. In other words,
+write new matrices, <span class="math notranslate nohighlight">\(\mathbf{A}^0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}^0\)</span>, with columns like,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix}
+ a_{ii} \\
+ p \cdot \text{sgn}\left( a_{ij_\text{max}} \right)
+         \underbrace{\text{max}}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+ p^2 \cdot \text{sgn}\left( a_{ij_{\text{max}-1}} \right)
+           \underbrace{\text{max}-1}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+ \vdots
+\end{bmatrix}\end{split}\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(\text{max}-1\)</span> denotes the second-largest absolute value of elements,
+<span class="math notranslate nohighlight">\(\text{max}-2\)</span> is the third-largest abosule value of elements, etc.</p>
+<p>The matrices <span class="math notranslate nohighlight">\(\mathbf{A}^0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}^0\)</span> have the diagonal elements of
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> in the first row, and below the first row has the
+largest off-diagonal element in row <span class="math notranslate nohighlight">\(i\)</span>, the second-largest off-diagonal element, etc.
+The elements are weighted by a factor <span class="math notranslate nohighlight">\(0 &lt; p &lt; 1\)</span>, so that the smaller elements are
+considered less important for matching. The matrices can be truncated after a few terms; for
+example, after the size of elements falls below some threshold. A reasonable choice would be
+to stop after <span class="math notranslate nohighlight">\(\lfloor \frac{-2\ln 10}{\ln p} +1\rfloor\)</span> rows; this ensures that the
+size of the elements in the last row is less than 1% of those in the first off-diagonal row.</p>
+<p>There are obviously many different ways to construct the matrices <span class="math notranslate nohighlight">\(\mathbf{A}^0\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{B}^0\)</span>. Another, even better, method would be to try to encode not only what the
+off-diagonal elements are, but which element in the matrix they correspond to. One could do that
+by not only listing the diagonal elements, but also listing the associated off-diagonal element.
+I.e., the columns of <span class="math notranslate nohighlight">\(\mathbf{A}^0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}^0\)</span> would be,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix}
+ a_{ii} \\
+ p \cdot a_{j_\text{max} j_\text{max}} \\
+ p \cdot \text{sgn}\left( a_{ij_\text{max}} \right)
+         \underbrace{\text{max}}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+ p^2 \cdot a_{j_{\text{max}-1} j_{\text{max}-1}} \\
+ p^2 \cdot \text{sgn}\left( a_{ij_{\text{max}-1}} \right)
+           \underbrace{\text{max}-1}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\
+ \vdots
+\end{bmatrix}\end{split}\]</div>
+<p>In this case, you would stop the procedure after
+<span class="math notranslate nohighlight">\(m = \left\lfloor {\frac{{ - 4\ln 10}}{{\ln p}} + 1} \right \rfloor\)</span> rows.</p>
+<p>Then one uses the <code class="xref py py-class docutils literal notranslate"><span class="pre">procrustes.permutation.PermutationProcrustes</span></code> to match the constructed
+matrices <span class="math notranslate nohighlight">\(\mathbf{A}^0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}^0\)</span> instead of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{B}\)</span>. I.e.,</p>
+<div class="math notranslate nohighlight">
+\[\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+                 \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+  \text{Tr}\left[\mathbf{P}^\dagger \left(\mathbf{A^0}^\dagger\mathbf{B^0}\right)\right]\]</div>
+<p>Please note that the &quot;umeyama_approx&quot; might give inaccurate permutation
+matrix. More specificity, this is a approximated Umeyama method. One example
+we can give is that when we compute the permutation matrix that transforms
+<span class="math notranslate nohighlight">\(A\)</span> to <span class="math notranslate nohighlight">\(B\)</span>, the &quot;umeyama_approx&quot; method can not give the exact
+permutation transformation matrix while &quot;umeyama&quot;, &quot;normal1&quot; and &quot;normal2&quot; do.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}A =
+\begin{bmatrix}
+     4 &amp;  5 &amp; -3 &amp;  3 \\
+     5 &amp;  7 &amp;  3 &amp; -5 \\
+    -3 &amp;  3 &amp;  2 &amp;  2 \\
+     3 &amp; -5 &amp;  2 &amp;  5 \\
+\end{bmatrix} \\
+B =
+\begin{bmatrix}
+     73 &amp;  100 &amp;   73 &amp;  -62 \\
+    100 &amp;  208 &amp; -116 &amp;  154 \\
+     73 &amp; -116 &amp;  154 &amp;  100 \\
+    -62 &amp;  154 &amp;  100 &amp;  127 \\
+\end{bmatrix} \\\end{split}\]</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="orthogonal.html" class="btn btn-neutral float-left" title="procrustes.orthogonal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="softassign.html" class="btn btn-neutral float-right" title="procrustes.softassign" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2022, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

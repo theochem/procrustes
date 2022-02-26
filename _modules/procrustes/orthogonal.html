@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.orthogonal &mdash; Procrustes 1.0.0a5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Procrustes
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>procrustes.orthogonal</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for procrustes.orthogonal</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># The Procrustes library provides a set of functions for transforming</span>
+<span class="c1"># a matrix to make it as similar as possible to a target matrix.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2022 The QC-Devs Community</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of Procrustes.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Orthogonal Procrustes Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># import warnings</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">compute_error</span><span class="p">,</span> <span class="n">ProcrustesResult</span><span class="p">,</span> <span class="n">setup_input_arrays</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;orthogonal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;orthogonal_2sided&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="orthogonal"><a class="viewcode-back" href="../../api/orthogonal.html#procrustes.orthogonal.orthogonal">[docs]</a><span class="k">def</span> <span class="nf">orthogonal</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lapack_driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gesvd&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcrustesResult</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform orthogonal Procrustes.</span>
+
+<span class="sd">    Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m</span>
+<span class="sd">    \times n}`, find the orthogonal transformation matrix :math:`\mathbf{Q}_{n</span>
+<span class="sd">    \times n}` that makes :math:`\mathbf{AQ}` as close as possible to :math:`\mathbf{B}`.</span>
+<span class="sd">    In other words,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}</span>
+<span class="sd">                          \|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2</span>
+
+<span class="sd">    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to</span>
+<span class="sd">    have the same shape, which is gauranteed with the default ``pad`` argument for any given</span>
+<span class="sd">    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and</span>
+<span class="sd">    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero</span>
+<span class="sd">    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of</span>
+<span class="sd">    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero</span>
+<span class="sd">    rows/columns so they have the same shape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}` representing the reference matrix.</span>
+<span class="sd">    pad : bool, optional</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    translate : bool, optional</span>
+<span class="sd">        If True, both arrays are centered at origin (columns of the arrays will have mean zero).</span>
+<span class="sd">    scale : bool, optional</span>
+<span class="sd">        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.</span>
+<span class="sd">    unpad_col : bool, optional</span>
+<span class="sd">        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    unpad_row : bool, optional</span>
+<span class="sd">        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If True, convert the input to an array, checking for NaNs or Infs.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the</span>
+<span class="sd">        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`</span>
+<span class="sd">        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.</span>
+<span class="sd">    lapack_driver : {&#39;gesvd&#39;, &#39;gesdd&#39;}, optional</span>
+<span class="sd">        Whether to use the more efficient divide-and-conquer approach (&#39;gesdd&#39;) or the more robust</span>
+<span class="sd">        general rectangular approach (&#39;gesvd&#39;) to compute the singular-value decomposition with</span>
+<span class="sd">        `scipy.linalg.svd`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : ProcrustesResult</span>
+<span class="sd">        The Procrustes result represented as a class:`utils.ProcrustesResult` object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The optimal orthogonal matrix is obtained by,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{Q}^{\text{opt}} =</span>
+<span class="sd">        \arg \underbrace{\min}_{\left\{\mathbf{Q} \left| {\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}</span>
+<span class="sd">             \right. \right\}} \|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2 =</span>
+<span class="sd">        \arg \underbrace{\max}_{\left\{\mathbf{Q} \left| {\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}</span>
+<span class="sd">             \right. \right\}} \text{Tr}\left[\mathbf{Q^\dagger}\mathbf{A^\dagger}\mathbf{B}\right]</span>
+
+<span class="sd">    The solution is obtained using the singular value decomposition (SVD) of the</span>
+<span class="sd">    :math:`\mathbf{A}^\dagger \mathbf{B}` matrix,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{A}^\dagger \mathbf{B} &amp;= \tilde{\mathbf{U}} \tilde{\mathbf{\Sigma}}</span>
+<span class="sd">                                          \tilde{\mathbf{V}}^{\dagger} \\</span>
+<span class="sd">       \mathbf{Q}^{\text{opt}} &amp;= \tilde{\mathbf{U}} \tilde{\mathbf{V}}^{\dagger}</span>
+
+<span class="sd">    The singular values are always listed in decreasing order, with the smallest singular</span>
+<span class="sd">    value in the bottom-right-hand corner of :math:`\tilde{\mathbf{\Sigma}}`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from scipy.stats import ortho_group</span>
+<span class="sd">    &gt;&gt;&gt; from procrustes import orthogonal</span>
+<span class="sd">    &gt;&gt;&gt; a = np.random.rand(5, 3)   # random input matrix</span>
+<span class="sd">    &gt;&gt;&gt; q = ortho_group.rvs(3)     # random orthogonal transformation</span>
+<span class="sd">    &gt;&gt;&gt; b = np.dot(a, q) + np.random.rand(1, 3)   # random target matrix</span>
+<span class="sd">    &gt;&gt;&gt; result = orthogonal(a, b, translate=True, scale=False)</span>
+<span class="sd">    &gt;&gt;&gt; print(result.error)      # error (should be zero)</span>
+<span class="sd">    &gt;&gt;&gt; print(result.t)          # transformation matrix (same as q)</span>
+<span class="sd">    &gt;&gt;&gt; print(result.new_a)      # translated array a</span>
+<span class="sd">    &gt;&gt;&gt; print(result.new_b)      # translated array b</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check inputs</span>
+    <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">setup_input_arrays</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">unpad_col</span><span class="p">,</span>
+        <span class="n">unpad_row</span><span class="p">,</span>
+        <span class="n">pad</span><span class="p">,</span>
+        <span class="n">translate</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">,</span>
+        <span class="n">check_finite</span><span class="p">,</span>
+        <span class="n">weight</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Shape of A and B does not match: </span><span class="si">{</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+        <span class="p">)</span>
+    <span class="c1"># calculate SVD of A.T * B</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_b</span><span class="p">),</span> <span class="n">lapack_driver</span><span class="o">=</span><span class="n">lapack_driver</span><span class="p">)</span>
+    <span class="c1"># compute optimal orthogonal transformation</span>
+    <span class="n">u_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">vt</span><span class="p">)</span>
+    <span class="c1"># compute one-sided error</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">u_opt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">u_opt</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="orthogonal_2sided"><a class="viewcode-back" href="../../api/orthogonal.html#procrustes.orthogonal.orthogonal_2sided">[docs]</a><span class="k">def</span> <span class="nf">orthogonal_2sided</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">single</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lapack_driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gesvd&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcrustesResult</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform two-sided orthogonal Procrustes with one- or two-transformations.</span>
+
+<span class="sd">    **Two Transformations:** Given a matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix</span>
+<span class="sd">    :math:`\mathbf{B}_{m \times n}`, find two :math:`n \times n` orthogonal</span>
+<span class="sd">    transformation matrices :math:`\mathbf{Q}_1^\dagger` and :math:`\mathbf{Q}_2` that makes</span>
+<span class="sd">    :math:`\mathbf{Q}_1^\dagger\mathbf{A}\mathbf{Q}_2` as close as possible to :math:`\mathbf{B}`.</span>
+<span class="sd">    In other words,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">          \underbrace{\text{min}}_{\left\{ {\mathbf{Q}_1 \atop \mathbf{Q}_2} \left|</span>
+<span class="sd">            {\mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \atop \mathbf{Q}_2^{-1} =</span>
+<span class="sd">            \mathbf{Q}_2^\dagger} \right. \right\}}</span>
+<span class="sd">            \|\mathbf{Q}_1^\dagger \mathbf{A} \mathbf{Q}_2 - \mathbf{B}\|_{F}^2</span>
+
+<span class="sd">    **Single Transformations:** Given a **symmetric** matrix :math:`\mathbf{A}_{n \times n}` and</span>
+<span class="sd">    a reference :math:`\mathbf{B}_{n \times n}`, find one orthogonal transformation</span>
+<span class="sd">    matrix :math:`\mathbf{Q}_{n \times n}` that makes :math:`\mathbf{A}` as close as possible to</span>
+<span class="sd">    :math:`\mathbf{B}`. In other words,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}</span>
+<span class="sd">                          \|\mathbf{Q}^\dagger\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2</span>
+
+<span class="sd">    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to</span>
+<span class="sd">    have the same shape, which is gauranteed with the default ``pad`` argument for any given</span>
+<span class="sd">    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and</span>
+<span class="sd">    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero</span>
+<span class="sd">    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of</span>
+<span class="sd">    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero</span>
+<span class="sd">    rows/columns so they have the same shape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}` representing the reference matrix.</span>
+<span class="sd">    single : bool, optional</span>
+<span class="sd">        If True, single transformation is used (i.e., :math:`\mathbf{Q}_1=\mathbf{Q}_2=\mathbf{Q}`),</span>
+<span class="sd">        otherwise, two transformations are used.</span>
+<span class="sd">    pad : bool, optional</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    translate : bool, optional</span>
+<span class="sd">        If True, both arrays are centered at origin (columns of the arrays will have mean zero).</span>
+<span class="sd">    scale : bool, optional</span>
+<span class="sd">        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.</span>
+<span class="sd">    unpad_col : bool, optional</span>
+<span class="sd">        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    unpad_row : bool, optional</span>
+<span class="sd">        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If True, convert the input to an array, checking for NaNs or Infs.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the</span>
+<span class="sd">        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`</span>
+<span class="sd">        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.</span>
+<span class="sd">    lapack_driver : {&quot;gesvd&quot;, &quot;gesdd&quot;}, optional</span>
+<span class="sd">        Used in the singular value decomposition function from SciPy. Only allowed two options,</span>
+<span class="sd">        with &quot;gesvd&quot; being less-efficient than &quot;gesdd&quot; but is more robust. Default is &quot;gesvd&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : ProcrustesResult</span>
+<span class="sd">        The Procrustes result represented as a class:`utils.ProcrustesResult` object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Two-Sided Orthogonal Procrustes with Two Transformations:**</span>
+<span class="sd">    The optimal orthogonal transformations are obtained by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{Q}_{1}^{\text{opt}}, \mathbf{Q}_{2}^{\text{opt}} = \arg</span>
+<span class="sd">          \underbrace{\text{min}}_{\left\{ {\mathbf{Q}_1 \atop \mathbf{Q}_2} \left|</span>
+<span class="sd">            {\mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \atop \mathbf{Q}_2^{-1} =</span>
+<span class="sd">            \mathbf{Q}_2^\dagger} \right. \right\}}</span>
+<span class="sd">            \|\mathbf{Q}_1^\dagger \mathbf{A} \mathbf{Q}_2 - \mathbf{B}\|_{F}^2 = \arg</span>
+<span class="sd">       \underbrace{\text{max}}_{\left\{ {\mathbf{Q}_1 \atop \mathbf{Q}_2} \left|</span>
+<span class="sd">             {\mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \atop \mathbf{Q}_2^{-1} =</span>
+<span class="sd">             \mathbf{Q}_2^\dagger} \right. \right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{Q}_2^\dagger\mathbf{A}^\dagger\mathbf{Q}_1\mathbf{B} \right]</span>
+
+<span class="sd">    This is solved by taking the singular value decomposition (SVD) of :math:`\mathbf{A}` and</span>
+<span class="sd">    :math:`\mathbf{B}`,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{A} = \mathbf{U}_A \mathbf{\Sigma}_A \mathbf{V}_A^\dagger \\</span>
+<span class="sd">       \mathbf{B} = \mathbf{U}_B \mathbf{\Sigma}_B \mathbf{V}_B^\dagger</span>
+
+<span class="sd">    Then the two optimal orthogonal matrices are given by,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{Q}_1^{\text{opt}} = \mathbf{U}_A \mathbf{U}_B^\dagger \\</span>
+<span class="sd">       \mathbf{Q}_2^{\text{opt}} = \mathbf{V}_A \mathbf{V}_B^\dagger</span>
+
+<span class="sd">    **Two-Sided Orthogonal Procrustes with Single-Transformation:**</span>
+<span class="sd">    The optimal orthogonal transformation is obtained by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{Q}^{\text{opt}} = \arg</span>
+<span class="sd">       \underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}</span>
+<span class="sd">                          \|\mathbf{Q}^\dagger\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2 = \arg</span>
+<span class="sd">       \underbrace{\text{max}}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger\right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{Q}^\dagger\mathbf{A}^\dagger\mathbf{Q}\mathbf{B} \right]</span>
+
+<span class="sd">    Using the singular value decomposition (SVD) of :math:`\mathbf{A}` and :math:`\mathbf{B}`,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{A} = \mathbf{U}_A \mathbf{\Lambda}_A \mathbf{U}_A^\dagger \\</span>
+<span class="sd">       \mathbf{B} = \mathbf{U}_B \mathbf{\Lambda}_B \mathbf{U}_B^\dagger</span>
+
+<span class="sd">    The optimal orthogonal matrix :math:`\mathbf{Q}^\text{opt}` is obtained through,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{Q}^\text{opt} = \mathbf{U}_A \mathbf{S} \mathbf{U}_B^\dagger</span>
+
+<span class="sd">    where :math:`\mathbf{S}` is a diagonal matrix with :math:`\pm{1}` elements,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{S} =</span>
+<span class="sd">       \begin{bmatrix}</span>
+<span class="sd">        { \pm 1} &amp; 0       &amp;\cdots &amp;0 \\</span>
+<span class="sd">        0        &amp;{ \pm 1} &amp;\ddots &amp;\vdots \\</span>
+<span class="sd">        \vdots   &amp;\ddots   &amp;\ddots &amp;0\\</span>
+<span class="sd">        0        &amp;\cdots   &amp;0      &amp;{ \pm 1}</span>
+<span class="sd">       \end{bmatrix}</span>
+
+<span class="sd">    The matrix :math:`\mathbf{S}` is chosen to be the identity matrix.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[30, 33, 20], [33, 53, 43], [20, 43, 46]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[ 22.78131838, -0.58896768,-43.00635291, 0., 0.],</span>
+<span class="sd">    ...               [ -0.58896768, 16.77132475,  0.24289990, 0., 0.],</span>
+<span class="sd">    ...               [-43.00635291,  0.2428999 , 89.44735687, 0., 0.],</span>
+<span class="sd">    ...               [  0.        ,  0.        ,  0.        , 0., 0.]])</span>
+<span class="sd">    &gt;&gt;&gt; res = orthogonal_2sided(a, b, single=True, pad=True, unpad_col=True)</span>
+<span class="sd">    &gt;&gt;&gt; res.t</span>
+<span class="sd">    array([[ 0.25116633,  0.76371527,  0.59468855],</span>
+<span class="sd">           [-0.95144277,  0.08183302,  0.29674906],</span>
+<span class="sd">           [ 0.17796663, -0.64034549,  0.74718507]])</span>
+<span class="sd">    &gt;&gt;&gt; res.error</span>
+<span class="sd">    1.9646186414076689e-26</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if translate:</span>
+    <span class="c1">#     warnings.warn(</span>
+    <span class="c1">#         &quot;The translation matrix was not well defined. \</span>
+    <span class="c1">#             Two sided rotation and translation don&#39;t commute.&quot;,</span>
+    <span class="c1">#         stacklevel=2,</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1"># Check inputs</span>
+    <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">setup_input_arrays</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">unpad_col</span><span class="p">,</span>
+        <span class="n">unpad_row</span><span class="p">,</span>
+        <span class="n">pad</span><span class="p">,</span>
+        <span class="n">translate</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">,</span>
+        <span class="n">check_finite</span><span class="p">,</span>
+        <span class="n">weight</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># check symmetry if single_transform=True</span>
+    <span class="k">if</span> <span class="n">single</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_a</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Array A with </span><span class="si">{</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> shape is not symmetric. &quot;</span>
+                <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">new_b</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_b</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Array B with </span><span class="si">{</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> shape is not symmetric. &quot;</span>
+                <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># two-sided orthogonal Procrustes with one-transformations</span>
+    <span class="k">if</span> <span class="n">single</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ua</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">new_a</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">new_b</span><span class="p">)</span>
+        <span class="n">u_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ua</span><span class="p">,</span> <span class="n">ub</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="c1"># compute one-sided error</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">u_opt</span><span class="p">,</span> <span class="n">u_opt</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">u_opt</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">u_opt</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="c1"># two-sided orthogonal Procrustes with two-transformations</span>
+    <span class="n">ua</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vta</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="o">=</span><span class="n">lapack_driver</span><span class="p">)</span>
+    <span class="n">ub</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vtb</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">new_b</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="o">=</span><span class="n">lapack_driver</span><span class="p">)</span>
+    <span class="n">u_opt1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ua</span><span class="p">,</span> <span class="n">ub</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">u_opt2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vta</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">vtb</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">u_opt2</span><span class="p">,</span> <span class="n">u_opt1</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">u_opt2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">u_opt1</span><span class="o">.</span><span class="n">T</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2022, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

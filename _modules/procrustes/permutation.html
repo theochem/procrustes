@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.permutation &mdash; Procrustes 1.0.0a5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Procrustes
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>procrustes.permutation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for procrustes.permutation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># The Procrustes library provides a set of functions for transforming</span>
+<span class="c1"># a matrix to make it as similar as possible to a target matrix.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2022 The QC-Devs Community</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of Procrustes.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Permutation Procrustes Module.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">procrustes.kopt</span> <span class="kn">import</span> <span class="n">kopt_heuristic_double</span><span class="p">,</span> <span class="n">kopt_heuristic_single</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_zero_padding</span><span class="p">,</span> <span class="n">compute_error</span><span class="p">,</span> <span class="n">ProcrustesResult</span><span class="p">,</span> <span class="n">setup_input_arrays</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">linear_sum_assignment</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="s2">&quot;permutation_2sided&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="permutation"><a class="viewcode-back" href="../../api/permutation.html#procrustes.permutation.permutation">[docs]</a><span class="k">def</span> <span class="nf">permutation</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcrustesResult</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform one-sided permutation Procrustes.</span>
+
+<span class="sd">    Given matrix :math:`\mathbf{A}_{m \times n}` and a reference matrix :math:`\mathbf{B}_{m \times</span>
+<span class="sd">    n}`, find the permutation transformation matrix :math:`\mathbf{P}_{n \times n}`</span>
+<span class="sd">    that makes :math:`\mathbf{AP}` as close as possible to :math:`\mathbf{B}`. In other words,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\} \atop</span>
+<span class="sd">       \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}</span>
+<span class="sd">       \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2</span>
+
+<span class="sd">    This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to</span>
+<span class="sd">    have the same shape, which is guaranteed with the default ``pad=True`` argument for any given</span>
+<span class="sd">    :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and</span>
+<span class="sd">    :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero</span>
+<span class="sd">    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of</span>
+<span class="sd">    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero</span>
+<span class="sd">    rows/columns so they have the same shape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}` representing the reference matrix.</span>
+<span class="sd">    pad : bool, optional</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    translate : bool, optional</span>
+<span class="sd">        If True, both arrays are centered at origin (columns of the arrays will have mean zero).</span>
+<span class="sd">    scale : bool, optional</span>
+<span class="sd">        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.</span>
+<span class="sd">    unpad_col : bool, optional</span>
+<span class="sd">        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.</span>
+<span class="sd">    unpad_row : bool, optional</span>
+<span class="sd">        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If True, convert the input to an array, checking for NaNs or Infs.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the</span>
+<span class="sd">        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`</span>
+<span class="sd">        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : ProcrustesResult</span>
+<span class="sd">        The Procrustes result represented as a class:`utils.ProcrustesResult` object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The optimal :math:`n \times n` permutation matrix is obtained by,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\text{opt}} =</span>
+<span class="sd">        \arg \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}</span>
+<span class="sd">        \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}</span>
+<span class="sd">            \|\mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2</span>
+<span class="sd">      = \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}</span>
+<span class="sd">        \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}</span>
+<span class="sd">            \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right]</span>
+
+<span class="sd">    The solution is found by relaxing the problem into a linear programming problem. The solution</span>
+<span class="sd">    to a linear programming problem is always at the boundary of the allowed region. So,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \in \{0, 1\}</span>
+<span class="sd">       \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{B} \right] =</span>
+<span class="sd">       \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {[\mathbf{P}]_{ij} \geq 0</span>
+<span class="sd">       \atop \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1} \right. \right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{P}^\dagger\left(\mathbf{A}^\dagger\mathbf{B}\right) \right]</span>
+
+<span class="sd">    This is a matching problem and can be solved by the Hungarian algorithm. The cost matrix is</span>
+<span class="sd">    defined as :math:`\mathbf{A}^\dagger\mathbf{B}` and the `scipy.optimize.linear_sum_assignment`</span>
+<span class="sd">    is used to solve for the permutation that maximizes the linear sum assignment problem.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check inputs</span>
+    <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">setup_input_arrays</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">unpad_col</span><span class="p">,</span>
+        <span class="n">unpad_row</span><span class="p">,</span>
+        <span class="n">pad</span><span class="p">,</span>
+        <span class="n">translate</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">,</span>
+        <span class="n">check_finite</span><span class="p">,</span>
+        <span class="n">weight</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># if number of rows is less than column, the arrays are made square</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">_zero_padding</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="s2">&quot;square&quot;</span><span class="p">)</span>
+
+    <span class="c1"># compute cost matrix C = A.T B</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_b</span><span class="p">)</span>
+    <span class="c1"># compute permutation matrix using Hungarian algorithm</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="c1"># compute one-sided permutation error</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="permutation_2sided"><a class="viewcode-back" href="../../api/permutation.html#procrustes.permutation.permutation_2sided">[docs]</a><span class="k">def</span> <span class="nf">permutation_2sided</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">single</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;kopt&quot;</span><span class="p">,</span>
+    <span class="n">guess_p1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">guess_p2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lapack_driver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gesvd&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcrustesResult</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform two-sided permutation Procrustes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}` representing the reference matrix.</span>
+<span class="sd">    single : bool, optional</span>
+<span class="sd">        If `True`, the single-transformation Procrustes is performed to obtain :math:`\mathbf{P}`.</span>
+<span class="sd">        If `False`, the two-transformations Procrustes is performed to obtain :math:`\mathbf{P}_1`</span>
+<span class="sd">        and :math:`\mathbf{P}_2`.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        The method to solve for permutation matrices. For `single=False`, these include &quot;flip-flop&quot;</span>
+<span class="sd">        and &quot;k-opt&quot; methods. For `single=True`, these include &quot;approx-normal1&quot;, &quot;approx-normal2&quot;,</span>
+<span class="sd">        &quot;approx-umeyama&quot;, &quot;approx-umeyama-svd&quot;, &quot;k-opt&quot;, &quot;soft-assign&quot;, and &quot;nmf&quot;.</span>
+<span class="sd">    guess_p1 : np.ndarray, optional</span>
+<span class="sd">        Guess for :math:`\mathbf{P}_1` matrix given as a 2D-array. This is only required for the</span>
+<span class="sd">        two-transformations case specified by setting `single=False`.</span>
+<span class="sd">    guess_p2 : np.ndarray, optional</span>
+<span class="sd">        Guess for :math:`\mathbf{P}_2` matrix given as a 2D-array.</span>
+<span class="sd">    pad : bool, optional</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    unpad_col : bool, optional</span>
+<span class="sd">        If True, zero columns (with values less than 1.0e-8) on the right-hand side are removed.</span>
+<span class="sd">    unpad_row : bool, optional</span>
+<span class="sd">        If True, zero rows (with values less than 1.0e-8) at the bottom are removed.</span>
+<span class="sd">    translate : bool, optional</span>
+<span class="sd">        If True, both arrays are centered at origin (columns of the arrays will have mean zero).</span>
+<span class="sd">    scale : bool, optional</span>
+<span class="sd">        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If True, convert the input to an array, checking for NaNs or Infs.</span>
+<span class="sd">    options : dict, optional</span>
+<span class="sd">       A dictionary of method options.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the</span>
+<span class="sd">        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`</span>
+<span class="sd">        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.</span>
+<span class="sd">    lapack_driver : {&#39;gesvd&#39;, &#39;gesdd&#39;}, optional</span>
+<span class="sd">        Whether to use the more efficient divide-and-conquer approach (&#39;gesdd&#39;) or the more robust</span>
+<span class="sd">        general rectangular approach (&#39;gesvd&#39;) to compute the singular-value decomposition with</span>
+<span class="sd">        `scipy.linalg.svd`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : ProcrustesResult</span>
+<span class="sd">        The Procrustes result represented as a class:`utils.ProcrustesResult` object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Given matrix :math:`\mathbf{A}_{n \times n}` and a reference :math:`\mathbf{B}_{n \times n}`,</span>
+<span class="sd">    find a permutation of rows/columns of :math:`\mathbf{A}_{n \times n}` that makes it as close as</span>
+<span class="sd">    possible to :math:`\mathbf{B}_{n \times n}`. I.e.,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        &amp;\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">            \|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2\\</span>
+<span class="sd">        = &amp;\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">            \text{Tr}\left[\left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)^\dagger</span>
+<span class="sd">            \left(\mathbf{P}^\dagger\mathbf{A}\mathbf{P} - \mathbf{B} \right)\right] \\</span>
+<span class="sd">        = &amp;\underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">            \text{Tr}\left[\mathbf{P}^\dagger\mathbf{A}^\dagger\mathbf{P}\mathbf{B} \right]\\</span>
+
+<span class="sd">    Here, :math:`\mathbf{P}_{n \times n}` is the permutation matrix. Given an intial guess, the</span>
+<span class="sd">    best local minimum can be obtained by the iterative procedure,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       p_{ij}^{(n + 1)} = p_{ij}^{(n)} \sqrt{ \frac{2\left[\mathbf{T}^{(n)}\right]_{ij}}{\left[</span>
+<span class="sd">                          \mathbf{P}^{(n)} \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} +</span>
+<span class="sd">                          \left( \left(\mathbf{P}^{(n)}\right)^T \mathbf{T} \right)^T  \right)</span>
+<span class="sd">                          \right]_{ij}} }</span>
+
+<span class="sd">    where,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{T}^{(n)} = \mathbf{A} \mathbf{P}^{(n)} \mathbf{B}</span>
+
+<span class="sd">    Using an initial guess, the iteration can stops when the change in :math:`d` is below the</span>
+<span class="sd">    specified threshold,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       d = \text{Tr} \left[\left(\mathbf{P}^{(n+1)} -\mathbf{P}^{(n)} \right)^T</span>
+<span class="sd">                           \left(\mathbf{P}^{(n+1)} -\mathbf{P}^{(n)} \right)\right]</span>
+
+<span class="sd">    The outcome of the iterative procedure :math:`\mathbf{P}^{(\infty)}` is not a permutation</span>
+<span class="sd">    matrix. So, the closest permutation can be found by setting ``refinement=True``. This uses</span>
+<span class="sd">    :class:`procrustes.permutation.PermutationProcrustes` to find the closest permutation; that is,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">                            \|\mathbf{P} - \mathbf{P}^{(\infty)}\|_{F}^2</span>
+<span class="sd">       = \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">                            \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">         \text{Tr}\left[\mathbf{P}^\dagger\mathbf{P}^{(\infty)} \right]</span>
+
+<span class="sd">    The answer to this problem is a heuristic solution for the matrix-matching problem that seems</span>
+<span class="sd">    to be relatively accurate.</span>
+
+<span class="sd">    **Initial Guess:**</span>
+
+<span class="sd">    Two possible initial guesses are inferred from the Umeyama procedure. One can find either the</span>
+<span class="sd">    closest permutation matrix to :math:`\mathbf{U}_\text{Umeyama}` or to</span>
+<span class="sd">    :math:`\mathbf{U}_\text{Umeyama}^\text{approx.}`.</span>
+
+<span class="sd">    Considering the :class:`procrustes.permutation.PermutationProcrustes`, the resulting permutation</span>
+<span class="sd">    matrix can be specified as initial guess through ``guess=umeyama`` and ``guess=umeyama_approx``,</span>
+<span class="sd">    which solves:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">                         \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{U}_\text{Umeyama} \right] \\</span>
+<span class="sd">        \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">                         \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{P}^\dagger\mathbf{U}_\text{Umeyama}^\text{approx.} \right]</span>
+
+<span class="sd">    Another choice is to start by solving a normal permutation Procrustes problem. In other words,</span>
+<span class="sd">    write new matrices, :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0`, with columns like,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \begin{bmatrix}</span>
+<span class="sd">        a_{ii} \\</span>
+<span class="sd">        p \cdot \text{sgn}\left( a_{ij_\text{max}} \right)</span>
+<span class="sd">                \underbrace{\text{max}}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\</span>
+<span class="sd">        p^2 \cdot \text{sgn}\left( a_{ij_{\text{max}-1}} \right)</span>
+<span class="sd">                  \underbrace{\text{max}-1}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\</span>
+<span class="sd">        \vdots</span>
+<span class="sd">       \end{bmatrix}</span>
+
+<span class="sd">    Here, :math:`\text{max}-1` denotes the second-largest absolute value of elements,</span>
+<span class="sd">    :math:`\text{max}-2` is the third-largest abosule value of elements, etc.</span>
+
+<span class="sd">    The matrices :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` have the diagonal elements of</span>
+<span class="sd">    :math:`\mathbf{A}` and :math:`\mathbf{B}` in the first row, and below the first row has the</span>
+<span class="sd">    largest off-diagonal element in row :math:`i`, the second-largest off-diagonal element, etc.</span>
+<span class="sd">    The elements are weighted by a factor :math:`0 &lt; p &lt; 1`, so that the smaller elements are</span>
+<span class="sd">    considered less important for matching. The matrices can be truncated after a few terms; for</span>
+<span class="sd">    example, after the size of elements falls below some threshold. A reasonable choice would be</span>
+<span class="sd">    to stop after :math:`\lfloor \frac{-2\ln 10}{\ln p} +1\rfloor` rows; this ensures that the</span>
+<span class="sd">    size of the elements in the last row is less than 1% of those in the first off-diagonal row.</span>
+
+<span class="sd">    There are obviously many different ways to construct the matrices :math:`\mathbf{A}^0` and</span>
+<span class="sd">    :math:`\mathbf{B}^0`. Another, even better, method would be to try to encode not only what the</span>
+<span class="sd">    off-diagonal elements are, but which element in the matrix they correspond to. One could do that</span>
+<span class="sd">    by not only listing the diagonal elements, but also listing the associated off-diagonal element.</span>
+<span class="sd">    I.e., the columns of :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` would be,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \begin{bmatrix}</span>
+<span class="sd">        a_{ii} \\</span>
+<span class="sd">        p \cdot a_{j_\text{max} j_\text{max}} \\</span>
+<span class="sd">        p \cdot \text{sgn}\left( a_{ij_\text{max}} \right)</span>
+<span class="sd">                \underbrace{\text{max}}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\</span>
+<span class="sd">        p^2 \cdot a_{j_{\text{max}-1} j_{\text{max}-1}} \\</span>
+<span class="sd">        p^2 \cdot \text{sgn}\left( a_{ij_{\text{max}-1}} \right)</span>
+<span class="sd">                  \underbrace{\text{max}-1}_{1 \le j \le n} \left(\left|a_{ij}\right|\right)\\</span>
+<span class="sd">        \vdots</span>
+<span class="sd">       \end{bmatrix}</span>
+
+<span class="sd">    In this case, you would stop the procedure after</span>
+<span class="sd">    :math:`m = \left\lfloor {\frac{{ - 4\ln 10}}{{\ln p}} + 1} \right \rfloor` rows.</span>
+
+<span class="sd">    Then one uses the :class:`procrustes.permutation.PermutationProcrustes` to match the constructed</span>
+<span class="sd">    matrices :math:`\mathbf{A}^0` and :math:`\mathbf{B}^0` instead of :math:`\mathbf{A}` and</span>
+<span class="sd">    :math:`\mathbf{B}`. I.e.,</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \underbrace{\text{max}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}</span>
+<span class="sd">                         \atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}</span>
+<span class="sd">          \text{Tr}\left[\mathbf{P}^\dagger \left(\mathbf{A^0}^\dagger\mathbf{B^0}\right)\right]</span>
+
+<span class="sd">    Please note that the &quot;umeyama_approx&quot; might give inaccurate permutation</span>
+<span class="sd">    matrix. More specificity, this is a approximated Umeyama method. One example</span>
+<span class="sd">    we can give is that when we compute the permutation matrix that transforms</span>
+<span class="sd">    :math:`A` to :math:`B`, the &quot;umeyama_approx&quot; method can not give the exact</span>
+<span class="sd">    permutation transformation matrix while &quot;umeyama&quot;, &quot;normal1&quot; and &quot;normal2&quot; do.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        A =</span>
+<span class="sd">        \begin{bmatrix}</span>
+<span class="sd">             4 &amp;  5 &amp; -3 &amp;  3 \\</span>
+<span class="sd">             5 &amp;  7 &amp;  3 &amp; -5 \\</span>
+<span class="sd">            -3 &amp;  3 &amp;  2 &amp;  2 \\</span>
+<span class="sd">             3 &amp; -5 &amp;  2 &amp;  5 \\</span>
+<span class="sd">        \end{bmatrix} \\</span>
+<span class="sd">        B =</span>
+<span class="sd">        \begin{bmatrix}</span>
+<span class="sd">             73 &amp;  100 &amp;   73 &amp;  -62 \\</span>
+<span class="sd">            100 &amp;  208 &amp; -116 &amp;  154 \\</span>
+<span class="sd">             73 &amp; -116 &amp;  154 &amp;  100 \\</span>
+<span class="sd">            -62 &amp;  154 &amp;  100 &amp;  127 \\</span>
+<span class="sd">        \end{bmatrix} \\</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check single argument</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">single</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument single is not a boolean! Given type=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">single</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># check inputs</span>
+    <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">setup_input_arrays</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">unpad_col</span><span class="p">,</span> <span class="n">unpad_row</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">translate</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">check_finite</span><span class="p">,</span> <span class="n">weight</span>
+    <span class="p">)</span>
+
+    <span class="c1"># check that A &amp; B are square in case of single transformation</span>
+    <span class="k">if</span> <span class="n">single</span> <span class="ow">and</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;For single=</span><span class="si">{</span><span class="n">single</span><span class="si">}</span><span class="s2">, matrix A should be square but A.shape=</span><span class="si">{</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">single</span> <span class="ow">and</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;For single=</span><span class="si">{</span><span class="n">single</span><span class="si">}</span><span class="s2">, matrix B should be square but B.shape=</span><span class="si">{</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># print a statement if user-specified guess is not used</span>
+    <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;approx&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">guess_p1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method=</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> does not use an initial guess, so guess_p1 is ignored!&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;approx&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">guess_p2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method=</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> does not use an initial guess, so guess_p2 is ignored!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get the number of rows &amp; columns of matrix A</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># assign &amp; check initial guess for P1</span>
+    <span class="k">if</span> <span class="n">single</span> <span class="ow">and</span> <span class="n">guess_p1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;For single=</span><span class="si">{</span><span class="n">single</span><span class="si">}</span><span class="s2">, P1 is transpose of P2, so guess_p1 should be None.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">single</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">guess_p1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">guess_p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">guess_p1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument guess_p1 should be either None or a (</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">) array.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># assign &amp; check initial guess for P2</span>
+    <span class="k">if</span> <span class="n">guess_p2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">guess_p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">guess_p2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument guess_p2 should be either None or a (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">) array.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># check options dictionary &amp; assign default keys</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span> <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument options should be a dictionary. Given type=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">options</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># pylint: disable=C0201</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Argument options should only have </span><span class="si">{</span><span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2"> keys. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Given options contains </span><span class="si">{</span><span class="n">options</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2"> keys!&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># update defaults dictionary to use the specified options</span>
+        <span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="c1"># 2-sided permutation Procrustes with two transformations</span>
+    <span class="c1"># -------------------------------------------------------</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">single</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;flip-flop&quot;</span><span class="p">:</span>
+            <span class="c1"># compute permutations using flip-flop algorithm</span>
+            <span class="n">perm1</span><span class="p">,</span> <span class="n">perm2</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">_permutation_2sided_2trans_flipflop</span><span class="p">(</span>
+                <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;tol&quot;</span><span class="p">],</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;maxiter&quot;</span><span class="p">],</span> <span class="n">guess_p1</span><span class="p">,</span> <span class="n">guess_p2</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;k-opt&quot;</span><span class="p">:</span>
+            <span class="c1"># compute permutations using k-opt heuristic search</span>
+            <span class="n">fun_error</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            <span class="n">perm1</span><span class="p">,</span> <span class="n">perm2</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">kopt_heuristic_double</span><span class="p">(</span>
+                <span class="n">fun_error</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="n">guess_p1</span><span class="p">,</span> <span class="n">p2</span><span class="o">=</span><span class="n">guess_p2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method=</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> not supported for single=</span><span class="si">{</span><span class="n">single</span><span class="si">}</span><span class="s2"> transformation!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">perm2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">perm1</span><span class="p">)</span>
+
+    <span class="c1"># 2-sided permutation Procrustes with one transformation</span>
+    <span class="c1"># ------------------------------------------------------</span>
+    <span class="c1"># The (un)directed iterative procedure for finding the permutation matrix takes the square</span>
+    <span class="c1"># root of the matrix entries, which can result in complex numbers if the entries are</span>
+    <span class="c1"># negative. To avoid this, all matrix entries are shifted (by the smallest amount) to be</span>
+    <span class="c1"># positive. This causes no change to the objective function, as it&#39;s a constant value</span>
+    <span class="c1"># being added to all entries of a and b.</span>
+    <span class="n">shift</span> <span class="o">=</span> <span class="mf">1.0e-6</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">new_a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">new_b</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">shift</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">new_a</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">new_b</span><span class="p">)))</span>
+    <span class="c1"># shift is a float, so even if new_a or new_b are ints, the positive matrices are floats</span>
+    <span class="c1"># default shift is not zero to avoid division by zero later in the algorithm</span>
+    <span class="n">pos_a</span> <span class="o">=</span> <span class="n">new_a</span> <span class="o">+</span> <span class="n">shift</span>
+    <span class="n">pos_b</span> <span class="o">=</span> <span class="n">new_b</span> <span class="o">+</span> <span class="n">shift</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;approx-normal1&quot;</span><span class="p">:</span>
+        <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_normal1</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">tmp_b</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_normal1</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">permutation</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">tmp_b</span><span class="p">)</span><span class="o">.</span><span class="n">t</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;approx-normal2&quot;</span><span class="p">:</span>
+        <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_normal2</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">tmp_b</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_normal2</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">permutation</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">tmp_b</span><span class="p">)</span><span class="o">.</span><span class="n">t</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;approx-umeyama&quot;</span><span class="p">:</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_umeyama</span><span class="p">(</span><span class="n">pos_a</span><span class="p">,</span> <span class="n">pos_b</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;approx-umeyama-svd&quot;</span><span class="p">:</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_umeyama_svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;k-opt&quot;</span><span class="p">:</span>
+        <span class="n">fun_error</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">pos_a</span><span class="p">,</span> <span class="n">pos_b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">perm</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">kopt_heuristic_single</span><span class="p">(</span><span class="n">fun_error</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">guess_p2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">])</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;soft-assign&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;nmf&quot;</span><span class="p">:</span>
+        <span class="c1"># check whether A &amp; B are symmetric (within a relative &amp; absolute tolerance)</span>
+        <span class="n">is_pos_a_symmetric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pos_a</span><span class="p">,</span> <span class="n">pos_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-08</span><span class="p">)</span>
+        <span class="n">is_pos_b_symmetric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pos_b</span><span class="p">,</span> <span class="n">pos_b</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-08</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_pos_a_symmetric</span> <span class="ow">and</span> <span class="n">is_pos_b_symmetric</span><span class="p">:</span>
+            <span class="c1"># undirected graph matching problem (iterative procedure)</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">_permutation_2sided_1trans_undirected</span><span class="p">(</span>
+                <span class="n">pos_a</span><span class="p">,</span> <span class="n">pos_b</span><span class="p">,</span> <span class="n">guess_p2</span><span class="p">,</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;tol&quot;</span><span class="p">],</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;maxiter&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># directed graph matching problem (iterative procedure)</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">_permutation_2sided_1trans_directed</span><span class="p">(</span>
+                <span class="n">pos_a</span><span class="p">,</span> <span class="n">pos_b</span><span class="p">,</span> <span class="n">guess_p2</span><span class="p">,</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;tol&quot;</span><span class="p">],</span> <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;maxiter&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method=</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> not supported for single=</span><span class="si">{</span><span class="n">single</span><span class="si">}</span><span class="s2"> transformation!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># some of the methods for 2-sided-1-transformation permutation procrustes does not produce a</span>
+    <span class="c1"># permutation matrix. So, their output is treated like a guess, and the closest permutation</span>
+    <span class="c1"># matrix is found using 1-sided permutation procrustes (where A=I &amp; B=perm)</span>
+    <span class="c1"># Even though this step is not needed for ALL methods (e.g. k-opt, normal1, &amp; normal2), to</span>
+    <span class="c1"># make the code simple, this step is performed for all methods as its cost is negligible.</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">permutation</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">perm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">perm</span><span class="p">,</span>
+        <span class="n">translate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unpad_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unpad_row</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">t</span>
+    <span class="c1"># compute error</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">perm</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">perm</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">perm</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">perm</span><span class="o">.</span><span class="n">T</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_permutation_2sided_2trans_flipflop</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">p0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">q0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># two-sided permutation Procrustes with 2 transformations :math:` {\(\vert PNQ-M \vert\)}^2_F`</span>
+    <span class="c1"># taken from page 64 in parallel solution of svd-related problems, with applications</span>
+    <span class="c1"># Pythagoras Papadimitriou, University of Manchester, 1993</span>
+
+    <span class="c1"># initial guesses: set P1 to identity if guess P0 is not given, and compute Q1 using 1-sided</span>
+    <span class="c1"># permutation procrustes where A=(P1N), B=M, &amp; cost = A.T B</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">p0</span>
+    <span class="k">if</span> <span class="n">p1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">q1</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">m</span><span class="p">))</span>
+    <span class="c1"># compute initial error1 = |(P1)N(Q1) - M|</span>
+    <span class="n">error1</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">error1</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">max_iter</span><span class="p">:</span>
+        <span class="c1"># update P1 using 1-sided permutation procrustes where A=(NQ1).T, B=M.T, &amp; cost = A.T B</span>
+        <span class="c1"># 1-sided procrustes finds the right-hand-side transformation T, so to solve for P1, one</span>
+        <span class="c1"># needs to minimize |Q.T N.T P.T - M.T| which is the same as original objective function.</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">q1</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># update Q1 using 1-sided permutation procrustes where A=(P1N).T, B=M, &amp; cost = A.T B</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">error1</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="n">max_iter</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum iterations reached in 1st case of flip-flop! error=</span><span class="si">{</span><span class="n">error1</span><span class="si">}</span><span class="s2"> &amp; tol=</span><span class="si">{</span><span class="n">tol</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># initial guesses: set Q2 to identity if guess Q0 is not given, and compute P2 using 1-sided</span>
+    <span class="c1"># permutation procrustes where A=(NQ2).T, B=M.T, &amp; cost = A.T B</span>
+    <span class="n">q2</span> <span class="o">=</span> <span class="n">q0</span>
+    <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">q2</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="c1"># compute initial error2 = |(P2)N(Q2) - M|</span>
+    <span class="n">error2</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">error2</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">max_iter</span><span class="p">:</span>
+        <span class="c1"># update Q2 using 1-sided permutation procrustes where A=(P2N), B=M, &amp; cost = A.T B</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">m</span><span class="p">))</span>
+        <span class="c1"># update P2 using 1-sided permutation procrustes where A=(NQ2).T, B=M.T, &amp; cost = A.T B</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">q2</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">T</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">error2</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="n">max_iter</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum iterations reached in 2nd case of flip-flop! error=</span><span class="si">{</span><span class="n">error1</span><span class="si">}</span><span class="s2"> &amp; tol=</span><span class="si">{</span><span class="n">tol</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># return permutations corresponding to the lowest error</span>
+    <span class="k">if</span> <span class="n">error1</span> <span class="o">&lt;=</span> <span class="n">error2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">p1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">error1</span>
+    <span class="k">return</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">error2</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">cost_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># solve linear sum assignment problem to get the row/column indices of optimal assignment</span>
+    <span class="n">row_ind</span><span class="p">,</span> <span class="n">col_ind</span> <span class="o">=</span> <span class="n">linear_sum_assignment</span><span class="p">(</span><span class="n">cost_matrix</span><span class="p">,</span> <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># make the permutation matrix by setting the corresponding elements to 1</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">cost_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">perm</span><span class="p">[(</span><span class="n">row_ind</span><span class="p">,</span> <span class="n">col_ind</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">perm</span>
+
+
+<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_normal1</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># This assumes that array_a has all positive entries, this guess does not match that found</span>
+    <span class="c1">#    in the notes/paper because it doesn&#39;t include the sign function.</span>
+    <span class="c1"># build the empty target array</span>
+    <span class="n">array_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="c1"># Fill the first row of array_c with diagonal entries</span>
+    <span class="n">array_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+    <span class="n">array_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="c1"># get all the non-diagonal element</span>
+    <span class="n">array_c_non_diag</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">array_mask</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">array_c_non_diag</span> <span class="o">=</span> <span class="n">array_c_non_diag</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">array_c_non_diag</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">array_c_non_diag</span><span class="p">))</span>
+    <span class="p">]</span>
+
+    <span class="c1"># form the right format in order to combine with matrix A</span>
+    <span class="n">array_c_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">array_c_non_diag</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="c1"># fill the array_c with array_c_sorted</span>
+    <span class="n">array_c</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">array_c_sorted</span>
+    <span class="c1"># the weight matrix</span>
+    <span class="n">weight_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">weight_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">weight_c</span><span class="p">[</span><span class="n">weight</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">weight_p</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+    <span class="c1"># build the new matrix array_new</span>
+    <span class="n">array_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">array_c</span><span class="p">,</span> <span class="n">weight_c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">array_new</span>
+
+
+<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_normal2</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># This assumes that array_a has all positive entries, this guess does not match that found</span>
+    <span class="c1">#    in the notes/paper because it doesn&#39;t include the sign function.</span>
+    <span class="n">array_mask_a</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="c1"># array_off_diag0 is the off diagonal elements of A</span>
+    <span class="n">array_off_diag</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">array_mask_a</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># array_off_diag1 is sorted off diagonal elements of A</span>
+    <span class="n">array_off_diag</span> <span class="o">=</span> <span class="n">array_off_diag</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">array_off_diag</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">array_off_diag</span><span class="p">))</span>
+    <span class="p">]</span>
+    <span class="n">array_off_diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">array_off_diag</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="c1"># array_c is newly built matrix B without weights</span>
+    <span class="c1"># build array_c with the expected shape</span>
+    <span class="n">col_num_new</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">array_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">col_num_new</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">array_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+
+    <span class="c1"># use inf to represent the diagonal element</span>
+    <span class="n">a_inf</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">index_inf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a_inf</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># the weight matrix</span>
+    <span class="n">weight_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">weight_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">col_num_new</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">weight_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">weight_p</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">index_col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c1"># the index_col*2 row of array_c</span>
+        <span class="n">array_c</span><span class="p">[</span><span class="n">index_col</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">array_off_diag</span><span class="p">[</span><span class="n">index_col</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="c1"># the index_col*2-1 row of array_c</span>
+        <span class="n">array_c</span><span class="p">[</span><span class="n">index_col</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">index_inf</span><span class="p">[:,</span> <span class="n">index_col</span><span class="p">],</span> <span class="n">index_inf</span><span class="p">[:,</span> <span class="n">index_col</span><span class="p">]]</span>
+
+        <span class="c1"># the index_col*2 row of weight_c</span>
+        <span class="n">weight_c</span><span class="p">[</span><span class="n">index_col</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">weight_p</span><span class="p">,</span> <span class="n">index_col</span><span class="p">)</span>
+        <span class="c1"># the index_col*2 row of weight_c</span>
+        <span class="n">weight_c</span><span class="p">[</span><span class="n">index_col</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">weight_p</span><span class="p">,</span> <span class="n">index_col</span><span class="p">)</span>
+
+    <span class="c1"># the new matrix B</span>
+    <span class="n">array_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">array_c</span><span class="p">,</span> <span class="n">weight_c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array_new</span>
+
+
+<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_umeyama</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># check whether A &amp; B are symmetric (within a relative &amp; absolute tolerance)</span>
+    <span class="n">is_a_symmetric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-08</span><span class="p">)</span>
+    <span class="n">is_b_symmetric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-08</span><span class="p">)</span>
+    <span class="c1"># symmetrize A &amp; B if not symmetric</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_a_symmetric</span> <span class="ow">and</span> <span class="n">is_b_symmetric</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">_symmetrize_matrix</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">_symmetrize_matrix</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="c1"># compute normalized normalized eigenvector of A &amp; B</span>
+    <span class="c1"># in some cases, A and B can be complex matrix (when symmetrizing non-symmetric A &amp; B),</span>
+    <span class="c1"># the np.linalg.eigh returns the eigenvalues and eigenvectors of a complex Hermitian</span>
+    <span class="c1"># (conjugate symmetric) or a real symmetric matrix.</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ua</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="c1"># for complex input, x + iy, the absolute value is np.sqrt(x**2 + y**2)</span>
+    <span class="n">u_umeyama</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ua</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ub</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">u_umeyama</span>
+
+
+<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_umeyama_svd</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># compute u_umeyama</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">_approx_permutation_2sided_1trans_umeyama</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="c1"># compute approximated umeyama matrix</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vt</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="o">=</span><span class="n">lapack_driver</span><span class="p">)</span>
+    <span class="n">u_umeyama_approx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">u_umeyama_approx</span>
+
+
+<span class="k">def</span> <span class="nf">_symmetrize_matrix</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># symmetrized matrix A would be complex</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span>
+
+
+<span class="k">def</span> <span class="nf">_permutation_2sided_1trans_undirected</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">guess</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Solve for 2-sided permutation Procrustes with 1-transformation when A &amp; B are symmetric.&quot;&quot;&quot;</span>
+
+    <span class="n">p_old</span> <span class="o">=</span> <span class="n">guess</span>
+    <span class="n">change</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="n">change</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">iteration</span><span class="p">:</span>
+        <span class="c1"># compute alpha matrix</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="c1"># compute new permutation matrix &amp; change</span>
+        <span class="n">p_new</span> <span class="o">=</span> <span class="n">p_old</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">temp</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="p">,</span> <span class="n">alpha</span><span class="p">))</span>
+        <span class="n">change</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">p_new</span> <span class="o">-</span> <span class="n">p_old</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">p_new</span> <span class="o">-</span> <span class="n">p_old</span><span class="p">)))</span>
+        <span class="c1"># update permutation matrix</span>
+        <span class="n">p_old</span> <span class="o">=</span> <span class="n">p_new</span>
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="n">iteration</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum iteration reached! change=</span><span class="si">{</span><span class="n">change</span><span class="si">}</span><span class="s2"> &amp; tolerance=</span><span class="si">{</span><span class="n">tol</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p_new</span>
+
+
+<span class="k">def</span> <span class="nf">_permutation_2sided_1trans_directed</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">guess</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Solve for 2-sided permutation Procrustes with 1-transformation.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Algorithm 2 from Appendix of Procrustes paper</span>
+    <span class="n">p_old</span> <span class="o">=</span> <span class="n">guess</span>
+    <span class="n">change</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">change</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">iteration</span><span class="p">:</span>
+        <span class="c1"># compute alpha matrix</span>
+        <span class="n">tmp1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+        <span class="n">tmp2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">tmp1</span> <span class="o">+</span> <span class="n">tmp2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">tmp1</span> <span class="o">+</span> <span class="n">tmp2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p_old</span><span class="p">)</span>
+        <span class="c1"># compute new permutation matrix &amp; change</span>
+        <span class="n">p_new</span> <span class="o">=</span> <span class="n">p_old</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">tmp1</span> <span class="o">+</span> <span class="n">tmp2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p_old</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)))</span>
+        <span class="n">change</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">((</span><span class="n">p_new</span> <span class="o">-</span> <span class="n">p_old</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">p_new</span> <span class="o">-</span> <span class="n">p_old</span><span class="p">)))</span>
+        <span class="c1"># update permutation matrix</span>
+        <span class="n">p_old</span> <span class="o">=</span> <span class="n">p_new</span>
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="n">iteration</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum iteration reached! change=</span><span class="si">{</span><span class="n">change</span><span class="si">}</span><span class="s2"> &amp; tolerance=</span><span class="si">{</span><span class="n">tol</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p_new</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2022, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

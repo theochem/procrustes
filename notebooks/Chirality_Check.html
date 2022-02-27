@@ -54,6 +54,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Chemical_Structure_Alignment.html">Chemical Structure Alignment</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Chirality Check</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Download-IOData-&amp;-Matplotlib-Libraries-&amp;-Example-Files">Download IOData &amp; Matplotlib Libraries &amp; Example Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Procrustes-Analysis">Procrustes Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Plot-Procrustes-Results">Plot Procrustes Results</a></li>
 </ul>
 </li>
@@ -303,7 +305,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
@@ -386,21 +388,68 @@ div.rendered_html tbody tr:hover {
 <p>In the code block below, we use the <code class="docutils literal notranslate"><span class="pre">procrustes</span></code> library to check whether two geometries of the CHFClBr molecule are enantiomers; see <strong>Fig. (i)</strong>. The 3D-Cartesian coordinates of molecules are loaded from their XYZ files using <a class="reference external" href="https://github.com/theochem/iodata">IOData library</a>. Testing whether the coordinates can be matched through translation and rotation (i.e., rotational Procrustes) reveals that these two structures are not identical; see <strong>Fig (ii)</strong>. However, the two coordinates are
 enantiomers because they can be matched through translation, rotation, and reflection (i.e., orthogonal Procrustes) as shown in <strong>Fig (iii)</strong>.</p>
 <img alt="Fig. 1 Enantiomers prediction of CHFClBr with rotational-orthogonal Procrustes by comparing the atoms coordinates." src="../_images/chirality_checking.png" />
+<section id="Download-IOData-&amp;-Matplotlib-Libraries-&amp;-Example-Files">
+<h2>Download IOData &amp; Matplotlib Libraries &amp; Example Files<a class="headerlink" href="#Download-IOData-&-Matplotlib-Libraries-&-Example-Files" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://github.com/theochem/iodata">IOData Package</a> and Matplotlib, if there are not available on your system; this is required on Binder.</p></li>
+<li><p>Download <a class="reference external" href="https://github.com/theochem/procrustes/blob/master/doc/notebooks/notebook_data/chirality_checking/enantiomer1.xyz?raw=true?">enantiomer1.xyz</a> and <a class="reference external" href="https://github.com/theochem/procrustes/blob/master/doc/notebooks/notebook_data/chirality_checking/enantiomer2.xyz?raw=true?">enantiomer2.xyz</a> files used in the example below which are stored in <a class="reference external" href="https://github.com/theochem/procrustes/tree/master/doc/notebooks/notebook_data/chirality_checking">Procrustes GitHub repository example
+files</a>.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If needed, install IOData library (this is required on Binder)</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># See https://jakevdp.github.io/blog/2017/12/05/installing-python-packages-from-jupyter/</span>
+<span class="o">!{</span>sys.executable<span class="o">}</span> -m pip install qc-iodata
+<span class="o">!{</span>sys.executable<span class="o">}</span> -m pip install matplotlib
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If needed, download the example files</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="n">fpath</span> <span class="o">=</span> <span class="s2">&quot;notebook_data/chirality_checking/&quot;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
+    <span class="s2">&quot;https://raw.githubusercontent.com/theochem/procrustes/master/doc/notebooks/notebook_data/chirality_checking/enantiomer1.xyz&quot;</span><span class="p">,</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;enantiomer1.xyz&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
+    <span class="s2">&quot;https://raw.githubusercontent.com/theochem/procrustes/master/doc/notebooks/notebook_data/chirality_checking/enantiomer2.xyz&quot;</span><span class="p">,</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;enantiomer2.xyz&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Procrustes-Analysis">
+<h2>Procrustes Analysis<a class="headerlink" href="#Procrustes-Analysis" title="Permalink to this headline"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># chirality check with rotational and orthogonal Procrustes</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># chirality check with rotational and orthogonal Procrustes</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">from</span> <span class="nn">iodata</span> <span class="kn">import</span> <span class="n">load_one</span>
 <span class="kn">from</span> <span class="nn">procrustes</span> <span class="kn">import</span> <span class="n">orthogonal</span><span class="p">,</span> <span class="n">rotational</span>
 
 <span class="c1"># load CHClFBr enantiomers&#39; coordinates from XYZ files</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">load_one</span><span class="p">(</span><span class="s2">&quot;notebook_data/chirality_checking/enantiomer1.xyz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">atcoords</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">load_one</span><span class="p">(</span><span class="s2">&quot;notebook_data/chirality_checking/enantiomer2.xyz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">atcoords</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">load_one</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebook_data/chirality_checking/enantiomer1.xyz&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">atcoords</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">load_one</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebook_data/chirality_checking/enantiomer2.xyz&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">atcoords</span>
 
 <span class="c1"># rotational Procrustes on a &amp; b coordinates</span>
 <span class="n">result_rot</span> <span class="o">=</span> <span class="n">rotational</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -417,25 +466,25 @@ enantiomers because they can be matched through translation, rotation, and refle
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Rotational Procrustes Error =  26.08554575402179
-Orthogonal Procrustes Error =  4.432878638524325e-08
+Rotational Procrustes Error =  26.08554575402178
+Orthogonal Procrustes Error =  4.432878638501341e-08
 </pre></div></div>
 </div>
+</section>
 <section id="Plot-Procrustes-Results">
 <h2>Plot Procrustes Results<a class="headerlink" href="#Plot-Procrustes-Results" title="Permalink to this headline"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Plot outputs of Procrustes</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot outputs of Procrustes</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># =============</span>
-<span class="c1"># First subplot</span>
+<span class="c1"># First Subplot</span>
 <span class="c1"># =============</span>
 <span class="c1"># set up the axes for the first plot</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
@@ -458,7 +507,7 @@ Orthogonal Procrustes Error =  4.432878638524325e-08
 
 
 <span class="c1"># ==============</span>
-<span class="c1"># Second subplot</span>
+<span class="c1"># Second Subplot</span>
 <span class="c1"># ==============</span>
 <span class="c1"># set up the axes for the second plot</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
@@ -487,7 +536,7 @@ Orthogonal Procrustes Error =  4.432878638524325e-08
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Chirality_Check_3_0.png" src="../_images/notebooks_Chirality_Check_3_0.png" />
+<img alt="../_images/notebooks_Chirality_Check_7_0.png" src="../_images/notebooks_Chirality_Check_7_0.png" />
 </div>
 </div>
 </section>

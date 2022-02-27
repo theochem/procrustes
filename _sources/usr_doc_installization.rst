@@ -68,7 +68,7 @@ command in a desired *conda* environment:
 
 .. code-block:: bash
 
-    conda install -c theochem procrustes
+    conda install -c theochem qc-procrustes
 
 
 Alternatively, the *Procrustes* source code can be download from GitHub (either the stable version
@@ -128,3 +128,4 @@ In addition, to generate a coverage report alongside testing, one can use:
 
     # testing with coverage report
     pytest --cov-config=.coveragerc --cov=procrustes procrustes/test
+

@@ -23,7 +23,7 @@ preferred-citation:
       given-names: "Heidar-Zadeh"
       orcid: "https://orcid.org/0000-0002-2069-050X"
   journal: "Computer Physics Communications"
-  title: Procrustes: A python library to find transformations that maximize the similarity between matrices
+  title: "Procrustes: A python library to find transformations that maximize the similarity between matrices"
   type: article
   doi: "10.1016/j.cpc.2022.108334"
   isbn: 0010-4655

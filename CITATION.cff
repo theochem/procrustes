@@ -1,0 +1,31 @@
+cff-version: "1.2.0"
+message: "If you use this software, please cite it using this metadata. Thank you."
+
+preferred-citation:
+  authors:
+    - family-names: Meng
+      given-names: Fanwang
+      orcid: "https://orcid.org/0000-0003-2886-7012"
+    - family-names: Richer
+      given-names: Michael
+    - family-names: Tehrani
+      given-names: Alireza
+      orcid: "https://orcid.org/0000-0003-1308-8614"
+    - family-names: La
+      given-names: Jonathan
+    - family-names: Kim
+      given-names: "Taewon David"
+      orcid: "https://orcid.org/0000-0001-8670-0531"
+    - family-names: Ayers
+      given-names: "Paul W."
+      orcid: "https://orcid.org/0000-0003-2605-3883"
+    - family-names: Farnaz
+      given-names: "Heidar-Zadeh"
+      orcid: "https://orcid.org/0000-0002-2069-050X"
+  journal: "Computer Physics Communications"
+  title: Procrustes: A python library to find transformations that maximize the similarity between matrices
+  type: article
+  doi: "10.1016/j.cpc.2022.108334"
+  isbn: 0010-4655
+  year: 2022
+  date-released: "2022-03-10"

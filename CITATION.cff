@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Meng
+  given-names: Fanwang
+  orcid: "https://orcid.org/0000-0003-2886-7012"
+- family-names: Richer
+  given-names: Michael
+- family-names: Tehrani
+  given-names: Alireza
+  orcid: "https://orcid.org/0000-0003-1308-8614"
+- family-names: La
+  given-names: Jonathan
+- family-names: Kim
+  given-names: "Taewon David"
+  orcid: "https://orcid.org/0000-0001-8670-0531"
+- family-names: Ayers
+  given-names: "Paul W."
+  orcid: "https://orcid.org/0000-0003-2605-3883"
+- family-names: Farnaz
+  given-names: "Heidar-Zadeh"
+  orcid: "https://orcid.org/0000-0002-2069-050X"
+title: "Procrustes: A python library to find transformations that maximize the similarity between matrices"
+version: 1.0.0
+date-released: 2022-02-25
+url: "https://github.com/theochem/procrustes"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: Meng
+    given-names: Fanwang
+    orcid: "https://orcid.org/0000-0003-2886-7012"
+  - family-names: Richer
+    given-names: Michael
+  - family-names: Tehrani
+    given-names: Alireza
+    orcid: "https://orcid.org/0000-0003-1308-8614"
+  - family-names: La
+    given-names: Jonathan
+  - family-names: Kim
+    given-names: "Taewon David"
+    orcid: "https://orcid.org/0000-0001-8670-0531"
+  - family-names: Ayers
+    given-names: "Paul W."
+    orcid: "https://orcid.org/0000-0003-2605-3883"
+  - family-names: Farnaz
+    given-names: "Heidar-Zadeh"
+    orcid: "https://orcid.org/0000-0002-2069-050X"
+  doi: "10.1016/j.cpc.2022.108334"
+  journal: "Computer Physics Communications"
+  start: 1 # First page number
+  end: 37 # Last page number
+  title: "Procrustes: A python library to find transformations that maximize the similarity between matrices"
+  issue: 108334
+  volume: 276
+  year: 2022
+  date-released: "2022-03-10"

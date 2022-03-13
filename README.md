@@ -18,12 +18,24 @@ as similar as possible to a target matrix. For more information, visit
 Citation
 --------
 
-Please use the following citation in any publication using Procrustes library:
+Please use [the following citation](https://doi.org/10.1016/j.cpc.2022.108334)
+in any publication using Procrustes library:
 
-> **"Procrustes: A Python Library to Find Transformations that Maximize the Similarity Between
-> Matrices."**, F. Meng, M. Richer, A. Tehrani, J. La, T. D. Kim, P. W. Ayers, F. Heidar-Zadeh,
-> [JOURNAL XXX]().
-
+```md
+@article{Meng2022procrustes,
+title = {Procrustes: A python library to find transformations that maximize the similarity between matrices},
+author = {Fanwang Meng and Michael Richer and Alireza Tehrani and Jonathan La and Taewon David Kim and Paul W. Ayers and Farnaz Heidar-Zadeh},
+journal = {Computer Physics Communications},
+volume = {276},
+number = {108334},
+pages = {1--37},
+year = {2022},
+issn = {0010-4655},
+doi = {https://doi.org/10.1016/j.cpc.2022.108334},
+url = {https://www.sciencedirect.com/science/article/pii/S0010465522000522},
+keywords = {Procrustes analysis, Orthogonal, Symmetric, Rotational, Permutation, Softassign},
+}
+```
 
 Dependencies
 ------------

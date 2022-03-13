@@ -36,7 +36,7 @@ Please use the following citation in any publication using Procrustes library:
 
     **"Procrustes: A Python Library to Find Transformations that Maximize the Similarity Between
     Matrices"**, F. Meng, M. Richer, A. Tehrani, J. La, T. D. Kim, P. W. Ayers, F. Heidar-Zadeh,
-    `JOURNAL 2021; ISSUE PAGE NUMBER <URL>`__.
+    `JComputer Physics Communications, 276(108334), 2022. <https://doi.org/10.1016/j.cpc.2022.108334>`__.
 
 The Procrustes source code is hosted on `GitHub <https://github.com/theochem/procrustes>`_ and is
 released under the

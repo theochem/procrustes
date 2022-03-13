@@ -18,7 +18,8 @@ as similar as possible to a target matrix. For more information, visit
 Citation
 --------
 
-Please use the following citation in any publication using Procrustes library:
+Please use [the following citation](https://doi.org/10.1016/j.cpc.2022.108334)
+in any publication using Procrustes library:
 
 ```md
 @article{Meng2022procrustes,

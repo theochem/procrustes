@@ -24,7 +24,8 @@ preferred-citation:
       orcid: "https://orcid.org/0000-0002-2069-050X"
   journal: "Computer Physics Communications"
   title: "Procrustes: A python library to find transformations that maximize the similarity between matrices"
-  type: generic
+  type: article
+  volume: "275"
   pages: "108334"
   doi: "10.1016/j.cpc.2022.108334"
   isbn: 0010-4655

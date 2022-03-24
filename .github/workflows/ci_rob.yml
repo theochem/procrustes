@@ -49,11 +49,11 @@ jobs:
             git fetch origin ${GITHUB_BASE_REF} --depth=2
           fi
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      # - uses: actions/cache@v2
+      # - uses: actions/cache@v3
       #   with:
       #     path: ~/.local/venvs
       #     key: ${{ runner.os }}-Python-${{ matrix.python-version }}-venv

@@ -29,6 +29,11 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 from scipy.linalg import pinv, pinv2
 
 
+__all__ = [
+    "generic",
+]
+
+
 def generic(
     a: np.ndarray,
     b: np.ndarray,

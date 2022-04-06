@@ -29,6 +29,11 @@ from procrustes import orthogonal
 from procrustes.utils import _check_arraytypes
 
 
+__all__ = [
+    "generalized",
+]
+
+
 def generalized(
     array_list: List[np.ndarray],
     ref: Optional[np.ndarray] = None,

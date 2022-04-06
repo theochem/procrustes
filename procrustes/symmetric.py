@@ -29,6 +29,11 @@ from procrustes.utils import _zero_padding, compute_error, ProcrustesResult, set
 import scipy
 
 
+__all__ = [
+    "symmetric",
+]
+
+
 def symmetric(
     a: np.ndarray,
     b: np.ndarray,

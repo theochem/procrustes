@@ -29,6 +29,11 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 
 
+__all__ = [
+    "rotational",
+]
+
+
 def rotational(
     a: np.ndarray,
     b: np.ndarray,

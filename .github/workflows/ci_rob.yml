@@ -24,19 +24,23 @@ jobs:
             python-version: 3.8
           - os: ubuntu-latest
             python-version: 3.9
+          - os: ubuntu-latest
+            python-version: '3.10'
           - os: macos-latest
             python-version: 3.7
           - os: macos-latest
             python-version: 3.8
           - os: macos-latest
             python-version: 3.9
+          - os: macos-latest
+            python-version: '3.10'
 
     runs-on: ${{ matrix.os }}
     env:
       # Tell Roberto to upload coverage results
       ROBERTO_UPLOAD_COVERAGE: 1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 2
       - name: Fetch base branch (usually master)
@@ -45,11 +49,11 @@ jobs:
             git fetch origin ${GITHUB_BASE_REF} --depth=2
           fi
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      # - uses: actions/cache@v2
+      # - uses: actions/cache@v3
       #   with:
       #     path: ~/.local/venvs
       #     key: ${{ runner.os }}-Python-${{ matrix.python-version }}-venv
@@ -88,8 +92,8 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: |
             ~/miniconda3

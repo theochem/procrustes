@@ -22,8 +22,10 @@
 # --
 """Positive semidefinite Procrustes Module."""
 
+from matplotlib.cbook import flatten
 import numpy as np
-import scipy
+import scipy.linalg as lin
+from scipy.optimize import minimize
 
 """
 Let n be the number of dimensions we are concerned with in this problem.
@@ -38,7 +40,7 @@ Basic constructors of the algorithm.
 
 
 def T(arr):
-    return np.transpose(arr)
+    return arr.transpose()
 
 
 def tr(arr):
@@ -78,13 +80,20 @@ def permutation_matrix(E):
 def get_identity(E):
     arr1 = np.kron(E @ T(E), G @ T(G))
     arr2 = E @ G @ T(G) @ T(E)
-    I = np.eye(arr1.shape[0] / arr2.shape[0])
+    I = np.eye(arr1.shape[0] // arr2.shape[0])
     return I
 
 
 def get_X(Z, s):
-    X = Z[: n * (n - s), : n * (n - s)]
+    if s == n:
+        X = Z
+    else:
+        X = Z[: n * (n - s), : n * (n - s)]
     return X
+
+
+def is_pos_semi_def(x):
+    return np.all(np.linalg.eigvals(x) >= 0)
 
 
 def D(E, LE):
@@ -94,25 +103,43 @@ def D(E, LE):
     # D2 is constructed using the following formula:
     s = np.linalg.matrix_rank(E)
     A = T(LE)
-    ns = scipy.linalg.null_space(A)
-    ns = ns * np.sign(ns[0, 0])
-    v = ns[0]
-    D2 = T(v) @ v
+    v = lin.null_space(A).flatten()
+    D2 = np.outer(v, v)
 
     # D1 is constructed using the following formula:
     P = permutation_matrix(E)
-    I = get_identity(E)
+    I1 = get_identity(E)
     Z = (
         np.kron(E @ G @ T(G), T(E)) @ P
         + np.kron(E, G @ T(G) @ T(E)) @ P
-        + np.kron(E @ G @ T(G) @ T(E), I)
+        + np.kron(E @ G @ T(G) @ T(E), I1)
         + np.kron(E @ T(E), G @ T(G))
     )
+
     X = get_X(Z, s)
-    I = np.eye(n * (n - s) / LE.shape[0])
-    flattened_D1 = np.linalg.inv(X + np.kron(I, LE)) @ np.kron(I, LE) @ E.flatten()
-    D1 = flattened_D1.reshape(s, n)
-    D = np.concatenate((D1, D2), axis=0)
+    I2 = np.eye(X.shape[0] // LE.shape[0])
+
+    if s == n:
+        # print(f"E = {E}")
+        # print(f"LE = {LE}\n")
+        # print(f"D2 = {D2}\n")
+        # print(f"P = {P}\n")
+        # print(f"Z = {Z}\n")
+        # print(f"X = {X}\n")
+        # print(f"s = {s}\n")
+        # print(f"I2 = {I2}\n")
+        # print("Raise Error: error!!!!!")
+        flattened_D1 = (
+            np.linalg.pinv(X + np.kron(I2, LE)) @ np.kron(I2, LE) @ E[:s, :].flatten()
+        )
+        D = flattened_D1.reshape(s, n)
+        # exit(0)
+    else:
+        flattened_D1 = (
+            np.linalg.pinv(X + np.kron(I2, LE)) @ np.kron(I2, LE) @ E[:s, :].flatten()
+        )
+        D1 = flattened_D1.reshape(s, n)
+        D = np.concatenate((D1, D2), axis=0)
     return D
 
 
@@ -120,7 +147,7 @@ def make_positive(LE):
     Lambda, U = np.linalg.eig(LE)
     Lambda_pos = [max(0, i) for i in Lambda]
     inv_U = np.linalg.inv(U)
-    return np.dot(U, np.dot(np.diag(Lambda_pos), inv_U))
+    return U @ np.diag(Lambda_pos) @ inv_U
 
 
 def find_minima(E, DE):
@@ -129,13 +156,13 @@ def find_minima(E, DE):
 
     # Optimize the function using scipy.optimize.minimize
     # with respect to w > 0.
-    w_min = scipy.optimize.minimize(func, 1, bounds=((0, None)))
+    w_min = minimize(func, 1, bounds=((0, None),))
     return w_min.x[0]
 
 
 """
 Main algorithm:
-1. E_i is chosen or E_0 is defined for the first iteration
+1. E_0 is chosen randomly, i = 0
 2. Compute L(E_i)
 3. If L(E_i) \geq 0 then we stop and E_i is the answer
 4. Compute D_i
@@ -147,17 +174,21 @@ Main algorithm:
 
 def woodgate_algorithm():
     i = 0
-    E = np.eye(N=n)
+    E = np.random.rand(n, n)
     while True:
-        # Initialize once rather than calling multiple times.
         LE = L(E)
-        if L(E) >= 0:
+        if is_pos_semi_def(LE):
             print(f"Iteration: {i}, E = {E}")
             print(f"Required P = {T(E) @ E}")
+            print(f"Error = {np.linalg.norm(F - T(E) @ E @ G)}")
             break
+
         LE_pos = make_positive(LE)
         DE = D(E, LE_pos)
         w = find_minima(E, DE)
         E = E - w * DE
         i += 1
     return T(E) @ E
+
+
+sol = woodgate_algorithm()

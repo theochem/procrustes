@@ -167,7 +167,7 @@ def find_gradient(E: np.ndarray, LE: np.ndarray, G: np.ndarray) -> np.ndarray:
     return D
 
 
-def woodgate(a: np.ndarray, b: np.ndarray):
+def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """
     Woodgate's algorithm for positive semidefinite Procrustes.
 
@@ -230,8 +230,10 @@ def woodgate(a: np.ndarray, b: np.ndarray):
 
     # We define the functions f and L as in the paper.
     L = lambda arr: (arr.T @ arr @ G @ G.T) + (G @ G.T @ arr.T @ arr) - Q
-    f = lambda arr: (1 / 2) * np.trace(
-        F.T @ F + arr.T @ arr @ arr.T @ arr @ G @ G.T - arr.T @ arr @ Q
+    f = lambda arr: (1 / 2) * (
+        np.trace(F.T @ F)
+        + np.trace(arr.T @ arr @ arr.T @ arr @ G @ G.T)
+        - np.trace(arr.T @ arr @ Q)
     )
 
     # Main part of the algorithm.
@@ -248,6 +250,11 @@ def woodgate(a: np.ndarray, b: np.ndarray):
         D = find_gradient(E=E, LE=LE_pos, G=G)
 
         func = lambda w: f(E - w * D)
-        w_min = minimize(func, 1, bounds=((0, None),)).x[0]
+        w_min = minimize(func, 1, bounds=((1e-9, None),)).x[0]
         E = E - w_min * D
         i += 1
+
+    print(f"Woodgate's algorithm took {i} iterations.")
+    print(f"Error = {np.linalg.norm(F - E.T @ E @ G)}.")
+    print(f"Required P = {E.T @ E}")
+    return E.T @ E

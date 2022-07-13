@@ -25,13 +25,13 @@
 import numpy as np
 import scipy.linalg as lin
 from scipy.optimize import minimize
-from procrustes.utils import ProcrustesResult
+# from procrustes.utils import ProcrustesResult
 
 __all__ = ["woodgate"]
 
 
 def permutation_matrix(arr: np.ndarray) -> np.ndarray:
-    """
+    r"""
     Find required permutation matrix.
 
     Parameters
@@ -45,7 +45,7 @@ def permutation_matrix(arr: np.ndarray) -> np.ndarray:
         The permutation matrix.
     """
     k = 0
-    x, y = arr.shape
+    x, _ = arr.shape
     P = np.zeros((x**2, x**2))
 
     for i in range(x**2):
@@ -60,7 +60,7 @@ def permutation_matrix(arr: np.ndarray) -> np.ndarray:
 
 
 def is_pos_semi_def(x: np.ndarray) -> bool:
-    """
+    r"""
     Check if a matrix is positive semidefinite.
 
     Parameters
@@ -77,7 +77,7 @@ def is_pos_semi_def(x: np.ndarray) -> bool:
 
 
 def make_positive(arr: np.ndarray) -> np.ndarray:
-    """
+    r"""
     Re-construct a matrix by making all its negative eigenvalues zero.
 
     Parameters
@@ -97,7 +97,7 @@ def make_positive(arr: np.ndarray) -> np.ndarray:
 
 
 def find_gradient(E: np.ndarray, LE: np.ndarray, G: np.ndarray) -> np.ndarray:
-    """
+    r"""
     Find the gradient of the function f(E).
 
     Parameters
@@ -168,7 +168,7 @@ def find_gradient(E: np.ndarray, LE: np.ndarray, G: np.ndarray) -> np.ndarray:
 
 
 def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """
+    r"""
     Woodgate's algorithm for positive semidefinite Procrustes.
 
     Parameters

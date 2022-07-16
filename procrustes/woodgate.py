@@ -25,7 +25,8 @@
 import numpy as np
 import scipy.linalg as lin
 from scipy.optimize import minimize
-# from procrustes.utils import ProcrustesResult
+from math import inf, sqrt
+from typing import List
 
 __all__ = ["woodgate"]
 
@@ -45,27 +46,49 @@ def permutation_matrix(arr: np.ndarray) -> np.ndarray:
         The permutation matrix.
     """
     k = 0
-    x, _ = arr.shape
-    P = np.zeros((x**2, x**2))
+    n = arr.shape[0]
+    p = np.zeros((n**2, n**2))
 
-    for i in range(x**2):
-        if i % x == 0:
+    for i in range(n**2):
+        if i % n == 0:
             j = k
             k += 1
-            P[i, j] = 1
+            p[i, j] = 1
         else:
-            j += x
-            P[i, j] = 1
-    return P
+            j += n
+            p[i, j] = 1
+    return p
 
 
-def is_pos_semi_def(x: np.ndarray) -> bool:
+def no_update(error: List[int], threshold: int = 1e-5) -> bool:
+    r"""
+    Check if there has been any change in error,
+    with new iteration.
+
+    Parameters
+    ----------
+    error : List[int]
+        The error list.
+
+    threshold : int, optional
+        The threshold below which we change isn't
+        considered.
+
+    Returns
+    -------
+    bool
+        True if the error has reduced/changed.
+    """
+    return abs(error[-1] - error[-2]) < threshold
+
+
+def is_pos_semi_def(arr: np.ndarray) -> bool:
     r"""
     Check if a matrix is positive semidefinite.
 
     Parameters
     ----------
-    x : np.ndarray
+    arr : np.ndarray
         The matrix to be checked.
 
     Returns
@@ -73,7 +96,7 @@ def is_pos_semi_def(x: np.ndarray) -> bool:
     bool
         True if the matrix is positive semidefinite.
     """
-    return np.all(np.linalg.eigvals(x) >= 0)
+    return np.all(np.linalg.eigvals(arr) >= 0)
 
 
 def make_positive(arr: np.ndarray) -> np.ndarray:
@@ -90,24 +113,27 @@ def make_positive(arr: np.ndarray) -> np.ndarray:
     np.ndarray
         The re-constructed matrix.
     """
-    eigenvalues, U = np.linalg.eig(arr)
+    eigenvalues, unitary = np.linalg.eig(arr)
     eigenvalues_pos = [max(0, i) for i in eigenvalues]
-    U_inv = np.linalg.inv(U)
-    return U @ np.diag(eigenvalues_pos) @ U_inv
+    unitary_inv = np.linalg.inv(unitary)
+    return unitary @ np.diag(eigenvalues_pos) @ unitary_inv
 
 
-def find_gradient(E: np.ndarray, LE: np.ndarray, G: np.ndarray) -> np.ndarray:
+def find_gradient(e: np.ndarray, l: np.ndarray, g: np.ndarray) -> np.ndarray:
     r"""
     Find the gradient of the function f(E).
 
     Parameters
     ----------
-    E : np.ndarray
+    e : np.ndarray
         The input to the function f. This is E_i in the paper.
 
-    LE : np.ndarray
+    l : np.ndarray
         A matrix to be used in the gradient computation.
         This is L(E_i) in the paper.
+
+    g : np.ndarray
+        This is the original G matrix obtained as input.
 
     Returns
     -------
@@ -128,6 +154,9 @@ def find_gradient(E: np.ndarray, LE: np.ndarray, G: np.ndarray) -> np.ndarray:
         D2 L(E_i) = 0
         (X + (I \otimes L(E_i))) v(D1) = (I \otimes L(E_i)) v(E1)
 
+    In the following implementation, the variables d1 and d2 represent
+    D1 and D2, respectively.
+
     References
     ----------
     Refer to equations (26) and (27) in [1] for exact deinitions of the
@@ -136,35 +165,62 @@ def find_gradient(E: np.ndarray, LE: np.ndarray, G: np.ndarray) -> np.ndarray:
         semidefinite procrustes". Journal of the American Statistical
         Association, 93(453), 584-588.
     """
-    n = E.shape[0]
-    s = np.linalg.matrix_rank(E)
-    v = lin.null_space(LE.T).flatten()
-    D2 = np.outer(v, v)
+    n = e.shape[0]
+    s = np.linalg.matrix_rank(e)
+    v = lin.null_space(l.T).flatten()
+    d2 = np.outer(v, v)
 
-    P = permutation_matrix(E)
-    identity_Z = np.eye(
-        (np.kron(E @ E.T, G @ G.T)).shape[0] // (E @ G @ G.T @ E.T).shape[0]
+    p = permutation_matrix(e)
+    identity_z = np.eye(
+        (np.kron(e @ e.T, g @ g.T)).shape[0] // (e @ g @ g.T @ e.T).shape[0]
     )
-    Z = (
-        np.kron(E @ G @ G.T, E.T) @ P
-        + np.kron(E, G @ G.T @ E.T) @ P
-        + np.kron(E @ G @ G.T @ E.T, identity_Z)
-        + np.kron(E @ E.T, G @ G.T)
+    z = (
+        np.kron(e @ g @ g.T, e.T) @ p
+        + np.kron(e, g @ g.T @ e.T) @ p
+        + np.kron(e @ g @ g.T @ e.T, identity_z)
+        + np.kron(e @ e.T, g @ g.T)
     )
 
-    X = Z if s == n else Z[: n * (n - s), : n * (n - s)]
-    identity_X = np.eye(X.shape[0] // LE.shape[0])
-    flattened_D1 = (
-        np.linalg.pinv(X + np.kron(identity_X, LE))
-        @ np.kron(identity_X, LE)
-        @ E[:s, :].flatten()
+    x = z if s == n else z[: n * (n - s), : n * (n - s)]
+    identity_x = np.eye(x.shape[0] // l.shape[0])
+    flattened_d1 = (
+        np.linalg.pinv(x + np.kron(identity_x, l))
+        @ np.kron(identity_x, l)
+        @ e[:s, :].flatten()
     )
 
     if s == n:
-        D = flattened_D1.reshape(s, n)
+        d = flattened_d1.reshape(s, n)
     else:
-        D = np.concatenate((flattened_D1, D2), axis=0)
-    return D
+        d = np.concatenate((flattened_d1, d2), axis=0)
+    return d
+
+
+def scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
+    r"""
+    Find the scaling factor :math:`\hat{alpha}` and scale the
+    matrix e.
+
+    Parameters
+    ----------
+    e : np.ndarray
+        This is the matrix to be scaled.
+
+    g : np.ndarray
+        This is the original G matrix obtained as input.
+
+    q : np.ndarray
+        This is the matrix Q in the paper.
+
+    Returns
+    -------
+    np.ndarray
+        The scaling factor. This is \hat{alpha} in the paper.
+    """
+    alpha = sqrt(
+        max(1e-9, np.trace(e.T @ e @ q) / (2 * np.trace(e.T @ e @ e.T @ e @ g @ g.T)))
+    )
+    return alpha * e
 
 
 def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -224,37 +280,40 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """
 
     # We define the matrices F, G and Q as in the paper.
-    F = a
-    G = b
-    Q = F @ G.T + G @ F.T
+    f = b
+    g = a
+    q = f @ g.T + g @ f.T
 
-    # We define the functions f and L as in the paper.
-    L = lambda arr: (arr.T @ arr @ G @ G.T) + (G @ G.T @ arr.T @ arr) - Q
-    f = lambda arr: (1 / 2) * (
-        np.trace(F.T @ F)
-        + np.trace(arr.T @ arr @ arr.T @ arr @ G @ G.T)
-        - np.trace(arr.T @ arr @ Q)
+    # We define the functions L and f as in the paper.
+    func_l = lambda arr: (arr.T @ arr @ g @ g.T) + (g @ g.T @ arr.T @ arr) - q
+    func_f = lambda arr: (1 / 2) * (
+        np.trace(f.T @ f)
+        + np.trace(arr.T @ arr @ arr.T @ arr @ g @ g.T)
+        - np.trace(arr.T @ arr @ q)
     )
 
     # Main part of the algorithm.
     i = 0
-    n = F.shape[0]
-    E = np.random.rand(n, n)
+    n = f.shape[0]
+    e = scale(e=np.eye(n), g=g, q=q)
+    error = [inf]
 
     while True:
-        LE = L(E)
-        if is_pos_semi_def(LE):
+        l = func_l(e)
+        error.append(np.linalg.norm(f - e.T @ e @ g))
+        if is_pos_semi_def(l) or no_update(error):
             break
 
-        LE_pos = make_positive(LE)
-        D = find_gradient(E=E, LE=LE_pos, G=G)
+        l_pos = make_positive(l)
+        d = find_gradient(e=e, l=l_pos, g=g)
 
-        func = lambda w: f(E - w * D)
-        w_min = minimize(func, 1, bounds=((1e-9, None),)).x[0]
-        E = E - w_min * D
+        # Objective function which we want to minimize.
+        func_obj = lambda w: func_f(e - w * d)
+        w_min = minimize(func_obj, 1, bounds=((1e-9, None),)).x[0]
+        e = scale(e=(e - w_min * d), g=g, q=q)
         i += 1
 
-    print(f"Woodgate's algorithm took {i} iterations.")
-    print(f"Error = {np.linalg.norm(F - E.T @ E @ G)}.")
-    print(f"Required P = {E.T @ E}")
-    return E.T @ E
+    # print(f"Woodgate's algorithm took {i} iterations.")
+    # print(f"Error = {np.linalg.norm(f - e.T @ e @ g)}.")
+    # print(f"Required P = {e.T @ e}")
+    return e.T @ e, error[-1], i

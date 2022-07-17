@@ -21,12 +21,12 @@
 #
 # --
 """Positive semidefinite Procrustes Module."""
+from math import inf, sqrt
+from typing import List
 
 import numpy as np
 import scipy.linalg as lin
 from scipy.optimize import minimize
-from math import inf, sqrt
-from typing import List
 
 __all__ = ["woodgate"]
 
@@ -62,8 +62,7 @@ def permutation_matrix(arr: np.ndarray) -> np.ndarray:
 
 def no_update(error: List[int], threshold: int = 1e-5) -> bool:
     r"""
-    Check if there has been any change in error,
-    with new iteration.
+    Check if there has been any change in error.
 
     Parameters
     ----------
@@ -119,7 +118,7 @@ def make_positive(arr: np.ndarray) -> np.ndarray:
     return unitary @ np.diag(eigenvalues_pos) @ unitary_inv
 
 
-def find_gradient(e: np.ndarray, l: np.ndarray, g: np.ndarray) -> np.ndarray:
+def find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
     r"""
     Find the gradient of the function f(E).
 
@@ -167,7 +166,7 @@ def find_gradient(e: np.ndarray, l: np.ndarray, g: np.ndarray) -> np.ndarray:
     """
     n = e.shape[0]
     s = np.linalg.matrix_rank(e)
-    v = lin.null_space(l.T).flatten()
+    v = lin.null_space(le.T).flatten()
     d2 = np.outer(v, v)
 
     p = permutation_matrix(e)
@@ -182,10 +181,10 @@ def find_gradient(e: np.ndarray, l: np.ndarray, g: np.ndarray) -> np.ndarray:
     )
 
     x = z if s == n else z[: n * (n - s), : n * (n - s)]
-    identity_x = np.eye(x.shape[0] // l.shape[0])
+    identity_x = np.eye(x.shape[0] // le.shape[0])
     flattened_d1 = (
-        np.linalg.pinv(x + np.kron(identity_x, l))
-        @ np.kron(identity_x, l)
+        np.linalg.pinv(x + np.kron(identity_x, le))
+        @ np.kron(identity_x, le)
         @ e[:s, :].flatten()
     )
 
@@ -198,8 +197,7 @@ def find_gradient(e: np.ndarray, l: np.ndarray, g: np.ndarray) -> np.ndarray:
 
 def scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
     r"""
-    Find the scaling factor :math:`\hat{alpha}` and scale the
-    matrix e.
+    Find the scaling factor and scale the matrix e.
 
     Parameters
     ----------
@@ -215,7 +213,7 @@ def scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
     Returns
     -------
     np.ndarray
-        The scaling factor. This is \hat{alpha} in the paper.
+        The scaled matrix.
     """
     alpha = sqrt(
         max(1e-9, np.trace(e.T @ e @ q) / (2 * np.trace(e.T @ e @ e.T @ e @ g @ g.T)))
@@ -299,13 +297,13 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     error = [inf]
 
     while True:
-        l = func_l(e)
+        le = func_l(e)
         error.append(np.linalg.norm(f - e.T @ e @ g))
-        if is_pos_semi_def(l) or no_update(error):
+        if is_pos_semi_def(le) or no_update(error):
             break
 
-        l_pos = make_positive(l)
-        d = find_gradient(e=e, l=l_pos, g=g)
+        le_pos = make_positive(le)
+        d = find_gradient(e=e, le=le_pos, g=g)
 
         # Objective function which we want to minimize.
         func_obj = lambda w: func_f(e - w * d)
@@ -313,7 +311,4 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
         e = scale(e=(e - w_min * d), g=g, q=q)
         i += 1
 
-    # print(f"Woodgate's algorithm took {i} iterations.")
-    # print(f"Error = {np.linalg.norm(f - e.T @ e @ g)}.")
-    # print(f"Required P = {e.T @ e}")
     return e.T @ e, error[-1], i

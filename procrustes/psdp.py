@@ -21,24 +21,28 @@
 #
 # --
 """Positive semidefinite Procrustes Module."""
+
 from math import inf, sqrt
 from typing import List
 
 import numpy as np
+from procrustes.utils import ProcrustesResult
 import scipy.linalg as lin
 from scipy.optimize import minimize
 
-__all__ = ["woodgate"]
+
+__all__ = ["psdp_woodgate"]
 
 
-def permutation_matrix(arr: np.ndarray) -> np.ndarray:
+def __permutation_matrix(arr: np.ndarray) -> np.ndarray:
     r"""
     Find required permutation matrix.
 
     Parameters
     ----------
     arr : np.ndarray
-        The array :math:`A` such that :math:`v(A') = Pv(A)`.
+        The array :math:`\mathbf{A}` such that
+        :math:`v(\mathbf{A}') = \mathbf{P}v(\mathbf{A})`.
 
     Returns
     -------
@@ -60,7 +64,7 @@ def permutation_matrix(arr: np.ndarray) -> np.ndarray:
     return p
 
 
-def no_update(error: List[int], threshold: int = 1e-5) -> bool:
+def __no_update(error: List[int], threshold: int = 1e-5) -> bool:
     r"""
     Check if there has been any change in error.
 
@@ -81,7 +85,7 @@ def no_update(error: List[int], threshold: int = 1e-5) -> bool:
     return abs(error[-1] - error[-2]) < threshold
 
 
-def is_pos_semi_def(arr: np.ndarray) -> bool:
+def __is_pos_semi_def(arr: np.ndarray) -> bool:
     r"""
     Check if a matrix is positive semidefinite.
 
@@ -98,7 +102,7 @@ def is_pos_semi_def(arr: np.ndarray) -> bool:
     return np.all(np.linalg.eigvals(arr) >= 0)
 
 
-def make_positive(arr: np.ndarray) -> np.ndarray:
+def __make_positive(arr: np.ndarray) -> np.ndarray:
     r"""
     Re-construct a matrix by making all its negative eigenvalues zero.
 
@@ -115,46 +119,48 @@ def make_positive(arr: np.ndarray) -> np.ndarray:
     eigenvalues, unitary = np.linalg.eig(arr)
     eigenvalues_pos = [max(0, i) for i in eigenvalues]
     unitary_inv = np.linalg.inv(unitary)
-    return unitary @ np.diag(eigenvalues_pos) @ unitary_inv
+    return np.dot(unitary, np.dot(np.diag(eigenvalues_pos), unitary_inv))
 
 
-def find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
+def __find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
     r"""
     Find the gradient of the function f(E).
 
     Parameters
     ----------
     e : np.ndarray
-        The input to the function f. This is E_i in the paper.
+        The input to the function f. This is :math:`\mathbf{E_i}` in the paper.
 
     l : np.ndarray
         A matrix to be used in the gradient computation.
-        This is L(E_i) in the paper.
+        This is :math:`L(\mathbf{E}_i)` in the paper.
 
     g : np.ndarray
-        This is the original G matrix obtained as input.
+        This is the original :math:`\mathbf{G}` matrix obtained as input.
 
     Returns
     -------
     np.ndarray
-        The required gradient. This is D_i in the paper.
+        The required gradient. This is :math:`\mathbf{D_i}` in the paper.
 
     Notes
     -----
-    The gradient is defined as :math:`D_i = \nabla_{E} f(E_i)` and it
-    is constructed using two parts, namely, D1 and D2, which denote the
-    top and bottom parts of the gradient matrix.
+    The gradient is :math:`\mathbf{D}_i = \nabla_{\mathbf{E}} f(\mathbf{E}_i)`
+    and it is constructed using two parts, namely, :math:`\mathbf{D}_1` and
+    :math:`\mathbf{D}_2`, which denote the top and bottom parts of the gradient
+    matrix.
 
-    Specifically, D1 denoyes the top :math:`s` rows of the gradient matrix,
-    where, :math:`s` is the rank of the matrix :math:`E_i`. We, furthermore,
-    define E1 as the first :math:`s` rows of E_i.
+    Specifically, :math:`\mathbf{D}_1` denoyes the top :math:`s` rows of the
+    gradient matrix, where, :math:`s` is the rank of the matrix :math:`\mathbf{E}_i`.
+    We, furthermore, define E1 as the first :math:`s` rows of :math:`\mathbf{E_i}`.
 
     .. math::
-        D2 L(E_i) = 0
-        (X + (I \otimes L(E_i))) v(D1) = (I \otimes L(E_i)) v(E1)
+        \mathbf{D}_2 L(\mathbf{E}_i) = 0\\
+        (X + (I\otimes L(\mathbf{E}_i))) v(\mathbf{D}_1)
+            = (I\otimes L(\mathbf{E}_i)) v(\mathbf{E}_1)
 
     In the following implementation, the variables d1 and d2 represent
-    D1 and D2, respectively.
+    :math:`\mathbf{D}_1` and :math:`\mathbf{D}_2`, respectively.
 
     References
     ----------
@@ -169,7 +175,7 @@ def find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
     v = lin.null_space(le.T).flatten()
     d2 = np.outer(v, v)
 
-    p = permutation_matrix(e)
+    p = __permutation_matrix(e)
     identity_z = np.eye(
         (np.kron(e @ e.T, g @ g.T)).shape[0] // (e @ g @ g.T @ e.T).shape[0]
     )
@@ -195,7 +201,7 @@ def find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
     return d
 
 
-def scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
+def __scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
     r"""
     Find the scaling factor and scale the matrix e.
 
@@ -205,10 +211,10 @@ def scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
         This is the matrix to be scaled.
 
     g : np.ndarray
-        This is the original G matrix obtained as input.
+        This is the original :math:`\mathbf{G}` matrix obtained as input.
 
     q : np.ndarray
-        This is the matrix Q in the paper.
+        This is the matrix :math:`\mathbf{Q}` in the paper.
 
     Returns
     -------
@@ -221,7 +227,7 @@ def scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
     return alpha * e
 
 
-def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+def psdp_woodgate(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
     r"""
     Woodgate's algorithm for positive semidefinite Procrustes.
 
@@ -229,10 +235,11 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     ----------
     a : np.ndarray
         The matrix to be transformed.
-        This is relabelled to G as in the paper.
+        This is relabelled to :math:`\mathbf{G}` as in the paper.
+
     b : np.ndarray
         The target matrix.
-        This is relabellled to F as in the paper.
+        This is relabellled to :math:`\mathbf{F}` as in the paper.
 
     Returns
     -------
@@ -241,32 +248,36 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 
     Notes
     -----
-    Given :math:`F, G \in R^{\ n\times m}`, the woodgate algorithm finds
-    :math:`P \in S^{\ n\times n}_{\geq}` such that the following is true:
+    Given :math:`\mathbf{F}, \mathbf{G} \in R^{\ n\times m}`, the woodgate
+    algorithm finds :math:`\mathbf{P} \in S^{\ n\times n}_{\geq}` such
+    that the following is true:
 
     .. math::
-        \text{PSDP: } min_{P} \|F - PG\|
+        \text{PSDP: } min_{\mathbf{P}} \|\mathbf{F}-\mathbf{P}\mathbf{G}\|
 
     Woodgate's algorithm takes a non-convex approach to the above problem.
     It finds solution to the following which serves as a subroutine to our
     original problem.
 
     .. math::
-        \text{PSDP*: } min_{E \in R^{\ n\times n}} \|F - E'EG\|
+        \text{PSDP*: } min_{\mathbf{E} \in R^{\ n\times n}} \|\mathbf{F}
+            - \mathbf{E}^T\mathbf{E}\mathbf{G}\|
 
     Now, since all local minimizers of PSDP* are also global minimizers, we
-    have :math:`\hat{P} = \hat{E}'E` where :math:`\hat{E}` is any local
-    minimizer of PSDP* and :math:`\hat{P}` is the required minimizer for
-    our originak PSDP problem.
+    have :math:`\hat{\mathbf{P}} = \hat{\mathbf{E}}^T\mathbf{E}` where
+    :math:`\hat{\mathbf{E}}` is any local minimizer of PSDP* and
+    :math:`\hat{\mathbf{P}}` is the required minimizer for our original PSDP
+    problem.
 
     The main algorithm is as follows:
 
-    - :math:`E_0` is chosen randomly, :math:`i = 0`.
-    - Compute :math:`L(E_i)`.
-    - If :math:`L(E_i) \geq 0` then we stop and :math:`E_i` is the answer.
-    - Compute :math:`D_i`.
-    - Minimize :math:`f(E_i - w_i D_i)`.
-    - :math:`E_{i + 1} = E_i - w_i_min D_i`
+    - :math:`\mathbf{E}_0` is chosen randomly, :math:`i = 0`.
+    - Compute :math:`L(\mathbf{E}_i)`.
+    - If :math:`L(\mathbf{E}_i) \geq 0` then we stop and
+        :math:`\mathbf{E}_i` is the answer.
+    - Compute :math:`\mathbf{D}_i`.
+    - Minimize :math:`f(\mathbf{E}_i - w_i \mathbf{D}_i)`.
+    - :math:`\mathbf{E}_{i + 1} = \mathbf{E}_i - w_i_min \mathbf{D}_i`
     - :math:`i = i + 1`, start from 2 again.
 
 
@@ -278,6 +289,8 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """
 
     # We define the matrices F, G and Q as in the paper.
+    # Our plan is to find matrix P such that, |F - PG| is minimized.
+    # Now, |F - PG| = |PG - F| = |PGI - F| = |PAI - F|
     f = b
     g = a
     q = f @ g.T + g @ f.T
@@ -293,22 +306,25 @@ def woodgate(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     # Main part of the algorithm.
     i = 0
     n = f.shape[0]
-    e = scale(e=np.eye(n), g=g, q=q)
+    e = __scale(e=np.eye(n), g=g, q=q)
     error = [inf]
 
     while True:
         le = func_l(e)
         error.append(np.linalg.norm(f - e.T @ e @ g))
-        if is_pos_semi_def(le) or no_update(error):
+        if __is_pos_semi_def(le) or __no_update(error):
             break
 
-        le_pos = make_positive(le)
-        d = find_gradient(e=e, le=le_pos, g=g)
+        le_pos = __make_positive(le)
+        d = __find_gradient(e=e, le=le_pos, g=g)
 
         # Objective function which we want to minimize.
         func_obj = lambda w: func_f(e - w * d)
         w_min = minimize(func_obj, 1, bounds=((1e-9, None),)).x[0]
-        e = scale(e=(e - w_min * d), g=g, q=q)
+        e = __scale(e=(e - w_min * d), g=g, q=q)
         i += 1
 
-    return e.T @ e, error[-1], i
+    # Returning the result as a ProcrastesResult object.
+    return ProcrustesResult(
+        new_a=a, new_b=b, error=error[-1], s=(e.T @ e), t=np.eye(a.shape[1])
+    )

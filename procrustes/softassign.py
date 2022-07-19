@@ -218,7 +218,7 @@ def softassign(
     array_c = np.kron(new_a, new_b)
     # Get the shape of A (B and the permutation matrix as well)
     row_num = new_a.shape[0]
-    c_tensor = array_c.reshape(row_num, row_num, row_num, row_num)
+    c_tensor = array_c.reshape((row_num, row_num, row_num, row_num))
     # Compute the beta_0
     gamma = _compute_gamma(array_c, row_num, gamma_scaler)
     if beta_0 is None:

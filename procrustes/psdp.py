@@ -25,6 +25,7 @@
 from math import inf, sqrt
 
 import numpy as np
+from numpy.linalg import multi_dot
 from procrustes.utils import ProcrustesResult
 import scipy
 from scipy.optimize import minimize
@@ -99,14 +100,18 @@ def psdp_woodgate(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
     # Now, |F - PG| = |PG - F| = |PGI - F| = |PAI - F|.
     f = b
     g = a
-    q = f @ g.T + g @ f.T
+    q = f.dot(g.T) + g.dot(f.T)
 
     # We define the functions L and f as in the paper.
-    func_l = lambda arr: (arr.T @ arr @ g @ g.T) + (g @ g.T @ arr.T @ arr) - q
+    func_l = (
+        lambda arr: (multi_dot([arr.T, arr, g, g.T]))
+        + (multi_dot([g, g.T, arr.T, arr]))
+        - q
+    )
     func_f = lambda arr: (1 / 2) * (
-        np.trace(f.T @ f)
-        + np.trace(arr.T @ arr @ arr.T @ arr @ g @ g.T)
-        - np.trace(arr.T @ arr @ q)
+        np.trace(np.dot(f.T, f))
+        + np.trace(multi_dot([arr.T, arr, arr.T, arr, g, g.T]))
+        - np.trace(multi_dot([arr.T, arr, q]))
     )
 
     # Main part of the algorithm.
@@ -117,10 +122,10 @@ def psdp_woodgate(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
 
     while True:
         le = func_l(e)
-        error.append(np.linalg.norm(f - e.T @ e @ g))
+        error.append(np.linalg.norm(f - multi_dot([e.T, e, g])))
 
         # Check if positive semidefinite or if the algorithm has converged.
-        if (np.all(np.linalg.eigvals(le)) >= 0) or (abs(error[-1] - error[-2]) < 1e-5):
+        if np.all(np.linalg.eigvals(le) >= 0) or abs(error[-1] - error[-2]) < 1e-5:
             break
 
         # Make all the eigenvalues of le positive and use it to compute d.
@@ -135,7 +140,7 @@ def psdp_woodgate(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
 
     # Returning the result as a ProcrastesResult object.
     return ProcrustesResult(
-        new_a=a, new_b=b, error=error[-1], s=(e.T @ e), t=np.eye(a.shape[1])
+        new_a=a, new_b=b, error=error[-1], s=np.dot(e.T, e), t=np.eye(a.shape[1])
     )
 
 
@@ -244,21 +249,24 @@ def _find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
 
     p = _permutation_matrix(e)
     identity_z = np.eye(
-        (np.kron(e @ e.T, g @ g.T)).shape[0] // (e @ g @ g.T @ e.T).shape[0]
+        (np.kron(e.dot(e.T), g.dot(g.T))).shape[0]
+        // (multi_dot([e, g, g.T, e.T])).shape[0]
     )
     z = (
-        np.kron(e @ g @ g.T, e.T) @ p
-        + np.kron(e, g @ g.T @ e.T) @ p
-        + np.kron(e @ g @ g.T @ e.T, identity_z)
-        + np.kron(e @ e.T, g @ g.T)
+        np.kron(multi_dot([e, g, g.T]), e.T).dot(p)
+        + np.kron(e, multi_dot([g, g.T, e.T])).dot(p)
+        + np.kron(multi_dot([e, g, g.T, e.T]), identity_z)
+        + np.kron(e.dot(e.T), g.dot(g.T))
     )
 
     x = z if s == n else z[: n * (n - s), : n * (n - s)]
     identity_x = np.eye(x.shape[0] // le.shape[0])
-    flattened_d1 = (
-        np.linalg.pinv(x + np.kron(identity_x, le))
-        @ np.kron(identity_x, le)
-        @ e[:s, :].flatten()
+    flattened_d1 = multi_dot(
+        [
+            np.linalg.pinv(x + np.kron(identity_x, le)),
+            np.kron(identity_x, le),
+            e[:s, :].flatten(),
+        ]
     )
 
     if s == n:
@@ -289,6 +297,10 @@ def _scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
         The scaled matrix.
     """
     alpha = sqrt(
-        max(1e-9, np.trace(e.T @ e @ q) / (2 * np.trace(e.T @ e @ e.T @ e @ g @ g.T)))
+        max(
+            1e-9,
+            np.trace(multi_dot([e.T, e, q]))
+            / (2 * np.trace(multi_dot([e.T, e, e.T, e, g, g.T]))),
+        )
     )
     return alpha * e

@@ -65,20 +65,20 @@ def psdp_woodgate(
     :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
     rows/columns so they have the same shape.
 
-    Throughout all methods used for implementing the Woodgate algorithm, the matrices 
-    :math:`\mathbf{A}` and :math:`\mathbf{B}` are referred to as :math:`\mathbf{G}` and 
+    Throughout all methods used for implementing the Woodgate algorithm, the matrices
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` are referred to as :math:`\mathbf{G}` and
     :math:`\mathbf{F}` respectively, following the nomenclature used in [1]_.
 
     Parameters
     ----------
     a : np.ndarray
         The matrix :math:`\mathbf{A}` which is to be transformed.
-        This is relabelled to variable g representing the matrix :math:`\mathbf{G}` as 
+        This is relabelled to variable g representing the matrix :math:`\mathbf{G}` as
         in the paper.
 
     b : np.ndarray
         The target matrix :math:`\mathbf{B}`.
-        This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as 
+        This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as
         in the paper.
 
     pad : bool, optional
@@ -309,8 +309,8 @@ def _find_gradient(e: np.ndarray, le: np.ndarray, g: np.ndarray) -> np.ndarray:
             = (I\otimes L(\mathbf{E}_i)) v(\mathbf{E}_1)
 
     In the following implementation, the variables d1 and d2 represent
-    :math:`\mathbf{D}_1` and :math:`\mathbf{D}_2`, respectively. Refer to 
-    equations (26) and (27) in [1]_ for exact deinitions of the several terms mentioned 
+    :math:`\mathbf{D}_1` and :math:`\mathbf{D}_2`, respectively. Refer to
+    equations (26) and (27) in [1]_ for exact deinitions of the several terms mentioned
     in this function.
 
     References

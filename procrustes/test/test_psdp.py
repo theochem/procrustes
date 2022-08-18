@@ -77,4 +77,4 @@ def test_psdp_generic_non_square():
             [-1.08770156, 0.12829214, 0.75328052],
         ]
     )
-    assert_almost_equal(res, actual_result)
+    assert_almost_equal(res, actual_result, decimal=5)

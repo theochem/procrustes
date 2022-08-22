@@ -70,5 +70,5 @@ setup(
         'Topic :: Scientific/Engineering :: Chemistry',
         'Intended Audience :: Science/Research',
     ],
-    install_requires=["numpy>=1.19.5", "scipy>=1.5.0, <1.9.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
+    install_requires=["numpy>=1.19.5", "scipy>=1.5.0", "pytest>=5.4.3", "sphinx>=2.3.0"],
 )

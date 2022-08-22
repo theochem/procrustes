@@ -26,7 +26,7 @@ from typing import Optional
 
 import numpy as np
 from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
-from scipy.linalg import pinv, pinv2
+from scipy.linalg import pinv
 
 
 __all__ = [
@@ -44,7 +44,6 @@ def generic(
     unpad_row: bool = False,
     check_finite: bool = True,
     weight: Optional[np.ndarray] = None,
-    use_svd: bool = False,
 ) -> ProcrustesResult:
     r"""Perform generic one-sided Procrustes.
 
@@ -90,12 +89,6 @@ def generic(
         The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
         elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
         matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
-    use_svd : bool, optional
-        If True, the (Moore-Penrose) pseudo-inverse is computed by singular-value decomposition
-        (SVD) including all 'large' singular values (using `scipy.linalg.pinv2`).
-        If False, the the (Moore-Penrose) pseudo-inverse is computed by least-squares solver
-        (using `scipy.linalg.pinv`). The least-squares implementation is less efficient, but more
-        robust, than the SVD implementation.
 
     Returns
     -------
@@ -114,9 +107,6 @@ def generic(
     unknowns).
 
     """
-    if not isinstance(use_svd, bool):
-        raise TypeError(f"The use_svd parameter {type(use_svd)} should be type bool.")
-
     # check inputs
     new_a, new_b = setup_input_arrays(
         a,
@@ -130,12 +120,7 @@ def generic(
         weight,
     )
     # compute the generic solution
-    if use_svd:
-        # Use the singular value decomposition, much faster but less robust.
-        a_inv = pinv2(np.dot(new_a.T, new_a))
-    else:
-        # Uses the least-squared method.
-        a_inv = pinv(np.dot(new_a.T, new_a))
+    a_inv = pinv(np.dot(new_a.T, new_a))
 
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     # compute one-sided error

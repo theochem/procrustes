@@ -23,7 +23,7 @@
 """Test procrustes.generic module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_raises
+from numpy.testing import assert_almost_equal
 from procrustes.generic import generic
 import pytest
 
@@ -55,15 +55,12 @@ def test_generic_square_lapack_driver_and_assertion_error(m):
     array_x = np.random.uniform(-2.0, 2.0, (m, m))
     array_b = np.dot(array_a, array_x)
     # compute procrustes transformation
-    res = generic(array_a, array_b, translate=False, scale=False, use_svd=True)
+    res = generic(array_a, array_b, translate=False, scale=False)
     # check error & arrays
     assert_almost_equal(res.error, 0.0, decimal=6)
     assert_almost_equal(res.t, array_x, decimal=6)
     assert_almost_equal(res.new_a, array_a, decimal=6)
     assert_almost_equal(res.new_b, array_b, decimal=6)
-
-    # Check assertion error
-    assert_raises(TypeError, generic, array_a, array_b, use_svd="not bool")
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(2, 100, (25, 2)))

@@ -22,8 +22,7 @@
 # --
 """Positive semidefinite Procrustes Module."""
 
-from math import inf, sin, sqrt
-from operator import mul
+from math import inf, sqrt
 from typing import Optional
 
 import numpy as np
@@ -31,7 +30,6 @@ from numpy.linalg import multi_dot
 from procrustes.utils import ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
-
 
 __all__ = ["psdp_woodgate", "psdp_peng"]
 
@@ -43,25 +41,32 @@ def psdp_peng(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
     n = f.shape[0]
 
     # Perform Singular Value Decomposition (SVD) of G (here g).
-    u1, singualar_values, v1_transpose = np.linalg.svd(g, full_matrices=True)
-    sigma = np.diag(singualar_values)
-    v1 = v1_transpose.T
-    assert g == multi_dot([u1, sigma, v1_transpose])
+    u, singular_values, v_transpose = np.linalg.svd(g, full_matrices=True)
+    r = len(singular_values)
+    u1, u2 = u[:, :r], u[:, r:]
+    v1 = v_transpose.T[:, :r]
+    sigma = np.diag(singular_values)
 
     # Representing the intermediate matrix S.
-    phi = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            x, y = 0, 0
-            if i < len(singualar_values):
-                x = singualar_values[i]
-            if j < len(singualar_values):
-                y = singualar_values[j]
-            phi[i][j] = 1 / (x**2 + y**2)
+    phi = np.array([[1 / (i ** 2 + j ** 2) for i in singular_values]
+                   for j in singular_values])
+    # phi = np.zeros((n, n))
+    # for i in range(n):
+    #     for j in range(n):
+    #         x, y = 0, 0
+    #         if i < len(singular_values):
+    #             x = singular_values[i]
+    #         if j < len(singular_values):
+    #             y = singular_values[j]
+    #         phi[i][j] = 1 / (x**2 + y**2)
+    print(phi.shape)
+    print(multi_dot([u1.T, f, v1, sigma]).shape)
+    print(multi_dot([sigma, v1.T, f.T, u1]).shape)
     s = multi_dot(
         [
-            phi[i][j],
-            (multi_dot([u1.T, f, v1, sigma]), multi_dot([sigma, v1.T, f.T, u1])),
+            phi,
+            (multi_dot([u1.T, f, v1, sigma]) +
+             multi_dot([sigma, v1.T, f.T, u1])),
         ]
     )
 
@@ -69,20 +74,32 @@ def psdp_peng(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
     eigenvalues, unitary = np.linalg.eig(s)
     eigenvalues_pos = [max(0, i) for i in eigenvalues]
 
-    # Computing the matrix P_11 (here, p11) which is necessary 
+    # Computing the matrix P_11 (here, p11) which is necessary
     # to find the minimizer.
-    p11 = multi_dot([unitary, np.diag(eigenvalues_pos), np.linalg.inv(unitary)])
+    p11 = multi_dot(
+        [unitary, np.diag(eigenvalues_pos), np.linalg.inv(unitary)])
 
     # Computing p12.
-    u2 = TODO
     p12 = multi_dot([np.linalg.inv(sigma), v1.T, f.T, u2])
-    
+
     # Checking if solution is possible.
-    
+    print(np.linalg.matrix_rank(p11))
+    print(p12)
+    print(np.linalg.matrix_rank(np.concatenate((p11, p12), axis=1)))
+    if np.linalg.matrix_rank(p11) != np.linalg.matrix_rank(np.concatenate((p11, p12), axis=1)):
+        raise ValueError(
+            f"Rank mismatch. Symmetric positive semidefinite Procrustes problem has no solution.")
 
     # Finding the required minimizer.
+    mid1 = np.concatenate((p11, p12), axis=1)
+    mid2 = np.concatenate((p12.T, multi_dot([p12.T, p11, p12])), axis=1)
+    mid = np.concatenate((mid1, mid2), axis=0)
+    p = multi_dot([u, mid, u.T])
 
-    pass
+    # Returning the result as a ProcrastesResult object.
+    return ProcrustesResult(
+        new_a=a, new_b=b, error=np.linalg.norm(f - np.dot(p, g)), s=p, t=np.eye(a.shape[1])
+    )
 
 
 def psdp_woodgate(
@@ -235,7 +252,8 @@ def psdp_woodgate(
         + (multi_dot([g, g.T, arr.T, arr]))
         - q
     )
-    func_f = lambda arr: (1 / 2) * (
+
+    def func_f(arr): return (1 / 2) * (
         np.trace(np.dot(f.T, f))
         + np.trace(multi_dot([arr.T, arr, arr.T, arr, g, g.T]))
         - np.trace(multi_dot([arr.T, arr, q]))
@@ -260,7 +278,7 @@ def psdp_woodgate(
         d = _find_gradient(e=e, le=le_pos, g=g)
 
         # Objective function which we want to minimize.
-        func_obj = lambda w: func_f(e - w * d)
+        def func_obj(w): return func_f(e - w * d)
         w_min = minimize(func_obj, 1, bounds=((1e-9, None),)).x[0]
         e = _scale(e=(e - w_min * d), g=g, q=q)
         i += 1

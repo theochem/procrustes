@@ -22,7 +22,8 @@
 # --
 """Positive semidefinite Procrustes Module."""
 
-from math import inf, sqrt
+from math import inf, sin, sqrt
+from operator import mul
 from typing import Optional
 
 import numpy as np
@@ -32,7 +33,56 @@ import scipy
 from scipy.optimize import minimize
 
 
-__all__ = ["psdp_woodgate"]
+__all__ = ["psdp_woodgate", "psdp_peng"]
+
+
+def psdp_peng(a: np.ndarray, b: np.ndarray) -> ProcrustesResult:
+    # Check inputs and define the matrices F (matrix to be transformed) and
+    # G (the target matrix).
+    g, f = a, b
+    n = f.shape[0]
+
+    # Perform Singular Value Decomposition (SVD) of G (here g).
+    u1, singualar_values, v1_transpose = np.linalg.svd(g, full_matrices=True)
+    sigma = np.diag(singualar_values)
+    v1 = v1_transpose.T
+    assert g == multi_dot([u1, sigma, v1_transpose])
+
+    # Representing the intermediate matrix S.
+    phi = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            x, y = 0, 0
+            if i < len(singualar_values):
+                x = singualar_values[i]
+            if j < len(singualar_values):
+                y = singualar_values[j]
+            phi[i][j] = 1 / (x**2 + y**2)
+    s = multi_dot(
+        [
+            phi[i][j],
+            (multi_dot([u1.T, f, v1, sigma]), multi_dot([sigma, v1.T, f.T, u1])),
+        ]
+    )
+
+    # Perform Spectral Decomposition on S (here named s).
+    eigenvalues, unitary = np.linalg.eig(s)
+    eigenvalues_pos = [max(0, i) for i in eigenvalues]
+
+    # Computing the matrix P_11 (here, p11) which is necessary 
+    # to find the minimizer.
+    p11 = multi_dot([unitary, np.diag(eigenvalues_pos), np.linalg.inv(unitary)])
+
+    # Computing p12.
+    u2 = TODO
+    p12 = multi_dot([np.linalg.inv(sigma), v1.T, f.T, u2])
+    
+    # Checking if solution is possible.
+    
+
+    # Finding the required minimizer.
+
+    pass
 
 
 def psdp_woodgate(

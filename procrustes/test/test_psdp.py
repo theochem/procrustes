@@ -31,19 +31,23 @@ def test_psdp_identity(n=np.random.randint(50, 100)):
     r"""Test PSDP with identity matrix."""
     a = np.eye(n)
     b = np.eye(n)
-    out = psdp_woodgate(a=a, b=b)
-    res = out.__getattr__("s")
-    assert_almost_equal(res, np.eye(n))
+    res = psdp_woodgate(a=a, b=b)
+    s = res["s"]
+    error = res["error"]
+    assert_almost_equal(s, np.eye(n))
+    assert_almost_equal(error, 0.0)
 
 
 def test_psdp_diagonal():
     r"""Test PSDP with diagonal matrix."""
     a = np.diag([1, 2, 3, 4])
     b = np.eye(4)
-    out = psdp_woodgate(a=a, b=b)
-    res = out.__getattr__("s")
+    res = psdp_woodgate(a=a, b=b)
+    s = res["s"]
+    error = res["error"]
     actual_result = np.diag([0.99999, 0.5, 0.33333, 0.25])
-    assert_almost_equal(res, actual_result, decimal=5)
+    assert_almost_equal(s, actual_result, decimal=5)
+    assert_almost_equal(error, 0.0, decimal=3)
 
 
 def test_psdp_generic_square():
@@ -51,8 +55,9 @@ def test_psdp_generic_square():
     # The example given here is from the original paper.
     a = np.array([[1, 6, 0], [4, 3, 0], [0, 0, -0.5]])
     b = np.array([[1, 0, 0], [0, -2, 3], [0, 2, 4]])
-    out = psdp_woodgate(a=a, b=b)
-    res = out.__getattr__("s")
+    res = psdp_woodgate(a=a, b=b)
+    s = res["s"]
+    error = res["error"]
     actual_result = np.array(
         [
             [0.22351489, -0.11059539, 0.24342428],
@@ -60,7 +65,8 @@ def test_psdp_generic_square():
             [0.24342428, -0.12044658, 0.26510708],
         ]
     )
-    assert_almost_equal(res, actual_result)
+    assert_almost_equal(s, actual_result)
+    assert_almost_equal(error, 5.600999068630569)
 
 
 def test_psdp_generic_non_square():
@@ -68,8 +74,9 @@ def test_psdp_generic_non_square():
     # The example given here is from the original paper.
     a = np.array([[5, 1, 6, -1], [3, 2, 0, 2], [2, 4, 3, -3]])
     b = np.array([[15, 1, 15 - 3, 2 + 5], [10, 5, 6, 3], [-3, 3, -3, -2 + 4]])
-    out = psdp_woodgate(a=a, b=b)
-    res = out.__getattr__("s")
+    res = psdp_woodgate(a=a, b=b)
+    s = res["s"]
+    error = res["error"]
     actual_result = np.array(
         [
             [2.57997197, 1.11007896, -1.08770156],
@@ -77,4 +84,5 @@ def test_psdp_generic_non_square():
             [-1.08770156, 0.12829214, 0.75328052],
         ]
     )
-    assert_almost_equal(res, actual_result, decimal=5)
+    assert_almost_equal(s, actual_result, decimal=5)
+    assert_almost_equal(error, 5.674530443833204)

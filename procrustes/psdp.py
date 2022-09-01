@@ -188,7 +188,7 @@ def psdp_peng(
     return ProcrustesResult(
         new_a=a,
         new_b=b,
-        error=sqrt(compute_error(a=a, b=b, s=p, t=np.eye(a.shape[1]))),
+        error=compute_error(a=a, b=b, s=p, t=np.eye(a.shape[1])),
         s=p,
         t=np.eye(a.shape[1]),
     )
@@ -360,10 +360,11 @@ def psdp_woodgate(
 
     while True:
         le = func_l(e)
-        error.append(sqrt(compute_error(a=a, b=b, s=np.dot(e.T, e), t=np.eye(a.shape[1]))))
+        error.append(compute_error(a=a, b=b, s=np.dot(e.T, e), t=np.eye(a.shape[1])))
 
         # Check if positive semidefinite or if the algorithm has converged.
-        if np.all(np.linalg.eigvals(le) >= 0) or abs(error[-1] - error[-2]) < 1e-5:
+        if (np.all(np.linalg.eigvals(le) >= 0)
+                or abs(sqrt(error[-1]) - sqrt(error[-2])) < 1e-5):
             break
 
         # Make all the eigenvalues of le positive and use it to compute d.
@@ -380,7 +381,11 @@ def psdp_woodgate(
 
     # Returning the result as a ProcrastesResult object.
     return ProcrustesResult(
-        new_a=a, new_b=b, error=error[-1], s=np.dot(e.T, e), t=np.eye(a.shape[1])
+        new_a=a,
+        new_b=b,
+        error=error[-1],
+        s=np.dot(e.T, e),
+        t=np.eye(a.shape[1])
     )
 
 

@@ -66,7 +66,7 @@ def test_psdp_generic_square():
         ]
     )
     assert_almost_equal(s, actual_result)
-    assert_almost_equal(error, 5.600999068630569, decimal=3)
+    assert_almost_equal(error, 5.600999068630569 ** 2, decimal=3)
 
 
 def test_psdp_generic_non_square():
@@ -85,4 +85,4 @@ def test_psdp_generic_non_square():
         ]
     )
     assert_almost_equal(s, actual_result, decimal=5)
-    assert_almost_equal(error, 5.674530443833204, decimal=3)
+    assert_almost_equal(error, 5.674530443833204 ** 2, decimal=3)

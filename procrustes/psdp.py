@@ -27,7 +27,7 @@ from typing import Optional
 
 import numpy as np
 from numpy.linalg import multi_dot
-from procrustes.utils import ProcrustesResult, setup_input_arrays, compute_error
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
 

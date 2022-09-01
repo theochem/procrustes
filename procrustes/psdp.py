@@ -27,11 +27,14 @@ from typing import Optional
 
 import numpy as np
 from numpy.linalg import multi_dot
-from procrustes.utils import ProcrustesResult, setup_input_arrays
+from procrustes.utils import ProcrustesResult, setup_input_arrays, compute_error
 import scipy
 from scipy.optimize import minimize
 
-__all__ = ["psdp_woodgate", "psdp_peng"]
+__all__ = [
+    "psdp_woodgate",
+    "psdp_peng"
+]
 
 
 def psdp_peng(
@@ -185,7 +188,7 @@ def psdp_peng(
     return ProcrustesResult(
         new_a=a,
         new_b=b,
-        error=np.linalg.norm(f - np.dot(p, g)),
+        error=sqrt(compute_error(a=a, b=b, s=p, t=np.eye(a.shape[1]))),
         s=p,
         t=np.eye(a.shape[1]),
     )
@@ -357,7 +360,7 @@ def psdp_woodgate(
 
     while True:
         le = func_l(e)
-        error.append(np.linalg.norm(f - multi_dot([e.T, e, g])))
+        error.append(sqrt(compute_error(a=a, b=b, s=np.dot(e.T, e), t=np.eye(a.shape[1]))))
 
         # Check if positive semidefinite or if the algorithm has converged.
         if np.all(np.linalg.eigvals(le) >= 0) or abs(error[-1] - error[-2]) < 1e-5:

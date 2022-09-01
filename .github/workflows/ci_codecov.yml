@@ -67,7 +67,6 @@ jobs:
         fail_ci_if_error: true
         directory: ./coverage/reports/
         file: ./coverage.xml
-        path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
         flags: unittests
         name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}

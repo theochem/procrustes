@@ -63,9 +63,10 @@ jobs:
         pytest --cov-config=.coveragerc --cov-report=xml --color=yes procrustes/test/
 
     - name: CodeCov
-      uses: codecov/codecov-action@v3.1.0
+      uses: codecov/codecov-action@v3
       with:
         fail_ci_if_error: true
         file: ./coverage.xml
+        verbose: true
         flags: unittests
         name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}

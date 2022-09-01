@@ -1,6 +1,7 @@
 [run]
 omit =
     procrustes/test/*
+    procrustes/__init__.py
 
 [report]
 show_missing = True

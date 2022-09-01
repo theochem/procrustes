@@ -172,7 +172,7 @@ def psdp_peng(
         np.concatenate((p11, p12), axis=1)
     ):
         raise ValueError(
-            f"Rank mismatch. Symmetric positive semidefinite Procrustes problem has no solution."
+            "Rank mismatch. Symmetric positive semidefinite Procrustes problem has no solution."
         )
 
     # Finding the required minimizer (optimal transformation).

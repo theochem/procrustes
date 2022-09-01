@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        python -m pip install -r requirements_dev.txt
+        python -m pip install -r requirements.txt
         python -m pip install -U pytest pytest-cov codecov
 
     - name: Install package

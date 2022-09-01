@@ -23,6 +23,8 @@ coverage:
 
   # ignore statistics for the testing folders
   ignore:
+    - setup.py
+    - updateheaders.py
     - .*/test/.*
     - .*/examples/.*
     - .*/__int__.py

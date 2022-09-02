@@ -24,7 +24,7 @@ r"""Testings for PSDP (positive semi-definite Procrustes) module."""
 
 import numpy as np
 from numpy.testing import assert_almost_equal
-from procrustes.psdp import psdp_woodgate, psdp_peng
+from procrustes.psdp import psdp_peng, psdp_woodgate
 
 
 def test_psdp_identity(n=np.random.randint(50, 100)):

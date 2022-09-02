@@ -27,12 +27,171 @@ from typing import Optional
 
 import numpy as np
 from numpy.linalg import multi_dot
-from procrustes.utils import ProcrustesResult, setup_input_arrays
+from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
 
+__all__ = [
+    "psdp_woodgate",
+    "psdp_peng"
+]
 
-__all__ = ["psdp_woodgate"]
+
+def psdp_peng(
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+) -> ProcrustesResult:
+    r"""
+    Peng's algorithm for the symmetric positive semi-definite Procrustes problem.
+
+    Given a matrix :math:`\mathbf{A}_{n \times m}` and a reference matrix :math:`\mathbf{B}_{n
+    \times m}`, find the positive semidefinite transformation matrix :math:`\mathbf{P}_{n
+    \times n}` that makes :math:`\mathbf{PA}` as close as possible to :math:`\mathbf{B}`.
+    In other words,
+
+    .. math::
+        \text{PSDP: } min_{\mathbf{P}} \|\mathbf{B}-\mathbf{P}\mathbf{A}\|_{F}^2
+
+    Throughout all methods used for implementing the Peng et al algorithm, the matrices
+    :math:`\mathbf{A}` and :math:`\mathbf{B}` are referred to as :math:`\mathbf{G}` and
+    :math:`\mathbf{F}` respectively, following the nomenclature used in [1]_.
+
+    Parameters
+    ----------
+    a : np.ndarray
+        The matrix :math:`\mathbf{A}` which is to be transformed.
+        This is relabelled to variable g representing the matrix :math:`\mathbf{G}` as
+        in the paper.
+
+    b : np.ndarray
+        The target matrix :math:`\mathbf{B}`.
+        This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as
+        in the paper.
+
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+
+    translate : bool, optional
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
+
+    scale : bool, optional
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    check_finite : bool, optional
+        If True, convert the input to an array, checking for NaNs or Infs.
+
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+
+    Returns
+    -------
+    ProcrustesResult
+        The result of the Procrustes transformation.
+
+    Notes
+    -----
+    The algorithm is constructive in nature and can be described as follows:
+
+    - Decompose the matrix :math:`\mathbf{G}` into its singular value decomposition.
+    - Construct :math:`\hat{\mathbf{S}} = \mathbf{\Phi} \ast (
+        \mathbf{U}^T_1 \mathbf{F} \mathbf{V}_1 \mathbf{\Sigma}
+        + \mathbf{\Sigma} \mathbf{V}^T_1 \mathbf{F}^T \mathbf{U}_1)`.
+    - Perform spectral decomposition of :math:`\hat{\mathbf{S}}`.
+    - Computing intermediate matrices $\mathbf{P}_{11}$ and $\mathbf{P}_{12}$.
+    - Check if solution exists.
+    - Compute $\hat{\mathbf{P}}$ (required minimizer) using $\mathbf{P}_{11}$ and
+        $\mathbf{P}_{12}$.
+
+    References
+    ----------
+    .. [1] Jingjing Peng et al (2019). "Solution of symmetric positive semidefinite Procrustes
+        problem". Electronic Journal of Linear Algebra, ISSN 1081-3810. Volume 35, pp. 543-554.
+    """
+    # Check inputs and define the matrices F (matrix to be transformed) and
+    # G (the target matrix).
+    g, f = setup_input_arrays(
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    if g.shape != f.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {g.shape} != {f.shape} "
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
+
+    # Perform Singular Value Decomposition (SVD) of G (here g).
+    u, singular_values, v_transpose = np.linalg.svd(g, full_matrices=True)
+    r = len(singular_values)
+    u1, u2 = u[:, :r], u[:, r:]
+    v1 = v_transpose.T[:, :r]
+    sigma = np.diag(singular_values)
+
+    # Representing the intermediate matrix S.
+    phi = np.array(
+        [[1 / (i**2 + j**2) for i in singular_values] for j in singular_values]
+    )
+    s = np.multiply(
+        phi, multi_dot([u1.T, f, v1, sigma]) + multi_dot([sigma, v1.T, f.T, u1])
+    )
+
+    # Perform Spectral Decomposition on S (here named s).
+    eigenvalues, unitary = np.linalg.eig(s)
+    eigenvalues_pos = [max(0, i) for i in eigenvalues]
+
+    # Computing intermediate matrices required to construct the required
+    # optimal transformation.
+    p11 = multi_dot([unitary, np.diag(eigenvalues_pos), np.linalg.inv(unitary)])
+    p12 = multi_dot([np.linalg.inv(sigma), v1.T, f.T, u2])
+
+    # Checking if solution is possible.
+    if np.linalg.matrix_rank(p11) != np.linalg.matrix_rank(
+        np.concatenate((p11, p12), axis=1)
+    ):
+        raise ValueError(
+            "Rank mismatch. Symmetric positive semidefinite Procrustes problem has no solution."
+        )
+
+    # Finding the required minimizer (optimal transformation).
+    mid1 = np.concatenate((p11, p12), axis=1)
+    mid2 = np.concatenate((p12.T, multi_dot([p12.T, np.linalg.pinv(p11), p12])), axis=1)
+    mid = np.concatenate((mid1, mid2), axis=0)
+    p = multi_dot([u, mid, u.T])
+
+    # Returning the result as a ProcrastesResult object.
+    return ProcrustesResult(
+        new_a=a,
+        new_b=b,
+        error=compute_error(a=a, b=b, s=p, t=np.eye(a.shape[1])),
+        s=p,
+        t=np.eye(a.shape[1]),
+    )
 
 
 def psdp_woodgate(
@@ -185,11 +344,13 @@ def psdp_woodgate(
         + (multi_dot([g, g.T, arr.T, arr]))
         - q
     )
-    func_f = lambda arr: (1 / 2) * (
-        np.trace(np.dot(f.T, f))
-        + np.trace(multi_dot([arr.T, arr, arr.T, arr, g, g.T]))
-        - np.trace(multi_dot([arr.T, arr, q]))
-    )
+
+    def func_f(arr):
+        return (1 / 2) * (
+            np.trace(np.dot(f.T, f))
+            + np.trace(multi_dot([arr.T, arr, arr.T, arr, g, g.T]))
+            - np.trace(multi_dot([arr.T, arr, q]))
+        )
 
     # Main part of the algorithm.
     i = 0
@@ -199,10 +360,11 @@ def psdp_woodgate(
 
     while True:
         le = func_l(e)
-        error.append(np.linalg.norm(f - multi_dot([e.T, e, g])))
+        error.append(compute_error(a=a, b=b, s=np.dot(e.T, e), t=np.eye(a.shape[1])))
 
         # Check if positive semidefinite or if the algorithm has converged.
-        if np.all(np.linalg.eigvals(le) >= 0) or abs(error[-1] - error[-2]) < 1e-5:
+        if (np.all(np.linalg.eigvals(le) >= 0)
+                or abs(sqrt(error[-1]) - sqrt(error[-2])) < 1e-5):
             break
 
         # Make all the eigenvalues of le positive and use it to compute d.
@@ -210,14 +372,20 @@ def psdp_woodgate(
         d = _find_gradient(e=e, le=le_pos, g=g)
 
         # Objective function which we want to minimize.
-        func_obj = lambda w: func_f(e - w * d)
+        def func_obj(w):
+            return func_f(e - w * d)
+
         w_min = minimize(func_obj, 1, bounds=((1e-9, None),)).x[0]
         e = _scale(e=(e - w_min * d), g=g, q=q)
         i += 1
 
     # Returning the result as a ProcrastesResult object.
     return ProcrustesResult(
-        new_a=a, new_b=b, error=error[-1], s=np.dot(e.T, e), t=np.eye(a.shape[1])
+        new_a=a,
+        new_b=b,
+        error=error[-1],
+        s=np.dot(e.T, e),
+        t=np.eye(a.shape[1])
     )
 
 

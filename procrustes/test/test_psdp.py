@@ -147,7 +147,7 @@ def test_psdp_non_full_rank():
         ]
     )
     assert_almost_equal(s, actual_result, decimal=2)
-    assert_almost_equal(error, 0.0025848018603061226)
+    assert_almost_equal(error, 0.0, decimal=2)
     res = psdp_peng(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array(
@@ -168,4 +168,4 @@ def test_psdp_non_full_rank():
         ]
     )
     assert_almost_equal(s, actual_result, decimal=2)
-    assert_almost_equal(error, 2.9011440718759514e-06)
+    assert_almost_equal(error, 0.0, decimal=2)

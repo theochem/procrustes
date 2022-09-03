@@ -21,18 +21,15 @@
     :
     : --
 
-Procrustes API
-##############
 
-.. toctree::
+.. _psdp:
 
-    utils.rst
-    kopt.rst
-    generic.rst
-    generalized.rst
-    orthogonal.rst
-    permutation.rst
-    softassign.rst
-    rotational.rst
-    symmetric.rst
-    psdp.rst
+:mod:`procrustes.psdp`
+=============================
+
+.. automodule:: procrustes.psdp
+   :members:
+   :undoc-members:
+   :special-members:
+   :inherited-members:
+   :private-members:

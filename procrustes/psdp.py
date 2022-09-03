@@ -304,7 +304,7 @@ def psdp_woodgate(
         :math:`\mathbf{E}_i` is the answer.
     - Compute :math:`\mathbf{D}_i`.
     - Minimize :math:`f(\mathbf{E}_i - w_i \mathbf{D}_i)`.
-    - :math:`\mathbf{E}_{i + 1} = \mathbf{E}_i - w_i_min \mathbf{D}_i`
+    - :math:`\mathbf{E}_{i + 1} = \mathbf{E}_i - {(w_i)}_{min} \mathbf{D}_i`.
     - :math:`i = i + 1`, start from 2 again.
 
 

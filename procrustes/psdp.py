@@ -31,7 +31,11 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
 
-__all__ = ["psdp_woodgate", "psdp_peng"]
+__all__ = [
+    "psdp_woodgate",
+    "psdp_peng",
+    "psdp_opt"
+]
 
 
 def psdp_opt(
@@ -48,6 +52,23 @@ def psdp_opt(
     r"""
     Spectral projected gradient method for the positive semi-definite Procrustes problem.
     """
+    a, b = setup_input_arrays(
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    if a.shape != b.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {a.shape} != {b.shape} "
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
+
     # Initializing the required minimizer.
     # Here, a denote the matrix to be transformed i.e. A, x is the transformer X and b is the
     # target matrix B. Our goal is to minimize ||XA - B||_F (as mentioned in the function description).

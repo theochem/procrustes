@@ -182,9 +182,9 @@ def test_psdp_opt_generic_non_square():
     res = psdp_opt(a=a, b=b)
     error = res["error"]
     # Keeping error assertion to be less than a threshold value
-    # rather than "almost equal" to a given value because increasing 
+    # rather than "almost equal" to a given value because increasing
     # the number of iterations might reduce the error obtained.
-    assert(error <= 32.2)
+    assert error <= 32.2
 
 
 def test_psdp_woodgate_non_full_rank():
@@ -268,6 +268,7 @@ def test_psdp_peng_non_full_rank():
     )
     assert_almost_equal(s, actual_result, decimal=2)
     assert_almost_equal(error, 0.0, decimal=2)
+
 
 def test_psdp_opt_non_full_rank():
     r"""Test PSDP when the to be transformed matrix doesn't have full rank."""

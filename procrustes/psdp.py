@@ -31,10 +31,117 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
 
-__all__ = [
-    "psdp_woodgate",
-    "psdp_peng"
-]
+__all__ = ["psdp_woodgate", "psdp_peng"]
+
+
+def psdp_opt(
+    a: np.ndarray,
+    b: np.ndarray,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+) -> ProcrustesResult:
+    r"""
+    Spectral projected gradient method for the positive semi-definite Procrustes problem.
+    """
+    # Initializing the required minimizer.
+    # Here, a denote the matrix to be transformed i.e. A, x is the transformer X and b is the
+    # target matrix B. Our goal is to minimize ||XA - B||_F (as mentioned in the function description).
+    n, m = a.shape
+    x = np.eye(n)
+
+    # Option structure with fields that serve as parameters for the algorithm.
+    opts = {
+        # Maximum number of iterations.
+        "mxitr": 10000,
+        # Stop control for ||X_k - X_{k-1}||_F.
+        "xtol": 1e-5,
+        # Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
+        "ftol": 1e-12,
+        # If proj is True we perform Cholesky decomposition else we do spectral
+        # decomposition.
+        "proj": True,
+        # Check if A is a diagonal matrix.
+        "a_is_diag": n == m and np.count_nonzero(a - np.diag(np.diagonal(a))) == 0,
+        # Parameter of the non-monotone technique proposed by Zhang-Hager.
+        "gamma": 0.85,
+        # Parameter for control the linear approximation in line search.
+        "rho": 1e-4,
+        # Factor for decreasing the step size in the backtracking line search.
+        "eta": 0.1,
+        # Initial step size.
+        "tau": 1e-3,
+    }
+
+    hold = np.dot(x, a) - b
+    grad = np.dot(hold, a.T)
+    f = np.linalg.norm(hold) ** 2
+    norm_grad = np.linalg.norm(grad)
+    q = 1
+    cval = f
+
+    # Main iteration of the algorithm.
+    for i in range(opts["mxitr"]):
+        x_old = x
+        f_old = f
+        grad_old = grad
+        derivative = opts["rho"] * (norm_grad**2)
+        nls = 1
+
+        while True:
+            x = x_old - opts["tau"] * grad_old
+            x = _psd_proj(x, opts["proj"])
+            hold = np.dot(x, a) - b
+            f = np.linalg.norm(hold) ** 2
+
+            if f <= cval - opts["tau"] * derivative or nls >= 5:
+                break
+            opts["tau"] = opts["eta"] * opts["tau"]
+            nls += 1
+
+        grad = np.dot(hold, a.T)
+        norm_grad = np.linalg.norm(grad)
+
+        # Calculate the Barzilai-Borwein step-size.
+        s = x - x_old
+        norm_s = np.linalg.norm(s)
+        x_diff = norm_s / np.linalg.norm(x)
+        f_diff = abs(f - f_old) / abs(f_old + 1)
+
+        y = grad - grad_old
+        sy = abs(np.sum(np.multiply(s, y)))
+        if i % 2 == 0:
+            tau = (norm_s**2) / sy
+        else:
+            tau = sy / (np.linalg.norm(y) ** 2)
+        tau = max(min(tau, 1e20), 1e-20)
+
+        # Stopping conditions.
+        if norm_s < opts["xtol"] or (
+            x_diff < 100 * opts["ftol"] and f_diff < opts["ftol"]
+        ):
+            if i <= 2:
+                opts["ftol"] /= 10
+                opts["xtol"] /= 10
+            else:
+                break
+
+        q_old = q
+        q = opts["gamma"] * q_old + 1
+        cval = (opts["gamma"] * q_old * cval + f) / q
+
+    # error = ||SAT - B||_F
+    return ProcrustesResult(
+        new_a=a,
+        new_b=b,
+        error=compute_error(a=a, b=b, t=np.eye(m), s=x),
+        t=np.eye(m),
+        s=x,
+    )
 
 
 def psdp_peng(
@@ -363,8 +470,10 @@ def psdp_woodgate(
         error.append(compute_error(a=a, b=b, s=np.dot(e.T, e), t=np.eye(a.shape[1])))
 
         # Check if positive semidefinite or if the algorithm has converged.
-        if (np.all(np.linalg.eigvals(le) >= 0)
-                or abs(sqrt(error[-1]) - sqrt(error[-2])) < 1e-5):
+        if (
+            np.all(np.linalg.eigvals(le) >= 0)
+            or abs(sqrt(error[-1]) - sqrt(error[-2])) < 1e-5
+        ):
             break
 
         # Make all the eigenvalues of le positive and use it to compute d.
@@ -381,11 +490,7 @@ def psdp_woodgate(
 
     # Returning the result as a ProcrastesResult object.
     return ProcrustesResult(
-        new_a=a,
-        new_b=b,
-        error=error[-1],
-        s=np.dot(e.T, e),
-        t=np.eye(a.shape[1])
+        new_a=a, new_b=b, error=error[-1], s=np.dot(e.T, e), t=np.eye(a.shape[1])
     )
 
 
@@ -549,3 +654,29 @@ def _scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
         )
     )
     return alpha * e
+
+
+def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
+    r"""
+    Return the symmetric positive semi-definite matrix nearest to a given matrix.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        The input matrix.
+
+    Returns
+    -------
+    np.ndarray
+        The nearest symmetric positive semi-definite matrix.
+    """
+    arr = (arr + arr.T) / 2
+    if np.isnan(arr).any() or np.isposinf(abs(arr)).any():
+        raise ValueError("C^h u.T")
+
+    try:
+        assert do_cholesky
+        _ = np.linalg.cholesky(arr)
+        return arr
+    except:
+        return _make_positive(arr)

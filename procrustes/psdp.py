@@ -31,11 +31,7 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
 
-__all__ = [
-    "psdp_woodgate",
-    "psdp_peng",
-    "psdp_opt"
-]
+__all__ = ["psdp_woodgate", "psdp_peng", "psdp_opt"]
 
 
 def psdp_opt(
@@ -51,6 +47,70 @@ def psdp_opt(
 ) -> ProcrustesResult:
     r"""
     Spectral projected gradient method for the positive semi-definite Procrustes problem.
+
+    Given a matrix :math:`\mathbf{A}_{n \times m}` and a reference matrix :math:`\mathbf{B}_{n
+    \times m}`, find the positive semidefinite transformation matrix :math:`\mathbf{X}_{n
+    \times n}` that makes :math:`\mathbf{XA}` as close as possible to :math:`\mathbf{B}`.
+    In other words,
+
+    .. math::
+        \text{PSDP: } min_{\mathbf{X}} \|\mathbf{X}\mathbf{A}-\mathbf{B}\|_{F}^2
+
+    Parameters
+    ----------
+    a : np.ndarray
+        The matrix :math:`\mathbf{A}` which is to be transformed.
+        This is relabelled to variable g representing the matrix :math:`\mathbf{G}` as
+        in the paper.
+
+    b : np.ndarray
+        The target matrix :math:`\mathbf{B}`.
+        This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as
+        in the paper.
+
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+
+    translate : bool, optional
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
+
+    scale : bool, optional
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    check_finite : bool, optional
+        If True, convert the input to an array, checking for NaNs or Infs.
+
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+
+    Returns
+    -------
+    ProcrustesResult
+        The result of the Procrustes transformation.
+
+    Notes
+    -----
+    The OptPSDP algorithm (on which this implementation is based) is defined well in p. 114
+    of [1]_.
+
+    References
+    ----------
+    .. [1] Harry F. Oviedo (2019). "A Spectral Gradient Projection Method for the Positive 
+        Semi-definite Procrustes Problem". Revista Colombiana de Matematicas, Volume 55(2021)1, 
+        pages 109-123.
     """
     a, b = setup_input_arrays(
         a,
@@ -70,8 +130,9 @@ def psdp_opt(
         )
 
     # Initializing the required minimizer.
-    # Here, a denote the matrix to be transformed i.e. A, x is the transformer X and b is the
-    # target matrix B. Our goal is to minimize ||XA - B||_F (as mentioned in the function description).
+    # Here, a denote the matrix to be transformed i.e. A, x is the transformer X
+    # and b is the target matrix B. Our goal is to minimize ||XA - B||_F
+    # (as mentioned in the function description).
     n, m = a.shape
     x = np.eye(n)
 
@@ -699,5 +760,5 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
         assert do_cholesky
         _ = np.linalg.cholesky(arr)
         return arr
-    except:
+    except Exception:
         return _make_positive(arr)

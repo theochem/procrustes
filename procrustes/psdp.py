@@ -23,7 +23,7 @@
 """Positive semidefinite Procrustes Module."""
 
 from math import inf, sqrt
-from typing import Optional
+from typing import Optional, Dict
 
 import numpy as np
 from numpy.linalg import multi_dot
@@ -37,6 +37,7 @@ __all__ = ["psdp_woodgate", "psdp_peng", "psdp_opt"]
 def psdp_opt(
     a: np.ndarray,
     b: np.ndarray,
+    options: Dict,
     pad: bool = True,
     translate: bool = False,
     scale: bool = False,
@@ -67,6 +68,44 @@ def psdp_opt(
         The target matrix :math:`\mathbf{B}`.
         This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as
         in the paper.
+
+    options : Dict, optional
+        Dictionary with fields that serve as parameters for the algorithm.
+
+        mxitr : int
+            Maximum number of iterations.
+            Default value is 10000.
+
+        xtol : float
+            Stop control for ||X_k - X_{k-1}||_F.
+            Defaut value is 1e-5.
+
+        ftol : float
+            Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
+            Default value is 1e-12.
+
+        proj : bool
+            If proj is True we perform Cholesky decomposition else we do spectral
+            decomposition.
+            Default value is True.
+
+        gamma : float
+            Parameter of the non-monotone technique proposed by Zhang-Hager.
+            Default value is 0.85.
+
+        rho : float
+            Parameter for control the linear approximation in line search.
+            Default value is 1e-4.
+
+        eta : float
+            Factor for decreasing the step size in the backtracking line search.
+            Default value is 0.1.
+
+        tau : float
+            Initial step size with default value 1e-3.
+        
+        nls : int
+            Number of internal iterations with default value 5.
 
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
@@ -108,8 +147,8 @@ def psdp_opt(
 
     References
     ----------
-    .. [1] Harry F. Oviedo (2019). "A Spectral Gradient Projection Method for the Positive 
-        Semi-definite Procrustes Problem". Revista Colombiana de Matematicas, Volume 55(2021)1, 
+    .. [1] Harry F. Oviedo (2019). "A Spectral Gradient Projection Method for the Positive
+        Semi-definite Procrustes Problem". Revista Colombiana de Matematicas, Volume 55(2021)1,
         pages 109-123.
     """
     a, b = setup_input_arrays(
@@ -137,27 +176,28 @@ def psdp_opt(
     x = np.eye(n)
 
     # Option structure with fields that serve as parameters for the algorithm.
-    opts = {
-        # Maximum number of iterations.
-        "mxitr": 10000,
-        # Stop control for ||X_k - X_{k-1}||_F.
-        "xtol": 1e-5,
-        # Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
-        "ftol": 1e-12,
-        # If proj is True we perform Cholesky decomposition else we do spectral
-        # decomposition.
-        "proj": True,
-        # Check if A is a diagonal matrix.
-        "a_is_diag": n == m and np.count_nonzero(a - np.diag(np.diagonal(a))) == 0,
-        # Parameter of the non-monotone technique proposed by Zhang-Hager.
-        "gamma": 0.85,
-        # Parameter for control the linear approximation in line search.
-        "rho": 1e-4,
-        # Factor for decreasing the step size in the backtracking line search.
-        "eta": 0.1,
-        # Initial step size.
-        "tau": 1e-3,
-    }
+    if options == None:
+        options = {
+            # Maximum number of iterations.
+            "mxitr": 10000,
+            # Stop control for ||X_k - X_{k-1}||_F.
+            "xtol": 1e-5,
+            # Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
+            "ftol": 1e-12,
+            # If proj is True we perform Cholesky decomposition else we do spectral
+            # decomposition.
+            "proj": True,
+            # Parameter of the non-monotone technique proposed by Zhang-Hager.
+            "gamma": 0.85,
+            # Parameter for control the linear approximation in line search.
+            "rho": 1e-4,
+            # Factor for decreasing the step size in the backtracking line search.
+            "eta": 0.1,
+            # Initial step size.
+            "tau": 1e-3,
+            # Number of internal iterations.
+            "nls": 5
+        }
 
     hold = np.dot(x, a) - b
     grad = np.dot(hold, a.T)
@@ -167,22 +207,22 @@ def psdp_opt(
     cval = f
 
     # Main iteration of the algorithm.
-    for i in range(opts["mxitr"]):
+    for i in range(options["mxitr"]):
         x_old = x
         f_old = f
         grad_old = grad
-        derivative = opts["rho"] * (norm_grad**2)
+        derivative = options["rho"] * (norm_grad**2)
         nls = 1
 
         while True:
-            x = x_old - opts["tau"] * grad_old
-            x = _psd_proj(x, opts["proj"])
+            x = x_old - options["tau"] * grad_old
+            x = _psd_proj(x, options["proj"])
             hold = np.dot(x, a) - b
             f = np.linalg.norm(hold) ** 2
 
-            if f <= cval - opts["tau"] * derivative or nls >= 5:
+            if f <= cval - options["tau"] * derivative or nls >= options["nls"]:
                 break
-            opts["tau"] = opts["eta"] * opts["tau"]
+            options["tau"] = options["eta"] * options["tau"]
             nls += 1
 
         grad = np.dot(hold, a.T)
@@ -192,7 +232,7 @@ def psdp_opt(
         s = x - x_old
         norm_s = np.linalg.norm(s)
         x_diff = norm_s / np.linalg.norm(x)
-        f_diff = abs(f - f_old) / abs(f_old + 1)
+        f_diff = abs((f - f_old) / (f_old + 1))
 
         y = grad - grad_old
         sy = abs(np.sum(np.multiply(s, y)))
@@ -200,21 +240,23 @@ def psdp_opt(
             tau = (norm_s**2) / sy
         else:
             tau = sy / (np.linalg.norm(y) ** 2)
+        # Bounding the step size between 1e-20 and 1e20
+        # so that it is neither too low or too high.
         tau = max(min(tau, 1e20), 1e-20)
 
         # Stopping conditions.
-        if norm_s < opts["xtol"] or (
-            x_diff < 100 * opts["ftol"] and f_diff < opts["ftol"]
+        if norm_s < options["xtol"] or (
+            x_diff < 100 * options["ftol"] and f_diff < options["ftol"]
         ):
             if i <= 2:
-                opts["ftol"] /= 10
-                opts["xtol"] /= 10
+                options["ftol"] /= 10
+                options["xtol"] /= 10
             else:
                 break
 
         q_old = q
-        q = opts["gamma"] * q_old + 1
-        cval = (opts["gamma"] * q_old * cval + f) / q
+        q = options["gamma"] * q_old + 1
+        cval = (options["gamma"] * q_old * cval + f) / q
 
     # error = ||SAT - B||_F
     return ProcrustesResult(
@@ -746,6 +788,10 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
     ----------
     arr : np.ndarray
         The input matrix.
+    
+    do_cholesky : bool
+        Parameter to decide whether or not to perform
+        Cholesky decomposition.
 
     Returns
     -------
@@ -754,7 +800,7 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
     """
     arr = (arr + arr.T) / 2
     if np.isnan(arr).any() or np.isposinf(abs(arr)).any():
-        raise ValueError("C^h u.T")
+        raise ValueError("Array has atleast one entry which is NaN or infinite.")
 
     try:
         assert do_cholesky

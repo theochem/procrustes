@@ -23,7 +23,7 @@
 """Positive semidefinite Procrustes Module."""
 
 from math import inf, sqrt
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import numpy as np
 from numpy.linalg import multi_dot
@@ -103,7 +103,7 @@ def psdp_opt(
 
         tau : float
             Initial step size with default value 1e-3.
-        
+
         nls : int
             Number of internal iterations with default value 5.
 
@@ -176,7 +176,7 @@ def psdp_opt(
     x = np.eye(n)
 
     # Option structure with fields that serve as parameters for the algorithm.
-    if options == None:
+    if options is None:
         options = {
             # Maximum number of iterations.
             "mxitr": 10000,
@@ -196,7 +196,7 @@ def psdp_opt(
             # Initial step size.
             "tau": 1e-3,
             # Number of internal iterations.
-            "nls": 5
+            "nls": 5,
         }
 
     hold = np.dot(x, a) - b
@@ -788,7 +788,7 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
     ----------
     arr : np.ndarray
         The input matrix.
-    
+
     do_cholesky : bool
         Parameter to decide whether or not to perform
         Cholesky decomposition.

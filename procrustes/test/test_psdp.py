@@ -188,8 +188,7 @@ def test_psdp_opt_generic_non_square():
 
 
 def test_psdp_woodgate_non_full_rank():
-    r"""Test Woodgate's algorithm for PSDP
-    when the to be transformed matrix doesn't have full rank."""
+    r"""Test Woodgate's algorithm for PSDP for full rank matrix."""
     a = np.array(
         [
             [0.3452, -0.9897, 0.8082, -0.1739, -1.4692, -0.2531, 1.0339],
@@ -227,8 +226,7 @@ def test_psdp_woodgate_non_full_rank():
 
 
 def test_psdp_peng_non_full_rank():
-    r"""Test Peng's algorithm for PSDP
-    when the to be transformed matrix doesn't have full rank."""
+    r"""Test Peng's algorithm for PSDP for full rank matrix."""
     a = np.array(
         [
             [0.3452, -0.9897, 0.8082, -0.1739, -1.4692, -0.2531, 1.0339],

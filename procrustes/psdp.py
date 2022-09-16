@@ -806,5 +806,5 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
         assert do_cholesky
         _ = np.linalg.cholesky(arr)
         return arr
-    except Exception:
+    except (Exception,):
         return _make_positive(arr)

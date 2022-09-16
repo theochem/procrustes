@@ -802,9 +802,9 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
     if np.isnan(arr).any() or np.isposinf(abs(arr)).any():
         raise ValueError("Array has atleast one entry which is NaN or infinite.")
 
-    if do_cholesky:
-        # Check if cholesky decomposition is even possible.
+    try:
+        assert do_cholesky
         _ = np.linalg.cholesky(arr)
         return arr
-    else:
+    except np.linalg.LinAlgError:
         return _make_positive(arr)

@@ -179,16 +179,27 @@ def psdp_opt(
     n, m = a.shape
     x = np.eye(n)
 
-    if options == None:
+    # Option structure with fields that serve as parameters for the algorithm.
+    if options is None:
         options = {
+            # Maximum number of iterations.
             "mxitr": 10000,
+            # Stop control for ||X_k - X_{k-1}||_F.
             "xtol": 1e-5,
+            # Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
             "ftol": 1e-12,
+            # If proj is True we perform Cholesky decomposition else we do spectral
+            # decomposition.
             "proj": True,
+            # Parameter of the non-monotone technique proposed by Zhang-Hager.
             "gamma": 0.85,
+            # Parameter for control the linear approximation in line search.
             "rho": 1e-4,
+            # Factor for decreasing the step size in the backtracking line search.
             "eta": 0.1,
+            # Initial step size.
             "tau": 1e-3,
+            # Number of internal iterations.
             "nls": 5,
         }
 

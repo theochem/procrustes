@@ -51,7 +51,7 @@ def test_psdp_opt_identity(n=np.random.randint(50, 100)):
     r"""Test OptPSDP with identity matrix."""
     a = np.eye(n)
     b = np.eye(n)
-    res = psdp_opt(a=a, b=b, options=None)
+    res = psdp_opt(a=a, b=b)
     s, error = res["s"], res["error"]
     assert_almost_equal(s, np.eye(n))
     assert_almost_equal(error, 0.0)
@@ -83,7 +83,7 @@ def test_psdp_opt_diagonal():
     r"""Test OptPSDP with diagonal matrix."""
     a = np.diag([1, 2, 3, 4])
     b = np.eye(4)
-    res = psdp_opt(a=a, b=b, options=None)
+    res = psdp_opt(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.diag([1, 0.5, 0.33333, 0.25])
     assert_almost_equal(s, actual_result, decimal=1)
@@ -128,7 +128,7 @@ def test_psdp_opt_generic_square():
     r"""Test OptPSDP with 2 generic square matrices."""
     a = np.array([[1, 6, 0], [4, 3, 0], [0, 0, -0.5]])
     b = np.array([[1, 0, 0], [0, -2, 3], [0, 2, 4]])
-    res = psdp_opt(a=a, b=b, options=None)
+    res = psdp_opt(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array(
         [
@@ -179,7 +179,7 @@ def test_psdp_opt_generic_non_square():
     r"""Test OptPSDP with 2 generic non-square matrices."""
     a = np.array([[5, 1, 6, -1], [3, 2, 0, 2], [2, 4, 3, -3]])
     b = np.array([[15, 1, 15 - 3, 2 + 5], [10, 5, 6, 3], [-3, 3, -3, -2 + 4]])
-    res = psdp_opt(a=a, b=b, options=None)
+    res = psdp_opt(a=a, b=b)
     error = res["error"]
     # Keeping error assertion to be less than a threshold value
     # rather than "almost equal" to a given value because increasing
@@ -292,6 +292,6 @@ def test_psdp_opt_non_full_rank():
             [-0.5694, -9.4371, -5.5455, -15.6041, 24.4958, -20.4567, -11.4576],
         ]
     )
-    res = psdp_opt(a=a, b=b, options=None)
+    res = psdp_opt(a=a, b=b)
     error = res["error"]
     assert_almost_equal(error, 0.0, decimal=2)

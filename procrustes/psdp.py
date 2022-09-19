@@ -31,23 +31,17 @@ from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 from scipy.optimize import minimize
 
-__all__ = ["psdp_woodgate", "psdp_peng", "psdp_opt"]
+__all__ = [
+    "psdp_woodgate",
+    "psdp_peng",
+    "psdp_opt"
+]
 
 
 def psdp_opt(
     a: np.ndarray,
     b: np.ndarray,
-    options: Dict = {
-        "mxitr": 10000,
-        "xtol": 1e-5,
-        "ftol": 1e-12,
-        "proj": True,
-        "gamma": 0.85,
-        "rho": 1e-4,
-        "eta": 0.1,
-        "tau": 1e-3,
-        "nls": 5,
-    },
+    options: Dict = None,
     pad: bool = True,
     translate: bool = False,
     scale: bool = False,
@@ -184,6 +178,19 @@ def psdp_opt(
     # (as mentioned in the function description).
     n, m = a.shape
     x = np.eye(n)
+
+    if options == None:
+        options = {
+            "mxitr": 10000,
+            "xtol": 1e-5,
+            "ftol": 1e-12,
+            "proj": True,
+            "gamma": 0.85,
+            "rho": 1e-4,
+            "eta": 0.1,
+            "tau": 1e-3,
+            "nls": 5,
+        }
 
     hold = np.dot(x, a) - b
     grad = np.dot(hold, a.T)

@@ -24,11 +24,11 @@ r"""Testings for PSDP (positive semi-definite Procrustes) module."""
 
 import numpy as np
 from numpy.testing import assert_almost_equal
-from procrustes.psdp import psdp_peng, psdp_woodgate
+from procrustes.psdp import psdp_opt, psdp_peng, psdp_woodgate
 
 
 def test_psdp_woodgate_identity(n=np.random.randint(50, 100)):
-    r"""Test PSDP with identity matrix."""
+    r"""Test Woodgate's algorithm for PSDP with identity matrix."""
     a = np.eye(n)
     b = np.eye(n)
     res = psdp_woodgate(a=a, b=b)
@@ -38,7 +38,7 @@ def test_psdp_woodgate_identity(n=np.random.randint(50, 100)):
 
 
 def test_psdp_peng_identity(n=np.random.randint(50, 100)):
-    r"""Test PSDP with identity matrix."""
+    r"""Test Peng's algorithm for PSDP with identity matrix."""
     a = np.eye(n)
     b = np.eye(n)
     res = psdp_peng(a=a, b=b)
@@ -47,8 +47,18 @@ def test_psdp_peng_identity(n=np.random.randint(50, 100)):
     assert_almost_equal(error, 0.0)
 
 
+def test_psdp_opt_identity(n=np.random.randint(50, 100)):
+    r"""Test OptPSDP with identity matrix."""
+    a = np.eye(n)
+    b = np.eye(n)
+    res = psdp_opt(a=a, b=b)
+    s, error = res["s"], res["error"]
+    assert_almost_equal(s, np.eye(n))
+    assert_almost_equal(error, 0.0)
+
+
 def test_psdp_woodgate_diagonal():
-    r"""Test PSDP with diagonal matrix."""
+    r"""Test Woodgate's algorithm for PSDP with diagonal matrix."""
     a = np.diag([1, 2, 3, 4])
     b = np.eye(4)
     res = psdp_woodgate(a=a, b=b)
@@ -59,7 +69,7 @@ def test_psdp_woodgate_diagonal():
 
 
 def test_psdp_peng_diagonal():
-    r"""Test PSDP with diagonal matrix."""
+    r"""Test Peng's algorithm for PSDP with diagonal matrix."""
     a = np.diag([1, 2, 3, 4])
     b = np.eye(4)
     res = psdp_peng(a=a, b=b)
@@ -69,8 +79,19 @@ def test_psdp_peng_diagonal():
     assert_almost_equal(error, 0.0, decimal=3)
 
 
+def test_psdp_opt_diagonal():
+    r"""Test OptPSDP with diagonal matrix."""
+    a = np.diag([1, 2, 3, 4])
+    b = np.eye(4)
+    res = psdp_opt(a=a, b=b)
+    s, error = res["s"], res["error"]
+    actual_result = np.diag([1, 0.5, 0.33333, 0.25])
+    assert_almost_equal(s, actual_result, decimal=1)
+    assert_almost_equal(error, 0.0, decimal=3)
+
+
 def test_psdp_woodgate_generic_square():
-    r"""Test PSDP with 2 generic square matrices."""
+    r"""Test Woodgate's algorithm for PSDP with 2 generic square matrices."""
     a = np.array([[1, 6, 0], [4, 3, 0], [0, 0, -0.5]])
     b = np.array([[1, 0, 0], [0, -2, 3], [0, 2, 4]])
     res = psdp_woodgate(a=a, b=b)
@@ -87,7 +108,7 @@ def test_psdp_woodgate_generic_square():
 
 
 def test_psdp_peng_generic_square():
-    r"""Test PSDP with 2 generic square matrices."""
+    r"""Test Peng's algorithm for PSDP with 2 generic square matrices."""
     a = np.array([[1, 6, 0], [4, 3, 0], [0, 0, -0.5]])
     b = np.array([[1, 0, 0], [0, -2, 3], [0, 2, 4]])
     res = psdp_peng(a=a, b=b)
@@ -103,8 +124,25 @@ def test_psdp_peng_generic_square():
     assert_almost_equal(error, 33.43617791613022, decimal=3)
 
 
+def test_psdp_opt_generic_square():
+    r"""Test OptPSDP with 2 generic square matrices."""
+    a = np.array([[1, 6, 0], [4, 3, 0], [0, 0, -0.5]])
+    b = np.array([[1, 0, 0], [0, -2, 3], [0, 2, 4]])
+    res = psdp_opt(a=a, b=b)
+    s, error = res["s"], res["error"]
+    actual_result = np.array(
+        [
+            [0.22423989, -0.11129353, 0.24612947],
+            [-0.11129353, 0.0552366, -0.12215765],
+            [0.24612947, -0.12215765, 0.27015584],
+        ]
+    )
+    assert_almost_equal(s, actual_result, decimal=3)
+    assert_almost_equal(error, 31.371443352940343, decimal=3)
+
+
 def test_psdp_woodgate_generic_non_square():
-    r"""Test PSDP with 2 generic non-square matrices."""
+    r"""Test Woodgate's algorithm for PSDP with 2 generic non-square matrices."""
     a = np.array([[5, 1, 6, -1], [3, 2, 0, 2], [2, 4, 3, -3]])
     b = np.array([[15, 1, 15 - 3, 2 + 5], [10, 5, 6, 3], [-3, 3, -3, -2 + 4]])
     res = psdp_woodgate(a=a, b=b)
@@ -121,7 +159,7 @@ def test_psdp_woodgate_generic_non_square():
 
 
 def test_psdp_peng_generic_non_square():
-    r"""Test PSDP with 2 generic non-square matrices."""
+    r"""Test Peng's algorithm for PSDP with 2 generic non-square matrices."""
     a = np.array([[5, 1, 6, -1], [3, 2, 0, 2], [2, 4, 3, -3]])
     b = np.array([[15, 1, 15 - 3, 2 + 5], [10, 5, 6, 3], [-3, 3, -3, -2 + 4]])
     res = psdp_peng(a=a, b=b)
@@ -137,8 +175,20 @@ def test_psdp_peng_generic_non_square():
     assert_almost_equal(error, 32.21671819685297)
 
 
+def test_psdp_opt_generic_non_square():
+    r"""Test OptPSDP with 2 generic non-square matrices."""
+    a = np.array([[5, 1, 6, -1], [3, 2, 0, 2], [2, 4, 3, -3]])
+    b = np.array([[15, 1, 15 - 3, 2 + 5], [10, 5, 6, 3], [-3, 3, -3, -2 + 4]])
+    res = psdp_opt(a=a, b=b)
+    error = res["error"]
+    # Keeping error assertion to be less than a threshold value
+    # rather than "almost equal" to a given value because increasing
+    # the number of iterations might reduce the error obtained.
+    assert error <= 32.2
+
+
 def test_psdp_woodgate_non_full_rank():
-    r"""Test PSDP when the to be transformed matrix doesn't have full rank."""
+    r"""Test Woodgate's algorithm for PSDP for full rank matrix."""
     a = np.array(
         [
             [0.3452, -0.9897, 0.8082, -0.1739, -1.4692, -0.2531, 1.0339],
@@ -176,7 +226,7 @@ def test_psdp_woodgate_non_full_rank():
 
 
 def test_psdp_peng_non_full_rank():
-    r"""Test PSDP when the to be transformed matrix doesn't have full rank."""
+    r"""Test Peng's algorithm for PSDP for full rank matrix."""
     a = np.array(
         [
             [0.3452, -0.9897, 0.8082, -0.1739, -1.4692, -0.2531, 1.0339],
@@ -217,4 +267,31 @@ def test_psdp_peng_non_full_rank():
         ]
     )
     assert_almost_equal(s, actual_result, decimal=2)
+    assert_almost_equal(error, 0.0, decimal=2)
+
+
+def test_psdp_opt_non_full_rank():
+    r"""Test OptPSDP when the to be transformed matrix doesn't have full rank."""
+    a = np.array(
+        [
+            [0.3452, -0.9897, 0.8082, -0.1739, -1.4692, -0.2531, 1.0339],
+            [0.2472, -1.4457, -0.6672, -0.5790, 1.2516, -0.8184, -0.4790],
+            [-1.3567, -0.9348, 0.7573, 1.7002, -0.9627, -0.5655, 2.5222],
+            [1.6639, 0.6111, -0.1858, 0.0485, 0.1136, 0.1372, -0.0149],
+            [-0.1400, -0.3303, -0.2965, 0.0218, 0.0565, -0.1907, -0.2544],
+            [-1.2662, 0.1905, 0.3302, -0.4041, 1.1479, -1.4716, 0.0857],
+        ]
+    )
+    b = np.array(
+        [
+            [6.3043, -6.5364, 1.2659, -2.7625, -2.9861, -5.4362, 2.7422],
+            [-0.5694, -9.4371, -5.5455, -15.6041, 24.4958, -20.4567, -11.4576],
+            [-0.1030, 2.3164, 3.0813, 8.1280, -10.6447, 6.6903, 7.9874],
+            [8.1678, -4.5977, 0.0559, -2.6948, 1.1326, -6.5904, 2.0167],
+            [6.3043, -6.5364, 1.2659, -2.7625, -2.9861, -5.4362, 2.7422],
+            [-0.5694, -9.4371, -5.5455, -15.6041, 24.4958, -20.4567, -11.4576],
+        ]
+    )
+    res = psdp_opt(a=a, b=b)
+    error = res["error"]
     assert_almost_equal(error, 0.0, decimal=2)

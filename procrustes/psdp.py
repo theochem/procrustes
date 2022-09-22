@@ -23,7 +23,7 @@
 """Positive semidefinite Procrustes Module."""
 
 from math import inf, sqrt
-from typing import Optional
+from typing import Dict, Optional
 
 import numpy as np
 from numpy.linalg import multi_dot
@@ -33,8 +33,245 @@ from scipy.optimize import minimize
 
 __all__ = [
     "psdp_woodgate",
-    "psdp_peng"
+    "psdp_peng",
+    "psdp_opt"
 ]
+
+
+def psdp_opt(
+    a: np.ndarray,
+    b: np.ndarray,
+    options_dict: Dict = None,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+) -> ProcrustesResult:
+    r"""
+    Spectral projected gradient method for the positive semi-definite Procrustes problem.
+
+    Given a matrix :math:`\mathbf{A}_{n \times m}` and a reference matrix :math:`\mathbf{B}_{n
+    \times m}`, find the positive semidefinite transformation matrix :math:`\mathbf{X}_{n
+    \times n}` that makes :math:`\mathbf{XA}` as close as possible to :math:`\mathbf{B}`.
+    In other words,
+
+    .. math::
+        \text{PSDP: } min_{\mathbf{X}} \|\mathbf{X}\mathbf{A}-\mathbf{B}\|_{F}^2
+
+    Parameters
+    ----------
+    a : np.ndarray
+        The matrix :math:`\mathbf{A}` which is to be transformed.
+        This is relabelled to variable g representing the matrix :math:`\mathbf{G}` as
+        in the paper.
+
+    b : np.ndarray
+        The target matrix :math:`\mathbf{B}`.
+        This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as
+        in the paper.
+
+    options : Dict, optional
+        Dictionary with fields that serve as parameters for the algorithm.
+
+        max_iter : int
+            Maximum number of iterations.
+            Default value is 10000.
+
+        x_tol : float
+            Stop control for ||X_k - X_{k-1}||_F.
+            Defaut value is 1e-5.
+
+        f_tol : float
+            Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
+            Default value is 1e-12.
+
+        proj : bool
+            If proj is True we perform Cholesky decomposition else we do spectral
+            decomposition.
+            Default value is True.
+
+        gamma : float
+            Parameter of the non-monotone technique proposed by Zhang-Hager.
+            Default value is 0.85.
+
+        rho : float
+            Parameter for control the linear approximation in line search.
+            Default value is 1e-4.
+
+        eta : float
+            Factor for decreasing the step size in the backtracking line search.
+            Default value is 0.1.
+
+        tau : float
+            Initial step size with default value 1e-3.
+
+        nls : int
+            Number of internal iterations with default value 5.
+
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+
+    translate : bool, optional
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
+
+    scale : bool, optional
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    check_finite : bool, optional
+        If True, convert the input to an array, checking for NaNs or Infs.
+
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+
+    Returns
+    -------
+    ProcrustesResult
+        The result of the Procrustes transformation.
+
+    Notes
+    -----
+    The OptPSDP algorithm (on which this implementation is based) is defined well in p. 114
+    of [1]_.
+
+    References
+    ----------
+    .. [1] Harry F. Oviedo (2019). "A Spectral Gradient Projection Method for the Positive
+        Semi-definite Procrustes Problem". Revista Colombiana de Matematicas, Volume 55(2021)1,
+        pages 109-123.
+    """
+    a, b = setup_input_arrays(
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    if a.shape != b.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {a.shape} != {b.shape} "
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
+
+    # Initializing the required minimizer.
+    # Here, "a" denotes the matrix to be transformed i.e. A, x is the transformer X
+    # and b is the target matrix B. Our goal is to minimize ||XA - B||_F
+    # (as mentioned in the function description).
+    n, m = a.shape
+    x = np.eye(n)
+
+    # Option structure with fields that serve as parameters for the algorithm.
+    options = {
+        # Maximum number of iterations.
+        "max_iter": 10000,
+        # Stop control for ||X_k - X_{k-1}||_F.
+        "x_tol": 1e-5,
+        # Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
+        "f_tol": 1e-12,
+        # If proj is True we perform Cholesky decomposition else we do spectral
+        # decomposition.
+        "proj": True,
+        # Parameter of the non-monotone technique proposed by Zhang-Hager.
+        "gamma": 0.85,
+        # Parameter for control the linear approximation in line search.
+        "rho": 1e-4,
+        # Factor for decreasing the step size in the backtracking line search.
+        "eta": 0.1,
+        # Initial step size.
+        "tau": 1e-3,
+        # Number of internal iterations.
+        "nls": 5,
+    }
+    # update the parameter dictionary based on values provided by the user
+    if options_dict:
+        options.update(options_dict)
+
+    hold = np.dot(x, a) - b
+    grad = np.dot(hold, a.T)
+    f = np.linalg.norm(hold) ** 2
+    norm_grad = np.linalg.norm(grad)
+    q = 1
+    cval = f
+
+    # Main iteration of the algorithm.
+    for i in range(options["max_iter"]):
+        x_old = x
+        f_old = f
+        grad_old = grad
+        derivative = options["rho"] * (norm_grad**2)
+        nls = 1
+
+        while True:
+            x = x_old - options["tau"] * grad_old
+            x = _psd_proj(x, options["proj"])
+            hold = np.dot(x, a) - b
+            f = np.linalg.norm(hold) ** 2
+
+            if f <= cval - options["tau"] * derivative or nls >= options["nls"]:
+                break
+            options["tau"] = options["eta"] * options["tau"]
+            nls += 1
+
+        grad = np.dot(hold, a.T)
+        norm_grad = np.linalg.norm(grad)
+
+        # Calculate the Barzilai-Borwein step-size.
+        s = x - x_old
+        norm_s = np.linalg.norm(s)
+        x_diff = norm_s / np.linalg.norm(x)
+        f_diff = abs((f - f_old) / (f_old + 1))
+
+        y = grad - grad_old
+        sy = abs(np.sum(np.multiply(s, y)))
+        if i % 2 == 0:
+            tau = (norm_s**2) / sy
+        else:
+            tau = sy / (np.linalg.norm(y) ** 2)
+        # Bounding the step size between 1e-20 and 1e20
+        # so that it is neither too low or too high.
+        tau = max(min(tau, 1e20), 1e-20)
+
+        # Stopping conditions.
+        if norm_s < options["x_tol"] or (
+            x_diff < 100 * options["f_tol"] and f_diff < options["f_tol"]
+        ):
+            if i <= 2:
+                options["f_tol"] /= 10
+                options["x_tol"] /= 10
+            else:
+                break
+
+        q_old = q
+        q = options["gamma"] * q_old + 1
+        cval = (options["gamma"] * q_old * cval + f) / q
+
+    # error = ||SAT - B||_F
+    return ProcrustesResult(
+        new_a=a,
+        new_b=b,
+        error=compute_error(a=a, b=b, t=np.eye(m), s=x),
+        t=np.eye(m),
+        s=x,
+    )
 
 
 def psdp_peng(
@@ -363,8 +600,10 @@ def psdp_woodgate(
         error.append(compute_error(a=a, b=b, s=np.dot(e.T, e), t=np.eye(a.shape[1])))
 
         # Check if positive semidefinite or if the algorithm has converged.
-        if (np.all(np.linalg.eigvals(le) >= 0)
-                or abs(sqrt(error[-1]) - sqrt(error[-2])) < 1e-5):
+        if (
+            np.all(np.linalg.eigvals(le) >= 0)
+            or abs(sqrt(error[-1]) - sqrt(error[-2])) < 1e-5
+        ):
             break
 
         # Make all the eigenvalues of le positive and use it to compute d.
@@ -381,11 +620,7 @@ def psdp_woodgate(
 
     # Returning the result as a ProcrastesResult object.
     return ProcrustesResult(
-        new_a=a,
-        new_b=b,
-        error=error[-1],
-        s=np.dot(e.T, e),
-        t=np.eye(a.shape[1])
+        new_a=a, new_b=b, error=error[-1], s=np.dot(e.T, e), t=np.eye(a.shape[1])
     )
 
 
@@ -549,3 +784,33 @@ def _scale(e: np.ndarray, g: np.ndarray, q: np.ndarray) -> np.ndarray:
         )
     )
     return alpha * e
+
+
+def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
+    r"""
+    Return the symmetric positive semi-definite matrix nearest to a given matrix.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        The input matrix.
+
+    do_cholesky : bool
+        Parameter to decide whether or not to perform
+        Cholesky decomposition.
+
+    Returns
+    -------
+    np.ndarray
+        The nearest symmetric positive semi-definite matrix.
+    """
+    arr = (arr + arr.T) / 2
+    if np.isnan(arr).any() or np.isposinf(abs(arr)).any():
+        raise ValueError("Array has atleast one entry which is NaN or infinite.")
+
+    try:
+        assert do_cholesky
+        _ = np.linalg.cholesky(arr)
+        return arr
+    except np.linalg.LinAlgError:
+        return _make_positive(arr)

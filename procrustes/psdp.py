@@ -76,15 +76,15 @@ def psdp_opt(
     options : Dict, optional
         Dictionary with fields that serve as parameters for the algorithm.
 
-        mxitr : int
+        max_iter : int
             Maximum number of iterations.
             Default value is 10000.
 
-        xtol : float
+        x_tol : float
             Stop control for ||X_k - X_{k-1}||_F.
             Defaut value is 1e-5.
 
-        ftol : float
+        f_tol : float
             Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
             Default value is 1e-12.
 
@@ -182,11 +182,11 @@ def psdp_opt(
     # Option structure with fields that serve as parameters for the algorithm.
     options = {
         # Maximum number of iterations.
-        "mxitr": 10000,
+        "max_iter": 10000,
         # Stop control for ||X_k - X_{k-1}||_F.
-        "xtol": 1e-5,
+        "x_tol": 1e-5,
         # Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
-        "ftol": 1e-12,
+        "f_tol": 1e-12,
         # If proj is True we perform Cholesky decomposition else we do spectral
         # decomposition.
         "proj": True,
@@ -213,7 +213,7 @@ def psdp_opt(
     cval = f
 
     # Main iteration of the algorithm.
-    for i in range(options["mxitr"]):
+    for i in range(options["max_iter"]):
         x_old = x
         f_old = f
         grad_old = grad
@@ -251,12 +251,12 @@ def psdp_opt(
         tau = max(min(tau, 1e20), 1e-20)
 
         # Stopping conditions.
-        if norm_s < options["xtol"] or (
-            x_diff < 100 * options["ftol"] and f_diff < options["ftol"]
+        if norm_s < options["x_tol"] or (
+            x_diff < 100 * options["f_tol"] and f_diff < options["f_tol"]
         ):
             if i <= 2:
-                options["ftol"] /= 10
-                options["xtol"] /= 10
+                options["f_tol"] /= 10
+                options["x_tol"] /= 10
             else:
                 break
 

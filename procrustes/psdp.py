@@ -38,35 +38,6 @@ __all__ = [
     "psdp_projgrad"
 ]
 
-def init_procustes_projgrad(
-    A: np.ndarray,
-    B: np.ndarray,
-    choice: int = 0
-) -> np.ndarray:
-    r"""
-    Returns the starting point of the transformation S of the projection gradient algorithm
-    """
-    n, m = A.shape
-
-    # We will find two choices S1 and S2 and return the one that gives a lower error in the minimization function
-
-    # Finding S1
-    S1T = np.linalg.lstsq(A.conj().T, B.conj().T, rcond = 1)[0]
-    S1 = S1T.conj().T
-    S1 = _psd_proj(S1)
-    e1 = np.linalg.norm(S1@A-B, 'fro')
-
-    # Finding S2
-    eps = 1e-6
-    S2 = np.zeros((n, n))
-    for i in range(n):
-        S2[i, i] = max(0, (A[i,:]@B[i,:].conj().T) / (np.linalg.norm(A[i,:])**2 + eps)) # Adding eps to avoid 0 division
-    e2 = np.linalg.norm(S2@A-B, "fro")
-
-    if e1 < e2 or choice == 1:
-        return S1
-    elif e2 < e1 or choice == 2:
-        return S2
 
 def psdp_projgrad(
     a: np.ndarray,
@@ -112,7 +83,7 @@ def psdp_projgrad(
 
     n, m = A.shape
 
-    S = init_procustes_projgrad(A, B)
+    S = _init_procustes_projgrad(A, B)
     
     # Performing some precomputations
     AAT = A@A.conj().T
@@ -923,3 +894,35 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
         return arr
     except np.linalg.LinAlgError:
         return _make_positive(arr)
+
+
+
+def _init_procustes_projgrad(
+    A: np.ndarray,
+    B: np.ndarray,
+    choice: int = 0
+) -> np.ndarray:
+    r"""
+    Returns the starting point of the transformation S of the projection gradient algorithm
+    """
+    n, m = A.shape
+
+    # We will find two choices S1 and S2 and return the one that gives a lower error in the minimization function
+
+    # Finding S1
+    S1T = np.linalg.lstsq(A.conj().T, B.conj().T, rcond = 1)[0]
+    S1 = S1T.conj().T
+    S1 = _psd_proj(S1)
+    e1 = np.linalg.norm(S1@A-B, 'fro')
+
+    # Finding S2
+    eps = 1e-6
+    S2 = np.zeros((n, n))
+    for i in range(n):
+        S2[i, i] = max(0, (A[i,:]@B[i,:].conj().T) / (np.linalg.norm(A[i,:])**2 + eps)) # Adding eps to avoid 0 division
+    e2 = np.linalg.norm(S2@A-B, "fro")
+
+    if e1 < e2 or choice == 1:
+        return S1
+    elif e2 < e1 or choice == 2:
+        return S2

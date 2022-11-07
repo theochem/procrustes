@@ -37,6 +37,114 @@ __all__ = [
     "psdp_opt"
 ]
 
+def init_procustes_projgrad(
+    A: np.ndarray,
+    B: np.ndarray,
+    choice: int = 0
+) -> np.ndarray:
+    r"""
+    Returns the starting point of the transformation S of the projection gradient algorithm
+    """
+    n, m = A.shape
+
+    # We will find two choices S1 and S2 and return the one that gives a lower error in the minimization function
+
+    # Finding S1
+    S1T = np.linalg.lstsq(A.conj().T, B.conj().T, rcond = 1)[0]
+    S1 = S1T.conj().T
+    S1 = _psd_proj(S1)
+    e1 = np.linalg.norm(S1@A-B, 'fro')
+
+    # Finding S2
+    eps = 1e-6
+    S2 = np.zeros((n, n))
+    for i in range(n):
+        S2[i, i] = max(0, (A[i,:]@B[i,:].conj().T) / (np.linalg.norm(A[i,:])**2 + eps)) # Adding eps to avoid 0 division
+    e2 = np.linalg.norm(S2@A-B, "fro")
+
+    if e1 < e2 or choice == 1:
+        return S1
+    elif e2 < e1 or choice == 2:
+        return S2
+
+def psdp_projgrad(
+    a: np.ndarray,
+    b: np.ndarray,
+    max_iterations: int = 1000,
+    delta: float = 1e-6,
+    tol: float = 1e-6,
+    pad: bool = True,
+    translate: bool = False,
+    scale: bool = False,
+    unpad_col: bool = False,
+    unpad_row: bool = False,
+    check_finite: bool = True,
+    weight: Optional[np.ndarray] = None,
+) -> ProcrustesResult:
+    r"""
+    We want to minimize the function ||SAT-B||_F where A and B are n*m matrices and S is n*n transformation we want to find that minimizes the above function and T is just an identity matrix for now. We are only considering left transformation.
+
+    The paper minimizes the following function ||AX-B||_F, so the mapping between the problem statements are
+    Term used in paper             Term used in our implementation
+    --------------------------------------------------------------
+    A                               S
+    X                               A
+    B                               B
+    """
+    A, B = setup_input_arrays(
+        a,
+        b,
+        unpad_col,
+        unpad_row,
+        pad,
+        translate,
+        scale,
+        check_finite,
+        weight,
+    )
+    
+    if A.shape != B.shape:
+        raise ValueError(
+            f"Shape of A and B does not match: {a.shape} != {b.shape} "
+            "Check pad, unpad_col, and unpad_row arguments."
+        )
+
+    n, m = A.shape
+
+    S = init_procustes_projgrad(A, B)
+    
+    # Performing some precomputations
+    AAT = A@A.conj().T
+    x, _ = np.linalg.eig(AAT)
+    max_eig = np.max(x) ** 2 # Not sure if these can be complex too, if they are complex, then need to take norm
+    min_eig = np.min(x) ** 2 # Same as above
+    BAT = B@A.conj().T
+
+    # Initialization of the algorithm
+    i = 1
+    eps  = 1
+    eps0 = 0
+    err = np.zeros((max_iterations + 1, 1))
+
+    while i <= max_iterations and eps >= delta*eps0:    
+        S_old = S
+        # Projected gradient step
+        S = _psd_proj(S - (S@AAT - BAT)/max_eig)
+        if i ==1:
+            eps0 = np.linalg.norm(S-S_old, 'fro')
+        eps = np.linalg.norm(S-S_old, 'fro')
+        err[i] = np.linalg.norm(S@A-B, 'fro')
+        if err[i] < tol:
+            break
+        i += 1
+
+    return ProcrustesResult(
+        new_a=A,
+        new_b=B,
+        error=compute_error(a=a, b=b, t=np.eye(m), s=S),
+        t=np.eye(m),
+        s=S,
+    )
 
 def psdp_opt(
     a: np.ndarray,

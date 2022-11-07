@@ -34,7 +34,8 @@ from scipy.optimize import minimize
 __all__ = [
     "psdp_woodgate",
     "psdp_peng",
-    "psdp_opt"
+    "psdp_opt",
+    "psdp_projgrad"
 ]
 
 def init_procustes_projgrad(

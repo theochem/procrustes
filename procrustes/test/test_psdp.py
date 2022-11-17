@@ -51,7 +51,7 @@ def test_psdp_projgrad_generic_square():
     r"""Test Projected Gradient's algorithm for PSDP with 2 generic square matrices."""
     a = np.array([[1, 6, 0], [4, 3, 0], [0, 0, -0.5]])
     b = np.array([[1, 0, 0], [0, -2, 3], [0, 2, 4]])
-    res = psdp_projgrad(a=a, b=b, max_iterations= 10000)
+    res = psdp_projgrad(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array(
         [
@@ -68,7 +68,7 @@ def test_psdp_projgrad_generic_non_square():
     r"""Test Projected Grdient's algorithm for PSDP with 2 generic non-square matrices."""
     a = np.array([[5, 1, 6, -1], [3, 2, 0, 2], [2, 4, 3, -3]])
     b = np.array([[15, 1, 15 - 3, 2 + 5], [10, 5, 6, 3], [-3, 3, -3, -2 + 4]])
-    res = psdp_projgrad(a=a, b=b, max_iterations=10000)
+    res = psdp_projgrad(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array([
         [ 2.58262946,  1.10868691, -1.08661918],
@@ -101,7 +101,7 @@ def test_psdp_projgrad_non_full_rank():
             [-0.5694, -9.4371, -5.5455, -15.6041, 24.4958, -20.4567, -11.4576],
         ]
     )
-    res = psdp_projgrad(a=a, b=b, max_iterations=10000)
+    res = psdp_projgrad(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array([
         [ 5.40878932,  1.63338805, -0.30680274,  3.87229356,  5.40863988,  1.63366874],

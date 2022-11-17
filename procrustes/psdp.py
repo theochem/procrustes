@@ -35,16 +35,14 @@ __all__ = [
     "psdp_woodgate",
     "psdp_peng",
     "psdp_opt",
-    "psdp_projgrad"
+    "psdp_projgrad",
 ]
 
 
 def psdp_projgrad(
     a: np.ndarray,
     b: np.ndarray,
-    max_iterations: int = 1000,
-    delta: float = 1e-6,
-    tol: float = 1e-6,
+    options_dict: Dict = {},
     pad: bool = True,
     translate: bool = False,
     scale: bool = False,
@@ -54,7 +52,9 @@ def psdp_projgrad(
     weight: Optional[np.ndarray] = None,
 ) -> ProcrustesResult:
     r"""
-    We want to minimize the function ||SAT-B||_F where A and B are n*m matrices and S is n*n transformation we want to find that minimizes the above function and T is just an identity matrix for now. We are only considering left transformation.
+    Projected gradient method for the positive semi-definite Procrustes problem.
+
+    We want to minimize the function F = ||SAT-B||_F where A and B are n*m matrices and S is n*n transformation we want to find that minimizes the above function and T is just an identity matrix for now. We are only considering left transformation.
 
     The paper minimizes the following function ||AX-B||_F, so the mapping between the problem statements are
     Term used in paper             Term used in our implementation
@@ -62,6 +62,72 @@ def psdp_projgrad(
     A                               S
     X                               A
     B                               B
+
+    Parameters
+    ----------
+    a : np.ndarray
+        The matrix :math:`\mathbf{A}` which is to be transformed.
+
+    b : np.ndarray
+        The target matrix :math:`\mathbf{B}`.
+
+    options : Dict, optional
+        Dictionary with fields that serve as parameters for the algorithm.
+
+        max_iter : int
+            Maximum number of iterations.
+            Default value is 10000.
+
+        s_tol : float
+            Stop control for ||S_i - S_{i-1}||_F / ||S_1 - S_0||_F
+            Defaut value is 1e-5. Should be kept below 1
+
+        f_tol : float
+            Stop control for ||F_i - F_{i-1}||_F/(1+||F_{i-1}||_F).
+            Default value is 1e-12. Should be kept way less than 1
+
+    pad : bool, optional
+        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.
+
+    translate : bool, optional
+        If True, both arrays are centered at origin (columns of the arrays will have mean zero).
+
+    scale : bool, optional
+        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and
+        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.
+
+    unpad_col : bool, optional
+        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    unpad_row : bool, optional
+        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.
+
+    check_finite : bool, optional
+        If True, convert the input to an array, checking for NaNs or Infs.
+
+    weight : ndarray, optional
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
+        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
+        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+
+    Returns
+    -------
+    ProcrustesResult
+        The result of the Procrustes transformation.
+
+    Notes
+    -----
+    The Projected Gradient algorithm (on which this implementation is based) is defined well in p. 131
+    of [1]_.
+
+    References
+    ----------
+    .. [1] Nicolas Gillis, Punit Sharma, "A semi-analytical approach for the positive semidefinite
+        Procrustesproblem, Linear Algebra and its Applications, Volume 540, 2018, Pages 112-137
     """
     A, B = setup_input_arrays(
         a,
@@ -83,31 +149,58 @@ def psdp_projgrad(
 
     n, m = A.shape
 
-    S = _init_procustes_projgrad(A, B)
+    # Specifies the default parameters of the algorithm
+    options = {
+        # The maximum number of iterations the gradient descent algorithm must run for
+        "max_iter": 10000,
+        # The minimum ratio of ||S_i - S_{i - 1}||_F with ||S_1 - S_0||_F, below which algorithm terminates
+        "s_tol": 1e-5,
+        # The minimum ratio of ||F_i - F_{i - 1}||_F with 1 + ||F_{i - 1}||_F, below which algorithm terminates
+        "f_tol": 1e-12
+    }
+
+    options.update(options_dict)
     
     # Performing some precomputations
     AAT = A@A.conj().T
     x, _ = np.linalg.eig(AAT)
     max_eig = np.max(x) ** 2 # Not sure if these can be complex too, if they are complex, then need to take norm
-    min_eig = np.min(x) ** 2 # Same as above
     BAT = B@A.conj().T
 
     # Initialization of the algorithm
     i = 1
+    err = np.zeros((options["max_iter"] + 1, 1))
+    # S is the right transformation in our problem statement
+    S = _init_procustes_projgrad(A, B)
+    # F is the function whose norm we want to minimize, F = S@A - B
+    F   = S @ A - B
+    # eps = ||S_i - S_{i - 1}||_F
     eps  = 1
+    # eps0 = ||S_1 - S_0||_F
     eps0 = 0
-    err = np.zeros((max_iterations + 1, 1))
 
-    while i <= max_iterations and eps >= delta*eps0:    
+    # Algorithm is run until the max iterations
+    while i <= options["max_iter"]:    
         S_old = S
+        F_old = F
         # Projected gradient step
         S = _psd_proj(S - (S@AAT - BAT)/max_eig)
+        F   = S @ A - B
+        err[i] = np.linalg.norm(F, 'fro')
+        
+        # Stop conditions to check if the algorithm should be terminated
+        
+        # If the ||F_i - F_{i - 1}||_F / (1 + ||F_old||_F) is lesser than some tolerance level, then we terminate the algorithm, as there is not much improvement gain in the transformation S for the extra iterations we perform
+        if np.linalg.norm(F - F_old, 'fro') / (1 + np.linalg.norm(F_old, 'fro')) < options["f_tol"]:
+            break
+        
+        # If the ||S_i - S_{i - 1}||_F / ||S_1 - S_0||_F is lesser than some tolerance level, then we terminate the algorithm. TODO: to decide if this is useful or not.
         if i ==1:
             eps0 = np.linalg.norm(S-S_old, 'fro')
         eps = np.linalg.norm(S-S_old, 'fro')
-        err[i] = np.linalg.norm(S@A-B, 'fro')
-        if err[i] < tol:
+        if eps >= options["s_tol"] * eps0:
             break
+
         i += 1
 
     return ProcrustesResult(

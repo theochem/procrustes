@@ -190,15 +190,15 @@ def psdp_projgrad(
         
         # Stop conditions to check if the algorithm should be terminated
         
-        # If the ||F_i - F_{i - 1}||_F / (1 + ||F_old||_F) is lesser than some tolerance level, then we terminate the algorithm, as there is not much improvement gain in the transformation S for the extra iterations we perform
+        # If the ||F_i - F_{i - 1}||_F / (1 + ||F_old||_F) is lesser than some tolerance level, then we terminate the algorithm, as there is not much improvement gain in the optimisation problem for the extra iterations we perform
         if np.linalg.norm(F - F_old, 'fro') / (1 + np.linalg.norm(F_old, 'fro')) < options["f_tol"]:
             break
         
         # If the ||S_i - S_{i - 1}||_F / ||S_1 - S_0||_F is lesser than some tolerance level, then we terminate the algorithm. TODO: to decide if this is useful or not.
-        if i ==1:
+        if i == 1:
             eps0 = np.linalg.norm(S-S_old, 'fro')
         eps = np.linalg.norm(S-S_old, 'fro')
-        if eps >= options["s_tol"] * eps0:
+        if eps < options["s_tol"] * eps0:
             break
 
         i += 1

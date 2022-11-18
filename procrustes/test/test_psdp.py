@@ -26,6 +26,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_less
 from procrustes.psdp import psdp_opt, psdp_peng, psdp_woodgate, psdp_projgrad
 
+
 def test_psdp_projgrad_identity(n=np.random.randint(50, 100)):
     r"""Test Projected Gradient's algorithm for PSDP with identity matrix."""
     a = np.eye(n)
@@ -71,8 +72,8 @@ def test_psdp_projgrad_generic_non_square():
     res = psdp_projgrad(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array([
-        [ 2.58262946,  1.10868691, -1.08661918],
-        [ 1.10868691,  1.67636517,  0.13242428],
+        [2.58262946,  1.10868691, -1.08661918],
+        [1.10868691,  1.67636517,  0.13242428],
         [-1.08661918,  0.13242428,  0.75597659]]
     )
     assert_almost_equal(s, actual_result, decimal=5)
@@ -104,12 +105,12 @@ def test_psdp_projgrad_non_full_rank():
     res = psdp_projgrad(a=a, b=b)
     s, error = res["s"], res["error"]
     actual_result = np.array([
-        [ 5.40878932,  1.63338805, -0.30680274,  3.87229356,  5.40863988,  1.63366874],
-        [ 1.63338805,  9.63678713, -3.53016912,  2.47908485,  1.63323779,  9.63660762],
+        [5.40878932,  1.63338805, -0.30680274,  3.87229356,  5.40863988,  1.63366874],
+        [1.63338805,  9.63678713, -3.53016912,  2.47908485,  1.63323779,  9.63660762],
         [-0.30680274, -3.53016912,  2.71131028,  0.02464064, -0.30684737, -3.53027101],
-        [ 3.87229356,  2.47908485,  0.02464064,  5.9697877,   3.87199514,  2.47930511],
-        [ 5.40863988,  1.63323779, -0.30684737,  3.87199514,  5.40849846,  1.63356974],
-        [ 1.63366874,  9.63660762, -3.53027101,  2.47930511,  1.63356974,  9.63675614]
+        [3.87229356,  2.47908485,  0.02464064,  5.9697877,   3.87199514,  2.47930511],
+        [5.40863988,  1.63323779, -0.30684737,  3.87199514,  5.40849846,  1.63356974],
+        [1.63366874,  9.63660762, -3.53027101,  2.47930511,  1.63356974,  9.63675614]
     ])
     assert_almost_equal(s, actual_result, decimal=2)
     assert_almost_equal(error, 0.0, decimal=5)

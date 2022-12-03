@@ -27,6 +27,7 @@ from numpy.testing import assert_almost_equal, assert_array_less
 from procrustes.psdp import psdp_opt, psdp_peng, psdp_projgrad, psdp_woodgate
 
 
+
 def test_psdp_projgrad_identity(n=np.random.randint(50, 100)):
     r"""Test Projected Gradient's algorithm for PSDP with identity matrix."""
     a = np.eye(n)

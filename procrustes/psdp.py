@@ -165,7 +165,8 @@ def psdp_projgrad(
         "f_tol": 1e-12
     }
 
-    options.update(options_dict)
+    if options_dict:
+        options.update(options_dict)
 
     # Performing some precomputations
     aat = a@a.conj().T

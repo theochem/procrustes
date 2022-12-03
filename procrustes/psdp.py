@@ -42,7 +42,7 @@ __all__ = [
 def psdp_projgrad(
     a: np.ndarray,
     b: np.ndarray,
-    options_dict: Dict = {},
+    options_dict: Dict = None,
     pad: bool = True,
     translate: bool = False,
     scale: bool = False,
@@ -54,9 +54,13 @@ def psdp_projgrad(
     r"""
     Projected gradient method for the positive semi-definite Procrustes problem.
 
-    We want to minimize the function F = ||SAT-B||_F where A and B are n*m matrices and S is n*n transformation we want to find that minimizes the above function and T is just an identity matrix for now. We are only considering left transformation.
+    We want to minimize the function F = ||SAT-B||_F where A and B are n*m matrices and S is n*n
+    transformation we want to find that minimizes the above function and T is just an identity
+    matrix for now. We are only considering left transformation.
 
-    The paper minimizes the following function ||AX-B||_F, so the mapping between the problem statements are
+    The paper minimizes the following function ||AX-B||_F, so the mapping between the problem
+    statements are
+
     Term used in paper             Term used in our implementation
     --------------------------------------------------------------
     A                               S
@@ -121,15 +125,15 @@ def psdp_projgrad(
 
     Notes
     -----
-    The Projected Gradient algorithm (on which this implementation is based) is defined well in p. 131
-    of [1]_.
+    The Projected Gradient algorithm (on which this implementation is based) is defined well in
+    p. 131 of [1]_.
 
     References
     ----------
     .. [1] Nicolas Gillis, Punit Sharma, "A semi-analytical approach for the positive semidefinite
         Procrustesproblem, Linear Algebra and its Applications, Volume 540, 2018, Pages 112-137
     """
-    A, B = setup_input_arrays(
+    a, b = setup_input_arrays(
         a,
         b,
         unpad_col,
@@ -140,76 +144,82 @@ def psdp_projgrad(
         check_finite,
         weight,
     )
-    
-    if A.shape != B.shape:
+
+    if a.shape != b.shape:
         raise ValueError(
             f"Shape of A and B does not match: {a.shape} != {b.shape} "
             "Check pad, unpad_col, and unpad_row arguments."
         )
 
-    n, m = A.shape
+    _, m = a.shape
 
     # Specifies the default parameters of the algorithm
     options = {
         # The maximum number of iterations the gradient descent algorithm must run for
         "max_iter": 10000,
-        # The minimum ratio of ||S_i - S_{i - 1}||_F with ||S_1 - S_0||_F, below which algorithm terminates
+        # The minimum ratio of ||S_i - S_{i - 1}||_F with ||S_1 - S_0||_F, below which algorithm
+        # terminates
         "s_tol": 1e-5,
-        # The minimum ratio of ||F_i - F_{i - 1}||_F with 1 + ||F_{i - 1}||_F, below which algorithm terminates
+        # The minimum ratio of ||F_i - F_{i - 1}||_F with 1 + ||F_{i - 1}||_F, below which algorithm
+        # terminates
         "f_tol": 1e-12
     }
 
     options.update(options_dict)
-    
+
     # Performing some precomputations
-    AAT = A@A.conj().T
-    x, _ = np.linalg.eig(AAT)
-    max_eig = np.max(x) ** 2 # Not sure if these can be complex too, if they are complex, then need to take norm
-    BAT = B@A.conj().T
+    aat = a@a.conj().T
+    x, _ = np.linalg.eig(aat)
+    max_eig = np.max(x) ** 2  # if they are complex, then need to take norm
+    bat = b@a.conj().T
 
     # Initialization of the algorithm
     i = 1
     err = np.zeros((options["max_iter"] + 1, 1))
     # S is the right transformation in our problem statement
-    S = _init_procustes_projgrad(A, B)
+    s = _init_procustes_projgrad(a, b)
     # F is the function whose norm we want to minimize, F = S@A - B
-    F   = S @ A - B
+    f = s @ a - b
     # eps = ||S_i - S_{i - 1}||_F
-    eps  = 1
+    eps = 1
     # eps0 = ||S_1 - S_0||_F
     eps0 = 0
 
     # Algorithm is run until the max iterations
-    while i <= options["max_iter"]:    
-        S_old = S
-        F_old = F
+    while i <= options["max_iter"]:
+        s_old = s
+        f_old = f
         # Projected gradient step
-        S = _psd_proj(S - (S@AAT - BAT)/max_eig)
-        F   = S @ A - B
-        err[i] = np.linalg.norm(F, 'fro')
-        
+        s = _psd_proj(s - (s@aat - bat)/max_eig)
+        f = s @ a - b
+        err[i] = np.linalg.norm(f, 'fro')
+
         # Stop conditions to check if the algorithm should be terminated
-        
-        # If the ||F_i - F_{i - 1}||_F / (1 + ||F_old||_F) is lesser than some tolerance level, then we terminate the algorithm, as there is not much improvement gain in the optimisation problem for the extra iterations we perform
-        if np.linalg.norm(F - F_old, 'fro') / (1 + np.linalg.norm(F_old, 'fro')) < options["f_tol"]:
+
+        # If the ||F_i - F_{i - 1}||_F / (1 + ||F_old||_F) is lesser than some tolerance level,
+        # then we terminate the algorithm, as there is not much improvement gain in the
+        # optimisation problem for the extra iterations we perform
+        if np.linalg.norm(f - f_old, 'fro') / (1 + np.linalg.norm(f_old, 'fro')) < options["f_tol"]:
             break
-        
-        # If the ||S_i - S_{i - 1}||_F / ||S_1 - S_0||_F is lesser than some tolerance level, then we terminate the algorithm. TODO: to decide if this is useful or not.
+
+        # If the ||S_i - S_{i - 1}||_F / ||S_1 - S_0||_F is lesser than some tolerance level,
+        # then we terminate the algorithm. TODO: to decide if this is useful or not.
         if i == 1:
-            eps0 = np.linalg.norm(S-S_old, 'fro')
-        eps = np.linalg.norm(S-S_old, 'fro')
+            eps0 = np.linalg.norm(s - s_old, 'fro')
+        eps = np.linalg.norm(s - s_old, 'fro')
         if eps < options["s_tol"] * eps0:
             break
 
         i += 1
 
     return ProcrustesResult(
-        new_a=A,
-        new_b=B,
-        error=compute_error(a=a, b=b, t=np.eye(m), s=S),
+        new_a=a,
+        new_b=b,
+        error=compute_error(a=a, b=b, t=np.eye(m), s=s),
         t=np.eye(m),
-        s=S,
+        s=s,
     )
+
 
 def psdp_opt(
     a: np.ndarray,
@@ -989,33 +999,37 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
         return _make_positive(arr)
 
 
-
 def _init_procustes_projgrad(
-    A: np.ndarray,
-    B: np.ndarray,
+    a: np.ndarray,
+    b: np.ndarray,
     choice: int = 0
 ) -> np.ndarray:
-    r"""
-    Returns the starting point of the transformation S of the projection gradient algorithm
-    """
-    n, m = A.shape
+    r"""Return the starting point of the transformation S of the projection gradient algorithm."""
 
-    # We will find two choices S1 and S2 and return the one that gives a lower error in the minimization function
+    n, _ = a.shape
+
+    # We will find two choices S1 and S2 and return the one that gives a lower error in the
+    # minimization function
 
     # Finding S1
-    S1T = np.linalg.lstsq(A.conj().T, B.conj().T, rcond = 1)[0]
-    S1 = S1T.conj().T
-    S1 = _psd_proj(S1)
-    e1 = np.linalg.norm(S1@A-B, 'fro')
+    s1t = np.linalg.lstsq(a.conj().T, b.conj().T, rcond=1)[0]
+    s1 = s1t.conj().T
+    s1 = _psd_proj(s1)
+    e1 = np.linalg.norm(s1@a-b, 'fro')
 
     # Finding S2
     eps = 1e-6
-    S2 = np.zeros((n, n))
+    s2 = np.zeros((n, n))
     for i in range(n):
-        S2[i, i] = max(0, (A[i,:]@B[i,:].conj().T) / (np.linalg.norm(A[i,:])**2 + eps)) # Adding eps to avoid 0 division
-    e2 = np.linalg.norm(S2@A-B, "fro")
+        s2[i, i] = max(0, (a[i, :]@b[i, :].conj().T) / (np.linalg.norm(a[i, :])**2 + eps))
+        # Adding eps to avoid 0 division
+    e2 = np.linalg.norm(s2@a-b, "fro")
+
+    s_init = None
 
     if e1 < e2 or choice == 1:
-        return S1
+        s_init = s1
     elif e2 < e1 or choice == 2:
-        return S2
+        s_init = s2
+
+    return s_init

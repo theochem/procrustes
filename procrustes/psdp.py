@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Positive semidefinite Procrustes Module."""
+"""Positive semi-definite Procrustes Module."""
 
 from math import inf, sqrt
 from typing import Dict, Optional
@@ -75,20 +75,20 @@ def psdp_projgrad(
     b : np.ndarray
         The target matrix :math:`\mathbf{B}`.
 
-    options : Dict, optional
+    options_dict : Dict, optional
         Dictionary with fields that serve as parameters for the algorithm.
 
         max_iter : int
             Maximum number of iterations.
-            Default value is 10000.
+            Default=10000.
 
         s_tol : float
             Stop control for ||S_i - S_{i-1}||_F / ||S_1 - S_0||_F
-            Defaut value is 1e-5. Should be kept below 1
+            Defaut=1e-5. Should be kept below 1
 
         f_tol : float
             Stop control for ||F_i - F_{i-1}||_F/(1+||F_{i-1}||_F).
-            Default value is 1e-12. Should be kept way less than 1
+            Default=1e-12. Should be kept way less than 1
 
     pad : bool, optional
         Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
@@ -178,7 +178,7 @@ def psdp_projgrad(
     i = 1
     err = np.zeros((options["max_iter"] + 1, 1))
     # S is the right transformation in our problem statement
-    s = _init_procustes_projgrad(a, b)
+    s = _init_procrustes_projgrad(a, b)
     # F is the function whose norm we want to minimize, F = S@A - B
     f = s @ a - b
     # eps = ||S_i - S_{i - 1}||_F
@@ -257,37 +257,31 @@ def psdp_opt(
         This is relabelled to variable f representing the matrix :math:`\mathbf{F}` as
         in the paper.
 
-    options : Dict, optional
+    options_dict : Dict, optional
         Dictionary with fields that serve as parameters for the algorithm.
 
         max_iter : int
-            Maximum number of iterations.
-            Default value is 10000.
+            Maximum number of iterations. Default=10000.
 
         x_tol : float
-            Stop control for ||X_k - X_{k-1}||_F.
-            Defaut value is 1e-5.
+            Stop control for ||X_k - X_{k-1}||_F. Defaut=1e-5.
 
         f_tol : float
             Stop control for |F_k - F_{k-1}|/(1+|F_{k-1}|).
-            Default value is 1e-12.
+            Default=1e-12.
 
         proj : bool
             If proj is True we perform Cholesky decomposition else we do spectral
-            decomposition.
-            Default value is True.
+            decomposition. Default=True.
 
         gamma : float
-            Parameter of the non-monotone technique proposed by Zhang-Hager.
-            Default value is 0.85.
+            Parameter of the non-monotone technique proposed by Zhang-Hager. Default=0.85.
 
         rho : float
-            Parameter for control the linear approximation in line search.
-            Default value is 1e-4.
+            Parameter for control the linear approximation in line search. Default=1e-4.
 
         eta : float
-            Factor for decreasing the step size in the backtracking line search.
-            Default value is 0.1.
+            Factor for decreasing the step size in the backtracking line search. Default=0.1.
 
         tau : float
             Initial step size with default value 1e-3.
@@ -980,8 +974,7 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
         The input matrix.
 
     do_cholesky : bool
-        Parameter to decide whether or not to perform
-        Cholesky decomposition.
+        Parameter to decide whether to perform Cholesky decomposition.
 
     Returns
     -------
@@ -1000,7 +993,7 @@ def _psd_proj(arr: np.ndarray, do_cholesky: bool = True) -> np.ndarray:
         return _make_positive(arr)
 
 
-def _init_procustes_projgrad(
+def _init_procrustes_projgrad(
     a: np.ndarray,
     b: np.ndarray,
     choice: int = 0

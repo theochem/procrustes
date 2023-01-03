@@ -54,7 +54,7 @@ first, and then:
 
 ```bash
 # Create and activate myenv conda environment (optional, but recommended)
-conda create -n myenv python=3.6
+conda create -n myenv python=3.7
 conda activate myenv
 
 # Install the stable release.

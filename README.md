@@ -1,7 +1,7 @@
 Procrustes
 ==========
 
-[![This project supports Python 3.6+](https://img.shields.io/badge/Python-3.6+-blue.svg)](https://python.org/downloads)
+[![This project supports Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub Actions CI Tox Status](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml/badge.svg?branch=master)](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml)
 [![Documentation Status](https://readthedocs.org/projects/procrustes/badge/?version=latest)](https://procrustes.readthedocs.io/en/latest/?badge=latest)

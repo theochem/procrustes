@@ -60,7 +60,7 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-        python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes selector
+        python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes procrustes
 
     - name: CodeCov
       uses: codecov/codecov-action@v4.5.0

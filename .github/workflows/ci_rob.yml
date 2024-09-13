@@ -55,7 +55,7 @@ jobs:
             git fetch origin ${GITHUB_BASE_REF} --depth=2
           fi
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64

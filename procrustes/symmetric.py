@@ -27,12 +27,7 @@ from typing import Optional
 import numpy as np
 import scipy
 
-from procrustes.utils import (
-    ProcrustesResult,
-    _zero_padding,
-    compute_error,
-    setup_input_arrays,
-)
+from procrustes.utils import ProcrustesResult, _zero_padding, compute_error, setup_input_arrays
 
 __all__ = [
     "symmetric",

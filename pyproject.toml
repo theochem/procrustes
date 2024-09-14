@@ -110,8 +110,13 @@ exclude = ["*/*/tests", "tests_*", "doc", "tools/conda.recipe", "tools/conda.rec
 line-length = 100
 
 [tool.isort]
+# https://github.com/PyCQA/isort/blob/main/pyproject.toml
+line_length = 100
 profile = "black"
 known_first_party = ["procrustes"]
+skip = [
+    "procrustes/__init__.py"
+]
 
 [tool.ruff]
 line-length = 100

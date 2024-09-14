@@ -41,7 +41,9 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        architecture: x64
+        # comment this out as the new MacOS runners are arm64
+        # https://github.com/actions/setup-python/issues/825
+        # architecture: x64
 
     - name: Install dependencies
       shell: bash

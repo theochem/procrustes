@@ -24,7 +24,13 @@
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises
-from procrustes.utils import _hide_zero_padding, _scale_array, _translate_array, _zero_padding
+
+from procrustes.utils import (
+    _hide_zero_padding,
+    _scale_array,
+    _translate_array,
+    _zero_padding,
+)
 
 
 def test_zero_padding_rows():

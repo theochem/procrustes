@@ -26,10 +26,11 @@ from math import inf, sqrt
 from typing import Dict, Optional
 
 import numpy as np
-from numpy.linalg import multi_dot
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
+from numpy.linalg import multi_dot
 from scipy.optimize import minimize
+
+from procrustes.utils import ProcrustesResult, compute_error, setup_input_arrays
 
 __all__ = [
     "psdp_woodgate",

@@ -24,6 +24,7 @@ r"""Testings for PSDP (positive semi-definite Procrustes) module."""
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_less
+
 from procrustes.psdp import psdp_opt, psdp_peng, psdp_projgrad, psdp_woodgate
 
 

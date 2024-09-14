@@ -23,11 +23,12 @@
 """Testings for symmetric Procrustes module."""
 
 import numpy as np
+import pytest
 from numpy.testing import assert_almost_equal, assert_equal
+from scipy.stats import ortho_group
+
 from procrustes import symmetric
 from procrustes.test.common import minimize_one_transformation
-import pytest
-from scipy.stats import ortho_group
 
 
 @pytest.mark.parametrize("m, n, add_cols, add_rows", np.random.randint(50, 100, (5, 4)))

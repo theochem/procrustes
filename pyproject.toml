@@ -264,3 +264,19 @@ skips = [
     "B603", # Ignore subprocess call
     "B607", # Ignore subprocess call
 ]
+
+[tool.pylint."MESSAGES CONTROL"]
+max-line-length = 100
+disable = [
+    "too-many-arguments",
+    "too-many-locals",
+    # "wrong-import-order",
+    "fixme",
+    "too-many-branches",
+    "too-many-statements",
+    "too-many-lines",
+    "unnecessary-lambda-assignment",
+    "no-else-return",
+    "no-member",
+    "too-many-branches",
+]

@@ -9,7 +9,6 @@ on:
       - "v*.*.*-*"
       - "*.*.*-*"
 
-
 env:
   # package name
   PYPI_NAME: qc-procrustes

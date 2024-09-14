@@ -85,7 +85,7 @@ documentation = "https://procrustes.qcdevs.org/"
 repository = "https://github.com/theochem/procrustes/"
 
 [build-system]
-requires = ["setuptools>=64", "setuptools-scm>=8", "wheel"]
+requires = ["setuptools>=64", "setuptools-scm>=8", "wheel", "build"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]

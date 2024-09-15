@@ -18,3 +18,15 @@ project:
         - deploy-pypi
         - deploy-conda
         # - deploy-github
+
+# Conda-specific settings:
+conda:
+  linux_url: 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh'
+  osx_url: 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh'
+  base_path: '${HOME}/miniconda3'
+  # The pinning config must be a string of words separated by whitespace,
+  # alternating package and version number. These packages will be pinned at
+  # the given version in conda. Don't use wildcards.
+  pinning: "python 3.11"
+  # you practically always need to include conda-forge.
+  channels: [conda-forge]

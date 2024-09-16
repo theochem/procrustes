@@ -1,0 +1,296 @@
+# -*- coding: utf-8 -*-
+# The Procrustes library provides a set of functions for transforming
+# a matrix to make it as similar as possible to a target matrix.
+#
+# Copyright (C) 2017-2022 The QC-Devs Community
+#
+# This file is part of Procrustes.
+#
+# Procrustes is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# Procrustes is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
+
+[project]
+name = "qc-procrustes"
+description = "Python library for finding the optimal transformation(s) that makes two matrices as close as possible to each other."
+readme = {file = 'README.md', content-type='text/markdown'}
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+authors = [
+    {name = "QC-Devs Community", email = "qcdevs@gmail.com"},
+]
+keywords = [
+    "procrustes analysis",
+    "statistical shape analysis",
+    "qudratic assignment problem",
+    "matrix transformation",
+    "generalized procrustes analysis",
+    "orthogonal procrustes problem",
+    "symmetric procrustes problem",
+    "rotational procrustes problem",
+    "permutation procrustes problem",
+    "softassign method",
+    "molecule alignment",
+    "chemical structure similarity",
+
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Unix",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    'Topic :: Scientific/Engineering :: Physics',
+    'Topic :: Scientific/Engineering :: Chemistry',
+    'Intended Audience :: Science/Research',
+]
+
+dynamic = [
+    "dependencies",
+    "optional-dependencies",
+    "version",
+]
+
+[project.scripts]
+# # Command line interface entrypoint scripts
+# procrustes = "procrustes.__main__:main"
+
+[project.urls]
+homepage = "https://github.com/theochem/procrustes"
+documentation = "https://procrustes.qcdevs.org/"
+repository = "https://github.com/theochem/procrustes/"
+
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = { file = ["requirements_dev.txt"] }}
+
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools-scm
+
+[tool.setuptools]
+platforms = ["Linux", "Windows", "MacOS"]
+include-package-data = true
+zip-safe = true
+
+[tool.setuptools.package-data]
+procrustes = ["*.xml"]
+
+[tool.setuptools.packages.find]
+exclude = ["*/*/tests", "tests_*", "doc", "tools/conda.recipe", "tools/conda.recipe/*"]
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+# https://github.com/PyCQA/isort/blob/main/pyproject.toml
+line_length = 100
+profile = "black"
+known_first_party = ["procrustes"]
+skip = [
+    "procrustes/__init__.py"
+]
+
+[tool.ruff]
+line-length = 100
+show-source = true
+# Rules: https://beta.ruff.rs/docs/rules
+# If you violate a rule, lookup the rule on the Rules page in ruff docs.
+# Many rules have links you can click with a explanation of the rule and how to fix it.
+# If there isn't a link, go to the project the rule was source from (e.g. flake8-bugbear)
+# and review it's docs for the corresponding rule.
+# If you're still confused, ask a fellow developer for assistance.
+# You can also run "ruff rule <rule>" to explain a rule on the command line, without a browser or internet access.
+select = [
+    "E",    # pycodestyle
+    "F",    # Pyflakes
+    "W",    # Warning
+    "B",    # flake8-bugbear
+    "A",    # flake8-builtins
+    "C4",   # flake8-comprehensions
+    "T10",  # flake8-debugger
+    "EXE",  # flake8-executable,
+    "ISC",  # flake8-implicit-str-concat
+    "G",    # flake8-logging-format
+    "PIE",  # flake8-pie
+    "T20",  # flake8-print
+    "PT",   # flake8-pytest-style
+    "RSE",  # flake8-raise
+    "RET",  # flake8-return
+    "TID",  # flake8-tidy-imports
+    "ARG",  # flake8-unused-arguments
+    "PGH",  # pygrep-hooks
+    "PLC",  # Pylint Convention
+    "PLE",  # Pylint Errors
+    "PLW",  # Pylint Warnings
+    "RUF",  # Ruff-specific rules
+
+    # ** Things to potentially enable in the future **
+    # DTZ requires all usage of datetime module to have timezone-aware
+    # objects (so have a tz argument or be explicitly UTC).
+    # "DTZ",  # flake8-datetimez
+    # "PTH",  # flake8-use-pathlib
+    # "SIM",  # flake8-simplify
+]
+
+# Files to exclude from linting
+extend-exclude = [
+    "*.pyc",
+    "__pycache__",
+    "*.egg-info",
+    ".eggs",
+    # check point files of jupyter notebooks
+    "*.ipynb_checkpoints",
+    ".tox",
+    ".git",
+    "build",
+    "dist",
+    "docs",
+    "examples",
+    "htmlcov",
+    "notebooks",
+    ".cache",
+    "_version.py",
+]
+
+# Linting error codes to ignore
+ignore = [
+    "F403",    # unable to detect undefined names from star imports
+    "F405",    # undefined locals from star imports
+    "W605",    # invalid escape sequence
+    "A003",    # shadowing python builtins
+    "RET505",  # unnecessary 'else' after 'return' statement
+    "RET504",  # Unnecessary variable assignment before return statement
+    "RET507",  # Unnecessary {branch} after continue statement
+    "PT011",   # pytest-raises-too-broad
+    "PT012",   # pytest.raises() block should contain a single simple statement
+    "PLW0603", # Using the global statement to update is discouraged
+    "PLW2901", # for loop variable overwritten by assignment target
+    "G004",    # Logging statement uses f-string
+    "PIE790",  # no-unnecessary-pass
+    "PIE810",  # multiple-starts-ends-with
+    "PGH003",  # Use specific rule codes when ignoring type issues
+    "PLC1901", # compare-to-empty-string
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401", "E501"]
+"procrustes/somefile.py" = ["E402", "E501"]
+"procrustes/somedir/*" = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+follow_imports = "skip"
+ignore_missing_imports = true
+files = "procrustes"
+exclude = [
+    "doc",
+    "docs",
+    "tools/conda.recipe",
+    "tools/conda.recipe/*",
+]
+
+# Configuration for pytest
+# https://docs.pytest.org/en/latest/reference/customize.html#pyproject-toml
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+    "--cache-clear",
+    "--showlocals",
+    "-v",
+    "-r a",
+    "--cov-report=term-missing",
+    "--cov=procrustes",
+]
+# directory containing the tests
+testpaths = [
+    "procrustes/tests",
+    "procrustes/test",
+]
+norecursedirs = [
+    ".vscode",
+    "__pycache__",
+    "build",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning"
+]
+markers = [
+    "slow: lower-importance tests that take an excessive amount of time",
+]
+
+[tool.coverage.run]
+omit = [
+    'procrustes/test/*',
+]
+
+[tool.vulture]
+exclude = [
+    "somedir",
+    "*somefile.py",
+]
+
+[tool.bandit]
+exclude_dirs = [
+    "procrustes/tests",
+    "procrustes/test",
+]
+skips = [
+    "B101", # Ignore assert statements
+    "B311", # Ignore pseudo-random generators
+    "B404", # Ignore subprocess import
+    "B603", # Ignore subprocess call
+    "B607", # Ignore subprocess call
+]
+
+[tool.pylint."MESSAGES CONTROL"]
+max-line-length = 100
+disable = [
+    "too-many-arguments",
+    "too-many-locals",
+    # "wrong-import-order",
+    "fixme",
+    "too-many-branches",
+    "too-many-statements",
+    "too-many-lines",
+    "unnecessary-lambda-assignment",
+    "no-else-return",
+    "no-member",
+    "too-many-branches",
+]
+
+[tool.pylint."MASTER"]
+# ingore the __init__.py files
+# ignore-patterns = "__init__.py"
+# https://pylint.readthedocs.io/en/stable/user_guide/configuration/all-options.html#ignore
+ignore = [
+    "procrustes/test/__init__.py",
+    "procrustes/__init__.py",
+    ]

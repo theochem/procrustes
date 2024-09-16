@@ -1,13 +1,12 @@
 Procrustes
 ==========
 
-[![This project supports Python 3.6+](https://img.shields.io/badge/Python-3.6+-blue.svg)](https://python.org/downloads)
+[![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
-[![GitHub Actions CI Tox Status](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml/badge.svg?branch=master)](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml)
+[![CI Tox](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml)
 [![Documentation Status](https://readthedocs.org/projects/procrustes/badge/?version=latest)](https://procrustes.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/theochem/procrustes/branch/master/graph/badge.svg?token=3L96J5QQOT)](https://codecov.io/gh/theochem/procrustes)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=doc%2Fnotebooks%2F)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/theochem/procrustes.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/theochem/procrustes/context:python)
 
 The Procrustes library provides a set of functions for transforming a matrix to make it
 as similar as possible to a target matrix. For more information, visit
@@ -40,9 +39,9 @@ Dependencies
 
 The following dependencies are required to run Procrustes properly,
 
-* Python >= 3.6: <http://www.python.org/>
+* Python >= 3.9: <http://www.python.org/>
 * NumPy >= 1.21.5: <http://www.numpy.org/>
-* SciPy >= 1.5.0: <http://www.scipy.org/>
+* SciPy >= 1.9.0: <http://www.scipy.org/>
 * PyTest >= 5.3.4: <https://docs.pytest.org/>
 * PyTest-Cov >= 2.8.0: <https://pypi.org/project/pytest-cov/>
 
@@ -55,7 +54,7 @@ first, and then:
 
 ```bash
 # Create and activate myenv conda environment (optional, but recommended)
-conda create -n myenv python=3.6
+conda create -n myenv python=3.11
 conda activate myenv
 
 # Install the stable release.

@@ -25,9 +25,9 @@
 from typing import Optional
 
 import numpy as np
-from procrustes.utils import compute_error, ProcrustesResult, setup_input_arrays
 import scipy
 
+from procrustes.utils import ProcrustesResult, compute_error, setup_input_arrays
 
 __all__ = [
     "rotational",

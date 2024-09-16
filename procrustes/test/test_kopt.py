@@ -23,10 +23,11 @@
 """Test Module for Kopt."""
 
 import numpy as np
+import pytest
 from numpy.testing import assert_equal, assert_raises
+
 from procrustes.kopt import kopt_heuristic_double, kopt_heuristic_single
 from procrustes.utils import compute_error
-import pytest
 
 
 def test_kopt_heuristic_single_raises():

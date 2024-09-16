@@ -23,10 +23,11 @@
 """Testing for rotational Procrustes module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal
-from procrustes import rotational
 import pytest
+from numpy.testing import assert_almost_equal
 from scipy.stats import special_ortho_group
+
+from procrustes import rotational
 
 
 @pytest.mark.parametrize("m, n", np.random.randint(500, 1000, (5, 2)))

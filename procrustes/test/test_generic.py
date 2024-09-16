@@ -23,10 +23,10 @@
 """Test procrustes.generic module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal
-from procrustes.generic import generic
 import pytest
+from numpy.testing import assert_almost_equal
 
+from procrustes.generic import generic
 
 np.random.seed(2020)
 

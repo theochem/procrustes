@@ -22,9 +22,9 @@
 # --
 
 
-from glob import glob
-from fnmatch import fnmatch
 import os
+from fnmatch import fnmatch
+from glob import glob
 
 
 def strip_header(lines, closing):

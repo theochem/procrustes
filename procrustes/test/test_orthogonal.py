@@ -23,10 +23,11 @@
 r"""Testings for orthogonal Procrustes module."""
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal, assert_raises
-from procrustes.orthogonal import orthogonal, orthogonal_2sided
 import pytest
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 from scipy.stats import ortho_group
+
+from procrustes.orthogonal import orthogonal, orthogonal_2sided
 
 
 def generate_random_reflection_matrix(n):

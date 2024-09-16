@@ -25,9 +25,9 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
+
 from procrustes import orthogonal
 from procrustes.utils import _check_arraytypes
-
 
 __all__ = [
     "generalized",

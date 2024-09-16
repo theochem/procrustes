@@ -24,6 +24,7 @@
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_raises
+
 from procrustes.generalized import generalized
 
 

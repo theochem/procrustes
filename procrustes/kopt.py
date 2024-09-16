@@ -27,7 +27,6 @@ from typing import Callable, Tuple
 
 import numpy as np
 
-
 __all__ = [
     "kopt_heuristic_single",
     "kopt_heuristic_double",

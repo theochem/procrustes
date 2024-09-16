@@ -27,7 +27,9 @@
 import itertools
 
 import numpy as np
+import pytest
 from numpy.testing import assert_almost_equal, assert_raises
+
 from procrustes.permutation import (
     _approx_permutation_2sided_1trans_normal1,
     _approx_permutation_2sided_1trans_normal2,
@@ -35,7 +37,6 @@ from procrustes.permutation import (
     permutation,
     permutation_2sided,
 )
-import pytest
 
 
 def generate_random_permutation_matrix(n):

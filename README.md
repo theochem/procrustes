@@ -3,7 +3,7 @@
 [![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![CI Tox](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml)
-[![Documentation Status](https://readthedocs.org/projects/procrustes/badge/?version=latest)](https://procrustes.readthedocs.io/en/latest/?badge=latest)
+[![docs](https://github.com/theochem/procrustes/actions/workflows/deploy_website.yaml/badge.svg?branch=main)](https://github.com/theochem/procrustes/actions/workflows/deploy_website.yaml)
 [![codecov](https://codecov.io/gh/theochem/procrustes/branch/main/graph/badge.svg?token=3L96J5QQOT)](https://codecov.io/gh/theochem/procrustes)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/theochem/procrustes/main?filepath=doc%2Fnotebooks%2F)
 

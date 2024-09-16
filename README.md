@@ -1,19 +1,17 @@
-Procrustes
-==========
+# Procrustes Python Library
 
 [![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![CI Tox](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/procrustes/actions/workflows/ci_tox.yml)
-[![Documentation Status](https://readthedocs.org/projects/procrustes/badge/?version=latest)](https://procrustes.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/theochem/procrustes/branch/master/graph/badge.svg?token=3L96J5QQOT)](https://codecov.io/gh/theochem/procrustes)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=doc%2Fnotebooks%2F)
+[![docs](https://github.com/theochem/procrustes/actions/workflows/deploy_website.yaml/badge.svg?branch=main)](https://github.com/theochem/procrustes/actions/workflows/deploy_website.yaml)
+[![codecov](https://codecov.io/gh/theochem/procrustes/branch/main/graph/badge.svg?token=3L96J5QQOT)](https://codecov.io/gh/theochem/procrustes)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/theochem/procrustes/main?filepath=doc%2Fnotebooks%2F)
 
 The Procrustes library provides a set of functions for transforming a matrix to make it
 as similar as possible to a target matrix. For more information, visit
 [**Procrustes Documentation**](https://procrustes.qcdevs.org/).
 
-Citation
---------
+## Citation
 
 Please use [the following citation](https://doi.org/10.1016/j.cpc.2022.108334)
 in any publication using Procrustes library:
@@ -34,39 +32,71 @@ in any publication using Procrustes library:
 }
 ```
 
-Dependencies
-------------
+## Dependencies
 
 The following dependencies are required to run Procrustes properly,
 
 * Python >= 3.9: <http://www.python.org/>
 * NumPy >= 1.21.5: <http://www.numpy.org/>
 * SciPy >= 1.9.0: <http://www.scipy.org/>
-* PyTest >= 5.3.4: <https://docs.pytest.org/>
-* PyTest-Cov >= 2.8.0: <https://pypi.org/project/pytest-cov/>
 
-Installation
-------------
+To test Procrustes, the following dependencies are required,
 
-To install Procrustes using the conda package management system, install
-[miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
-first, and then:
+* PyTest >= 8.3.0: <https://docs.pytest.org/>
+* PyTest-Cov >= 5.0.0: <https://pypi.org/project/pytest-cov/>
 
-```bash
-# Create and activate myenv conda environment (optional, but recommended)
-conda create -n myenv python=3.11
-conda activate myenv
+## Installation
 
-# Install the stable release.
-conda install -c theochem qc-procrustes
-```
+It is recommended to install `qc-procrustes` within a virtual environment.To create a virtual
+environment, we can use the `venv` module (Python 3.3+,
+https://docs.python.org/3/tutorial/venv.html), `miniconda` (https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), or
+`pipenv` (https://pipenv.pypa.io/en/latest/).
 
-To install Procrustes with pip, you may want to create a
-[virtual environment](https://docs.python.org/3/tutorial/venv.html), and then:
+### Installing from PyPI
+
+To install `procrustes` with `pip`, we can install the latest stable release from the Python Package Index (PyPI) as follows:
 
 ```bash
-# Install the stable release.
-pip install qc-procrustes
+    # install the stable release.
+    pip install qc-procrustes
 ```
 
-See <https://procrustes.qcdevs.org/usr_doc_installization.html> for full details.
+### Installing from The Prebuild Wheel Files
+
+To download the prebuilt wheel files, visit the [PyPI page](https://pypi.org/project/qc-procrustes/)
+and [GitHub releases](https://github.com/theochem/procrustes/tags).
+
+```bash
+    # download the wheel file first to your local machine
+    # then install the wheel file
+    pip install file_path/qc_procrustes-1.0.2a1-py3-none-any.whl
+```
+
+### Installing from the Source Code
+
+In addition, we can install the latest development version from the GitHub repository as follows:
+
+```bash
+    # install the latest development version
+    pip install git+https://github.com/theochem/procrustes.git
+```
+
+We can also clone the repository to access the latest development version, test it and install it as follows:
+
+```bash
+    # clone the repository
+    git clone git@github.com:theochem/procrustes.git
+
+    # change into the working directory
+    cd procrustes
+    # run the tests
+    python -m pytest .
+
+    # install the package
+    pip install .
+
+```
+
+## More
+
+See https://procrustes.qcdevs.org for full details.

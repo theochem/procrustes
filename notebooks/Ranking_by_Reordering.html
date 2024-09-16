@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ranking by Reordering &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="References" href="../usr_doc_zref.html" />
+    <link rel="prev" title="Atom-Atom Mapping" href="Atom_Atom_Mapping.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Chemical_Structure_Alignment.html">Chemical Structure Alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Chirality_Check.html">Chirality Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Atom_Atom_Mapping.html">Atom-Atom Mapping</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Ranking by Reordering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../usr_doc_tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Ranking by Reordering</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Ranking_by_Reordering.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Ranking-by-Reordering">
+<h1>Ranking by Reordering<a class="headerlink" href="#Ranking-by-Reordering" title="Link to this heading"></a></h1>
+<p>The problem of ranking a set of objects is ubiquitous not only in everyday life, but also for many scientific problems such as information retrieval, recommender systems, natural language processing, and drug discovery. This problem can be formulated as a 2-sided permutation Procrustes with single transformation.</p>
+<blockquote>
+<div><p><strong>Permutation Procrustes 2-Sided with Single-Transformation</strong></p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{n \times n}\)</span> and a reference <span class="math notranslate nohighlight">\(\mathbf{B}_{n \times n}\)</span>, find a permutation of rows/columns of <span class="math notranslate nohighlight">\(\mathbf{A}_{n \times n}\)</span> that makes it as close as possible to <span class="math notranslate nohighlight">\(\mathbf{B}_{n \times n}\)</span>, i.e.,</p>
+<p><span class="math">\begin{equation}
+\underbrace{\text{min}}_{\left\{\mathbf{P} \left| {p_{ij} \in \{0, 1\}
+\atop \sum_{i=1}^n p_{ij} = \sum_{j=1}^n p_{ij} = 1} \right. \right\}}
+\|\mathbf{P}^\dagger \mathbf{A} \mathbf{P} - \mathbf{B}\|_{F}^2 \\
+\end{equation}</span></p>
+</div></blockquote>
+<p>The code block below, we use the <code class="docutils literal notranslate"><span class="pre">procrustes</span></code> library to rank five American collegiate football teams, where each team plays one game against every other team, using their score-differentials as summarized below (data taken from A. N. Langville, C. D. Meyer, <em>Ranking by Reordering Methods</em>, Princeton University Press, 2012, Ch. 8, pp. 97–112). Here, each team is given a zero score for a game they lost (e.g., Duke lost to every other team) and the score difference is calculated for games won
+(e.g., Miami beat Duke by 45 points and UNC by 18 points). These results are also summarized in the square score-differential matrix <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> in <strong>Fig (i)</strong>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Team</p></th>
+<th class="head"><p>Duke</p></th>
+<th class="head"><p>Miami</p></th>
+<th class="head"><p>UNC</p></th>
+<th class="head"><p>UVA</p></th>
+<th class="head"><p>VT</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Duke</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Miami</p></td>
+<td><p>45</p></td>
+<td><p>0</p></td>
+<td><p>18</p></td>
+<td><p>8</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>UNC</p></td>
+<td><p>3</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>2</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>UVA</p></td>
+<td><p>31</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>VT</p></td>
+<td><p>45</p></td>
+<td><p>0</p></td>
+<td><p>27</p></td>
+<td><p>38</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Before applying Procrustes, one needs to define a proper target matrix. Traditionally, the rank-differential matrix has been used for this purpose and is defined for <span class="math notranslate nohighlight">\(n\)</span> teams as,</p>
+<p><span class="math">\begin{equation}
+\mathbf{R}_{n \times n} =
+\begin{bmatrix}
+0 & 1 & 2 & \cdots & n-1 \\
+& 0 & 1 & \cdots & n-2 \\
+&   &\ddots &\ddots & \vdots \\
+&   &   & \ddots & 1 \\
+&   &   &        & 0
+\end{bmatrix}
+\end{equation}</span></p>
+<p>The rank-differential matrix <span class="math notranslate nohighlight">\(\mathbf{R} \in \mathbb{R}^{n \times n}\)</span> is an upper-triangular matrix and its <span class="math notranslate nohighlight">\(ij\)</span>-th element specifies the difference in ranking between team <span class="math notranslate nohighlight">\(i\)</span> and team <span class="math notranslate nohighlight">\(j\)</span>. Considering the rank-differential matrix in <strong>Fig. (ii)</strong> as the target matrix <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>, the two-sided permutation Procrustes finds the single permutation matrix that maximizes the similarity between the score-differential matrix <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and the rank-differential
+matrix <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>. This results to <span class="math notranslate nohighlight">\([5,2,4,3,1]\)</span> as the final rankings of the teams in <strong>Fig. (iii)</strong>.</p>
+<p><img alt="Fig. 1 Ranking by reordering with two-sided permutation with one-transformation" src="../_images/ranking.png" /></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ranking by reordering with 2-sided permutation procrustes (with single transformation)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">procrustes</span> <span class="kn">import</span> <span class="n">permutation_2sided</span>
+
+<span class="c1"># input score-differential matrix</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span> <span class="p">],</span>    <span class="c1"># Duke</span>
+              <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">20</span><span class="p">],</span>    <span class="c1"># Miami</span>
+              <span class="p">[</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">0</span> <span class="p">],</span>    <span class="c1"># UNC</span>
+              <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span> <span class="p">],</span>    <span class="c1"># UVA</span>
+              <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span>  <span class="mi">0</span> <span class="p">]])</span>   <span class="c1"># VT</span>
+
+<span class="c1"># make rank-differential matrix</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">B</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span><span class="p">:]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">index</span><span class="p">)</span>
+
+<span class="c1"># rank teams using two-sided Procrustes</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">permutation_2sided</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;approx-normal1&quot;</span><span class="p">)</span>
+
+<span class="c1"># compute teams&#39; ranks (by adding 1 because Python&#39;s list index starts from 0)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">ranks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ranks</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ranks = &quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="p">)</span>     <span class="c1"># displays [5, 2, 4, 3, 1]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Ranks =  [5 2 4 3 1]
+</pre></div></div>
+</div>
+</section>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle">The corresponding file can be obtained from:</p>
+<ul class="simple">
+<li><p>Jupyter Notebook: <a class="reference download internal" download="" href="../_downloads/f51a965dcd5200f0702486aca1be9d7a/Ranking_by_Reordering.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Ranking_by_Reordering.ipynb</span></code></a></p></li>
+<li><p>Interactive Jupyter Notebook: <span class="raw-html"><a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=doc%2Fnotebooks%2F/Ranking_by_Reordering.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p></li>
+</ul>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Atom_Atom_Mapping.html" class="btn btn-neutral float-left" title="Atom-Atom Mapping" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../usr_doc_zref.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

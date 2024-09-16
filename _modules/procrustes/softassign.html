@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.softassign &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">procrustes.softassign</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for procrustes.softassign</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># The Procrustes library provides a set of functions for transforming</span>
+<span class="c1"># a matrix to make it as similar as possible to a target matrix.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2022 The QC-Devs Community</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of Procrustes.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;The Softassign Procrustes Module.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">procrustes.kopt</span> <span class="kn">import</span> <span class="n">kopt_heuristic_single</span>
+<span class="kn">from</span> <span class="nn">procrustes.permutation</span> <span class="kn">import</span> <span class="n">permutation</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">ProcrustesResult</span><span class="p">,</span> <span class="n">compute_error</span><span class="p">,</span> <span class="n">setup_input_arrays</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;softassign&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="softassign">
+<a class="viewcode-back" href="../../api/softassign.html#procrustes.softassign.softassign">[docs]</a>
+<span class="k">def</span> <span class="nf">softassign</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unpad_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">iteration_soft</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">iteration_sink</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">beta_r</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.10</span><span class="p">,</span>
+    <span class="n">beta_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e5</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">epsilon_soft</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-3</span><span class="p">,</span>
+    <span class="n">epsilon_sink</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-3</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">gamma_scaler</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.01</span><span class="p">,</span>
+    <span class="n">n_stop</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">adapted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">beta_0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">m_guess</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">iteration_anneal</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">kopt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">kopt_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcrustesResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference.</span>
+<span class="sd">    pad : bool, optional</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    translate : bool, optional</span>
+<span class="sd">        If True, both arrays are centered at origin (columns of the arrays will have mean zero).</span>
+<span class="sd">    scale : bool, optional</span>
+<span class="sd">        If True, both arrays are normalized with respect to the Frobenius norm, i.e.,</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1` and</span>
+<span class="sd">        :math:`\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1`.</span>
+<span class="sd">    unpad_col : bool, optional</span>
+<span class="sd">        If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    unpad_row : bool, optional</span>
+<span class="sd">        If True, zero rows (with values less than 1.0e-8) at the bottom of the intial</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices are removed.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If true, convert the input to an array, checking for NaNs or Infs. Default=True.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the</span>
+<span class="sd">        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`</span>
+<span class="sd">        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.</span>
+<span class="sd">    iteration_soft : int, optional</span>
+<span class="sd">        Number of iterations for softassign loop.</span>
+<span class="sd">    iteration_sink : int, optional</span>
+<span class="sd">        Number of iterations for Sinkhorn loop.</span>
+<span class="sd">    beta_r : float, optional</span>
+<span class="sd">        Annealing rate which should greater than 1.</span>
+<span class="sd">    beta_f : float, optional</span>
+<span class="sd">        The final inverse temperature.</span>
+<span class="sd">    epsilon : float, optional</span>
+<span class="sd">        The tolerance value for annealing loop.</span>
+<span class="sd">    epsilon_soft : float, optional</span>
+<span class="sd">        The tolerance value used for softassign.</span>
+<span class="sd">    epsilon_sink : float, optional</span>
+<span class="sd">        The tolerance value used for Sinkhorn loop. If adapted version is used, it will use the</span>
+<span class="sd">        adapted tolerance value for Sinkhorn instead.</span>
+<span class="sd">    k : float, optional</span>
+<span class="sd">        This parameter controls how much tighter the coverage threshold for the interior loop should</span>
+<span class="sd">        be than the coverage threshold for the loops outside. It has be be within the integral</span>
+<span class="sd">        :math:`(0,1)`.</span>
+<span class="sd">    gamma_scaler : float, optional</span>
+<span class="sd">        This parameter ensures the quadratic cost function including  self-amplification positive</span>
+<span class="sd">        define.</span>
+<span class="sd">    n_stop : int, optional</span>
+<span class="sd">        Number of running steps after the calculation converges in the relaxation procedure.</span>
+<span class="sd">    adapted : bool, optional</span>
+<span class="sd">        If adapted, this function will use the tighter covergence threshold for the interior loops.</span>
+<span class="sd">    beta_0 : float, optional</span>
+<span class="sd">        Initial inverse temperature.</span>
+<span class="sd">    beta_f : float, optional</span>
+<span class="sd">        Final inverse temperature.</span>
+<span class="sd">    m_guess : ndarray, optional</span>
+<span class="sd">        The initial guess of the doubly-stochastic matrix.</span>
+<span class="sd">    iteration_anneal : int, optional</span>
+<span class="sd">        Number of iterations for annealing loop.</span>
+<span class="sd">    kopt : bool, optional</span>
+<span class="sd">        If True, the k_opt heuristic search will be performed.</span>
+<span class="sd">    kopt_k : int, optional</span>
+<span class="sd">        Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local</span>
+<span class="sd">        search of 3 items and kopt_k=2 only searches for two items locally.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The weighting matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : ProcrustesResult</span>
+<span class="sd">        The Procrustes result represented as a class:`utils.ProcrustesResult` object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Quadratic assignment problem (QAP) has played a very special but fundamental role in</span>
+<span class="sd">    combinatorial optimization problems. The problem can be defined as a optimization problem to</span>
+<span class="sd">    minimize the cost to assign a set of facilities to a set of locations. The cost is a function</span>
+<span class="sd">    of the flow between the facilities and the geographical distances among various facilities.</span>
+
+<span class="sd">    The objective function (also named loss function in machine learning) is</span>
+<span class="sd">    defined as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        E_{qap}(M, \mu, \nu) =</span>
+<span class="sd">            - \frac{1}{2}\Sigma_{aibj}C_{ai;bj}M_{ai}M_{bj}</span>
+<span class="sd">            + \Sigma_{a}{\mu}_a (\Sigma_i M_{ai} -1) \\</span>
+<span class="sd">            + \Sigma_i {\nu}_i (\Sigma_i M_{ai} -1)</span>
+<span class="sd">            - \frac{\gamma}{2}\Sigma_{ai} {M_{ai}}^2</span>
+<span class="sd">            + \frac{1}{\beta} \Sigma_{ai} M_{ai}\log{M_{ai}}</span>
+
+<span class="sd">    where :math:`C_{ai,bj}` is the benefit matrix, :math:`M` is the</span>
+<span class="sd">    desired :math:`N \times N` permutation matrix. :math:`E` is the</span>
+<span class="sd">    energy function which comes along with a self-amplification term with</span>
+<span class="sd">    `\gamma`, two Lagrange parameters :math:`\mu` and :math:`\nu` for</span>
+<span class="sd">    constrained optimization and :math:`M_{ai} \log{M_{ai}}` servers as a</span>
+<span class="sd">    barrier function which ensures positivity of :math:`M_{ai}`. The</span>
+<span class="sd">    inverse temperature :math:`\beta` is a deterministic annealing</span>
+<span class="sd">    control parameter.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; array_a = np.array([[4, 5, 3, 3], [5, 7, 3, 5],</span>
+<span class="sd">    ...                     [3, 3, 2, 2], [3, 5, 2, 5]])</span>
+<span class="sd">        # define a random matrix</span>
+<span class="sd">    &gt;&gt;&gt; perm = np.array([[0., 0., 1., 0.], [1., 0., 0., 0.],</span>
+<span class="sd">    ...                  [0., 0., 0., 1.], [0., 1., 0., 0.]])</span>
+<span class="sd">        # define b by permuting array_a</span>
+<span class="sd">    &gt;&gt;&gt; b = np.dot(perm.T, np.dot(a, perm))</span>
+<span class="sd">    &gt;&gt;&gt; new_a, new_b, M_ai, error = softassign(a,b,unpad_col=False,unpad_row=False)</span>
+<span class="sd">    &gt;&gt;&gt; M_ai # the permutation matrix</span>
+<span class="sd">    array([[0., 0., 1., 0.],</span>
+<span class="sd">           [1., 0., 0., 0.],</span>
+<span class="sd">           [0., 0., 0., 1.],</span>
+<span class="sd">           [0., 1., 0., 0.]])</span>
+<span class="sd">    &gt;&gt;&gt; error # the error</span>
+<span class="sd">    0.0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable-msg=too-many-arguments</span>
+    <span class="c1"># pylint: disable-msg=too-many-branches</span>
+    <span class="c1"># todo: add linear_cost_func with default value 0</span>
+    <span class="c1"># Check beta_r</span>
+    <span class="k">if</span> <span class="n">beta_r</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument beta_r cannot be less than 1.&quot;</span><span class="p">)</span>
+    <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="o">=</span> <span class="n">setup_input_arrays</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">unpad_col</span><span class="p">,</span> <span class="n">unpad_row</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">translate</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">check_finite</span><span class="p">,</span> <span class="n">weight</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Check that A &amp; B are square and that they match each other.</span>
+    <span class="k">if</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Matrix A should be square but A.shape=</span><span class="si">{</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Matrix B should be square but B.shape=</span><span class="si">{</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Check pad, unpad_col, and unpad_row arguments.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;New matrix A </span><span class="si">{</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> should match the new&quot;</span> <span class="sa">f</span><span class="s2">&quot; matrix B shape </span><span class="si">{</span><span class="n">new_b</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Initialization</span>
+    <span class="c1"># Compute the benefit matrix</span>
+    <span class="n">array_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">)</span>
+    <span class="c1"># Get the shape of A (B and the permutation matrix as well)</span>
+    <span class="n">row_num</span> <span class="o">=</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">c_tensor</span> <span class="o">=</span> <span class="n">array_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">row_num</span><span class="p">,</span> <span class="n">row_num</span><span class="p">,</span> <span class="n">row_num</span><span class="p">,</span> <span class="n">row_num</span><span class="p">))</span>
+    <span class="c1"># Compute the beta_0</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">_compute_gamma</span><span class="p">(</span><span class="n">array_c</span><span class="p">,</span> <span class="n">row_num</span><span class="p">,</span> <span class="n">gamma_scaler</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">beta_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c_gamma</span> <span class="o">=</span> <span class="n">array_c</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">row_num</span> <span class="o">*</span> <span class="n">row_num</span><span class="p">))</span>
+        <span class="n">eival_gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">c_gamma</span><span class="p">)))</span>
+        <span class="n">beta_0</span> <span class="o">=</span> <span class="n">gamma_scaler</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0e-10</span><span class="p">,</span> <span class="n">eival_gamma</span> <span class="o">/</span> <span class="n">row_num</span><span class="p">)</span>
+        <span class="n">beta_0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">beta_0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">beta_0</span> <span class="o">*=</span> <span class="n">row_num</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta_0</span>
+
+    <span class="c1"># We will use iteration_anneal if provided even if the final inverse temperature is specified</span>
+    <span class="c1"># iteration_anneal is not None, beta_f can be None or not</span>
+    <span class="k">if</span> <span class="n">iteration_anneal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">beta_f</span> <span class="o">=</span> <span class="n">beta_0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">beta_r</span><span class="p">,</span> <span class="n">iteration_anneal</span><span class="p">)</span> <span class="o">*</span> <span class="n">row_num</span>
+    <span class="c1"># iteration_anneal is None and beta_f is not None</span>
+    <span class="k">elif</span> <span class="n">iteration_anneal</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">beta_f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">beta_f</span> <span class="o">*=</span> <span class="n">row_num</span>
+    <span class="c1"># Both iteration_anneal and beta_f are None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;We must specify at least one of iteration_anneal and beta_f and &quot;</span>
+            <span class="s2">&quot;specify only one is recommended.&quot;</span>
+        <span class="p">)</span>
+    <span class="c1"># Initialization of m_ai</span>
+    <span class="c1"># check shape of m_guess</span>
+    <span class="k">if</span> <span class="n">m_guess</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">m_guess</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The initial guess of permutation matrix cannot contain any negative values.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">m_guess</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">row_num</span> <span class="ow">and</span> <span class="n">m_guess</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">row_num</span><span class="p">:</span>
+            <span class="n">array_m</span> <span class="o">=</span> <span class="n">m_guess</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The shape of m_guess does not match (</span><span class="si">{</span><span class="n">row_num</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">row_num</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="s2">&quot;Use random initial guess instead.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">array_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="n">row_num</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># m_relax_old = 1 / N + np.random.rand(N, N)</span>
+        <span class="n">array_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">row_num</span><span class="p">,</span> <span class="n">row_num</span><span class="p">)))</span>
+    <span class="n">array_m</span><span class="p">[</span><span class="n">array_m</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">array_m</span> <span class="o">=</span> <span class="n">array_m</span> <span class="o">/</span> <span class="n">row_num</span>
+
+    <span class="n">nochange</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">adapted</span><span class="p">:</span>
+        <span class="n">epsilon_sink</span> <span class="o">=</span> <span class="n">epsilon_soft</span> <span class="o">*</span> <span class="n">k</span>
+    <span class="k">while</span> <span class="n">beta</span> <span class="o">&lt;</span> <span class="n">beta_f</span><span class="p">:</span>
+        <span class="c1"># relaxation</span>
+        <span class="n">m_old_beta</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">array_m</span><span class="p">)</span>
+        <span class="c1"># softassign loop</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">iteration_soft</span><span class="p">):</span>
+            <span class="n">m_old_soft</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">array_m</span><span class="p">)</span>
+            <span class="c1"># Compute Z in relaxation step</span>
+            <span class="c1"># C_gamma_tensor = C_gamma.reshape(N, N, N, N)</span>
+            <span class="c1"># Z = -np.einsum(&#39;ijkl,jl-&gt;ik&#39;, C_gamma_tensor, M)</span>
+            <span class="c1"># Z -= linear_cost_func</span>
+            <span class="n">array_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;aibj,bj-&gt;ai&quot;</span><span class="p">,</span> <span class="n">c_tensor</span><span class="p">,</span> <span class="n">array_m</span><span class="p">)</span>
+            <span class="n">array_z</span> <span class="o">+=</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">array_m</span>
+            <span class="c1"># soft_assign</span>
+            <span class="n">array_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">array_z</span><span class="p">)</span>
+            <span class="c1"># Sinkhorn loop</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">iteration_sink</span><span class="p">):</span>
+                <span class="c1"># Row normalization</span>
+                <span class="n">array_m</span> <span class="o">=</span> <span class="n">array_m</span> <span class="o">/</span> <span class="n">array_m</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Column normalization</span>
+                <span class="n">array_m</span> <span class="o">=</span> <span class="n">array_m</span> <span class="o">/</span> <span class="n">array_m</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Compute the delata_M_sink</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array_m</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">epsilon_sink</span><span class="p">:</span>
+                    <span class="n">array_m</span> <span class="o">=</span> <span class="n">array_m</span> <span class="o">/</span> <span class="n">array_m</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+            <span class="n">change_soft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array_m</span> <span class="o">-</span> <span class="n">m_old_soft</span><span class="p">))</span>
+            <span class="c1"># pylint: disable-msg=no-else-break</span>
+            <span class="k">if</span> <span class="n">change_soft</span> <span class="o">&lt;</span> <span class="n">epsilon_soft</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">adapted</span><span class="p">:</span>
+                    <span class="n">epsilon_sink</span> <span class="o">=</span> <span class="n">change_soft</span> <span class="o">*</span> <span class="n">k</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+        <span class="n">change_annealing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array_m</span> <span class="o">-</span> <span class="n">m_old_beta</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">change_annealing</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+            <span class="n">nochange</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">nochange</span> <span class="o">&gt;</span> <span class="n">n_stop</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nochange</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">beta</span> <span class="o">*=</span> <span class="n">beta_r</span>
+        <span class="k">if</span> <span class="n">adapted</span><span class="p">:</span>
+            <span class="n">epsilon_soft</span> <span class="o">=</span> <span class="n">change_soft</span> <span class="o">*</span> <span class="n">k</span>
+            <span class="n">epsilon_sink</span> <span class="o">=</span> <span class="n">epsilon_soft</span> <span class="o">*</span> <span class="n">k</span>
+
+    <span class="c1"># Compute the error</span>
+    <span class="n">array_m</span> <span class="o">=</span> <span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">array_m</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">array_m</span><span class="p">)[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span>
+    <span class="c1"># k-opt heuristic</span>
+    <span class="k">if</span> <span class="n">kopt</span><span class="p">:</span>
+        <span class="n">fun_error</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">array_m</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">kopt_heuristic_single</span><span class="p">(</span><span class="n">fun_error</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">array_m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">kopt_k</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">array_m</span><span class="p">,</span> <span class="n">array_m</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ProcrustesResult</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">new_a</span><span class="o">=</span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="o">=</span><span class="n">new_b</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">array_m</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_compute_gamma</span><span class="p">(</span><span class="n">array_c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">row_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">gamma_scaler</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute gamma for relaxation.&quot;&quot;&quot;</span>
+    <span class="n">array_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">row_num</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">row_num</span><span class="p">)</span> <span class="o">/</span> <span class="n">row_num</span>
+    <span class="n">big_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">array_r</span><span class="p">,</span> <span class="n">array_r</span><span class="p">)</span>
+    <span class="n">rcr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">big_r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">array_c</span><span class="p">,</span> <span class="n">big_r</span><span class="p">))</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">rcr</span><span class="p">)))</span> <span class="o">*</span> <span class="n">gamma_scaler</span>
+    <span class="k">return</span> <span class="n">gamma</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

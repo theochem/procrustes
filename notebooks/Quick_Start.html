@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorials" href="../usr_doc_tutorials.html" />
+    <link rel="prev" title="Installation" href="../usr_doc_installization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Quick_Start.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Quick-Start">
+<h1>Quick Start<a class="headerlink" href="#Quick-Start" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><strong>Orthogonal Procrustes</strong></p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> and a reference matrix <span class="math notranslate nohighlight">\(\mathbf{B}_{m\times n}\)</span>, find the orthogonal transformation matrix <span class="math notranslate nohighlight">\(\mathbf{Q}_{n\times n}\)</span> that makes <span class="math notranslate nohighlight">\(\mathbf{AQ}\)</span> as close as possible to <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>, i.e.,</p>
+<p><span class="math">\begin{equation}
+\underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}
+\|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2
+\end{equation}</span></p>
+</div></blockquote>
+<p>The code block below gives an example of the orthogonal Procrustes problem for random matrices <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>. Here, matrix <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> is constructed by shifting an orthogonal transformation of matrix <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>, so the matrices can be perfectly matched. As is the case with all Procrustes flavours, the user can specify whether the matrices should be translated (so that both are centered at origin) and/or scaled (so that both are normalized to unity with
+respect to the Frobenius norm). In addition, the other optional arguments (not appearing in the code-block below) specify whether the zero columns (on the right-hand side) and rows (at the bottom) should be removed prior to transformation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ortho_group</span>
+<span class="kn">from</span> <span class="nn">procrustes</span> <span class="kn">import</span> <span class="n">orthogonal</span>
+
+<span class="c1"># random input 10x7 matrix A</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+<span class="c1"># random orthogonal 7x7 matrix T (acting as Q)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">ortho_group</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="c1"># target matrix B (which is a shifted AT)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+<span class="c1"># orthogonal Procrustes analysis with translation</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">orthogonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># compute transformed matrix A (i.e., A x Q)</span>
+<span class="n">aq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">new_a</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># display Procrustes results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Procrustes Error = &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Does the obtained transformation match variable t? &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Does AQ and B matrices match?&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">aq</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">new_b</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transformation Matrix T = &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix A (after translation and scaling) = &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">new_a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix AQ = &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">aq</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix B (after translation and scaling) = &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">new_b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Procrustes Error =  2.4289236009459004e-30
+
+Does the obtained transformation match variable t?  True
+Does AQ and B matrices match? True
+Transformation Matrix T =
+[[-0.05485823 -0.21987681  0.71054591 -0.25910115  0.54815253 -0.11057903
+  -0.25285756]
+ [-0.52504088  0.57359009  0.08125893 -0.38628239 -0.16691215  0.36377965
+  -0.28162755]
+ [-0.13427477 -0.35050672  0.5114134  -0.07667139 -0.71683955  0.04718091
+   0.27496942]
+ [ 0.19650197  0.65967521  0.42739622  0.33295066  0.08143714 -0.10148903
+   0.46449961]
+ [ 0.45237142 -0.06057057 -0.04420777 -0.48171449  0.15466827  0.61863151
+   0.38866554]
+ [-0.0206257   0.12956287 -0.16552502 -0.64649468 -0.03687109 -0.66740601
+   0.30107121]
+ [ 0.67794881  0.21015927  0.12230059 -0.13005245 -0.35481889 -0.12155183
+  -0.56892541]]
+
+Matrix A (after translation and scaling) =
+[[-0.00055723 -0.01377505 -0.08991782 -0.16477186  0.14750515  0.00704046
+  -0.20861997]
+ [ 0.13709756 -0.02863268 -0.04751636  0.07709446 -0.14385904  0.10799371
+  -0.0032753 ]
+ [-0.16853924 -0.17772675  0.06648402 -0.16374724  0.04464136  0.09435058
+   0.03478612]
+ [ 0.11811112 -0.01507476 -0.06673255  0.139217   -0.0976698  -0.11659321
+  -0.03462358]
+ [-0.15903118 -0.01484409 -0.16695146  0.11677978 -0.19205803  0.01023694
+   0.10550636]
+ [ 0.02382673 -0.01263136  0.05182648 -0.10599329 -0.08805356 -0.07338563
+   0.00990156]
+ [-0.16720248 -0.04508176  0.03784015  0.10676988  0.04590812  0.00066062
+  -0.03174471]
+ [-0.06525965  0.14948796  0.07651695  0.02690549 -0.13166814 -0.24761947
+  -0.19722096]
+ [ 0.12908648  0.16851992 -0.01048313 -0.21501857  0.21002468  0.11819247
+   0.14823474]
+ [ 0.15246788 -0.01024143  0.14893372  0.18276434  0.20522923  0.09912353
+   0.17705575]]
+
+Matrix AQ =
+[[-0.08789303 -0.13682353 -0.15112392 -0.09097679  0.14960896  0.1194413
+   0.08089827]
+ [-0.04048379  0.04296137  0.09182028  0.00475755  0.09519934 -0.19631547
+  -0.02539345]
+ [ 0.10328743 -0.17937652 -0.1835174  -0.03432131 -0.13263092 -0.06584305
+   0.06085581]
+ [-0.02749881  0.06414488  0.12745368  0.15361799  0.12791064 -0.01422005
+  -0.03266849]
+ [ 0.04631795  0.19713971 -0.12997567  0.17079912 -0.02302644 -0.14601308
+  -0.07885918]
+ [-0.05406852 -0.10266454  0.01435798  0.04801396 -0.04504059 -0.00072564
+  -0.09940151]
+ [ 0.04797432  0.05870918 -0.06350457  0.07497127 -0.08421826  0.02485656
+   0.1510763 ]
+ [-0.26805587  0.02546819  0.03909608  0.21141601 -0.05464003  0.17025779
+  -0.00558307]
+ [ 0.05666167 -0.03614484 -0.00256305 -0.36619058  0.00816506  0.1013846
+  -0.14997974]
+ [ 0.22375865  0.06658609  0.25795658 -0.17208723 -0.04132777  0.00717706
+   0.09905505]]
+
+Matrix B (after translation and scaling) =
+[[-0.08789303 -0.13682353 -0.15112392 -0.09097679  0.14960896  0.1194413
+   0.08089827]
+ [-0.04048379  0.04296137  0.09182028  0.00475755  0.09519934 -0.19631547
+  -0.02539345]
+ [ 0.10328743 -0.17937652 -0.1835174  -0.03432131 -0.13263092 -0.06584305
+   0.06085581]
+ [-0.02749881  0.06414488  0.12745368  0.15361799  0.12791064 -0.01422005
+  -0.03266849]
+ [ 0.04631795  0.19713971 -0.12997567  0.17079912 -0.02302644 -0.14601308
+  -0.07885918]
+ [-0.05406852 -0.10266454  0.01435798  0.04801396 -0.04504059 -0.00072564
+  -0.09940151]
+ [ 0.04797432  0.05870918 -0.06350457  0.07497127 -0.08421826  0.02485656
+   0.1510763 ]
+ [-0.26805587  0.02546819  0.03909608  0.21141601 -0.05464003  0.17025779
+  -0.00558307]
+ [ 0.05666167 -0.03614484 -0.00256305 -0.36619058  0.00816506  0.1013846
+  -0.14997974]
+ [ 0.22375865  0.06658609  0.25795658 -0.17208723 -0.04132777  0.00717706
+   0.09905505]]
+</pre></div></div>
+</div>
+</section>
+<section id="Accessing-Scaling--and-Translation-Related-Information">
+<h1>Accessing Scaling- and Translation-Related Information<a class="headerlink" href="#Accessing-Scaling--and-Translation-Related-Information" title="Link to this heading"></a></h1>
+<p>In order to access the scaling factor of the initial two input matrices, we can use <code class="docutils literal notranslate"><span class="pre">_scale_array</span></code> function in <code class="docutils literal notranslate"><span class="pre">utils</span></code> module.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># accessing the scaling factor when preparing two input matrices</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_scale_array</span>
+
+<span class="c1"># array_a is scaled to match array_b&#39;s norm; after scaling the norm of $a$ equals the norm of $b$</span>
+<span class="n">scaled_a</span><span class="p">,</span> <span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">_scale_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="c1"># print(f&quot;The scaled matrix $a$ is {scaled_a}.&quot;)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The scaling factor is </span><span class="si">{</span><span class="n">scaling_factor</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The scaling factor is 0.8623410931853571.
+</pre></div></div>
+</div>
+<p>The user may also want to get the translation matrix or the translated matrix. This can be achieved by using <code class="docutils literal notranslate"><span class="pre">_translate_array</span></code> function in the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># accessing the translation matrix</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_translate_array</span>
+
+<span class="c1"># array_a is translated to centroid of array_b</span>
+<span class="c1"># after translation, the centroid of $a$ will match the centroid of $b$</span>
+<span class="n">trans_array_a</span><span class="p">,</span> <span class="n">centroid</span> <span class="o">=</span> <span class="n">_translate_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="c1"># print(f&quot;The translated array $a$ is {trans_array_a}.&quot;)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The centroid is </span><span class="si">{</span><span class="n">centroid</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The centroid is [-0.36907112 -1.20438156 -0.25281312 -0.3612893  -1.00236417 -0.150441
+ -0.93179808].
+</pre></div></div>
+</div>
+</section>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle">The corresponding file can be obtained from:</p>
+<ul class="simple">
+<li><p>Jupyter Notebook: <a class="reference download internal" download="" href="../_downloads/7517804d6d98d14e0383cf5ebb02b21b/Quick_Start.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Quick_Start.ipynb</span></code></a></p></li>
+<li><p>Interactive Jupyter Notebook: <span class="raw-html"><a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=doc%2Fnotebooks%2F/Quick_Start.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p></li>
+</ul>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../usr_doc_installization.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../usr_doc_tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

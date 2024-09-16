@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.generic &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="procrustes.generalized" href="generalized.html" />
+    <link rel="prev" title="procrustes.kopt" href="kopt.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="api_index.html">Procrustes API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#procrustes.generic.generic"><code class="docutils literal notranslate"><span class="pre">generic()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_index.html">Procrustes API</a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/generic.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-procrustes.generic">
+<span id="procrustes-generic"></span><span id="generic"></span><h1><a class="reference internal" href="#module-procrustes.generic" title="procrustes.generic"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a><a class="headerlink" href="#module-procrustes.generic" title="Link to this heading"></a></h1>
+<p>Generic Procrustes Module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.generic.generic">
+<span class="sig-prename descclassname"><span class="pre">procrustes.generic.</span></span><span class="sig-name descname"><span class="pre">generic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult"><span class="pre">ProcrustesResult</span></a></span></span><a class="reference internal" href="../_modules/procrustes/generic.html#generic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.generic.generic" title="Link to this definition"></a></dt>
+<dd><p>Perform generic one-sided Procrustes.</p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> and a reference matrix <span class="math notranslate nohighlight">\(\mathbf{B}_{m \times
+n}\)</span>, find the transformation matrix <span class="math notranslate nohighlight">\(\mathbf{T}_{n \times n}\)</span> that makes
+<span class="math notranslate nohighlight">\(\mathbf{AT}\)</span> as close as possible to <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>. In other words,</p>
+<div class="math notranslate nohighlight">
+\[\underbrace{\text{min}}_{\mathbf{T}} \quad \|\mathbf{A} \mathbf{T} - \mathbf{B}\|_{F}^2\]</div>
+<p>This Procrustes method requires the <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices to
+have the same shape, which is gauranteed with the default <code class="docutils literal notranslate"><span class="pre">pad</span></code> argument for any given
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices. In preparing the <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices, the (optional) order of operations is: <strong>1)</strong> unpad zero
+rows/columns, <strong>2)</strong> translate the matrices to the origin, <strong>3)</strong> weight entries of
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span>, <strong>4)</strong> scale the matrices to have unit norm, <strong>5)</strong> pad matrices with zero
+rows/columns so they have the same shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> which is going to be transformed.</p></li>
+<li><p><strong>b</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> representing the reference matrix.</p></li>
+<li><p><strong>pad</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> so that they have the same shape.</p></li>
+<li><p><strong>translate</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are centered at origin (columns of the arrays will have mean zero).</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1\)</span> and
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1\)</span>.</p></li>
+<li><p><strong>unpad_col</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices are removed.</p></li>
+<li><p><strong>unpad_row</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices are removed.</p></li>
+<li><p><strong>check_finite</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, convert the input to an array, checking for NaNs or Infs.</p></li>
+<li><p><strong>weight</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The 1D-array representing the weights of each row of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>. This defines the
+elements of the diagonal matrix <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> that is multiplied by <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>
+matrix, i.e., <span class="math notranslate nohighlight">\(\mathbf{A} \rightarrow \mathbf{WA}\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>res</strong> -- The Procrustes result represented as a class:<cite>utils.ProcrustesResult</cite> object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult">ProcrustesResult</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The optimal transformation matrix is obtained by solving the least-squares equations,</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{X}_\text{opt} = {(\mathbf{A}^{\top}\mathbf{A})}^{-1} \mathbf{A}^{\top} \mathbf{B}\]</div>
+<p>If <span class="math notranslate nohighlight">\(m &lt; n\)</span>, the transformation matrix <span class="math notranslate nohighlight">\(\mathbf{T}_\text{opt}\)</span> is not unique,
+because the system of equations is underdetermined (i.e., there are fewer equations than
+unknowns).</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="kopt.html" class="btn btn-neutral float-left" title="procrustes.kopt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generalized.html" class="btn btn-neutral float-right" title="procrustes.generalized" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

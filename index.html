@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Procrustes&#39;s Documentation! &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=195c3181"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="usr_doc_installization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to Procrustes's Documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-procrustes-s-documentation">
+<h1>Welcome to Procrustes's Documentation!<a class="headerlink" href="#welcome-to-procrustes-s-documentation" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://github.com/theochem/procrustes">Procrustes</a> is a free, open-source, and cross-platform
+Python library for (generalized) Procrustes problems with the goal of finding the optimal
+transformation(s) that makes two matrices as close as possible to each other.
+Please use the following citation in any publication using Procrustes library:</p>
+<blockquote>
+<div><p><strong>&quot;Procrustes: A Python Library to Find Transformations that Maximize the Similarity Between
+Matrices&quot;</strong>, F. Meng, M. Richer, A. Tehrani, J. La, T. D. Kim, P. W. Ayers, F. Heidar-Zadeh,
+<a class="reference external" href="https://doi.org/10.1016/j.cpc.2022.108334">Computer Physics Communications, 276(108334), 2022.</a>.</p>
+</div></blockquote>
+<p>The Procrustes source code is hosted on <a class="reference external" href="https://github.com/theochem/procrustes">GitHub</a> and is
+released under the
+<a class="reference external" href="https://github.com/theochem/procrustes/blob/master/LICENSE">GNU General Public License v3.0</a>.
+We welcome any contributions to the Procrustes library in accordance with our Code of Conduct;
+please see our <a class="reference external" href="https://qcdevs.org/guidelines/QCDevsCodeOfConduct/">Contributing Guidelines</a>.
+Please report any issues you encounter while using Procrustes library on
+<a class="reference external" href="https://github.com/theochem/procrustes/issues">GitHub Issues</a>.
+For further information and inquiries please contact us at <a class="reference external" href="mailto:qcdevs&#37;&#52;&#48;gmail&#46;com">qcdevs<span>&#64;</span>gmail<span>&#46;</span>com</a>.</p>
+</section>
+<section id="description-of-procrustes-methods">
+<h1>Description of Procrustes Methods<a class="headerlink" href="#description-of-procrustes-methods" title="Link to this heading"></a></h1>
+<p>Procrustes problems arise when one wishes to find one or two transformations,
+<span class="math notranslate nohighlight">\(\mathbf{T} \in \mathbb{R}^{n \times n}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{S} \in \mathbb{R}^{m \times m}\)</span>,
+that make matrix
+<span class="math notranslate nohighlight">\(\mathbf{A} \in \mathbb{R}^{m \times n}\)</span> (input matrix) resemble matrix
+<span class="math notranslate nohighlight">\(\mathbf{B} \in \mathbb{R}^{m \times n}\)</span> (target or reference matrix) as closely as possible:</p>
+<div class="math notranslate nohighlight">
+\[\underbrace{\min}_{\mathbf{S}, \mathbf{T}} \|\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\|_{F}^2\]</div>
+<p>where, the <span class="math notranslate nohighlight">\(\| \cdot \|_{F}\)</span> denotes the Frobenius norm defined as,</p>
+<div class="math notranslate nohighlight">
+\[\| \mathbf{A} \|_{F} = \sqrt{\sum^m_{i=1} \sum^n_{j=1} |a_{ij}|^2}
+                     = \sqrt{ \text{Tr} (\mathbf{A}^{\dagger} \mathbf{A})}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(a_{ij}\)</span> and <span class="math notranslate nohighlight">\(\text{Tr}(\mathbf{A})\)</span> denote the <span class="math notranslate nohighlight">\(ij\)</span>-th element and trace
+of matrix <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>, respectively. When <span class="math notranslate nohighlight">\(\mathbf{S}\)</span>
+is an identity matrix, this is called a <strong>one-sided Procrustes problem</strong>, and when it is
+equal to <span class="math notranslate nohighlight">\(\mathbf{T}\)</span>, this becomes <strong>two-sided Procrustes problem with one transformation</strong>,
+otherwise, it is called <strong>two-sided Procrustes problem</strong>. Different Procrustes problems use
+different choices for the transformation matrices <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> which
+are commonly taken to be orthogonal/unitary matrices, rotation matrices, symmetric matrices, or
+permutation matrices. The table below summarizes various Procrustes methods supported:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>Procrustes Type</strong></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{S}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{T}\)</span></p></td>
+<td><p>Constraints</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/generic.html#generic"><span class="std std-ref">Generic</span></a>  <span id="id1">[<a class="reference internal" href="usr_doc_zref.html#id3" title="John C. Gower. Procrustes methods. WIREs Computational Statistics, 2(4):503-508, 2010. doi:10.1002/wics.107.">1</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{T}\)</span></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/orthogonal.html#orthogonal"><span class="std std-ref">Orthogonal</span></a> <span id="id2">[<a class="reference internal" href="usr_doc_zref.html#id4" title="Peter H. Schönemann. A generalized solution of the orthogonal procrustes problem. Psychometrika, 31(1):1–10, Mar 1966. doi:10.1007/BF02289451.">2</a>, <a class="reference internal" href="usr_doc_zref.html#id5" title="Z. Zhang. A flexible new technique for camera calibration. IEEE Transactions on Pattern Analysis and Machine Intelligence, 22(11):1330-1334, Nov 2000. doi:10.1109/34.888718.">3</a>, <a class="reference internal" href="usr_doc_zref.html#id7" title="John C Gower and Garmt B Dijksterhuis. Procrustes Problems. Volume 30. Oxford University Press, 2004. doi:10.1093/acprof:oso/9780198510581.001.0001.">4</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{Q}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\({\mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/rotational.html#rotational"><span class="std std-ref">Rotational</span></a> <span id="id3">[<a class="reference internal" href="usr_doc_zref.html#id7" title="John C Gower and Garmt B Dijksterhuis. Procrustes Problems. Volume 30. Oxford University Press, 2004. doi:10.1093/acprof:oso/9780198510581.001.0001.">4</a>, <a class="reference internal" href="usr_doc_zref.html#id8" title="Frank B Brokken. Orthogonal procrustes rotation maximizing congruence. Psychometrika, 48(3):343–352, 1983. doi:10.1007/BF02293679.">5</a>, <a class="reference internal" href="usr_doc_zref.html#id9" title="JL Farrell, JC Stuelpnagel, RH Wessner, JR Velman, and JE Brook. A least squares estimate of satellite attitude (grace wahba). SIAM Review, 8(3):384–386, 1966. doi:10.1137/1008080.">6</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{R}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\begin{cases} \mathbf{R}^{-1} = {\mathbf{R}}^\dagger \\ \left | \mathbf{R} \right | = 1 \\ \end{cases}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/symmetric.html#symmetric"><span class="std std-ref">Symmetric</span></a> <span id="id4">[<a class="reference internal" href="usr_doc_zref.html#id10" title="Nicholas J Higham. The symmetric procrustes problem. BIT Numerical Mathematics, 28(1):133–143, 1988. doi:10.1007/BF01934701.">7</a>, <a class="reference internal" href="usr_doc_zref.html#id11" title="René Escalante and Marcos Raydan. Dykstra's algorithm for constrained least-squares rectangular matrix problems. Computers &amp; Mathematics with Applications, 35(6):73–79, 1998. doi:10.1016/S0898-1221(98)00020-0.">8</a>, <a class="reference internal" href="usr_doc_zref.html#id12" title="Juan Peng, Xi-Yan Hu, and Lei Zhang. The (m, n)-symmetric procrustes problem. Applied Mathematics and Computation, 198(1):24–34, 2008. doi:10.1016/j.amc.2007.08.094.">9</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{X}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{X} = \mathbf{X}^\dagger\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/permutation.html#permutation"><span class="std std-ref">Permutation</span></a> <span id="id5">[<a class="reference internal" href="usr_doc_zref.html#id2" title="Farnaz Heidar Zadeh and Paul W Ayers. Molecular alignment as a penalized permutation procrustes problem. Journal of Mathematical Chemistry, 51(3):927–936, 2013. doi:10.1007/s10910-012-0119-2.">10</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{P}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\begin{cases} [\mathbf{P}]_{ij} \in \{0, 1\} \\ \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1 \\ \end{cases}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/orthogonal.html#orthogonal"><span class="std std-ref">Two-sided Orthogonal</span></a> <span id="id6">[<a class="reference internal" href="usr_doc_zref.html#id6" title="Peter H Schönemann. On two-sided orthogonal procrustes problems. Psychometrika, 33(1):19–33, 1968. doi:10.1007/BF02289673.">11</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{Q}_1^\dagger\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{Q}_2\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\begin{cases} \mathbf{Q}_1^{-1} = \mathbf{Q}_1^\dagger \\ \mathbf{Q}_2^{-1} = \mathbf{Q}_2^\dagger \\ \end{cases}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/orthogonal.html#orthogonal"><span class="std std-ref">Two-sided Orthogonal with One Transformation</span></a> <span id="id7">[<a class="reference internal" href="usr_doc_zref.html#id13" title="Shinji Umeyama. An eigendecomposition approach to weighted graph matching problems. IEEE Transactions on Pattern Analysis and Machine Intelligence, 10(5):695–703, 1988. doi:10.1109/34.6778.">12</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{Q}^{\dagger}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{Q}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{Q}^{-1} = \mathbf{Q}^\dagger\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/permutation.html#permutation"><span class="std std-ref">Two-sided Permutation</span></a> <span id="id8">[<a class="reference internal" href="usr_doc_zref.html#id14" title="Pythagoras Papadimitriou. Parallel Solution of SVD-Related Problems, with Applications. PhD thesis, University of Manchester, 1993. URL: http://vummath.ma.man.ac.uk/~higham/links/theses/papad93.pdf.">13</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{P}_1^{\dagger}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{P}_2\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\begin{cases} [\mathbf{P}_1]_{ij} \in \{0, 1\} \\ [\mathbf{P}_2]_{ij} \in \{0, 1\} \\ \sum_{i=1}^n [\mathbf{P}_1]_{ij} = \sum_{j=1}^n [\mathbf{P}_1]_{ij} = 1 \\ \sum_{i=1}^n [\mathbf{P}_2]_{ij} = \sum_{j=1}^n [\mathbf{P}_2]_{ij} = 1 \\ \end{cases}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/permutation.html#permutation"><span class="std std-ref">Two-sided Permutation with One Transformation</span></a> <span id="id9">[<a class="reference internal" href="usr_doc_zref.html#id4" title="Peter H. Schönemann. A generalized solution of the orthogonal procrustes problem. Psychometrika, 31(1):1–10, Mar 1966. doi:10.1007/BF02289451.">2</a>, <a class="reference internal" href="usr_doc_zref.html#id15" title="Chris Ding, Tao Li, and Michael I Jordan. Nonnegative matrix factorization for combinatorial optimization: spectral clustering, graph matching, and clique finding. In ICDM '08: Proceedings of the 2008 Eighth IEEE International Conference on Data Mining, 183–192. IEEE, 2008. doi:10.1109/ICDM.2008.130.">14</a>]</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{P}^{\dagger}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbf{P}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\begin{cases} [\mathbf{P}]_{ij} \in \{0, 1\} \\ \sum_{i=1}^n [\mathbf{P}]_{ij} = \sum_{j=1}^n [\mathbf{P}]_{ij} = 1 \\ \end{cases}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>In addition to these Procrustes methods, summarized in the table above, the
+<a class="reference internal" href="api/generalized.html#generalized"><span class="std std-ref">generalized Procrustes analysis (GPA)</span></a>
+<span id="id10">[<a class="reference internal" href="usr_doc_zref.html#id3" title="John C. Gower. Procrustes methods. WIREs Computational Statistics, 2(4):503-508, 2010. doi:10.1002/wics.107.">1</a>, <a class="reference internal" href="usr_doc_zref.html#id16" title="Mikkel B Stegmann and David Delgado Gomez. A brief introduction to statistical shape analysis. Informatics and Mathematical Modelling, Technical University of Denmark, DTU, 2002. URL: http://www2.compute.dtu.dk/pubdb/pubs/403-full.html.">15</a>, <a class="reference internal" href="usr_doc_zref.html#id17" title="John C Gower. Generalized procrustes analysis. Psychometrika, 40(1):33–51, 1975. doi:10.1007/BF02291478.">16</a>, <a class="reference internal" href="usr_doc_zref.html#id18" title="Jos MF Ten Berge. Orthogonal procrustes rotation for two or more matrices. Psychometrika, 42(2):267–276, 1977. doi:10.1007/BF02294053.">17</a>, <a class="reference internal" href="usr_doc_zref.html#id19" title="Ingwer Borg and Patrick JF Groenen. Modern Multidimensional Scaling: Theory and Applications. Springer Science &amp; Business Media, 2005. doi:10.1007/0-387-28981-X.">18</a>]</span> and
+softassign algorithm <span id="id11">[<a class="reference internal" href="usr_doc_zref.html#id20" title="JJ Kosowsky and Alan L Yuille. The invisible hand algorithm: solving the assignment problem with statistical physics. Neural Networks, 7(3):477–490, 1994. doi:10.1016/0893-6080(94)90081-7.">19</a>, <a class="reference internal" href="usr_doc_zref.html#id21" title="Steven Gold and Anand Rangarajan. Softassign versus softmax: benchmarks in combinatorial optimization. In Advances in Neural Information Processing Systems, 626–632. 1996. doi:10.5555/2998828.2998917.">20</a>, <a class="reference internal" href="usr_doc_zref.html#id22" title="Anand Rangarajan, Alan L Yuille, Steven Gold, and Eric Mjolsness. A convergence proof for the softassign quadratic assignment algorithm. In Advances in Neural Information Processing Systems, 620–626. 1997. doi:10.5555/2998981.2999069.">21</a>]</span>
+are also implemented in our package. The GPA algorithm seeks the optimal transformation matrices
+<span class="math notranslate nohighlight">\(\mathbf{T}\)</span> to superpose the given objects (usually more than 2) with minimum distance,</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}
+  \min \sum_{i&lt;j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i - \mathbf{A}_j \mathbf{T}_j \right\|_F}^2
+\end{equation}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{A}_i\)</span> and <span class="math notranslate nohighlight">\(\mathbf{A}_j\)</span> are the configurations and <span class="math notranslate nohighlight">\(\mathbf{T}_i\)</span>
+and <span class="math notranslate nohighlight">\(\mathbf{T}_j\)</span> denotes the transformation matrices for <span class="math notranslate nohighlight">\(\mathbf{A}_i\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{A}_j\)</span> respectively. When only two objects are given, the problem shrinks to generic
+Procrustes.</p>
+<p>The <a class="reference internal" href="api/softassign.html#softassign"><span class="std std-ref">softassign</span></a> algorithm was first proposed to deal with quadratic
+assignment problem
+<span id="id12">[<a class="reference internal" href="usr_doc_zref.html#id20" title="JJ Kosowsky and Alan L Yuille. The invisible hand algorithm: solving the assignment problem with statistical physics. Neural Networks, 7(3):477–490, 1994. doi:10.1016/0893-6080(94)90081-7.">19</a>]</span> inspired by statistical physics algorithms and has subsequently been
+developed theoretically
+<span id="id13">[<a class="reference internal" href="usr_doc_zref.html#id21" title="Steven Gold and Anand Rangarajan. Softassign versus softmax: benchmarks in combinatorial optimization. In Advances in Neural Information Processing Systems, 626–632. 1996. doi:10.5555/2998828.2998917.">20</a>, <a class="reference internal" href="usr_doc_zref.html#id22" title="Anand Rangarajan, Alan L Yuille, Steven Gold, and Eric Mjolsness. A convergence proof for the softassign quadratic assignment algorithm. In Advances in Neural Information Processing Systems, 620–626. 1997. doi:10.5555/2998981.2999069.">21</a>]</span> and extended to many other applications
+<span id="id14">[<a class="reference internal" href="usr_doc_zref.html#id21" title="Steven Gold and Anand Rangarajan. Softassign versus softmax: benchmarks in combinatorial optimization. In Advances in Neural Information Processing Systems, 626–632. 1996. doi:10.5555/2998828.2998917.">20</a>, <a class="reference internal" href="usr_doc_zref.html#id24" title="Jiahui Wang, Xiaoshuang Zeng, Wenjie Luo, and Wei An. The application of neural network in multiple object tracking. DEStech Transactions on Computer Science and Engineering, pages 358–264, 2018. doi:10.12783/dtcse/csse2018/24504.">22</a>, <a class="reference internal" href="usr_doc_zref.html#id25" title="Steven Gold, Anand Rangarajan, and others. Softmax to softassign: neural network algorithms for combinatorial optimization. Journal of Artificial Neural Networks, 2(4):381–399, 1996. doi:10.5555/235912.235919.">23</a>, <a class="reference internal" href="usr_doc_zref.html#id26" title="Yu Tian, Junchi Yan, Hequan Zhang, Ya Zhang, Xiaokang Yang, and Hongyuan Zha. On the convergence of graph matching: graduated assignment revisited. In European Conference on Computer Vision, 821–835. Springer, 2012. doi:10.1007/978-3-642-33712-3_59.">24</a>, <a class="reference internal" href="usr_doc_zref.html#id27" title="Z Sheikhbahaee, R Nakajima, T Erben, P Schneider, H Hildebrandt, and AC Becker. Photometric calibration of the combo-17 survey with the softassign procrustes matching method. Monthly Notices of the Royal Astronomical Society, 471(3):3443–3455, 2017. doi:10.1093/mnras/stx1810.">25</a>]</span>.
+Because the two-sided permutation Procrustes problem is a special case of the
+quadratic assignment problem, it can be used here. The objective function is to minimize
+<span class="math notranslate nohighlight">\(E_{qap} (\mathbf{M}, \mu, \nu)\)</span>, <span id="id15">[<a class="reference internal" href="usr_doc_zref.html#id21" title="Steven Gold and Anand Rangarajan. Softassign versus softmax: benchmarks in combinatorial optimization. In Advances in Neural Information Processing Systems, 626–632. 1996. doi:10.5555/2998828.2998917.">20</a>, <a class="reference internal" href="usr_doc_zref.html#id23" title="Alan L Yuille and JJ Kosowsky. Statistical physics algorithms that converge. Neural Computation, 6(3):341–356, 1994. doi:10.1162/neco.1994.6.3.341.">26</a>]</span>,
+which is defined as follows,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+    E_{q a p}(\mathbf{M}, \mu, \nu) = &amp;-\frac{1}{2} \sum_{a i b j} \mathbf{C}_{a i ; b j}
+    \mathbf{M}_{a i} \mathbf{M}_{b j} \\
+    &amp; + \sum_{a} \mu_{a}\left(\sum_{i} \mathbf{M}_{a i} - 1 \right) + \sum_{i} \nu_{i} \left(
+    \sum_{a} \mathbf{M}_{a i} - 1 \right) \\
+    &amp; - \frac{\gamma}{2} \sum_{a i} \mathbf{M}_{a i}^{2} + \frac{1}{\beta} \sum_{a i}
+    \mathbf{M}_{a i} \log \mathbf{M}_{a i}
+\end{aligned}\end{split}\]</div>
+<p>Procrustes problems arise when aligning molecules and other objects, when evaluating optimal basis
+transformations, when determining optimal mappings between sets, and in many other contexts. This
+package includes the options to translate, scale, and zero-pad matrices, so that matrices with
+different centers/scaling/sizes can be considered.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_zref.html">References</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/api_index.html">Procrustes API</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usr_doc_installization.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

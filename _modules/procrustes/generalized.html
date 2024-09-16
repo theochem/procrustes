@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.generalized &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">procrustes.generalized</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for procrustes.generalized</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># The Procrustes library provides a set of functions for transforming</span>
+<span class="c1"># a matrix to make it as similar as possible to a target matrix.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2022 The QC-Devs Community</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of Procrustes.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Generalized Procrustes Module.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">procrustes</span> <span class="kn">import</span> <span class="n">orthogonal</span>
+<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_check_arraytypes</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;generalized&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="generalized">
+<a class="viewcode-back" href="../../api/generalized.html#procrustes.generalized.generalized">[docs]</a>
+<span class="k">def</span> <span class="nf">generalized</span><span class="p">(</span>
+    <span class="n">array_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">ref</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-7</span><span class="p">,</span>
+    <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generalized Procrustes Analysis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_list : List</span>
+<span class="sd">        The list of 2D-array which is going to be transformed.</span>
+<span class="sd">    ref : ndarray, optional</span>
+<span class="sd">        The reference array to initialize the first iteration. If None, the first array in</span>
+<span class="sd">        `array_list` will be used.</span>
+<span class="sd">    tol: float, optional</span>
+<span class="sd">        Tolerance value to stop the iterations.</span>
+<span class="sd">    n_iter: int, optional</span>
+<span class="sd">        Number of total iterations.</span>
+<span class="sd">    check_finite : bool, optional</span>
+<span class="sd">        If true, convert the input to an array, checking for NaNs or Infs.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_aligned : List</span>
+<span class="sd">        A list of transformed arrays with generalized Procrustes analysis.</span>
+<span class="sd">    new_distance_gpa: float</span>
+<span class="sd">        The distance for matching all the transformed arrays with generalized Procrustes analysis.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Given a set of matrices, :math:`\mathbf{A}_1, \mathbf{A}_2, \cdots, \mathbf{A}_k` with</span>
+<span class="sd">    :math:`k &gt; 2`,  the objective is to minimize in order to superimpose pairs of matrices.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \min \quad = \sum_{i&lt;j}^{j} {\left\| \mathbf{A}_i \mathbf{T}_i  -</span>
+<span class="sd">         \mathbf{A}_j \mathbf{T}_j \right\| }^2</span>
+
+<span class="sd">    This function implements the Equation (20) and the corresponding algorithm in  Gower&#39;s paper.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check input arrays</span>
+    <span class="n">_check_arraytypes</span><span class="p">(</span><span class="o">*</span><span class="n">array_list</span><span class="p">)</span>
+    <span class="c1"># check finite</span>
+    <span class="k">if</span> <span class="n">check_finite</span><span class="p">:</span>
+        <span class="n">array_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asarray_chkfinite</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">array_list</span><span class="p">]</span>
+
+    <span class="c1"># todo: translation and scaling</span>
+    <span class="k">if</span> <span class="n">n_iter</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of iterations should be a positive number.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># the first array will be used to build the initial ref</span>
+        <span class="n">array_aligned</span> <span class="o">=</span> <span class="p">[</span><span class="n">array_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="n">_orthogonal</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">array_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">array_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="p">]</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">array_aligned</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">array_aligned</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_list</span><span class="p">)</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">distance_gpa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
+        <span class="c1"># align to ref</span>
+        <span class="n">array_aligned</span> <span class="o">=</span> <span class="p">[</span><span class="n">_orthogonal</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">array_list</span><span class="p">]</span>
+        <span class="c1"># the mean</span>
+        <span class="n">new_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">array_aligned</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># todo: double check if the error is defined in the right way</span>
+        <span class="c1"># the error</span>
+        <span class="n">new_distance_gpa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">ref</span> <span class="o">-</span> <span class="n">new_ref</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">distance_gpa</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">new_distance_gpa</span> <span class="o">-</span> <span class="n">distance_gpa</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">distance_gpa</span> <span class="o">=</span> <span class="n">new_distance_gpa</span>
+    <span class="k">return</span> <span class="n">array_aligned</span><span class="p">,</span> <span class="n">new_distance_gpa</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_orthogonal</span><span class="p">(</span><span class="n">arr_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">arr_b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Orthogonal Procrustes transformation and returns the transformed array.&quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">orthogonal</span><span class="p">(</span><span class="n">arr_a</span><span class="p">,</span> <span class="n">arr_b</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unpad_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unpad_row</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;new_a&quot;</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">])</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

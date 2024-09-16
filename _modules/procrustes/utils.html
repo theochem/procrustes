@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.utils &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">procrustes.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for procrustes.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># The Procrustes library provides a set of functions for transforming</span>
+<span class="c1"># a matrix to make it as similar as possible to a target matrix.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2022 The QC-Devs Community</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of Procrustes.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 3</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># Procrustes is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># --</span>
+<span class="sd">&quot;&quot;&quot;Utility Module.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;compute_error&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;setup_input_arrays&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ProcrustesResult&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_zero_padding</span><span class="p">(</span>
+    <span class="n">array_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pad_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;row-col&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return arrays padded with rows and/or columns of zero.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}_{n_a \times m_a}`.</span>
+<span class="sd">    array_b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}_{n_b \times m_b}`.</span>
+<span class="sd">    pad_mode : str</span>
+<span class="sd">        Specifying how to pad the arrays. Should be one of</span>
+<span class="sd">        - &quot;row&quot;</span>
+<span class="sd">            The array with fewer rows is padded with zero rows so that both have the same</span>
+<span class="sd">            number of rows.</span>
+<span class="sd">        - &quot;col&quot;</span>
+<span class="sd">            The array with fewer columns is padded with zero columns so that both have the</span>
+<span class="sd">            same number of columns.</span>
+<span class="sd">        - &quot;row-col&quot;</span>
+<span class="sd">            The array with fewer rows is padded with zero rows, and the array with fewer</span>
+<span class="sd">            columns is padded with zero columns, so that both have the same dimensions.</span>
+<span class="sd">            This does not necessarily result in square arrays.</span>
+<span class="sd">        - &quot;square&quot;</span>
+<span class="sd">            The arrays are padded with zero rows and zero columns so that they are both</span>
+<span class="sd">            squared arrays. The dimension of square array is specified based on the highest</span>
+<span class="sd">            dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    padded_a : ndarray</span>
+<span class="sd">        Padded array_a.</span>
+<span class="sd">    padded_b : ndarray</span>
+<span class="sd">        Padded array_b.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># sanity checks</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array_b</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arguments array_a &amp; array_b should be numpy arrays.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">array_b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arguments array_a &amp; array_b should be 2D arrays.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">array_b</span><span class="o">.</span><span class="n">shape</span> <span class="ow">and</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1"># special case of square arrays, mode is set to None so that array_a &amp; array_b are returned.</span>
+        <span class="n">pad_mode</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">pad_mode</span> <span class="o">==</span> <span class="s2">&quot;square&quot;</span><span class="p">:</span>
+        <span class="c1"># calculate desired dimension of square array</span>
+        <span class="p">(</span><span class="n">a_n1</span><span class="p">,</span> <span class="n">a_m1</span><span class="p">),</span> <span class="p">(</span><span class="n">a_n2</span><span class="p">,</span> <span class="n">a_m2</span><span class="p">)</span> <span class="o">=</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">array_b</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">a_n1</span><span class="p">,</span> <span class="n">a_n2</span><span class="p">,</span> <span class="n">a_m1</span><span class="p">,</span> <span class="n">a_m2</span><span class="p">)</span>
+        <span class="c1"># padding rows to have both arrays have dim rows</span>
+        <span class="k">if</span> <span class="n">a_n1</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">:</span>
+            <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim</span> <span class="o">-</span> <span class="n">a_n1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_n2</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">:</span>
+            <span class="n">array_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_b</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim</span> <span class="o">-</span> <span class="n">a_n2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># padding columns to have both arrays have dim columns</span>
+        <span class="k">if</span> <span class="n">a_m1</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">:</span>
+            <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim</span> <span class="o">-</span> <span class="n">a_m1</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a_m2</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">:</span>
+            <span class="n">array_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_b</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim</span> <span class="o">-</span> <span class="n">a_m2</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pad_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;row&quot;</span><span class="p">,</span> <span class="s2">&quot;row-col&quot;</span><span class="p">]:</span>
+        <span class="c1"># padding rows to have both arrays have the same number of rows</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">array_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">diff</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_b</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">diff</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pad_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="s2">&quot;row-col&quot;</span><span class="p">]:</span>
+        <span class="c1"># padding columns to have both arrays have the same number of columns</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">array_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">diff</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array_b</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">diff</span><span class="p">]],</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">array_a</span><span class="p">,</span> <span class="n">array_b</span>
+
+
+<span class="k">def</span> <span class="nf">_translate_array</span><span class="p">(</span>
+    <span class="n">array_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return translated array_a and translation vector.</span>
+
+<span class="sd">    Columns of both arrays will have mean zero.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_a : ndarray</span>
+<span class="sd">        The 2D-array to translate.</span>
+<span class="sd">    array_b : ndarray, optional</span>
+<span class="sd">        The 2D-array to translate array_a based on.</span>
+<span class="sd">    weight : ndarray, optional</span>
+<span class="sd">        The weight vector.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_a : ndarray</span>
+<span class="sd">        If array_b is None, array_a is translated to origin using its centroid.</span>
+<span class="sd">        If array_b is given, array_a is translated to centroid of array_b (the centroid of</span>
+<span class="sd">        translated array_a will centroid with the centroid array_b).</span>
+<span class="sd">    centroid : float</span>
+<span class="sd">        If array_b is given, the centroid is returned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The mean is strongly affected by outliers and is not a robust estimator for central location</span>
+    <span class="c1"># see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean</span>
+    <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">weight</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The weight should be a 1d row vector.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">weight</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The elements of the weight should be non-negative.&quot;</span><span class="p">)</span>
+
+    <span class="n">centroid_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># translation vector to b centroid</span>
+        <span class="n">centroid_a</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">array_b</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array_a</span> <span class="o">-</span> <span class="n">centroid_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">centroid_a</span>
+
+
+<span class="k">def</span> <span class="nf">_scale_array</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">array_b</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return scaled/normalized array_a and scaling vector.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_a : ndarray</span>
+<span class="sd">        The 2D-array to scale</span>
+<span class="sd">    array_b : ndarray, default=None</span>
+<span class="sd">        The 2D-array to scale array_a based on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    scaled_a, ndarray</span>
+<span class="sd">        If array_b is None, array_a is normalized using the Frobenius norm.</span>
+<span class="sd">        If array_b is given, array_a is scaled to match array_b&quot;s norm (the norm of array_a</span>
+<span class="sd">        will be equal norm of array_b).</span>
+<span class="sd">    scale : float</span>
+<span class="sd">        The scaling factor to match array_b norm.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># scaling factor to match unit sphere</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">array_a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># scaling factor to match array_b norm</span>
+        <span class="n">scale</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">array_b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array_a</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span> <span class="n">scale</span>
+
+
+<span class="k">def</span> <span class="nf">_hide_zero_padding</span><span class="p">(</span>
+    <span class="n">array_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">remove_zero_col</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">remove_zero_row</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return array with zero-padded rows (bottom) and columns (right) removed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_a : ndarray</span>
+<span class="sd">        The initial array.</span>
+<span class="sd">    remove_zero_col : bool, optional</span>
+<span class="sd">        If True, zero columns (values less than 1e-8) on the right side will be removed.</span>
+<span class="sd">    remove_zero_row : bool, optional</span>
+<span class="sd">        If True, zero rows (values less than 1e-8) on the bottom will be removed.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Tolerance value.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    new_A : ndarray</span>
+<span class="sd">        Array, with either near zero columns and/or zero rows are removed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Input checking</span>
+    <span class="k">if</span> <span class="n">array_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Matrix inputs must be 1- or 2- dimensional arrays&quot;</span><span class="p">)</span>
+    <span class="c1"># Check zero rows from bottom to top</span>
+    <span class="k">if</span> <span class="n">remove_zero_row</span><span class="p">:</span>
+        <span class="n">num_row</span> <span class="o">=</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">array_a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="k">if</span> <span class="n">array_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">array_a</span>
+        <span class="k">for</span> <span class="n">array_v</span> <span class="ow">in</span> <span class="n">tmp_a</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">array_v</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="n">num_row</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">array_a</span> <span class="o">=</span> <span class="n">array_a</span><span class="p">[:</span><span class="n">num_row</span><span class="p">]</span>
+    <span class="c1"># Cut off zero rows</span>
+    <span class="k">if</span> <span class="n">remove_zero_col</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">array_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># Check zero columns from right to left</span>
+            <span class="n">col_m</span> <span class="o">=</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">array_v</span> <span class="ow">in</span> <span class="n">array_a</span><span class="o">.</span><span class="n">T</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">array_v</span><span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="n">col_m</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="c1"># Cut off zero columns</span>
+            <span class="n">array_a</span> <span class="o">=</span> <span class="n">array_a</span><span class="p">[:,</span> <span class="p">:</span><span class="n">col_m</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">array_a</span>
+
+
+<div class="viewcode-block" id="compute_error">
+<a class="viewcode-back" href="../../api/utils.html#procrustes.utils.compute_error">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_error</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the one- or two-sided Procrustes (squared Frobenius norm) error.</span>
+
+<span class="sd">    The double-sided Procrustes error is defined as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \|\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\|_{F}^2 =</span>
+<span class="sd">       \text{Tr}\left[</span>
+<span class="sd">            \left(\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\right)^\dagger</span>
+<span class="sd">            \left(\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\right)\right]</span>
+
+<span class="sd">    when :math:`\mathbf{S}` is the identity matrix :math:`\mathbf{I}`, this is called the one-sided</span>
+<span class="sd">    Procrustes error.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{A}_{m \times n}` which is going to be transformed.</span>
+<span class="sd">    b : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{B}_{m \times n}` representing the reference matrix.</span>
+<span class="sd">    t : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{T}_{n \times n}` representing the right-hand-side transformation</span>
+<span class="sd">        matrix.</span>
+<span class="sd">    s : ndarray, optional</span>
+<span class="sd">        The 2D-array :math:`\mathbf{S}_{m \times m}` representing the left-hand-side transformation</span>
+<span class="sd">        matrix. If set to `None`, the one-sided Procrustes error is computed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    error : float</span>
+<span class="sd">        The squared Frobenius norm of difference between the transformed array, :math:`\mathbf{S}</span>
+<span class="sd">        \mathbf{A}\mathbf{T}`, and the reference array, :math:`\mathbf{B}`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># transform matrix A to either AT or SAT</span>
+    <span class="n">a_trans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span> <span class="n">t</span><span class="p">)</span>
+    <span class="c1"># subtract matrix B and compute Frobenius norm squared</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a_trans</span> <span class="o">-</span> <span class="n">b</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span></div>
+
+
+
+<div class="viewcode-block" id="setup_input_arrays">
+<a class="viewcode-back" href="../../api/utils.html#procrustes.utils.setup_input_arrays">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_input_arrays</span><span class="p">(</span>
+    <span class="n">array_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">array_b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">remove_zero_col</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">remove_zero_row</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check and process array inputs for the Procrustes transformation routines.</span>
+
+<span class="sd">    Usually, the precursor step before all Procrustes methods.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_a : npdarray</span>
+<span class="sd">        The 2D array :math:`A` being transformed.</span>
+<span class="sd">    array_b : npdarray</span>
+<span class="sd">        The 2D reference array :math:`B`.</span>
+<span class="sd">    remove_zero_col : bool</span>
+<span class="sd">        If True, zero columns (values less than 1e-8) on the right side will be removed.</span>
+<span class="sd">    remove_zero_row : bool</span>
+<span class="sd">        If True, zero rows (values less than 1e-8) on the bottom will be removed.</span>
+<span class="sd">    pad : bool</span>
+<span class="sd">        Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices</span>
+<span class="sd">        :math:`\mathbf{A}` and :math:`\mathbf{B}` so that they have the same shape.</span>
+<span class="sd">    translate : bool</span>
+<span class="sd">        If true, then translate both arrays :math:`A, B` to the origin, ie columns of the arrays</span>
+<span class="sd">        will have mean zero.</span>
+<span class="sd">    scale :</span>
+<span class="sd">        If True, both arrays are normalized to one with respect to the Frobenius norm, ie</span>
+<span class="sd">        :math:`Tr(A^T A) = 1`.</span>
+<span class="sd">    check_finite : bool</span>
+<span class="sd">        If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.</span>
+<span class="sd">    weight : A list of ndarray or ndarray</span>
+<span class="sd">        A list of the weight arrays or one numpy array. When only on numpy array provided,</span>
+<span class="sd">        it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (ndarray, ndarray) :</span>
+<span class="sd">        Returns the padded arrays, in that they have the same matrix dimensions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array_a</span> <span class="o">=</span> <span class="n">_setup_input_array_lower</span><span class="p">(</span>
+        <span class="n">array_a</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remove_zero_col</span><span class="p">,</span> <span class="n">remove_zero_row</span><span class="p">,</span> <span class="n">translate</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">check_finite</span><span class="p">,</span> <span class="n">weight</span>
+    <span class="p">)</span>
+    <span class="n">array_b</span> <span class="o">=</span> <span class="n">_setup_input_array_lower</span><span class="p">(</span>
+        <span class="n">array_b</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remove_zero_col</span><span class="p">,</span> <span class="n">remove_zero_row</span><span class="p">,</span> <span class="n">translate</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">check_finite</span><span class="p">,</span> <span class="n">weight</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">pad</span><span class="p">:</span>
+        <span class="n">array_a</span><span class="p">,</span> <span class="n">array_b</span> <span class="o">=</span> <span class="n">_zero_padding</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">array_b</span><span class="p">,</span> <span class="n">pad_mode</span><span class="o">=</span><span class="s2">&quot;row-col&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array_a</span><span class="p">,</span> <span class="n">array_b</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">setup_input_arrays_multi</span><span class="p">(</span>
+    <span class="n">array_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">array_ref</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">remove_zero_col</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">remove_zero_row</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">pad_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check and process array inputs for the Procrustes transformation routines.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array_list : List</span>
+<span class="sd">        A list of 2D arrays that being transformed.</span>
+<span class="sd">    array_ref : ndarray</span>
+<span class="sd">        The 2D reference array :math:`B`.</span>
+<span class="sd">    remove_zero_col : bool</span>
+<span class="sd">        If True, zero columns (values less than 1e-8) on the right side will be removed.</span>
+<span class="sd">    remove_zero_row : bool</span>
+<span class="sd">        If True, zero rows (values less than 1e-8) on the bottom will be removed.</span>
+<span class="sd">    pad_mode : str</span>
+<span class="sd">        Specifying how to pad the arrays. Should be one of</span>
+<span class="sd">            - &quot;row&quot;</span>
+<span class="sd">                The array with fewer rows is padded with zero rows so that both have the same</span>
+<span class="sd">                number of rows.</span>
+<span class="sd">            - &quot;col&quot;</span>
+<span class="sd">                The array with fewer columns is padded with zero columns so that both have the</span>
+<span class="sd">                same number of columns.</span>
+<span class="sd">            - &quot;row-col&quot;</span>
+<span class="sd">                The array with fewer rows is padded with zero rows, and the array with fewer</span>
+<span class="sd">                columns is padded with zero columns, so that both have the same dimensions.</span>
+<span class="sd">                This does not necessarily result in square arrays.</span>
+<span class="sd">            - &quot;square&quot;</span>
+<span class="sd">                The arrays are padded with zero rows and zero columns so that they are both</span>
+<span class="sd">                squared arrays. The dimension of square array is specified based on the highest</span>
+<span class="sd">                dimension, i.e. :math:`\text{max}(n_a, m_a, n_b, m_b)`.</span>
+<span class="sd">    translate : bool</span>
+<span class="sd">        If true, then translate both arrays :math:`A, B` to the origin, ie columns of the arrays</span>
+<span class="sd">        will have mean zero.</span>
+<span class="sd">    scale :</span>
+<span class="sd">        If True, both arrays are normalized to one with respect to the Frobenius norm, ie</span>
+<span class="sd">        :math:`Tr(A^T A) = 1`.</span>
+<span class="sd">    check_finite : bool</span>
+<span class="sd">        If true, then checks if both arrays :math:`A, B` are numpy arrays and two-dimensional.</span>
+<span class="sd">    weight : A list of ndarray or ndarray, optional</span>
+<span class="sd">        A list of the weight arrays or one numpy array. When only on numpy array provided,</span>
+<span class="sd">        it is assumed that the two arrays :math:`A` and :math:`B` share the same weight matrix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List of arrays :</span>
+<span class="sd">        Returns the padded arrays, in that they have the same matrix dimensions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array_list_new</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">_setup_input_array_lower</span><span class="p">(</span>
+            <span class="n">array_a</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+            <span class="n">array_ref</span><span class="o">=</span><span class="n">array_ref</span><span class="p">,</span>
+            <span class="n">remove_zero_col</span><span class="o">=</span><span class="n">remove_zero_col</span><span class="p">,</span>
+            <span class="n">remove_zero_row</span><span class="o">=</span><span class="n">remove_zero_row</span><span class="p">,</span>
+            <span class="n">translate</span><span class="o">=</span><span class="n">translate</span><span class="p">,</span>
+            <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">,</span>
+            <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">array_list</span>
+    <span class="p">]</span>
+    <span class="n">arr_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">array_list_new</span><span class="p">])</span>
+    <span class="n">array_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">arr_shape</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">array_list_new</span> <span class="o">=</span> <span class="p">[</span><span class="n">_zero_padding</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">array_b</span><span class="p">,</span> <span class="n">pad_mode</span><span class="o">=</span><span class="n">pad_mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">array_list_new</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">array_list_new</span>
+
+
+<span class="k">def</span> <span class="nf">_setup_input_array_lower</span><span class="p">(</span>
+    <span class="n">array_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">array_ref</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">remove_zero_col</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">remove_zero_row</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">translate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">check_finite</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pre-processing the matrices with translation, scaling.&quot;&quot;&quot;</span>
+    <span class="n">_check_arraytypes</span><span class="p">(</span><span class="n">array_a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check_finite</span><span class="p">:</span>
+        <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray_chkfinite</span><span class="p">(</span><span class="n">array_a</span><span class="p">)</span>
+        <span class="c1"># Sometimes arrays already have zero padding that messes up zero padding below.</span>
+    <span class="n">array_a</span> <span class="o">=</span> <span class="n">_hide_zero_padding</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">remove_zero_col</span><span class="p">,</span> <span class="n">remove_zero_row</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">translate</span><span class="p">:</span>
+        <span class="n">array_a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_translate_array</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">array_ref</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+    <span class="c1"># scale the matrix when translate is False, but weight is True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="n">array_a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
+        <span class="n">array_a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_scale_array</span><span class="p">(</span><span class="n">array_a</span><span class="p">,</span> <span class="n">array_ref</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array_a</span>
+
+
+<span class="k">def</span> <span class="nf">_check_arraytypes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check array input types to Procrustes transformation routines.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arr_x</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Matrix inputs must be NumPy arrays&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Matrix inputs must be 2-dimensional arrays&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ProcrustesResult">
+<a class="viewcode-back" href="../../api/utils.html#procrustes.utils.ProcrustesResult">[docs]</a>
+<span class="k">class</span> <span class="nc">ProcrustesResult</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Represents the Procrustes analysis result.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    error : float</span>
+<span class="sd">        The Procrustes (squared Frobenius norm) error.</span>
+<span class="sd">    new_a : ndarray</span>
+<span class="sd">        The translated/scaled numpy ndarray :math:`\mathbf{A}`.</span>
+<span class="sd">    new_b : ndarray</span>
+<span class="sd">        The translated/scaled numpy ndarray :math:`\mathbf{B}`.</span>
+<span class="sd">    t : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{T}` representing the right-hand-side transformation matrix.</span>
+<span class="sd">    s : ndarray</span>
+<span class="sd">        The 2D-array :math:`\mathbf{S}` representing the left-hand-side transformation</span>
+<span class="sd">        matrix. If set to `None`, the one-sided Procrustes was performed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># modification on https://github.com/scipy/scipy/blob/v1.4.1/scipy/optimize/optimize.py#L77-L132</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deal with attributes which it doesn&#39;t explicitly manage.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="c1"># Not using raise from makes the traceback inaccurate, because the message implies there</span>
+        <span class="c1"># is a bug in the exception-handling code itself, which is a separate situation than</span>
+        <span class="c1"># wrapping an exception</span>
+        <span class="c1"># W0707 from http://pylint.pycqa.org/en/latest/technical_reference/features.html</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke_info</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ke_info</span>
+
+    <span class="fm">__setattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span>
+    <span class="fm">__delattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__delitem__</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human friendly representation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">max_len</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;()&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide basic customization of module attribute access with a list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

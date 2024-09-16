@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.softassign &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="procrustes.rotational" href="rotational.html" />
+    <link rel="prev" title="procrustes.permutation" href="permutation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="api_index.html">Procrustes API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#procrustes.softassign.softassign"><code class="docutils literal notranslate"><span class="pre">softassign()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_index.html">Procrustes API</a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/softassign.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-procrustes.softassign">
+<span id="procrustes-softassign"></span><span id="softassign"></span><h1><a class="reference internal" href="#module-procrustes.softassign" title="procrustes.softassign"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a><a class="headerlink" href="#module-procrustes.softassign" title="Link to this heading"></a></h1>
+<p>The Softassign Procrustes Module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.softassign.softassign">
+<span class="sig-prename descclassname"><span class="pre">procrustes.softassign.</span></span><span class="sig-name descname"><span class="pre">softassign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unpad_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration_soft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration_sink</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_soft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_sink</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adapted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_guess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration_anneal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kopt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kopt_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult"><span class="pre">ProcrustesResult</span></a></span></span><a class="reference internal" href="../_modules/procrustes/softassign.html#softassign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.softassign.softassign" title="Link to this definition"></a></dt>
+<dd><p>Find the transformation matrix for 2-sided permutation Procrustes with softassign algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> which is going to be transformed.</p></li>
+<li><p><strong>b</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{B}_{m \times n}\)</span> representing the reference.</p></li>
+<li><p><strong>pad</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> so that they have the same shape.</p></li>
+<li><p><strong>translate</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are centered at origin (columns of the arrays will have mean zero).</p></li>
+<li><p><strong>scale</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, both arrays are normalized with respect to the Frobenius norm, i.e.,
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{A}^\dagger\mathbf{A}\right] = 1\)</span> and
+<span class="math notranslate nohighlight">\(\text{Tr}\left[\mathbf{B}^\dagger\mathbf{B}\right] = 1\)</span>.</p></li>
+<li><p><strong>unpad_col</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero columns (with values less than 1.0e-8) on the right-hand side of the intial
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices are removed.</p></li>
+<li><p><strong>unpad_row</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, zero rows (with values less than 1.0e-8) at the bottom of the intial
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrices are removed.</p></li>
+<li><p><strong>check_finite</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If true, convert the input to an array, checking for NaNs or Infs. Default=True.</p></li>
+<li><p><strong>weight</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The 1D-array representing the weights of each row of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>. This defines the
+elements of the diagonal matrix <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> that is multiplied by <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>
+matrix, i.e., <span class="math notranslate nohighlight">\(\mathbf{A} \rightarrow \mathbf{WA}\)</span>.</p></li>
+<li><p><strong>iteration_soft</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of iterations for softassign loop.</p></li>
+<li><p><strong>iteration_sink</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of iterations for Sinkhorn loop.</p></li>
+<li><p><strong>beta_r</strong> (<em>float</em><em>, </em><em>optional</em>) -- Annealing rate which should greater than 1.</p></li>
+<li><p><strong>beta_f</strong> (<em>float</em><em>, </em><em>optional</em>) -- The final inverse temperature.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em><em>, </em><em>optional</em>) -- The tolerance value for annealing loop.</p></li>
+<li><p><strong>epsilon_soft</strong> (<em>float</em><em>, </em><em>optional</em>) -- The tolerance value used for softassign.</p></li>
+<li><p><strong>epsilon_sink</strong> (<em>float</em><em>, </em><em>optional</em>) -- The tolerance value used for Sinkhorn loop. If adapted version is used, it will use the
+adapted tolerance value for Sinkhorn instead.</p></li>
+<li><p><strong>k</strong> (<em>float</em><em>, </em><em>optional</em>) -- This parameter controls how much tighter the coverage threshold for the interior loop should
+be than the coverage threshold for the loops outside. It has be be within the integral
+<span class="math notranslate nohighlight">\((0,1)\)</span>.</p></li>
+<li><p><strong>gamma_scaler</strong> (<em>float</em><em>, </em><em>optional</em>) -- This parameter ensures the quadratic cost function including  self-amplification positive
+define.</p></li>
+<li><p><strong>n_stop</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of running steps after the calculation converges in the relaxation procedure.</p></li>
+<li><p><strong>adapted</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If adapted, this function will use the tighter covergence threshold for the interior loops.</p></li>
+<li><p><strong>beta_0</strong> (<em>float</em><em>, </em><em>optional</em>) -- Initial inverse temperature.</p></li>
+<li><p><strong>beta_f</strong> -- Final inverse temperature.</p></li>
+<li><p><strong>m_guess</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The initial guess of the doubly-stochastic matrix.</p></li>
+<li><p><strong>iteration_anneal</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of iterations for annealing loop.</p></li>
+<li><p><strong>kopt</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, the k_opt heuristic search will be performed.</p></li>
+<li><p><strong>kopt_k</strong> (<em>int</em><em>, </em><em>optional</em>) -- Defines the oder of k-opt heuristic local search. For example, kopt_k=3 leads to a local
+search of 3 items and kopt_k=2 only searches for two items locally.</p></li>
+<li><p><strong>weight</strong> -- The weighting matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>res</strong> -- The Procrustes result represented as a class:<cite>utils.ProcrustesResult</cite> object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="utils.html#procrustes.utils.ProcrustesResult" title="procrustes.utils.ProcrustesResult">ProcrustesResult</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Quadratic assignment problem (QAP) has played a very special but fundamental role in
+combinatorial optimization problems. The problem can be defined as a optimization problem to
+minimize the cost to assign a set of facilities to a set of locations. The cost is a function
+of the flow between the facilities and the geographical distances among various facilities.</p>
+<p>The objective function (also named loss function in machine learning) is
+defined as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}E_{qap}(M, \mu, \nu) =
+    - \frac{1}{2}\Sigma_{aibj}C_{ai;bj}M_{ai}M_{bj}
+    + \Sigma_{a}{\mu}_a (\Sigma_i M_{ai} -1) \\
+    + \Sigma_i {\nu}_i (\Sigma_i M_{ai} -1)
+    - \frac{\gamma}{2}\Sigma_{ai} {M_{ai}}^2
+    + \frac{1}{\beta} \Sigma_{ai} M_{ai}\log{M_{ai}}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_{ai,bj}\)</span> is the benefit matrix, <span class="math notranslate nohighlight">\(M\)</span> is the
+desired <span class="math notranslate nohighlight">\(N \times N\)</span> permutation matrix. <span class="math notranslate nohighlight">\(E\)</span> is the
+energy function which comes along with a self-amplification term with
+<cite>gamma</cite>, two Lagrange parameters <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\nu\)</span> for
+constrained optimization and <span class="math notranslate nohighlight">\(M_{ai} \log{M_{ai}}\)</span> servers as a
+barrier function which ensures positivity of <span class="math notranslate nohighlight">\(M_{ai}\)</span>. The
+inverse temperature <span class="math notranslate nohighlight">\(\beta\)</span> is a deterministic annealing
+control parameter.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>                    <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="go">    # define a random matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+<span class="gp">... </span>                 <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]])</span>
+<span class="go">    # define b by permuting array_a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">perm</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">perm</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span><span class="p">,</span> <span class="n">M_ai</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">softassign</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">unpad_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">unpad_row</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">M_ai</span> <span class="c1"># the permutation matrix</span>
+<span class="go">array([[0., 0., 1., 0.],</span>
+<span class="go">       [1., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 1.],</span>
+<span class="go">       [0., 1., 0., 0.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">error</span> <span class="c1"># the error</span>
+<span class="go">0.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="permutation.html" class="btn btn-neutral float-left" title="procrustes.permutation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rotational.html" class="btn btn-neutral float-right" title="procrustes.rotational" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

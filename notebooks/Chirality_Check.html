@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chirality Check &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Atom-Atom Mapping" href="Atom_Atom_Mapping.html" />
+    <link rel="prev" title="Chemical Structure Alignment" href="Chemical_Structure_Alignment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Chemical_Structure_Alignment.html">Chemical Structure Alignment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chirality Check</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Download-IOData-&amp;-Matplotlib-Libraries-&amp;-Example-Files">Download IOData &amp; Matplotlib Libraries &amp; Example Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Procrustes-Analysis">Procrustes Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-Procrustes-Results">Plot Procrustes Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Atom_Atom_Mapping.html">Atom-Atom Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ranking_by_Reordering.html">Ranking by Reordering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../usr_doc_tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Chirality Check</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Chirality_Check.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Chirality-Check">
+<h1>Chirality Check<a class="headerlink" href="#Chirality-Check" title="Link to this heading"></a></h1>
+<p>In chemistry, a molecule is chiral if it cannot be superimposed onto its mirror image by any combination of translation and rotation. These non-superposable mirror images are called enantiomers which share identical chemical and physical properties, but have distinct chemical reactivity and optical rotation properties. Checking whether two structures are enantiomers can be formulated as a Procrustes problem.</p>
+<blockquote>
+<div><p><strong>Rotational Procrustes</strong></p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> and a reference <span class="math notranslate nohighlight">\(\mathbf{B}_{m \times n}\)</span>, find the rotational transformation matrix <span class="math notranslate nohighlight">\(\mathbf{R}_{n \times n}\)</span> that makes <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> as close as possible to <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>, i.e.,</p>
+<p><span class="math">\begin{equation}
+\underbrace{\min}_{\left\{\mathbf{R} \left| {\mathbf{R}^{-1} = {\mathbf{R}}^\dagger
+\atop \left| \mathbf{R} \right| = 1} \right. \right\}}
+\|\mathbf{A}\mathbf{R} - \mathbf{B}\|_{F}^2
+\end{equation}</span></p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Orthogonal Procrustes</strong></p>
+<p>Given matrix <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> and a reference <span class="math notranslate nohighlight">\(\mathbf{B}_{m \times n}\)</span>, find the find the orthogonal transformation matrix <span class="math notranslate nohighlight">\(\mathbf{Q}_{n \times n}\)</span> that makes <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> as close as possible to <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>, i.e.,</p>
+<p><span class="math">\begin{equation}
+\underbrace{\min}_{\left\{\mathbf{Q} | \mathbf{Q}^{-1} = {\mathbf{Q}}^\dagger \right\}}
+\|\mathbf{A}\mathbf{Q} - \mathbf{B}\|_{F}^2
+\end{equation}</span></p>
+</div></blockquote>
+<p>In the code block below, we use the <code class="docutils literal notranslate"><span class="pre">procrustes</span></code> library to check whether two geometries of the CHFClBr molecule are enantiomers; see <strong>Fig. (i)</strong>. The 3D-Cartesian coordinates of molecules are loaded from their XYZ files using <a class="reference external" href="https://github.com/theochem/iodata">IOData library</a>. Testing whether the coordinates can be matched through translation and rotation (i.e., rotational Procrustes) reveals that these two structures are not identical; see <strong>Fig (ii)</strong>. However, the two coordinates are
+enantiomers because they can be matched through translation, rotation, and reflection (i.e., orthogonal Procrustes) as shown in <strong>Fig (iii)</strong>.</p>
+<p><img alt="Fig. 1 Enantiomers prediction of CHFClBr with rotational-orthogonal Procrustes by comparing the atoms coordinates." src="../_images/chirality_checking.png" /></p>
+<section id="Download-IOData-&amp;-Matplotlib-Libraries-&amp;-Example-Files">
+<h2>Download IOData &amp; Matplotlib Libraries &amp; Example Files<a class="headerlink" href="#Download-IOData-&-Matplotlib-Libraries-&-Example-Files" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://github.com/theochem/iodata">IOData Package</a> and Matplotlib, if there are not available on your system; this is required on Binder.</p></li>
+<li><p>Download <a class="reference external" href="https://github.com/theochem/procrustes/blob/master/doc/notebooks/notebook_data/chirality_checking/enantiomer1.xyz?raw=true?">enantiomer1.xyz</a> and <a class="reference external" href="https://github.com/theochem/procrustes/blob/master/doc/notebooks/notebook_data/chirality_checking/enantiomer2.xyz?raw=true?">enantiomer2.xyz</a> files used in the example below which are stored in <a class="reference external" href="https://github.com/theochem/procrustes/tree/master/doc/notebooks/notebook_data/chirality_checking">Procrustes GitHub repository example
+files</a>.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If needed, install IOData library (this is required on Binder)</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># See https://jakevdp.github.io/blog/2017/12/05/installing-python-packages-from-jupyter/</span>
+<span class="o">!{</span>sys.executable<span class="o">}</span><span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>qc-iodata
+<span class="o">!{</span>sys.executable<span class="o">}</span><span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>matplotlib
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If needed, download the example files</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="n">fpath</span> <span class="o">=</span> <span class="s2">&quot;notebook_data/chirality_checking/&quot;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
+    <span class="s2">&quot;https://raw.githubusercontent.com/theochem/procrustes/master/doc/notebooks/notebook_data/chirality_checking/enantiomer1.xyz&quot;</span><span class="p">,</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;enantiomer1.xyz&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
+    <span class="s2">&quot;https://raw.githubusercontent.com/theochem/procrustes/master/doc/notebooks/notebook_data/chirality_checking/enantiomer2.xyz&quot;</span><span class="p">,</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;enantiomer2.xyz&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Procrustes-Analysis">
+<h2>Procrustes Analysis<a class="headerlink" href="#Procrustes-Analysis" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># chirality check with rotational and orthogonal Procrustes</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">iodata</span> <span class="kn">import</span> <span class="n">load_one</span>
+<span class="kn">from</span> <span class="nn">procrustes</span> <span class="kn">import</span> <span class="n">orthogonal</span><span class="p">,</span> <span class="n">rotational</span>
+
+<span class="c1"># load CHClFBr enantiomers&#39; coordinates from XYZ files</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">load_one</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebook_data/chirality_checking/enantiomer1.xyz&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">atcoords</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">load_one</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;notebook_data/chirality_checking/enantiomer2.xyz&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">atcoords</span>
+
+<span class="c1"># rotational Procrustes on a &amp; b coordinates</span>
+<span class="n">result_rot</span> <span class="o">=</span> <span class="n">rotational</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rotational Procrustes Error = &quot;</span><span class="p">,</span> <span class="n">result_rot</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>     <span class="c1"># output: 26.085545</span>
+
+<span class="c1"># orthogonal Procrustes on a &amp; b coordinates</span>
+<span class="n">result_ortho</span> <span class="o">=</span> <span class="n">orthogonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Orthogonal Procrustes Error = &quot;</span><span class="p">,</span> <span class="n">result_ortho</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>   <span class="c1"># output: 4.432878e-08</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Rotational Procrustes Error =  26.08554575402178
+Orthogonal Procrustes Error =  4.432878638501341e-08
+</pre></div></div>
+</div>
+</section>
+<section id="Plot-Procrustes-Results">
+<h2>Plot Procrustes Results<a class="headerlink" href="#Plot-Procrustes-Results" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot outputs of Procrustes</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># =============</span>
+<span class="c1"># First Subplot</span>
+<span class="c1"># =============</span>
+<span class="c1"># set up the axes for the first plot</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="c1"># coordinates of rotated molecule A and molecule B</span>
+<span class="n">a_rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">result_rot</span><span class="o">.</span><span class="n">new_a</span><span class="p">,</span> <span class="n">result_rot</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+<span class="n">coords1</span><span class="p">,</span> <span class="n">coords2</span> <span class="o">=</span> <span class="n">a_rot</span><span class="p">,</span> <span class="n">result_rot</span><span class="o">.</span><span class="n">new_b</span>
+<span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Rotational Procrustes Error=</span><span class="si">{:0.2f}</span><span class="s2"> $\AA$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result_rot</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="o">=</span><span class="n">coords1</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="o">=</span><span class="n">coords1</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="n">coords1</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+           <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;enantiomer1 with rotation&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="o">=</span><span class="n">coords2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="o">=</span><span class="n">coords2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="n">coords2</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+           <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;enantiomer2&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;X/$\AA$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Y/$\AA$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">&quot;Z/$\AA$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+
+<span class="c1"># ==============</span>
+<span class="c1"># Second Subplot</span>
+<span class="c1"># ==============</span>
+<span class="c1"># set up the axes for the second plot</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="c1"># coordinates of rotated-and-refelcted molecule A and molecule B</span>
+<span class="n">a_rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">result_ortho</span><span class="o">.</span><span class="n">new_a</span><span class="p">,</span> <span class="n">result_ortho</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+<span class="n">coords1</span><span class="p">,</span> <span class="n">coords2</span> <span class="o">=</span> <span class="n">a_rot</span><span class="p">,</span> <span class="n">result_rot</span><span class="o">.</span><span class="n">new_b</span>
+<span class="n">title</span><span class="o">=</span><span class="s2">&quot;Orthogonal Procrustes Error=</span><span class="si">{:0.2f}</span><span class="s2"> $\AA$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result_ortho</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="o">=</span><span class="n">coords1</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="o">=</span><span class="n">coords1</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="n">coords1</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+           <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;enantiomer1 with rotation and reflection&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="o">=</span><span class="n">coords2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="o">=</span><span class="n">coords2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="n">coords2</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+           <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;enantiomer2&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;X/$\AA$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Y/$\AA$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">&quot;Z/$\AA$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Chirality_Check_7_0.png" src="../_images/notebooks_Chirality_Check_7_0.png" />
+</div>
+</div>
+</section>
+</section>
+<div class="admonition note">
+<p class="admonition-title fa fa-exclamation-circle">The corresponding file can be obtained from:</p>
+<ul class="simple">
+<li><p>Jupyter Notebook: <a class="reference download internal" download="" href="../_downloads/3edd039b8c0e4e46c832249d0630d07a/Chirality_Check.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Chirality_Check.ipynb</span></code></a></p></li>
+<li><p>Interactive Jupyter Notebook: <span class="raw-html"><a href="https://mybinder.org/v2/gh/theochem/procrustes/master?filepath=doc%2Fnotebooks%2F/Chirality_Check.ipynb"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a></span></p></li>
+</ul>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Chemical_Structure_Alignment.html" class="btn btn-neutral float-left" title="Chemical Structure Alignment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Atom_Atom_Mapping.html" class="btn btn-neutral float-right" title="Atom-Atom Mapping" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

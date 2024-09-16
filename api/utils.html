@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>procrustes.utils &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=195c3181"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+        <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="procrustes.kopt" href="kopt.html" />
+    <link rel="prev" title="Procrustes API" href="api_index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_installization.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="api_index.html">Procrustes API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#procrustes.utils.compute_error"><code class="docutils literal notranslate"><span class="pre">compute_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#procrustes.utils.setup_input_arrays"><code class="docutils literal notranslate"><span class="pre">setup_input_arrays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#procrustes.utils.ProcrustesResult"><code class="docutils literal notranslate"><span class="pre">ProcrustesResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#procrustes.utils.ProcrustesResult.error"><code class="docutils literal notranslate"><span class="pre">ProcrustesResult.error</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procrustes.utils.ProcrustesResult.new_a"><code class="docutils literal notranslate"><span class="pre">ProcrustesResult.new_a</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procrustes.utils.ProcrustesResult.new_b"><code class="docutils literal notranslate"><span class="pre">ProcrustesResult.new_b</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procrustes.utils.ProcrustesResult.t"><code class="docutils literal notranslate"><span class="pre">ProcrustesResult.t</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procrustes.utils.ProcrustesResult.s"><code class="docutils literal notranslate"><span class="pre">ProcrustesResult.s</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kopt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.kopt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generalized.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.generalized</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="orthogonal.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.orthogonal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="permutation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.permutation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="softassign.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.softassign</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rotational.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.rotational</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="symmetric.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.symmetric</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_index.html">Procrustes API</a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/utils.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-procrustes.utils">
+<span id="procrustes-utils"></span><h1><a class="reference internal" href="#module-procrustes.utils" title="procrustes.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">procrustes.utils</span></code></a><a class="headerlink" href="#module-procrustes.utils" title="Link to this heading"></a></h1>
+<p>Utility Module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.utils.compute_error">
+<span class="sig-prename descclassname"><span class="pre">procrustes.utils.</span></span><span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/procrustes/utils.html#compute_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.utils.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Return the one- or two-sided Procrustes (squared Frobenius norm) error.</p>
+<p>The double-sided Procrustes error is defined as</p>
+<div class="math notranslate nohighlight">
+\[\|\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\|_{F}^2 =
+\text{Tr}\left[
+     \left(\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\right)^\dagger
+     \left(\mathbf{S}\mathbf{A}\mathbf{T} - \mathbf{B}\right)\right]\]</div>
+<p>when <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> is the identity matrix <span class="math notranslate nohighlight">\(\mathbf{I}\)</span>, this is called the one-sided
+Procrustes error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{A}_{m \times n}\)</span> which is going to be transformed.</p></li>
+<li><p><strong>b</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{B}_{m \times n}\)</span> representing the reference matrix.</p></li>
+<li><p><strong>t</strong> (<em>ndarray</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{T}_{n \times n}\)</span> representing the right-hand-side transformation
+matrix.</p></li>
+<li><p><strong>s</strong> (<em>ndarray</em><em>, </em><em>optional</em>) -- The 2D-array <span class="math notranslate nohighlight">\(\mathbf{S}_{m \times m}\)</span> representing the left-hand-side transformation
+matrix. If set to <cite>None</cite>, the one-sided Procrustes error is computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>error</strong> -- The squared Frobenius norm of difference between the transformed array, <span class="math notranslate nohighlight">\(\mathbf{S}
+\mathbf{A}\mathbf{T}\)</span>, and the reference array, <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="procrustes.utils.setup_input_arrays">
+<span class="sig-prename descclassname"><span class="pre">procrustes.utils.</span></span><span class="sig-name descname"><span class="pre">setup_input_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_zero_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_zero_row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/procrustes/utils.html#setup_input_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.utils.setup_input_arrays" title="Link to this definition"></a></dt>
+<dd><p>Check and process array inputs for the Procrustes transformation routines.</p>
+<p>Usually, the precursor step before all Procrustes methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array_a</strong> (<em>npdarray</em>) -- The 2D array <span class="math notranslate nohighlight">\(A\)</span> being transformed.</p></li>
+<li><p><strong>array_b</strong> (<em>npdarray</em>) -- The 2D reference array <span class="math notranslate nohighlight">\(B\)</span>.</p></li>
+<li><p><strong>remove_zero_col</strong> (<em>bool</em>) -- If True, zero columns (values less than 1e-8) on the right side will be removed.</p></li>
+<li><p><strong>remove_zero_row</strong> (<em>bool</em>) -- If True, zero rows (values less than 1e-8) on the bottom will be removed.</p></li>
+<li><p><strong>pad</strong> (<em>bool</em>) -- Add zero rows (at the bottom) and/or columns (to the right-hand side) of matrices
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> so that they have the same shape.</p></li>
+<li><p><strong>translate</strong> (<em>bool</em>) -- If true, then translate both arrays <span class="math notranslate nohighlight">\(A, B\)</span> to the origin, ie columns of the arrays
+will have mean zero.</p></li>
+<li><p><strong>scale</strong> -- If True, both arrays are normalized to one with respect to the Frobenius norm, ie
+<span class="math notranslate nohighlight">\(Tr(A^T A) = 1\)</span>.</p></li>
+<li><p><strong>check_finite</strong> (<em>bool</em>) -- If true, then checks if both arrays <span class="math notranslate nohighlight">\(A, B\)</span> are numpy arrays and two-dimensional.</p></li>
+<li><p><strong>weight</strong> (<em>A list</em><em> of </em><em>ndarray</em><em> or </em><em>ndarray</em>) -- A list of the weight arrays or one numpy array. When only on numpy array provided,
+it is assumed that the two arrays <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> share the same weight matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the padded arrays, in that they have the same matrix dimensions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(ndarray, ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="procrustes.utils.ProcrustesResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">procrustes.utils.</span></span><span class="sig-name descname"><span class="pre">ProcrustesResult</span></span><a class="reference internal" href="../_modules/procrustes/utils.html#ProcrustesResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#procrustes.utils.ProcrustesResult" title="Link to this definition"></a></dt>
+<dd><p>Represents the Procrustes analysis result.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="procrustes.utils.ProcrustesResult.error">
+<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#procrustes.utils.ProcrustesResult.error" title="Link to this definition"></a></dt>
+<dd><p>The Procrustes (squared Frobenius norm) error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="procrustes.utils.ProcrustesResult.new_a">
+<span class="sig-name descname"><span class="pre">new_a</span></span><a class="headerlink" href="#procrustes.utils.ProcrustesResult.new_a" title="Link to this definition"></a></dt>
+<dd><p>The translated/scaled numpy ndarray <span class="math notranslate nohighlight">\(\mathbf{A}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="procrustes.utils.ProcrustesResult.new_b">
+<span class="sig-name descname"><span class="pre">new_b</span></span><a class="headerlink" href="#procrustes.utils.ProcrustesResult.new_b" title="Link to this definition"></a></dt>
+<dd><p>The translated/scaled numpy ndarray <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="procrustes.utils.ProcrustesResult.t">
+<span class="sig-name descname"><span class="pre">t</span></span><a class="headerlink" href="#procrustes.utils.ProcrustesResult.t" title="Link to this definition"></a></dt>
+<dd><p>The 2D-array <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> representing the right-hand-side transformation matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="procrustes.utils.ProcrustesResult.s">
+<span class="sig-name descname"><span class="pre">s</span></span><a class="headerlink" href="#procrustes.utils.ProcrustesResult.s" title="Link to this definition"></a></dt>
+<dd><p>The 2D-array <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> representing the left-hand-side transformation
+matrix. If set to <cite>None</cite>, the one-sided Procrustes was performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromkeys</span></code>(iterable[, value])</p></td>
+<td><p>Create a new dictionary with keys from iterable and values set to value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(key[, default])</p></td>
+<td><p>Return the value for key if key is in the dictionary, else default.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code>(key[, default])</p></td>
+<td><p>If the key is not found, return the default if given; otherwise, raise a KeyError.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code>(/)</p></td>
+<td><p>Remove and return a (key, value) pair as a 2-tuple.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdefault</span></code>(key[, default])</p></td>
+<td><p>Insert key with a value of default if key is not in the dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>([E, ]**F)</p></td>
+<td><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k] If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v In either case, this is followed by: for k in F:  D[k] = F[k]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_index.html" class="btn btn-neutral float-left" title="Procrustes API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="kopt.html" class="btn btn-neutral float-right" title="procrustes.kopt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

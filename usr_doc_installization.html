@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; Procrustes 1.0.2a2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=195c3181"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start" href="notebooks/Quick_Start.html" />
+    <link rel="prev" title="Welcome to Procrustes&#39;s Documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Procrustes
+          </a>
+              <div class="version">
+                1.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-code">Downloading Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Quick_Start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Quick_Start.html#Accessing-Scaling--and-Translation-Related-Information">Accessing Scaling- and Translation-Related Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usr_doc_zref.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/api_index.html">Procrustes API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Procrustes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usr_doc_installization.rst" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<span id="usr-installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<section id="downloading-code">
+<h2>Downloading Code<a class="headerlink" href="#downloading-code" title="Link to this heading"></a></h2>
+<p>The latest code can be obtained through theochem (<a class="reference external" href="https://github.com/theochem/procrustes">https://github.com/theochem/procrustes</a>) in Github,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:theochem/procrustes.git
+</pre></div>
+</div>
+</section>
+<section id="dependencies">
+<span id="usr-py-depend"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h2>
+<p>The following dependencies will be necessary for Procrustes to build properly,</p>
+<ul class="simple">
+<li><p>Python &gt;= 3.6: <a class="reference external" href="http://www.python.org/">https://www.python.org/</a></p></li>
+<li><p>SciPy &gt;= 1.5.0: <a class="reference external" href="http://www.scipy.org/">https://www.scipy.org/</a></p></li>
+<li><p>NumPy &gt;= 1.18.5: <a class="reference external" href="http://www.numpy.org/">https://www.numpy.org/</a></p></li>
+<li><p>Pip &gt;= 19.0: <a class="reference external" href="https://pip.pypa.io/">https://pip.pypa.io/</a></p></li>
+<li><p>PyTest &gt;= 5.4.3: <a class="reference external" href="https://docs.pytest.org/">https://docs.pytest.org/</a></p></li>
+<li><p>PyTest-Cov &gt;= 2.8.0: <a class="reference external" href="https://pypi.org/project/pytest-cov/">https://pypi.org/project/pytest-cov/</a></p></li>
+<li><p>Sphinx &gt;= 2.3.0, if one wishes to build the documentation locally:
+<a class="reference external" href="https://www.sphinx-doc.org/">https://www.sphinx-doc.org/</a></p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>Installation<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>The stable release of the package can be easily installed through the <em>pip</em> and
+<em>conda</em> package management systems, which install the dependencies automatically, if not
+available. To use <em>pip</em>, simply run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>qc-procrustes
+</pre></div>
+</div>
+<p>To use <em>conda</em>, one can either install the package through Anaconda Navigator or run the following
+command in a desired <em>conda</em> environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>theochem<span class="w"> </span>qc-procrustes
+</pre></div>
+</div>
+<p>Alternatively, the <em>Procrustes</em> source code can be download from GitHub (either the stable version
+or the development version) and then installed from source. For example, one can download the latest
+source code using <em>git</em> by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># download source code</span>
+git<span class="w"> </span>clone<span class="w"> </span>git@github.com:theochem/procrustes.git
+<span class="nb">cd</span><span class="w"> </span>procrustes
+</pre></div>
+</div>
+<p>From the parent directory, the dependencies can either be installed using <em>pip</em> by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># install dependencies using pip</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<p>or, through <em>conda</em> by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># create and activate myenv environment</span>
+<span class="c1"># Procruste works with Python 3.6, 3.7, and 3.8</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>myenv<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.6
+conda<span class="w"> </span>activate<span class="w"> </span>myenv
+<span class="c1"># install dependencies using conda</span>
+conda<span class="w"> </span>install<span class="w"> </span>--yes<span class="w"> </span>--file<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<p>Finally, the <em>Procrustes</em> package can be installed (from source) by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># install Procrustes from source</span>
+pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="testing">
+<span id="usr-testing"></span><h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>To make sure that the package is installed properly, the <em>Procrustes</em> tests should be executed using
+<em>pytest</em> from the parent directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># testing without coverage report</span>
+pytest<span class="w"> </span>-v<span class="w"> </span>.
+</pre></div>
+</div>
+<p>In addition, to generate a coverage report alongside testing, one can use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># testing with coverage report</span>
+pytest<span class="w"> </span>--cov-config<span class="o">=</span>.coveragerc<span class="w"> </span>--cov<span class="o">=</span>procrustes<span class="w"> </span>procrustes/test
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Procrustes&#39;s Documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/Quick_Start.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2024, The QC-Devs Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-name: Deploy Documentation Website
+name: Deploy Website
 
 # Trigger the workflow on push events to the default branch (e.g., main)
 on:
@@ -34,11 +34,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
-          pip install -r doc/requirements.txt
       # Build the Sphinx documentation
       - name: Build Sphinx documentation
         run: |
           cd doc
+          pip install -r requirements.txt
           make html
 
       # Deploy to GitHub Pages

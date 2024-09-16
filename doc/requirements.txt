@@ -6,4 +6,4 @@ sphinx-autoapi>=1.5.1
 sphinx-copybutton>=0.3.1
 nbsphinx>=0.8.3
 ipython>=7.22.0
-pandoc>=2.4
+pypandoc>=1.13

@@ -69,7 +69,7 @@ and [GitHub releases](https://github.com/theochem/procrustes/tags).
 ```bash
     # download the wheel file first to your local machine
     # then install the wheel file
-    pip install file_path/qc_procrustes-0.0.2b12-py3-none-any.whl
+    pip install file_path/qc_procrustes-1.0.2a1-py3-none-any.whl
 ```
 
 ### Installing from the Source Code

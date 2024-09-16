@@ -79,7 +79,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         env:
           TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
   github-release:
     name: Sign and Upload Python Distribution to GitHub Release

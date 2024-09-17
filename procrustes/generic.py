@@ -120,7 +120,15 @@ def generic(
         weight,
     )
     # compute the generic solution
-    a_inv = pinv(np.dot(new_a.T, new_a))
+    try:
+        a_inv = pinv(np.dot(new_a.T, new_a))
+    # add little bit of random noise when the matrix is ill conditioned
+    except np.linalg.LinAlgError:
+        # conver new_a to float if it is not
+        new_a = new_a.astype(float)
+        new_a += 2e-14 * np.random.random_sample((new_a.shape[0], new_a.shape[1])) - 1e-14
+        a_inv = pinv(np.dot(new_a.T, new_a))
+    # a_inv = pinv(np.dot(new_a.T, new_a))
 
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     # compute one-sided error

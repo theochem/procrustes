@@ -1,5 +1,7 @@
 # Codecov configuration to make it a bit less noisy
 codecov:
+  # set new Default branch
+  branch: main
   notify:
     require_ci_to_pass: yes
 

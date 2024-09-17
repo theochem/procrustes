@@ -211,7 +211,15 @@
         <span class="n">weight</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># compute the generic solution</span>
-    <span class="n">a_inv</span> <span class="o">=</span> <span class="n">pinv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_a</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">a_inv</span> <span class="o">=</span> <span class="n">pinv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_a</span><span class="p">))</span>
+    <span class="c1"># add little bit of random noise when the matrix is ill conditioned</span>
+    <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
+        <span class="c1"># conver new_a to float if it is not</span>
+        <span class="n">new_a</span> <span class="o">=</span> <span class="n">new_a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">new_a</span> <span class="o">+=</span> <span class="mf">2e-14</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">((</span><span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="mf">1e-14</span>
+        <span class="n">a_inv</span> <span class="o">=</span> <span class="n">pinv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_a</span><span class="p">))</span>
+    <span class="c1"># a_inv = pinv(np.dot(new_a.T, new_a))</span>
 
     <span class="n">array_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">multi_dot</span><span class="p">([</span><span class="n">a_inv</span><span class="p">,</span> <span class="n">new_a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">new_b</span><span class="p">])</span>
     <span class="c1"># compute one-sided error</span>

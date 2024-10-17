@@ -284,6 +284,7 @@ disable = [
     "no-else-return",
     "no-member",
     "too-many-branches",
+    "too-many-positional-arguments",
 ]
 
 [tool.pylint."MASTER"]

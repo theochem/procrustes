@@ -153,7 +153,7 @@ def permutation_2sided(
     a: np.ndarray,
     b: np.ndarray,
     single: bool = True,
-    method: str = "kopt",
+    method: str = "k-opt",
     guess_p1: Optional[np.ndarray] = None,
     guess_p2: Optional[np.ndarray] = None,
     pad: bool = False,

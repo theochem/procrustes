@@ -106,6 +106,7 @@ def generalized(
         new_distance_gpa = np.square(ref - new_ref).sum()
         if distance_gpa != np.inf and np.abs(new_distance_gpa - distance_gpa) < tol:
             break
+        ref = new_ref
         distance_gpa = new_distance_gpa
     return array_aligned, new_distance_gpa
 

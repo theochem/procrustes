@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>procrustes.permutation &mdash; Procrustes 1.1.0alpha documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -105,21 +105,21 @@
 <span class="c1">#</span>
 <span class="c1"># --</span>
 <span class="sd">&quot;&quot;&quot;Permutation Procrustes Module.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">linear_sum_assignment</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_sum_assignment</span>
 
-<span class="kn">from</span> <span class="nn">procrustes.kopt</span> <span class="kn">import</span> <span class="n">kopt_heuristic_double</span><span class="p">,</span> <span class="n">kopt_heuristic_single</span>
-<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">ProcrustesResult</span><span class="p">,</span> <span class="n">_zero_padding</span><span class="p">,</span> <span class="n">compute_error</span><span class="p">,</span> <span class="n">setup_input_arrays</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">procrustes.kopt</span><span class="w"> </span><span class="kn">import</span> <span class="n">kopt_heuristic_double</span><span class="p">,</span> <span class="n">kopt_heuristic_single</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">procrustes.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcrustesResult</span><span class="p">,</span> <span class="n">_zero_padding</span><span class="p">,</span> <span class="n">compute_error</span><span class="p">,</span> <span class="n">setup_input_arrays</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="s2">&quot;permutation_2sided&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="permutation">
 <a class="viewcode-back" href="../../api/permutation.html#procrustes.permutation.permutation">[docs]</a>
-<span class="k">def</span> <span class="nf">permutation</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">permutation</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -238,7 +238,7 @@
 
 <div class="viewcode-block" id="permutation_2sided">
 <a class="viewcode-back" href="../../api/permutation.html#procrustes.permutation.permutation_2sided">[docs]</a>
-<span class="k">def</span> <span class="nf">permutation_2sided</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">permutation_2sided</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">single</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -613,7 +613,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_permutation_2sided_2trans_flipflop</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_permutation_2sided_2trans_flipflop</span><span class="p">(</span>
     <span class="n">n</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">m</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -673,7 +673,7 @@
     <span class="k">return</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">error2</span>
 
 
-<span class="k">def</span> <span class="nf">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">cost_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_permutation_hungarian</span><span class="p">(</span><span class="n">cost_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># solve linear sum assignment problem to get the row/column indices of optimal assignment</span>
     <span class="n">row_ind</span><span class="p">,</span> <span class="n">col_ind</span> <span class="o">=</span> <span class="n">linear_sum_assignment</span><span class="p">(</span><span class="n">cost_matrix</span><span class="p">,</span> <span class="n">maximize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># make the permutation matrix by setting the corresponding elements to 1</span>
@@ -682,7 +682,7 @@
     <span class="k">return</span> <span class="n">perm</span>
 
 
-<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_normal1</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_approx_permutation_2sided_1trans_normal1</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># This assumes that array_a has all positive entries, this guess does not match that found</span>
     <span class="c1">#    in the notes/paper because it doesn&#39;t include the sign function.</span>
     <span class="c1"># build the empty target array</span>
@@ -712,7 +712,7 @@
     <span class="k">return</span> <span class="n">array_new</span>
 
 
-<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_normal2</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_approx_permutation_2sided_1trans_normal2</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># This assumes that array_a has all positive entries, this guess does not match that found</span>
     <span class="c1">#    in the notes/paper because it doesn&#39;t include the sign function.</span>
     <span class="n">array_mask_a</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -755,7 +755,7 @@
     <span class="k">return</span> <span class="n">array_new</span>
 
 
-<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_umeyama</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_approx_permutation_2sided_1trans_umeyama</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># check whether A &amp; B are symmetric (within a relative &amp; absolute tolerance)</span>
     <span class="n">is_a_symmetric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-08</span><span class="p">)</span>
     <span class="n">is_b_symmetric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-08</span><span class="p">)</span>
@@ -775,7 +775,7 @@
     <span class="k">return</span> <span class="n">u_umeyama</span>
 
 
-<span class="k">def</span> <span class="nf">_approx_permutation_2sided_1trans_umeyama_svd</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_approx_permutation_2sided_1trans_umeyama_svd</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># compute u_umeyama</span>
@@ -786,12 +786,12 @@
     <span class="k">return</span> <span class="n">u_umeyama_approx</span>
 
 
-<span class="k">def</span> <span class="nf">_symmetrize_matrix</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_symmetrize_matrix</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># symmetrized matrix A would be complex</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span>
 
 
-<span class="k">def</span> <span class="nf">_permutation_2sided_1trans_undirected</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_permutation_2sided_1trans_undirected</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">guess</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve for 2-sided permutation Procrustes with 1-transformation when A &amp; B are symmetric.&quot;&quot;&quot;</span>
@@ -818,7 +818,7 @@
     <span class="k">return</span> <span class="n">p_new</span>
 
 
-<span class="k">def</span> <span class="nf">_permutation_2sided_1trans_directed</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_permutation_2sided_1trans_directed</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">guess</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve for 2-sided permutation Procrustes with 1-transformation.&quot;&quot;&quot;</span>

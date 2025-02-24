@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start &mdash; Procrustes 1.1.0alpha documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -103,9 +103,9 @@ respect to the Frobenius norm). In addition, the other optional arguments (not a
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ortho_group</span>
-<span class="kn">from</span> <span class="nn">procrustes</span> <span class="kn">import</span> <span class="n">orthogonal</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">ortho_group</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">procrustes</span><span class="w"> </span><span class="kn">import</span> <span class="n">orthogonal</span>
 
 <span class="c1"># random input 10x7 matrix A</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
@@ -242,7 +242,7 @@ Matrix B (after translation and scaling) =
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># accessing the scaling factor when preparing two input matrices</span>
-<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_scale_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">procrustes.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_scale_array</span>
 
 <span class="c1"># array_a is scaled to match array_b&#39;s norm; after scaling the norm of $a$ equals the norm of $b$</span>
 <span class="n">scaled_a</span><span class="p">,</span> <span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">_scale_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -265,7 +265,7 @@ The scaling factor is 0.8623410931853571.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># accessing the translation matrix</span>
-<span class="kn">from</span> <span class="nn">procrustes.utils</span> <span class="kn">import</span> <span class="n">_translate_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">procrustes.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_translate_array</span>
 
 <span class="c1"># array_a is translated to centroid of array_b</span>
 <span class="c1"># after translation, the centroid of $a$ will match the centroid of $b$</span>

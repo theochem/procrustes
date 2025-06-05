@@ -64,11 +64,11 @@ jobs:
         python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes procrustes
 
     - name: CodeCov
-      uses: codecov/codecov-action@v4.6.0
+      uses: codecov/codecov-action@v5.4.3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         # Temp fix for https://github.com/codecov/codecov-action/issues/1487
-        version: v0.6.0
+        # version: v0.6.0
         fail_ci_if_error: true
         file: ./coverage.xml
         flags: unittests

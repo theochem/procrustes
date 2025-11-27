@@ -217,9 +217,7 @@ def _weighted_mean(arrays: List[np.ndarray], masks: List[np.ndarray]) -> np.ndar
     return result
 
 
-def _orthogonal_with_mask(
-    arr_a: np.ndarray, arr_b: np.ndarray, mask_a: np.ndarray
-) -> np.ndarray:
+def _orthogonal_with_mask(arr_a: np.ndarray, arr_b: np.ndarray, mask_a: np.ndarray) -> np.ndarray:
     """
     Perform weighted orthogonal Procrustes considering only observed values.
 

@@ -97,33 +97,34 @@ def test_generalized_with_missing_values_nan():
     arr_b = arr_base.copy()
     arr_c = np.dot(arr_base, _rotation(30))
     arr_d = np.dot(arr_base, _rotation(45))
-    
+
     # Introduce missing values (NaN)
     arr_b_missing = arr_b.copy()
     arr_b_missing[0, 0] = np.nan  # missing value in first array
-    
+
     arr_c_missing = arr_c.copy()
     arr_c_missing[1, 1] = np.nan  # missing value in second array
-    
+
     arr_d_missing = arr_d.copy()
     arr_d_missing[2, 0] = np.nan  # missing value in third array
-    
+
     arr_list = [arr_b_missing, arr_c_missing, arr_d_missing]
-    
+
     # Run GPA with missing value handling
-    arr_aligned, error = generalized(arr_list, ref=None, tol=1.0e-5, n_iter=200, 
-                                     handle_missing=True)
-    
+    arr_aligned, error = generalized(
+        arr_list, ref=None, tol=1.0e-5, n_iter=200, handle_missing=True
+    )
+
     # Check that all arrays are aligned (should be close to arr_base after alignment)
     # The alignment might not be perfect due to missing values, but should be reasonable
     assert len(arr_aligned) == 3
     assert arr_aligned[0].shape == arr_base.shape
-    
+
     # Check that missing values have been filled
     assert not np.any(np.isnan(arr_aligned[0]))
     assert not np.any(np.isnan(arr_aligned[1]))
     assert not np.any(np.isnan(arr_aligned[2]))
-    
+
     # Error should be finite and positive
     assert np.isfinite(error)
     assert error >= 0
@@ -135,17 +136,18 @@ def test_generalized_with_missing_values_masked():
     arr_base = np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]])
     arr_b = arr_base.copy()
     arr_c = np.dot(arr_base, _rotation(30))
-    
+
     # Create masked arrays
     arr_b_masked = np.ma.array(arr_b, mask=[[True, False], [False, False], [False, False]])
     arr_c_masked = np.ma.array(arr_c, mask=[[False, False], [False, True], [False, False]])
-    
+
     arr_list = [arr_b_masked, arr_c_masked]
-    
+
     # Run GPA with missing value handling
-    arr_aligned, error = generalized(arr_list, ref=None, tol=1.0e-5, n_iter=200,
-                                     handle_missing=True)
-    
+    arr_aligned, error = generalized(
+        arr_list, ref=None, tol=1.0e-5, n_iter=200, handle_missing=True
+    )
+
     # Check results
     assert len(arr_aligned) == 2
     assert not np.any(np.isnan(arr_aligned[0]))
@@ -160,15 +162,15 @@ def test_generalized_missing_backward_compatibility():
     arr_c = np.dot(arr_b, _rotation(30))
     arr_d = np.dot(arr_b, _rotation(45))
     arr_list = [arr_b, arr_c, arr_d]
-    
+
     # Run with handle_missing=False (default)
-    arr_aligned_old, error_old = generalized(arr_list, ref=None, tol=1.0e-7, n_iter=200,
-                                              handle_missing=False)
-    
+    arr_aligned_old, error_old = generalized(
+        arr_list, ref=None, tol=1.0e-7, n_iter=200, handle_missing=False
+    )
+
     # Run without specifying handle_missing (should default to False)
-    arr_aligned_default, error_default = generalized(arr_list, ref=None, tol=1.0e-7, 
-                                                      n_iter=200)
-    
+    arr_aligned_default, error_default = generalized(arr_list, ref=None, tol=1.0e-7, n_iter=200)
+
     # Results should be identical
     for i in range(len(arr_aligned_old)):
         assert_almost_equal(arr_aligned_old[i], arr_aligned_default[i], decimal=10)
@@ -181,11 +183,12 @@ def test_generalized_missing_no_missing_values():
     arr_c = np.dot(arr_b, _rotation(30))
     arr_d = np.dot(arr_b, _rotation(45))
     arr_list = [arr_b, arr_c, arr_d]
-    
+
     # Run with handle_missing=True but no actual missing values
-    arr_aligned, error = generalized(arr_list, ref=None, tol=1.0e-7, n_iter=200,
-                                     handle_missing=True)
-    
+    arr_aligned, error = generalized(
+        arr_list, ref=None, tol=1.0e-7, n_iter=200, handle_missing=True
+    )
+
     # Should still produce good alignment
     assert len(arr_aligned) == 3
     for aligned in arr_aligned:
@@ -198,23 +201,24 @@ def test_generalized_missing_high_percentage():
     arr_base = np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0], [3.0, 4.0]])
     arr_b = arr_base.copy()
     arr_c = np.dot(arr_base, _rotation(30))
-    
+
     # Create arrays with many missing values
     arr_b_missing = arr_b.copy()
     arr_b_missing[0, 0] = np.nan
     arr_b_missing[1, 1] = np.nan
     arr_b_missing[3, 0] = np.nan
-    
+
     arr_c_missing = arr_c.copy()
     arr_c_missing[0, 1] = np.nan
     arr_c_missing[2, 0] = np.nan
-    
+
     arr_list = [arr_b_missing, arr_c_missing]
-    
+
     # Run GPA
-    arr_aligned, error = generalized(arr_list, ref=None, tol=1.0e-5, n_iter=200,
-                                     handle_missing=True)
-    
+    arr_aligned, error = generalized(
+        arr_list, ref=None, tol=1.0e-5, n_iter=200, handle_missing=True
+    )
+
     # Check that algorithm completes and fills missing values
     assert len(arr_aligned) == 2
     assert not np.any(np.isnan(arr_aligned[0]))
@@ -227,20 +231,21 @@ def test_generalized_missing_with_reference():
     arr_base = np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]])
     arr_b = arr_base.copy()
     arr_c = np.dot(arr_base, _rotation(30))
-    
+
     # Introduce missing values
     arr_b_missing = arr_b.copy()
     arr_b_missing[0, 0] = np.nan
-    
+
     arr_c_missing = arr_c.copy()
     arr_c_missing[1, 1] = np.nan
-    
+
     arr_list = [arr_b_missing, arr_c_missing]
-    
+
     # Use arr_base as reference
-    arr_aligned, error = generalized(arr_list, ref=arr_base, tol=1.0e-5, n_iter=200,
-                                     handle_missing=True)
-    
+    arr_aligned, error = generalized(
+        arr_list, ref=arr_base, tol=1.0e-5, n_iter=200, handle_missing=True
+    )
+
     # Check results
     assert len(arr_aligned) == 2
     assert not np.any(np.isnan(arr_aligned[0]))
@@ -254,28 +259,30 @@ def test_generalized_missing_convergence():
     arr_b = arr_base.copy()
     arr_c = np.dot(arr_base, _rotation(30))
     arr_d = np.dot(arr_base, _rotation(60))
-    
+
     # Introduce missing values
     arr_b_missing = arr_b.copy()
     arr_b_missing[0, 0] = np.nan
-    
+
     arr_c_missing = arr_c.copy()
     arr_c_missing[1, 1] = np.nan
-    
+
     arr_d_missing = arr_d.copy()
     arr_d_missing[2, 0] = np.nan
-    
+
     arr_list = [arr_b_missing, arr_c_missing, arr_d_missing]
-    
+
     # Run with different tolerances
-    arr_aligned_loose, error_loose = generalized(arr_list, ref=None, tol=1.0e-3, n_iter=200,
-                                                  handle_missing=True)
-    arr_aligned_tight, error_tight = generalized(arr_list, ref=None, tol=1.0e-7, n_iter=200,
-                                                  handle_missing=True)
-    
+    arr_aligned_loose, error_loose = generalized(
+        arr_list, ref=None, tol=1.0e-3, n_iter=200, handle_missing=True
+    )
+    arr_aligned_tight, error_tight = generalized(
+        arr_list, ref=None, tol=1.0e-7, n_iter=200, handle_missing=True
+    )
+
     # Tighter tolerance should give better (or equal) result
     assert error_tight <= error_loose + 1.0e-5
-    
+
     # Both should produce valid results
     for aligned in arr_aligned_loose:
         assert not np.any(np.isnan(aligned))
@@ -286,28 +293,29 @@ def test_generalized_missing_convergence():
 def test_generalized_missing_different_patterns():
     """Test GPA with different missing patterns across arrays."""
     arr_base = np.array([[5.0, 0.0], [8.0, 0.0], [5.0, 5.0]])
-    
+
     # Create three arrays with different rotation and missing patterns
     arr_a = arr_base.copy()
     arr_a[0, 0] = np.nan  # top-left missing
-    
+
     arr_b = np.dot(arr_base, _rotation(45))
     arr_b[1, 1] = np.nan  # middle-right missing
-    
+
     arr_c = np.dot(arr_base, _rotation(90))
     arr_c[2, 0] = np.nan  # bottom-left missing
-    
+
     arr_list = [arr_a, arr_b, arr_c]
-    
+
     # Run GPA
-    arr_aligned, error = generalized(arr_list, ref=None, tol=1.0e-5, n_iter=200,
-                                     handle_missing=True)
-    
+    arr_aligned, error = generalized(
+        arr_list, ref=None, tol=1.0e-5, n_iter=200, handle_missing=True
+    )
+
     # Verify results
     assert len(arr_aligned) == 3
     for i, aligned in enumerate(arr_aligned):
         assert not np.any(np.isnan(aligned)), f"Array {i} has NaN values"
         assert aligned.shape == arr_base.shape
-    
+
     assert np.isfinite(error)
     assert error >= 0

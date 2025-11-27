@@ -172,8 +172,8 @@ def test_generalized_missing_backward_compatibility():
     arr_aligned_default, error_default = generalized(arr_list, ref=None, tol=1.0e-7, n_iter=200)
 
     # Results should be identical
-    for i in range(len(arr_aligned_old)):
-        assert_almost_equal(arr_aligned_old[i], arr_aligned_default[i], decimal=10)
+    for aligned_old, aligned_default in zip(arr_aligned_old, arr_aligned_default):
+        assert_almost_equal(aligned_old, aligned_default, decimal=10)
     assert_almost_equal(error_old, error_default, decimal=10)
 
 

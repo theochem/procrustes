@@ -22,6 +22,7 @@
 # --
 """Generalized Procrustes Module."""
 
+import warnings
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -161,30 +162,47 @@ def _extract_data(arr: np.ndarray) -> np.ndarray:
     return arr.copy()
 
 
+def _compute_column_means(array_list: List[np.ndarray]) -> List[float]:
+    """Compute column means of observed values across all arrays."""
+    n_cols = array_list[0].shape[1]
+    col_means = []
+
+    # Compute overall mean for fallback
+    all_observed = []
+    for arr in array_list:
+        arr_mask = _get_mask(arr)
+        arr_data = _extract_data(arr)
+        all_observed.extend(arr_data[arr_mask])
+    overall_mean = np.mean(all_observed) if all_observed else 0.0
+
+    for col_idx in range(n_cols):
+        col_values = []
+        for arr in array_list:
+            mask = _get_mask(arr)
+            data = _extract_data(arr)
+            observed_vals = data[mask[:, col_idx], col_idx]
+            col_values.extend(observed_vals)
+        if col_values:
+            col_means.append(np.mean(col_values))
+        else:
+            col_means.append(overall_mean)
+
+    return col_means
+
+
 def _initialize_missing_values(array_list: List[np.ndarray]) -> List[np.ndarray]:
     """Initialize missing values using column means of observed values across all arrays."""
-    initialized_arrays = []
+    n_cols = array_list[0].shape[1]
+    col_means = _compute_column_means(array_list)
 
+    # Fill missing values using precomputed column means
+    initialized_arrays = []
     for arr in array_list:
         arr_copy = _extract_data(arr)
         mask = _get_mask(arr)
-
-        # For each column, compute mean of observed values across all arrays
-        for col_idx in range(arr.shape[1]):
+        for col_idx in range(n_cols):
             if not mask[:, col_idx].all():  # if column has missing values
-                # Collect all observed values for this column across all arrays
-                col_values = []
-                for other_arr in array_list:
-                    other_mask = _get_mask(other_arr)
-                    other_data = _extract_data(other_arr)
-                    observed_vals = other_data[other_mask[:, col_idx], col_idx]
-                    col_values.extend(observed_vals)
-
-                if col_values:  # if we have any observed values
-                    col_mean = np.mean(col_values)
-                    # Fill missing values in this column
-                    arr_copy[~mask[:, col_idx], col_idx] = col_mean
-
+                arr_copy[~mask[:, col_idx], col_idx] = col_means[col_idx]
         initialized_arrays.append(arr_copy)
 
     return initialized_arrays
@@ -195,24 +213,25 @@ def _weighted_mean(arrays: List[np.ndarray], masks: List[np.ndarray]) -> np.ndar
     if not arrays:
         raise ValueError("At least one array is required.")
 
-    shape = arrays[0].shape
-    result = np.zeros(shape)
+    # Stack arrays and masks for vectorized computation
+    arrays_stacked = np.stack(arrays)  # shape: (k, n, m)
+    masks_stacked = np.stack(masks)  # shape: (k, n, m)
 
-    for i in range(shape[0]):
-        for j in range(shape[1]):
-            values = []
-            for arr, mask in zip(arrays, masks):
-                if mask[i, j]:  # if observed
-                    values.append(arr[i, j])
+    # Compute overall mean of all observed values for fallback
+    all_observed = arrays_stacked[masks_stacked]
+    fallback_mean = np.mean(all_observed) if all_observed.size > 0 else 0.0
 
-            if values:
-                result[i, j] = np.mean(values)
-            else:
-                # If all values are missing at this position, use overall mean
-                all_observed = []
-                for arr, mask in zip(arrays, masks):
-                    all_observed.extend(arr[mask].flatten())
-                result[i, j] = np.mean(all_observed) if all_observed else 0.0
+    # For each position, compute mean of observed values
+    # Set missing values to 0 for sum calculation, but only count observed
+    observed_sum = np.sum(arrays_stacked * masks_stacked, axis=0)
+    observed_count = np.sum(masks_stacked, axis=0)
+
+    with np.errstate(invalid="ignore", divide="ignore"):
+        result = np.where(
+            observed_count > 0,
+            observed_sum / observed_count,
+            fallback_mean
+        )
 
     return result
 
@@ -246,7 +265,11 @@ def _orthogonal_with_mask(arr_a: np.ndarray, arr_b: np.ndarray, mask_a: np.ndarr
         # Apply transformation
         return np.dot(arr_a, q_opt)
     except np.linalg.LinAlgError:
-        # If SVD fails, return original array
+        # If SVD fails, issue a warning and return original array
+        warnings.warn(
+            "SVD failed during orthogonal Procrustes transformation. "
+            "Returning original array without transformation."
+        )
         return arr_a
 
 
@@ -275,7 +298,14 @@ def _generalized_with_missing(
         ref = _weighted_mean(array_aligned, masks)
     else:
         array_aligned = [arr.copy() for arr in arrays_filled]
-        ref = ref.copy()
+        # Handle missing values in ref if present
+        ref_mask = _get_mask(ref)
+        ref_filled = _extract_data(ref)
+        if not ref_mask.all():
+            # Fill missing values in ref with mean of observed values
+            ref_mean = np.mean(ref_filled[ref_mask]) if ref_mask.any() else 0.0
+            ref_filled[~ref_mask] = ref_mean
+        ref = ref_filled
 
     distance_gpa = np.inf
 
@@ -311,4 +341,8 @@ def _generalized_with_missing(
         distance_gpa = new_distance_gpa
         array_aligned = array_aligned_new
 
-    return array_aligned, new_distance_gpa
+    # Compute actual GPA error: sum of squared distances between aligned arrays and reference
+    final_ref = _weighted_mean(array_aligned, masks)
+    gpa_error = sum(np.sum((arr - final_ref) ** 2) for arr in array_aligned)
+
+    return array_aligned, gpa_error

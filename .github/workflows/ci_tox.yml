@@ -13,10 +13,10 @@ on:
       - "master"
       - "main"
   schedule:
-    # Nightly tests run on master by default:
     # Scheduled workflows run on the latest commit on the default or base branch.
     # (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
-    - cron: "0 0 * * *"
+    # 4:30 UTC every Monday
+    - cron: '30 4 * * 1'
 
 jobs:
   test:
@@ -24,8 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [macOS-latest, windows-latest, ubuntu-latest]
-        os: [macos-13, macos-latest, windows-latest, ubuntu-latest]
+        os: [macOS-latest, windows-latest, ubuntu-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:

@@ -15,7 +15,7 @@ on:
   schedule:
     # Scheduled workflows run on the latest commit on the default or base branch.
     # (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
-    # 4:30 UTC, every day of month, every month, 1st day of week (Monday)
+    # 4:30 UTC every Monday
     - cron: '30 4 * * 1'
 
 jobs:

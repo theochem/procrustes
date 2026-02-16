@@ -33,7 +33,7 @@ authors = [
 keywords = [
     "procrustes analysis",
     "statistical shape analysis",
-    "qudratic assignment problem",
+    "quadratic assignment problem",
     "matrix transformation",
     "generalized procrustes analysis",
     "orthogonal procrustes problem",

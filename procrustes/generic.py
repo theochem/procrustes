@@ -55,7 +55,7 @@ def generic(
        \underbrace{\text{min}}_{\mathbf{T}} \quad \|\mathbf{A} \mathbf{T} - \mathbf{B}\|_{F}^2
 
     This Procrustes method requires the :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices to
-    have the same shape, which is gauranteed with the default ``pad`` argument for any given
+    have the same shape, which is guaranteed with the default ``pad`` argument for any given
     :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
     :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
     rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
@@ -124,11 +124,10 @@ def generic(
         a_inv = pinv(np.dot(new_a.T, new_a))
     # add little bit of random noise when the matrix is ill conditioned
     except np.linalg.LinAlgError:
-        # conver new_a to float if it is not
+        # convert new_a to float if it is not
         new_a = new_a.astype(float)
         new_a += 2e-14 * np.random.random_sample((new_a.shape[0], new_a.shape[1])) - 1e-14
         a_inv = pinv(np.dot(new_a.T, new_a))
-    # a_inv = pinv(np.dot(new_a.T, new_a))
 
     array_x = np.linalg.multi_dot([a_inv, new_a.T, new_b])
     # compute one-sided error

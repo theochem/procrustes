@@ -142,17 +142,62 @@ def _translate_array(
     """
     # The mean is strongly affected by outliers and is not a robust estimator for central location
     # see https://docs.python.org/3.6/library/statistics.html?highlight=mean#statistics.mean
-    if weight is not None:
-        if weight.ndim != 1:
-            raise ValueError("The weight should be a 1d row vector.")
-        if not (weight >= 0).all():
-            raise ValueError("The elements of the weight should be non-negative.")
 
-    centroid_a = np.average(array_a, axis=0, weights=weight)
+
+    if array_a.ndim != 2:
+        raise ValueError("The input array_a should be a 2d array.")
+    n_points, n_dims = array_a.shape
+    weight = np.asarray(weight) if weight is not None else None
+    if weight is None:
+        centroid_a = np.average(array_a, axis=0, weights=weight)
+    
+    else:
+        if weight.ndim ==1:
+            if weight.shape[0] != n_points:
+                raise ValueError("The length of 1D weight should be equal to the number of points "
+                                 "in array_a.")
+            if not (weight>=0).all():
+                raise ValueError("The elements of the weight should be non-negative.")
+            centroid_a = np.average(array_a, axis=0, weights=weight)
+
+        elif weight.ndim ==2:
+            if weight.shape[0] != weight.shape[1] or weight.shape[0] != n_dims:
+                raise ValueError("2D weight must be square with shape matching number of columns (n_dims).")
+            if not _is_psd(weight):
+                raise ValueError("2D weight matrix must be symmetric positive semidefinite (PSD).")
+            # For dimension metric W, the centroid minimizing sum_i (a_i - m)^T W (a_i - m)
+            # is the ordinary mean -> use ordinary mean.
+            centroid_a = np.mean(array_a, axis=0)
+        else:
+            raise ValueError("weight must be None, a 1D vector, or a 2D square matrix.")
     if array_b is not None:
-        # translation vector to b centroid
-        centroid_a -= np.average(array_b, axis=0, weights=weight)
-    return array_a - centroid_a, -1 * centroid_a
+        if weight is None:
+            centroid_a -= np.average(array_b, axis=0, weights=weight)
+        else:
+            if weight.ndim == 1:
+                centroid_a -= np.average(array_b, axis=0, weights=weight)
+            else:
+                centroid_a -= np.mean(array_b, axis=0)
+
+    return array_a - centroid_a, -1*centroid_a
+
+    
+    
+
+### func to check if a matrix is psd ###
+def _is_psd(matrix: np.ndarray, tor: float = 1e-8) -> bool:
+    if not isinstance(matrix, np.ndarray):
+        matrix = np.asarray(matrix)
+    if matrix.shape[0] != matrix.shape[1] and matrix.ndim != 2:
+        return False
+    if not np.allclose(matrix, matrix.T, atol=tor):
+        return False
+    eigvals = np.linalg.eigvalsh(matrix)
+    if np.any(eigvals < -tor):
+        return False
+    return True
+
+
 
 
 def _scale_array(array_a, array_b=None) -> Tuple[np.ndarray, float]:
@@ -433,7 +478,10 @@ def _setup_input_array_lower(
     # scale the matrix when translate is False, but weight is True
     else:
         if weight is not None:
-            array_a = np.dot(np.diag(weight), array_a)
+            if weight.ndim == 1:
+                array_a = np.dot(np.diag(weight), array_a)
+            elif weight.ndim == 2:
+                array_a = np.dot(array_a, weight) if _is_psd(weight) and weight.shape[0]==array_a.shape[1] else array_a
 
     if scale:
         array_a, _ = _scale_array(array_a, array_ref)

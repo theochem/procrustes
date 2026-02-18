@@ -350,3 +350,27 @@ def test_scale_array():
     # array_trans_scale should be identical to array after the above analysis
     expected = array_a
     assert (abs(predicted - expected) < 1.0e-10).all()
+
+
+def test_translate_with_2d_weight_uses_ordinary_mean():
+    """
+    When a 2D symmetric PSD matrix is given as 'weight' (a dimension metric),
+    _translate_array should use the ordinary mean for centering (not a 'W'-dependent centroid).
+    """
+    rng = np.random.RandomState(123)
+    # small deterministic dataset
+    A = np.array([[0.0, 0.0],
+                  [1.0, 0.0],
+                  [0.0, 1.0]])
+    # create symmetric PSD matrix W = M @ M.T
+    M = np.array([[1.0, 0.3],
+                  [0.3, 0.9]])
+    W = M @ M.T  # PSD, symmetric
+
+    translated, centroid_ret = _translate_array(A, weight=W)
+    # expected ordinary mean
+    expected_mean = np.mean(A, axis=0)
+    # function returns centroid_returned == -centroid_subtracted
+    assert_almost_equal(-centroid_ret, expected_mean, decimal=12)
+    # After translation the column means should be zero
+    assert_almost_equal(np.mean(translated, axis=0), np.zeros_like(expected_mean), decimal=12)

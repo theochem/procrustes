@@ -38,3 +38,4 @@ from procrustes.softassign import *
 from procrustes.symmetric import *
 from procrustes.generic import *
 from procrustes.generalized import *
+from procrustes.toeplitz import *

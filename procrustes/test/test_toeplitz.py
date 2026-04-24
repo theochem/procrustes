@@ -87,7 +87,7 @@ def test_toeplitz_output_is_toeplitz(n):
 
 
 @pytest.mark.parametrize("n", [3, 4, 5])
-def test_toeplitz_error_leq_generic(n):
+def test_toeplitz_error_geq_generic(n):
     r"""Toeplitz error should be >= generic (unconstrained) error for the same inputs."""
     rng = np.random.default_rng(200 + n)
     mat_a = rng.uniform(-5.0, 5.0, (n, n))
@@ -141,7 +141,7 @@ def test_hankel_output_is_hankel(n):
 
 
 @pytest.mark.parametrize("n", [3, 4, 5])
-def test_hankel_error_leq_generic(n):
+def test_hankel_error_geq_generic(n):
     r"""Hankel error should be >= generic (unconstrained) error for the same inputs."""
     rng = np.random.default_rng(500 + n)
     mat_a = rng.uniform(-5.0, 5.0, (n, n))

@@ -57,7 +57,7 @@ def _build_toeplitz_operator(a: np.ndarray) -> np.ndarray:
     """
     m, n = a.shape
     num_params = 2 * n - 1
-    op_m = np.zeros((m * n, num_params))
+    op_m = np.zeros((m * n, num_params), dtype=a.dtype)
 
     for col_idx in range(n):
         for row_idx in range(n):
@@ -97,7 +97,7 @@ def _build_hankel_operator(a: np.ndarray) -> np.ndarray:
     """
     m, n = a.shape
     num_params = 2 * n - 1
-    op_m = np.zeros((m * n, num_params))
+    op_m = np.zeros((m * n, num_params), dtype=a.dtype)
 
     for col_idx in range(n):
         for row_idx in range(n):
@@ -125,7 +125,7 @@ def _params_to_toeplitz(params: np.ndarray, n: int) -> np.ndarray:
     t_mat : ndarray
         The n x n Toeplitz matrix.
     """
-    t_mat = np.zeros((n, n))
+    t_mat = np.zeros((n, n), dtype=params.dtype)
     for i in range(n):
         for j in range(n):
             # Same diagonal mapping as in _build_toeplitz_operator.
@@ -154,7 +154,7 @@ def _params_to_hankel(params: np.ndarray, n: int) -> np.ndarray:
     h_mat : ndarray
         The n x n Hankel matrix.
     """
-    h_mat = np.zeros((n, n))
+    h_mat = np.zeros((n, n), dtype=params.dtype)
     for i in range(n):
         for j in range(n):
             h_mat[i, j] = params[i + j]
@@ -233,8 +233,8 @@ def toeplitz(
        \text{vec}(\mathbf{A}\mathbf{T}) = \mathbf{M} \mathbf{t}
 
     where :math:`\mathbf{t}` is the parameter vector and :math:`\mathbf{M}` is a structured matrix
-    derived from :math:`\mathbf{A}`. The optimal :math:`\mathbf{t}` is then found by solving the
-    normal equations:
+    derived from :math:`\mathbf{A}`. The optimal :math:`\mathbf{t}` is then found via
+    least-squares (using an SVD-based solver):
 
     .. math::
        \mathbf{t}^{\text{opt}} = \arg\min_{\mathbf{t}}
@@ -353,8 +353,8 @@ def hankel(
        \text{vec}(\mathbf{A}\mathbf{H}) = \mathbf{M} \mathbf{h}
 
     where :math:`\mathbf{h}` is the parameter vector and :math:`\mathbf{M}` is a structured matrix
-    derived from :math:`\mathbf{A}`. The optimal :math:`\mathbf{h}` is then found by solving the
-    normal equations:
+    derived from :math:`\mathbf{A}`. The optimal :math:`\mathbf{h}` is then found via
+    least-squares (using an SVD-based solver):
 
     .. math::
        \mathbf{h}^{\text{opt}} = \arg\min_{\mathbf{h}}

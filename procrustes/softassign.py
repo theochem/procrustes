@@ -91,9 +91,10 @@ def softassign(
     check_finite : bool, optional
         If true, convert the input to an array, checking for NaNs or Infs. Default=True.
     weight : ndarray, optional
-        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
-        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
-        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}` and
+        :math:`\mathbf{B}`. This defines the elements of the diagonal matrix :math:`\mathbf{W}`
+        that is multiplied by both matrices, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}` and
+        :math:`\mathbf{B} \rightarrow \mathbf{WB}`.
     iteration_soft : int, optional
         Number of iterations for softassign loop.
     iteration_sink : int, optional

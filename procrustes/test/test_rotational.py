@@ -25,6 +25,7 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal
+from scipy.spatial.transform import Rotation
 from scipy.stats import special_ortho_group
 
 from procrustes import rotational
@@ -124,3 +125,19 @@ def test_rotational_raises_error_shape_mismatch():
         rotational(array_a, array_b, pad=False, unpad_row=True)
     with pytest.raises(ValueError):
         rotational(array_a, array_b, pad=False, unpad_row=True, unpad_col=True)
+
+
+@pytest.mark.parametrize("m", [3, 5, 10])
+def test_rotational_weights_multiply_both_matrices(m):
+    r"""Test that the weights multiply both A and B, against the weighted Kabsch of scipy."""
+    rng = np.random.default_rng(m)
+    array_a = rng.normal(size=(m, 3))
+    array_b = rng.normal(size=(m, 3))
+    weight = rng.uniform(0.5, 2.0, m)
+    res = rotational(array_a, array_b, weight=weight)
+    assert_almost_equal(np.diag(weight) @ array_a, res.new_a)
+    assert_almost_equal(np.diag(weight) @ array_b, res.new_b)
+    assert_almost_equal(np.linalg.det(res.t), 1.0)
+    # scipy minimizes sum_i w_i ||b_i - R a_i||^2 and our weights enter squared: w_i^2 here
+    rot, _ = Rotation.align_vectors(array_b, array_a, weights=weight**2)
+    assert_almost_equal(res.t, rot.as_matrix().T)

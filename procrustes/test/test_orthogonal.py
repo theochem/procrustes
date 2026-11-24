@@ -25,6 +25,7 @@ r"""Testings for orthogonal Procrustes module."""
 import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
+from scipy.linalg import orthogonal_procrustes
 from scipy.stats import ortho_group
 
 from procrustes.orthogonal import orthogonal, orthogonal_2sided
@@ -372,3 +373,25 @@ def test_two_sided_orthogonal_single_transformation_random_orthogonal(n):
     assert_almost_equal(np.dot(result.t, result.t.T), np.eye(n), decimal=8)
     assert_almost_equal(abs(np.linalg.det(result.t)), 1.0, decimal=8)
     assert_almost_equal(result.error, 0, decimal=8)
+
+
+@pytest.mark.parametrize("m, n", [(5, 3), (8, 4), (6, 6), (9, 2)])
+def test_orthogonal_weights_multiply_both_matrices(m, n):
+    r"""Test that the weights multiply both A and B, so that ||W(AQ - B)|| is minimized."""
+    rng = np.random.default_rng(m * 10 + n)
+    array_a = rng.normal(size=(m, n))
+    array_b = rng.normal(size=(m, n))
+    weight = rng.uniform(0.5, 2.0, m)
+    w_mat = np.diag(weight)
+    res = orthogonal(array_a, array_b, weight=weight)
+    # the weighted matrices
+    assert_almost_equal(res.new_a, w_mat @ array_a)
+    assert_almost_equal(res.new_b, w_mat @ array_b)
+    # the transformation is the optimum of the weighted problem (scipy as the reference)
+    expected, _ = orthogonal_procrustes(w_mat @ array_a, w_mat @ array_b)
+    assert_almost_equal(res.t, expected)
+    expected_error = np.linalg.norm(w_mat @ (array_a @ expected - array_b)) ** 2
+    assert_almost_equal(res.error, expected_error)
+    # the weights give a different solution than the problem without weights
+    unweighted, _ = orthogonal_procrustes(array_a, array_b)
+    assert np.abs(res.t - unweighted).max() > 1e-3

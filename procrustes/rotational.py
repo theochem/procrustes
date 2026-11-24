@@ -61,8 +61,8 @@ def rotational(
     have the same shape, which is gauranteed with the default ``pad`` argument for any given
     :math:`\mathbf{A}` and :math:`\mathbf{B}` matrices. In preparing the :math:`\mathbf{A}` and
     :math:`\mathbf{B}` matrices, the (optional) order of operations is: **1)** unpad zero
-    rows/columns, **2)** translate the matrices to the origin, **3)** weight entries of
-    :math:`\mathbf{A}`, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
+    rows/columns, **2)** translate the matrices to the origin, **3)** weight the rows of both
+    matrices, **4)** scale the matrices to have unit norm, **5)** pad matrices with zero
     rows/columns so they have the same shape.
 
     Parameters
@@ -89,9 +89,10 @@ def rotational(
     check_finite : bool, optional
         If True, convert the input to an array, checking for NaNs or Infs.
     weight : ndarray, optional
-        The 1D-array representing the weights of each row of :math:`\mathbf{A}`. This defines the
-        elements of the diagonal matrix :math:`\mathbf{W}` that is multiplied by :math:`\mathbf{A}`
-        matrix, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}`.
+        The 1D-array representing the weights of each row of :math:`\mathbf{A}` and
+        :math:`\mathbf{B}`. This defines the elements of the diagonal matrix :math:`\mathbf{W}`
+        that is multiplied by both matrices, i.e., :math:`\mathbf{A} \rightarrow \mathbf{WA}` and
+        :math:`\mathbf{B} \rightarrow \mathbf{WB}`.
     lapack_driver : {'gesvd', 'gesdd'}, optional
         Whether to use the more efficient divide-and-conquer approach ('gesdd') or the more robust
         general rectangular approach ('gesvd') to compute the singular-value decomposition with
